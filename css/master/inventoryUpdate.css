@@ -1,0 +1,32 @@
+.left-inventory .chosen-container  {
+    width: 100% !important;
+}
+
+.right-inventory .chosen-container .chosen-drop  {
+    width: 100% !important;
+}
+
+.nav-tabs {
+    margin-bottom: 30px;
+}
+
+
+.left-inventory .chosen-container .chosen-drop  {
+    width: 100% !important;
+}
+
+.right-inventory .chosen-container .chosen-drop .chosen-results {
+    width: 100% !important;
+}
+
+.left-inventory .chosen-container .chosen-drop .chosen-results  {
+    width: 100% !important;
+}
+
+.left-inventory .chosen-single  {
+    width: 100% !important;
+}
+
+.right-inventory .chosen-container  {
+    width: 100% !important;
+}

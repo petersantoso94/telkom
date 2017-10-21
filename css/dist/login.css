@@ -1,0 +1,25 @@
+/*variable color*/
+/*-table striped color-*/
+/*variable breakpoint*/
+body section#jumbo-login {
+  background: #424242;
+  min-height: 240px;
+  padding: 60px 40px 60px 40px;
+}
+
+body section#jumbo-login #inner-jumbo #login-text {
+  color: #ffffff;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.16);
+  font-size: 28px;
+  font-weight: 100;
+}
+
+body section#jumbo-login #inner-jumbo #login-desc {
+  font-size: 16px;
+  letter-spacing: 0.6px;
+}
+
+body section#login-section {
+  position: relative;
+  top: -40px;
+}
