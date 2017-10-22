@@ -22,7 +22,7 @@ class InventoryController extends BaseController {
                     $counterfail = 0;
                     $subagent = '';
                     $cons = 0;
-                    $counter = 1;
+                    $counter = 48001;
                     $date = Input::get('eventDate');
                     $outprice = 0;
                     if (!empty($data) && $data->count()) {
