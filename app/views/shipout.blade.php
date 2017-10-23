@@ -127,13 +127,13 @@
                 <div class="col-sm-5" style="margin-top: 5px;">
                     <select data-placeholder="Choose a destination..." class="chosen-select" style="width: 100%" name="shipout" id="shipoutto">
                         <option></option>
-                        <option value="toko">TOKO</option>
-                        <option value="asprof">ASPROF</option>
-                        <option value="asprot">ASPROT</option>
-                        <option value="direct">DIRECT</option>
-                        <option value="index">INDEX</option>
-                        <option value="pre-emptive">PRE-EMPTIVE</option>
-                        <option value="columbia">COLUMBIA</option>
+                        <option value="TOKO">TOKO</option>
+                        <option value="ASPROF">ASPROF</option>
+                        <option value="ASPROT">ASPROT</option>
+                        <option value="DIRECT">DIRECT</option>
+                        <option value="INDEX">INDEX</option>
+                        <option value="PRE-EMPTIVE">PRE-EMPTIVE</option>
+                        <option value="COLUMBIA">COLUMBIA</option>
                     </select>
                 </div>
             </div>
@@ -163,7 +163,27 @@
                     <label class="fw300" style="margin-top: 7px;">New Sub Agent: </label>
                 </div>
                 <div class="col-sm-5">
-                    <input type="text" class="input-stretch" name="newagent">
+                    <input type="text" class="input-stretch" name="newagent" id="newsub">
+                </div>
+            </div>
+        </div>
+        <div class="row margtop20">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    <label class="fw300" style="margin-top: 7px;">Form Series Number: </label>
+                </div>
+                <div class="col-sm-5">
+                    <input type="text" id="formSN" class="input-stretch" name="formSN">
+                </div>
+            </div>
+        </div>
+        <div class="row margtop20">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    <label class="fw300" style="margin-top: 7px;">Price: </label>
+                </div>
+                <div class="col-sm-5">
+                    <input type="text" class="input-stretch" name="price">
                 </div>
             </div>
         </div>
@@ -202,6 +222,7 @@ var inventoryDataBackup = '';
 var inventoryDataBackup2 = '';
 var inventoryDataBackup3 = '';
 var getSN = '';
+var getForm = '';
 var notin = '';
 var postMissing = '<?php echo Route('postMissing') ?>';
 var postAvail = '<?php echo Route('postAvail') ?>';
@@ -212,8 +233,8 @@ window.deleteAttach = function (element) {
     if (confirm("Do you want to exclude this inventory (" + notin + ") ?") == true) {
         $.post(postMissing, {sn: notin}, function (data) {
 
-        }).done(function() {
-            refreshTable(); 
+        }).done(function () {
+            refreshTable();
         });
     }
 };
@@ -223,8 +244,8 @@ window.availAttach = function (element) {
     if (confirm("Do you want to include this inventory (" + notin + ") ?") == true) {
         $.post(postAvail, {sn: notin}, function (data) {
 
-        }).done(function() {
-            refreshTable(); 
+        }).done(function () {
+            refreshTable();
         });
     }
 };
@@ -236,7 +257,7 @@ $('#btn_cekmsi').on('click', function (e) {
     });
 });
 
-var refreshTable = function(){
+var refreshTable = function () {
     if ($.fn.dataTable.isDataTable('#example')) {
         table.fnDestroy();
         table2.fnDestroy();
@@ -274,13 +295,13 @@ $('#btn_ceksn').on('click', function (e) {
 
 $('#shipoutto').on('change', function (e) {
     $(".chosen-select2").chosen("destroy");
+    refreshFormSN();
     $('#subagent')
             .find('option')
             .remove();
     var shipto = document.getElementById('shipoutto').value;
     $.post(ajax1, {ship: shipto}, function (data) {
         $.each(data, function (key, val) {
-            console.log(val.SubAgent);
             $("#subagent").append('<option value="' + val.SubAgent + '">' + val.SubAgent + '</option>');
         });
     }).done(function () {
@@ -288,9 +309,44 @@ $('#shipoutto').on('change', function (e) {
         $(this).trigger("chosen:updated");
     });
 });
+$('#subagent').on('change', function (e) {
+    refreshFormSN();
+});
+
+var refreshFormSN = function () {
+    var shipoutto = '';
+    var stringtamp = '';
+    if ($('#shipoutto').val() != '') {
+        shipoutto = $('#shipoutto').val();
+        shipoutto = shipoutto.substring(0, 3);
+    }
+    if ($('#subagent').val() != '') {
+        shipoutto = $('#subagent').val().split(' ')[0];
+        shipoutto = shipoutto.substring(0, 3);
+    }
+    if ($('#newsub').val() != '') {
+        shipoutto = $('#newsub').val().split(' ')[0].substring(0, 3);
+    }
+    stringtamp = $('#shipindate').val() + '/SO/' + shipoutto;
+    getForm = '<?php echo Route('getForm') ?>';
+    $.post(getForm, {sn: stringtamp}, function (data) {
+        stringtamp += data;
+        $('#shipoutstart').val(data);
+    }).done(function () {
+        $('#formSN').val(stringtamp);
+    });
+};
+
+$('#shipindate').on('change', function (e) {
+    refreshFormSN();
+});
+$("#newsub").on("change keyup paste", function () {
+    refreshFormSN();
+})
 
 $(document).ready(function () {
     $('#shipindate').val(new Date().toDateInputValue());
+    $('#formSN').val(new Date().toDateInputValue());
     $(".chosen-select").chosen()
     $(".chosen-select2").chosen()
 });
