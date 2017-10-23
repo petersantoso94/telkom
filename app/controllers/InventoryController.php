@@ -6,7 +6,7 @@ class InventoryController extends BaseController {
         return sprintf("%'.19d\n", $num);
     }
 
-    public function showInsertInventory() { #sim
+    public function showInsertInventory2() { #sim
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
@@ -162,7 +162,7 @@ class InventoryController extends BaseController {
         return View::make('insertinventory')->withPage('insert inventory');
     }
 
-    public function showInsertInventory2() {
+    public function showInsertInventory() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
@@ -268,6 +268,8 @@ class InventoryController extends BaseController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $firstsn = Input::get('shipoutstart');
             $lastsn = Input::get('shipoutend');
+            $price = Input::get('price');
+            $series = Input::get('formSN');
             $subagent = Input::get('subagent');
             if (Input::get('newagent') != '') {
                 $subagent = Input::get('newagent');
@@ -280,6 +282,8 @@ class InventoryController extends BaseController {
                     $hist = new History();
                     $hist->SN = $inv->SerialNumber;
                     $hist->SubAgent = $subagent;
+                    $hist->Price = $price;
+                    $hist->ShipoutNumber = $series;
                     $hist->Status = 2;
                     $hist->Remark = Input::get('remark');
                     $hist->Date = Input::get('eventDate');
@@ -413,7 +417,7 @@ class InventoryController extends BaseController {
         $inv->Missing = 1;
         $inv->save();
     }
-    
+
     static function postAvail() {
         $sn = Input::get('sn');
         $inv = Inventory::find($sn);
@@ -423,6 +427,19 @@ class InventoryController extends BaseController {
 
     static function getSN($msi) {
         return Inventory::where('MSISDN', $msi)->first()->SerialNumber;
+    }
+
+    static function getForm() {
+        $lastnum = History::where('ShipoutNumber', 'like', '%' . Input::get('sn') . '%')->first();
+        if ($lastnum != null) {
+            $lastnum = $lastnum->ShipoutNumber;
+            $lastnum = substr($lastnum, -3, 3);
+        }else{
+            $lastnum = 0;
+        }
+        $lastnum ++;
+        $lastnum = sprintf("%'03d\n", $lastnum);
+        return $lastnum;
     }
 
     static function inventoryDataBackup($filter) {
@@ -538,7 +555,7 @@ class InventoryController extends BaseController {
                                              class="btn btn-pure-xs btn-xs btn-delete" ' . $disa . '>
                                         <span class="glyphicon glyphicon-trash"></span>
                                     </button>';
-                    }else{
+                    } else {
                         $return = '<button title="Set to available" type="button" data-internal="' . $data->SerialNumber . '"  onclick="availAttach(this)"
                                              class="btn btn-pure-xs btn-xs btn-delete">
                                         <span class="glyphicon glyphicon-thumbs-up"></span>
