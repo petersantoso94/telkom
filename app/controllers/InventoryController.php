@@ -180,6 +180,7 @@ class InventoryController extends BaseController {
 //                    $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Asia/Taipei'));
                     $date = Input::get('eventDate');
                     $wh = Input::get('warehouse');
+                    $formSN = Input::get('formSN');
                     $remark = Input::get('remark');
                     if (!empty($data) && $data->count()) {
                         foreach ($data as $key => $value) {
@@ -200,7 +201,7 @@ class InventoryController extends BaseController {
                                     $inv = Inventory::where('SerialNumber', $value->serial_number)->first();
 
                                     //insert history
-                                    $insertHistory = ['SN' => $value->serial_number, 'Warehouse' => $wh, 'Date' => $date, 'Remark' => $remark];
+                                    $insertHistory = ['SN' => $value->serial_number, 'Warehouse' => $wh, 'Date' => $date, 'Remark' => $remark,'ShipoutNumber' => $formSN];
                                     if (!empty($insertHistory)) {
                                         $lasthistoryID = DB::table('m_historymovement')->insertGetId($insertHistory);
                                     }
@@ -430,7 +431,7 @@ class InventoryController extends BaseController {
     }
 
     static function getForm() {
-        $lastnum = History::where('ShipoutNumber', 'like', '%' . Input::get('sn') . '%')->first();
+        $lastnum = History::where('ShipoutNumber', 'like', '%' . Input::get('sn') . '%')->orderBy('ID', 'desc')->first();
         if ($lastnum != null) {
             $lastnum = $lastnum->ShipoutNumber;
             $lastnum = substr($lastnum, -3, 3);

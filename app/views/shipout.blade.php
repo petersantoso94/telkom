@@ -180,7 +180,7 @@
         <div class="row margtop20">
             <div class="form-group">
                 <div class="col-sm-2">
-                    <label class="fw300" style="margin-top: 7px;">Price: </label>
+                    <label class="fw300" style="margin-top: 7px;">Shipout Price (NT$): </label>
                 </div>
                 <div class="col-sm-5">
                     <input type="text" class="input-stretch" name="price">
@@ -331,7 +331,6 @@ var refreshFormSN = function () {
     getForm = '<?php echo Route('getForm') ?>';
     $.post(getForm, {sn: stringtamp}, function (data) {
         stringtamp += data;
-        $('#shipoutstart').val(data);
     }).done(function () {
         $('#formSN').val(stringtamp);
     });

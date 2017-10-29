@@ -71,7 +71,7 @@
                     <label class="fw300" style="margin-top: 7px;">Provider: </label>
                 </div>
                 <div class="col-sm-5">
-                    <input type="text" class="input-stretch" name="provider" value="Taiwan Star">
+                    <input type="text" id="provider" class="input-stretch" name="provider" value="Taiwan Star">
                 </div>
             </div>
         </div>
@@ -82,6 +82,16 @@
                 </div>
                 <div class="col-sm-5">
                     <input type="text" class="input-stretch" name="warehouse" value="TELIN TAIWAN">
+                </div>
+            </div>
+        </div>
+        <div class="row margtop20">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    <label class="fw300" style="margin-top: 7px;">Form Series Number: </label>
+                </div>
+                <div class="col-sm-5">
+                    <input type="text" id="formSN" class="input-stretch" name="formSN">
                 </div>
             </div>
         </div>
@@ -105,6 +115,7 @@
 @stop
 @section('js-content')
 <script>
+    var getForm = '';
     Date.prototype.toDateInputValue = (function () {
         var local = new Date(this);
         local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
@@ -117,8 +128,33 @@
     $('#input-pict').on('change', function (e) {
         $('#pict-name').html($('#input-pict').val().split('\\').pop());
     });
+    $('#shipindate').on('change', function (e) {
+        refreshFormSN();
+    });
+    $("#provider").on("change keyup paste", function () {
+        refreshFormSN();
+    })
+
+    var refreshFormSN = function () {
+        var shipoutto = '';
+        var stringtamp = '';
+        if ($('#provider').val() != '') {
+            shipoutto = $('#provider').val();
+            shipoutto = shipoutto.substring(0, 3);
+        }
+        stringtamp = $('#shipindate').val() + '/SI/' + shipoutto;
+        getForm = '<?php echo Route('getForm') ?>';
+        $.post(getForm, {sn: stringtamp}, function (data) {
+            stringtamp += data;
+        }).done(function () {
+            $('#formSN').val(stringtamp);
+        });
+    };
+
     $(document).ready(function () {
         $('#shipindate').val(new Date().toDateInputValue());
+        refreshFormSN();
     });
+
 </script>
 @stop
