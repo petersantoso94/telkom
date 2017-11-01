@@ -47,6 +47,9 @@
                     <li><a href="{{Route('showReturnInventory')}}" @if($page == 'inventory return') class="active-sidemenu" @endif >Inventory Return</a></li>
                 </ul>
                 <ul class="list-sidebar-menu">
+                    <li><a href="{{Route('showConsignment')}}" @if($page == 'consignment') class="active-sidemenu" @endif >Consignment</a></li>
+                </ul>
+                <ul class="list-sidebar-menu">
                     <li><a href="{{Route('showWarehouseInventory')}}" @if($page == 'inventory warehouse') class="active-sidemenu" @endif >Move Warehouse</a></li>
                 </ul>
                 <ul class="list-sidebar-menu">

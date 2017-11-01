@@ -302,6 +302,44 @@ class InventoryController extends BaseController {
         }
         return View::make('shipout')->withPage('inventory shipout');
     }
+    
+    public function showConsignment() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $firstsn = Input::get('shipoutstart');
+            $lastsn = Input::get('shipoutend');
+            $price = Input::get('price');
+            $series = Input::get('formSN');
+            $subagent = Input::get('subagent');
+            if (Input::get('newagent') != '') {
+                $subagent = Input::get('newagent');
+            }
+            $counter = 0;
+            $allInvAvail = Inventory::whereBetween('SerialNumber', [$firstsn, $lastsn])->where('Missing', 0)->get();
+            foreach ($allInvAvail as $inv) {
+                $history = History::where('ID', $inv['LastStatusID'])->first();
+                if ($history->Status != 2) { //available
+                    $hist = new History();
+                    $hist->SN = $inv->SerialNumber;
+                    $hist->SubAgent = $subagent;
+                    $hist->Price = $price;
+                    $hist->ShipoutNumber = $series;
+                    $hist->Status = 2;
+                    $hist->Remark = Input::get('remark');
+                    $hist->Date = Input::get('eventDate');
+                    $hist->userRecord = Auth::user()->ID;
+                    $hist->save();
+
+                    //update last status
+                    $inv->LastStatusID = $hist->ID;
+                    $inv->Missing = 1;
+                    $inv->save();
+                    $counter++;
+                }
+            }
+            return View::make('shipout')->withResponse('Success')->withPage('inventory shipout')->withNumber($counter);
+        }
+        return View::make('consignment')->withPage('consignment');
+    }
 
     public function showReturnInventory() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
