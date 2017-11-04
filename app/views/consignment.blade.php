@@ -32,17 +32,26 @@
                     <label class="fw300" style="margin-top: 7px;">Serial number: </label>
                 </div>
                 <div class="col-sm-5">
-                    <input type="text" class="input-stretch" id='shipoutstart' name='shipoutstart' data-validation="required" required>
+                    <input type="text" class="input-stretch" id='shipoutstart' name='shipoutstart'>
                 </div>
             </div>
         </div>
         <div class="row margtop20">
             <div class="form-group">
                 <div class="col-sm-2">
-                    <label class="fw300" style="margin-top: 7px;">Consignment Date: </label>
+                    <label class="fw300" style="margin-top: 7px;">Series Number: </label>
                 </div>
                 <div class="col-sm-5">
-                    <input type="date" class="input-stretch" id='shipindate' name="eventDate" data-validation="required" required>
+                    <select data-placeholder="Choose a form series number..." class="chosen-select2" style="width: 100%" name="seriesNumber" id="series">
+                        <option></option>
+                        @foreach(DB::table('m_historymovement')->where('Consignment',1)->where('Status', 2)->select('ShipoutNumber')->distinct()->get() as $sn)
+                        @if($sn->ShipoutNumber != '')
+                        <option value="{{$sn->ShipoutNumber}}">
+                            {{$sn->ShipoutNumber}}
+                        </option>
+                        @endif
+                        @endforeach
+                    </select>
                 </div>
             </div>
         </div>
@@ -59,25 +68,8 @@
         </div>
     </div>
     <div class="white-pane__bordered margbot20 alert-success" style="background: #dff0d8;">
-        <h4>Available inventory</h4>
+        <h4>Available inventory with consignment status: </h4>
         <table id="example" class="display table-rwd table-inventory" cellspacing="0" width="100%">
-            <thead>
-                <tr>
-                    <th>Serial Number</th>
-                    <th>Type</th>
-                    <th>Last Status</th>
-                    <th>Last Warehouse</th>
-                    <th>Date</th>
-                    <th>MSISDN</th>
-                    <th>Action</th>
-                    <!--<th>Actions</th>-->
-                </tr>
-            </thead>
-        </table>
-    </div>
-    <div class="white-pane__bordered margbot20 alert-warning">
-        <h4>Missing Inventory: </h4>
-        <table id="example3" class="display table-rwd table-inventory" cellspacing="0" width="100%">
             <thead>
                 <tr>
                     <th>Serial Number</th>
@@ -218,10 +210,8 @@ Date.prototype.toDateInputValue = (function () {
 });
 var table = '';
 var table2 = '';
-var table3 = '';
 var inventoryDataBackup = '';
 var inventoryDataBackup2 = '';
-var inventoryDataBackup3 = '';
 var getSN = '';
 var getForm = '';
 var notin = '';
@@ -252,21 +242,26 @@ window.availAttach = function (element) {
 };
 
 $('#btn_cek').on('click', function (e) {
-    getSN = '<?php echo Route('getSN') ?>' + '/' + document.getElementById('msi').value;
-    $.get(getSN, function (data) {
-        $('#shipoutstart').val(data);
-    });
+    refreshTable();
 });
 
 var refreshTable = function () {
     if ($.fn.dataTable.isDataTable('#example')) {
         table.fnDestroy();
         table2.fnDestroy();
-        table3.fnDestroy();
     }
-    inventoryDataBackup = '<?php echo Route('inventoryDataBackupOut') ?>' + '/' + document.getElementById('shipoutstart').value + ',,,' + document.getElementById('shipoutend').value + ',,,1';
-    inventoryDataBackup2 = '<?php echo Route('inventoryDataBackupOut') ?>' + '/' + document.getElementById('shipoutstart').value + ',,,' + document.getElementById('shipoutend').value + ',,,0';
-    inventoryDataBackup3 = '<?php echo Route('inventoryDataBackupOut') ?>' + '/' + document.getElementById('shipoutstart').value + ',,,' + document.getElementById('shipoutend').value + ',,,2';
+    
+    var temp1 = document.getElementById('msi').value;
+    if(!temp1)
+        temp1 = 0;
+    var temp2 = document.getElementById('shipoutstart').value;
+    if(!temp2)
+        temp2 = 0;
+    var temp3 = document.getElementById('series').value;
+    if(!temp3)
+        temp3 = 0;
+    inventoryDataBackup = '<?php echo Route('inventoryDataBackupCons') ?>' + '/' + temp1 + ',,,' + temp2 + ',,,' +temp3 + ',,,1';
+    inventoryDataBackup2 = '<?php echo Route('inventoryDataBackupCons') ?>' + '/' + temp1 + ',,,' + temp2 + ',,,' + temp3+ ',,,0';
     table = $('#example').dataTable({
         "draw": 10,
         "bDestroy": true,
@@ -281,18 +276,7 @@ var refreshTable = function () {
         "serverSide": true,
         "ajax": inventoryDataBackup2
     });
-    table3 = $('#example3').dataTable({
-        "draw": 10,
-        "bDestroy": true,
-        "processing": true,
-        "serverSide": true,
-        "ajax": inventoryDataBackup3
-    });
 };
-
-$('#btn_ceksn').on('click', function (e) {
-    refreshTable();
-});
 
 $('#shipoutto').on('change', function (e) {
     $(".chosen-select2").chosen("destroy");

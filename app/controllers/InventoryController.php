@@ -201,7 +201,7 @@ class InventoryController extends BaseController {
                                     $inv = Inventory::where('SerialNumber', $value->serial_number)->first();
 
                                     //insert history
-                                    $insertHistory = ['SN' => $value->serial_number, 'Warehouse' => $wh, 'Date' => $date, 'Remark' => $remark,'ShipoutNumber' => $formSN];
+                                    $insertHistory = ['SN' => $value->serial_number, 'Warehouse' => $wh, 'Date' => $date, 'Remark' => $remark, 'ShipoutNumber' => $formSN];
                                     if (!empty($insertHistory)) {
                                         $lasthistoryID = DB::table('m_historymovement')->insertGetId($insertHistory);
                                     }
@@ -302,7 +302,7 @@ class InventoryController extends BaseController {
         }
         return View::make('shipout')->withPage('inventory shipout');
     }
-    
+
     public function showConsignment() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $firstsn = Input::get('shipoutstart');
@@ -473,7 +473,7 @@ class InventoryController extends BaseController {
         if ($lastnum != null) {
             $lastnum = $lastnum->ShipoutNumber;
             $lastnum = substr($lastnum, -3, 3);
-        }else{
+        } else {
             $lastnum = 0;
         }
         $lastnum ++;
@@ -611,6 +611,109 @@ class InventoryController extends BaseController {
         $extraCondition = "m_inventory.`SerialNumber` >= '" . $startid . "' && " . "m_inventory.`SerialNumber` <= '" . $endid . "'";
         $extraCondition .= " && m_historymovement.Status " . $string_temp;
         $extraCondition .= " && m_inventory.Missing " . $string_miss;
+        $join = ' INNER JOIN m_historymovement on m_historymovement.ID = m_inventory.LastStatusID';
+
+        echo json_encode(
+                SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
+    }
+
+    static function inventoryDataBackupCons($id) {
+        $msisdn = explode(',,,', $id)[0];
+        $serial = explode(',,,', $id)[1];
+        $series = explode(',,,', $id)[2];
+        $statusAvail = explode(',,,', $id)[3];
+        $inv = '';
+        $string_temp = '= 1';
+        if ($statusAvail == 0) {
+            $string_temp = '= 0';
+        }
+        if ($series != 0) {
+            $inv = Inventory::where('MSISDN', 'like', '%' . $msisdn . '%')->where('SerialNumber', 'like', '%' . $serial . '%')->first();
+            $serial = '';
+            $msisdn = '';
+        } else {
+            $series = '';
+            if ($msisdn == 0) {
+                $msisdn = '';
+            } else {
+                $inv = Inventory::where('MSISDN', 'like', '%' . $msisdn . '%')->first();
+                $hist = History::where('SN', $inv->SerialNumber)->where('Status', 2)->where('Consignment', $statusAvail)->first();
+                $series = $hist->ShipoutNumber;
+            }
+            if ($serial == 0) {
+                $serial = '';
+            } else {
+                $hist = History::where('SN', 'like', '%' . $serial . '%')->where('Status', 2)->where('Consignment', $statusAvail)->first();
+                $series = $hist->ShipoutNumber;
+            }
+        }
+        if ($msisdn == 0) {
+            $msisdn = '';
+        }
+        if ($serial == 0) {
+            $serial = '';
+        }
+        $table = 'm_inventory';
+        $primaryKey = 'm_inventory`.`SerialNumber';
+        $columns = array(
+            array('db' => 'SerialNumber', 'dt' => 0),
+            array(
+                'db' => 'Type',
+                'dt' => 1,
+                'formatter' => function( $d, $row ) {
+                    if ($d == 1) {
+                        return 'SIM';
+                    } else if ($d == 2) {
+                        return 'Voucher';
+                    }
+                }
+            ),
+            array(
+                'db' => 'Status',
+                'dt' => 2,
+                'formatter' => function( $d, $row ) {
+                    if ($d == 0) {
+                        return 'Ship In';
+                    } else if ($d == 1) {
+                        return 'Return';
+                    } else if ($d == 2) {
+                        return 'Ship Out';
+                    } else {
+                        return 'Warehouse';
+                    }
+                }
+            ),
+            array('db' => 'LastWarehouse', 'dt' => 3),
+            array('db' => 'Date', 'dt' => 4),
+            array('db' => 'MSISDN', 'dt' => 5),
+            array('db' => 'SerialNumber', 'dt' => 6, 'formatter' => function( $d, $row ) {
+                    $data = Inventory::find($d);
+                    if ($data->Missing == 0) {
+                        $hist = History::find($data->LastStatusID);
+                        $disa = '';
+                        if ($hist->Status == 2) {
+                            $disa = 'disabled';
+                        }
+                        $return = '<button type="button" data-internal="' . $data->SerialNumber . '"  onclick="deleteAttach(this)"
+                                             class="btn btn-pure-xs btn-xs btn-delete" ' . $disa . '>
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>';
+                    } else {
+                        $return = '<button title="Set to available" type="button" data-internal="' . $data->SerialNumber . '"  onclick="availAttach(this)"
+                                             class="btn btn-pure-xs btn-xs btn-delete">
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                                    </button>';
+                    }
+                    return $return;
+                }, 'field' => 'm_inventory`.`SerialNumber')
+        );
+
+        $sql_details = getConnection();
+        require('ssp.class.php');
+//        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
+        $extraCondition = "m_historymovement.Status = 2";
+        $extraCondition .= " && m_historymovement.ShipoutNumber LIKE '%" . $series . "%'";
+        $extraCondition .= " && m_historymovement.Consignment " . $string_temp;
         $join = ' INNER JOIN m_historymovement on m_historymovement.ID = m_inventory.LastStatusID';
 
         echo json_encode(
