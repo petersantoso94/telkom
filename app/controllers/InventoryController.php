@@ -457,6 +457,150 @@ class InventoryController extends BaseController {
         $inv->save();
     }
 
+    static function postNewAgent() {
+        Session::put('NewAgent', Input::get('agent'));
+    }
+
+    static function getPDFShipout() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $sn = Input::get('sn');
+            $date = Input::get('date');
+            $to = Input::get('to');
+            $subagent = Input::get('subagent');
+            $start = Input::get('start');
+            $end = Input::get('end');
+
+            Session::put('sn', $sn);
+            Session::put('date', $date);
+            Session::put('subagent', $subagent);
+            Session::put('to', $to);
+            Session::put('start', $start);
+            Session::put('end', $end);
+
+            return 'success';
+        }
+        $html = '
+            <html>
+                <head>
+                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                    <style>
+                        @font-face {
+                            font-family:traditional;
+                            src:url("public/fonts/traditional.otf");
+                        }
+                        body{
+                            font-family:traditional;
+                        }
+                        p{
+                            font-size: 90%;
+                            line-height: 0.3;
+                            font-family:traditional;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div style="width:102%; height:100px; border-style: solid;border-width: 2px;">
+                        <div style="width:100px; float:left; display: inline-block;"><img src="' . base_path() . '/uploaded_file/as.jpg" style="width: 100%;"></div>
+                        <div style="width:500px; float:left; text-align:center; display: inline-block; padding-top:10px;">
+                            <p>台灣紅白電訊股份有限公司</p>
+                            <p>Telekomunikasi Indonesia International (Taiwan) Limited</p>
+                            <p>114 台北市內湖區洲子街77號7樓之1</p>
+                            <p>Tel: +886 (02) 87525071, Fax: +886 (02) 87523619</p>
+                        </div>
+                        <div style="width:100px; float:left; display: inline-block; "><img src="' . base_path() . '/uploaded_file/telin.jpg" style="width: 100%;"></div>
+                    </div>
+                    <div style="width:102%; height:30px; text-align:center;">
+                        <p style="font-size:120%;">銷貨單</p>
+                    </div>
+                    <div style="width:102%; height:30px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
+                        訂單日期：'.Session::get('date').'
+                    </div>
+                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid;">
+                        訂單編號：'.Session::get('sn').'
+                    </div>
+                    <div style="width:102%; height:30px;border-left: 1px solid; border-bottom: 1px solid; border-right: 1px solid;">
+                        客戶編號：'.Session::get('to').'
+                    </div>
+                    <div style="width:102%; height:30px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
+                        <div style="width:100px; height:30px;float:left; display: inline-block;">客戶名稱：</div>
+                        <div style="width:400px; height:30px;float:left; display: inline-block;">'.Session::get('subagent').'</div>
+                        <div style="width:200px; height:30px;float:left; display: inline-block;">統一編號: </div>
+                    </div>
+                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid;">
+                        <div style="width:100px; height:30px;float:left; display: inline-block; ">送貨地址 ：</div>
+                        <div style="width:400px; height:30px;float:left; display: inline-block;"></div>
+                        <div style="width:200px; height:30px;float:left; display: inline-block;"></div>
+                    </div>
+                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:100px; height:30px;float:left; display: inline-block; ">發票號碼 ： </div>
+                        <div style="width:400px; height:30px;float:left; display: inline-block;"></div>
+                        <div style="width:200px; height:30px;float:left; display: inline-block;">倉 庫 別: </div>
+                    </div>
+                    <div style="width:102%; text-align:center;height:30px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:100px; height:30px;float:left; display: inline-block; border-right: 1px solid;">產品編號</div>
+                        <div style="width:300px; height:30px;float:left; display: inline-block; border-right: 1px solid;">產品名稱</div>
+                        <div style="width:70px; height:30px;float:left; display: inline-block; border-right: 1px solid;">數 量</div>
+                        <div style="width:115px; height:30px;float:left; display: inline-block; border-right: 1px solid;">訂價/單價</div>
+                        <div style="width:115px; height:30px;float:left; display: inline-block;">合計</div>
+                    </div>
+                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid;">
+                        <div style="width:100px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:30px;float:left; display: inline-block; border-right: 1px solid;">SIM CARD</div>
+                        <div style="width:70px; height:30px;float:left; display: inline-block; border-right: 1px solid;">25</div>
+                        <div style="width:115px; height:30px;float:left; display: inline-block; border-right: 1px solid;">NT$ -</div>
+                        <div style="width:115px; height:30px;float:left; display: inline-block;">NT$ -</div>
+                    </div>
+                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:100px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:70px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:30px;float:left; display: inline-block;"></div>
+                    </div>
+                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid; ">
+                        <div style="width:100px; text-align:center; height:30px;float:left; display: inline-block; border-right: 1px solid;">備</div>
+                        <div style="width:375px; height:30px;float:left; display: inline-block; border-right: 1px solid;">YILAN EVENT</div>
+                        <div style="width:115px; height:30px;float:left; display: inline-block; border-right: 1px solid;">總額</div>
+                        <div style="width:115px; height:30px;float:left; display: inline-block;">NT$ -</div>
+                    </div>
+                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid; ">
+                        <div style="width:100px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:375px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:30px;float:left; display: inline-block; border-right: 1px solid;">營業稅</div>
+                        <div style="width:115px; height:30px;float:left; display: inline-block;">NT$ -</div>
+                    </div>
+                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:100px; text-align:center; height:30px;float:left; display: inline-block; border-right: 1px solid;">註</div>
+                        <div style="width:375px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:30px;float:left; display: inline-block; border-right: 1px solid;">總計</div>
+                        <div style="width:115px; height:30px;float:left; display: inline-block;">NT$ -</div>
+                    </div>
+                    <div style="width:102%;text-align:center; height:30px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:200px; height:30px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
+                        <div style="width:200px; height:30px;float:left; display: inline-block; border-right: 1px solid;">主管簽章</div>
+                        <div style="width:70px; height:30px;float:left; display: inline-block; border-right: 1px solid;">財務處</div>
+                        <div style="width:230px; height:30px;float:left; display: inline-block;">承辦人</div>
+                    </div>
+                    <div style="width:102%;text-align:center; height:90px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:200px; height:90px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:200px; height:90px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:70px; height:90px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:230px; height:90px;float:left; display: inline-block;"></div>
+                    </div>
+                    <div style="width:102%; height:30px;"></div>
+                    <div style="width:102%;text-align:center; height:30px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;border-top: 1px solid;">
+                        <div style="width:350px; height:30px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
+                        <div style="width:350px; height:30px;float:left; display: inline-block;">承辦人</div>
+                    </div>
+                    <div style="width:102%;text-align:center; height:200px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:350px; height:200px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:350px; height:200px;float:left; display: inline-block;"></div>
+                    </div>
+                </body>
+            </html>';
+        return PDF ::load($html, 'F4', 'portrait')->show();
+    }
+
     static function postAvail() {
         $sn = Input::get('sn');
         $inv = Inventory::find($sn);

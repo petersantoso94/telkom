@@ -143,7 +143,7 @@
                 <div class="col-sm-2">
                     <label class="fw300" style="margin-top: 7px;">Subagent: </label>
                 </div>
-                <div class="col-sm-5" style="margin-top: 5px;">
+                <div class="col-sm-4" style="margin-top: 5px;">
                     <select data-placeholder="Choose a subagent..." class="chosen-select2" style="width: 100%" name="subagent" id="subagent">
                         <option></option>
                         @foreach(DB::table('m_historymovement')->select('SubAgent')->distinct()->get() as $agent)
@@ -155,15 +155,8 @@
                         @endforeach
                     </select>
                 </div>
-            </div>
-        </div>
-        <div class="row margtop20">
-            <div class="form-group">
-                <div class="col-sm-2">
-                    <label class="fw300" style="margin-top: 7px;">New Sub Agent: </label>
-                </div>
-                <div class="col-sm-5">
-                    <input type="text" class="input-stretch" name="newagent" id="newsub">
+                <div class="col-sm-1" style="margin-top: 5px;">
+                    <button type="button" onclick="newSubagent(this)"><span class="glyphicon glyphicon-plus"></span></button>
                 </div>
             </div>
         </div>
@@ -198,8 +191,11 @@
             </div>
         </div>
         <div class="row margtop20">
-            <div class="col-xs-8">
+            <div class="col-xs-6">
                 <input type="submit" class="button btnblue btn-wide wide-h" style="background-color: #424242; color: white;">
+            </div>
+            <div class="col-xs-1">
+                <button type="button" onclick="printPrev(this)"><span class="glyphicon glyphicon-print"></span></button>
             </div>
         </div>
     </div>
@@ -225,8 +221,11 @@ var getSN = '';
 var getForm = '';
 var notin = '';
 var postMissing = '<?php echo Route('postMissing') ?>';
+var postNewAgent = '<?php echo Route('postNewAgent') ?>';
 var postAvail = '<?php echo Route('postAvail') ?>';
 var ajax1 = '<?php echo Route('getSubAgent') ?>';
+var getPDF = '<?php echo Route('getPDFShipout') ?>';
+var newAgentName = '';
 
 window.deleteAttach = function (element) {
     notin = $(element).data('internal');
@@ -246,6 +245,46 @@ window.availAttach = function (element) {
 
         }).done(function () {
             refreshTable();
+        });
+    }
+};
+
+window.printPrev = function (element) {
+    var shipout_date = document.getElementById('shipindate').value;
+    var shipout_SN = document.getElementById('formSN').value;
+    var shipout_to = document.getElementById('shipoutto').value;
+    var shipout_subagent = document.getElementById('subagent').value;
+    var shipout_start = document.getElementById('shipoutstart').value;
+    var shipout_end = document.getElementById('shipoutend').value;
+    $.post(getPDF, 
+    {date: shipout_date,sn: shipout_SN,to: shipout_to,subagent: shipout_subagent
+        ,start: shipout_start,end: shipout_end}
+    , function (data) {
+
+    }).done(function () {
+        window.open(getPDF);
+    });
+};
+
+window.newSubagent = function (element) {
+    var person = prompt("Please enter New Subagent name:", "{Shipout to}{space}{Subagent name}");
+    if (person == null || person == "") {
+        txt = "User cancelled the prompt.";
+    } else {
+        newAgentName = person;
+        confirmNewAgent();
+    }
+};
+
+var confirmNewAgent = function () {
+    if (confirm("Do you want to safe this New Subagent: '" + newAgentName + "' ?") == true) {
+        $.post(postNewAgent, {agent: newAgentName}, function (data) {
+            
+        }).done(function () {
+            $(".chosen-select2").chosen("destroy");
+            $("#subagent").append('<option value="' + newAgentName + '">' + newAgentName + '</option>');
+            $(".chosen-select2").chosen()
+            $(this).trigger("chosen:updated");
         });
     }
 };
@@ -323,9 +362,6 @@ var refreshFormSN = function () {
     if ($('#subagent').val() != '') {
         shipoutto = $('#subagent').val().split(' ')[0];
         shipoutto = shipoutto.substring(0, 3);
-    }
-    if ($('#newsub').val() != '') {
-        shipoutto = $('#newsub').val().split(' ')[0].substring(0, 3);
     }
     stringtamp = $('#shipindate').val() + '/SO/' + shipoutto;
     getForm = '<?php echo Route('getForm') ?>';
