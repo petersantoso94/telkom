@@ -532,46 +532,46 @@ class InventoryController extends BaseController {
                         }
                         p{
                             font-size: 90%;
-                            line-height: 0.2;
+                            line-height: 0.3;
                             font-family:traditional;
                         }
                     </style>
                 </head>
                 <body>
-                    <div style="width:102%; height:100px; border-style: solid;border-width: 2px;">
-                        <div style="width:100px; float:left; display: inline-block;"><img src="' . base_path() . '/uploaded_file/as.jpg" style="width: 100%;"></div>
-                        <div style="width:500px; float:left; text-align:center; display: inline-block; padding-top:10px;">
+                    <div style="width:102%; height:93px; border-style: solid;border-width: 2px;">
+                        <div style="width:91px;padding-top:1px; float:left; display: inline-block;"><img src="' . base_path() . '/uploaded_file/as.jpg" style="width: 100%;"></div>
+                        <div style="width:500px; float:left; text-align:center; display: inline-block; padding-top:3px;">
                             <p>台灣紅白電訊股份有限公司</p>
                             <p>Telekomunikasi Indonesia International (Taiwan) Limited</p>
                             <p>114 台北市內湖區洲子街77號7樓之1</p>
                             <p>Tel: +886 (02) 87525071, Fax: +886 (02) 87523619</p>
                         </div>
-                        <div style="width:100px; float:left; display: inline-block; "><img src="' . base_path() . '/uploaded_file/telin.jpg" style="width: 100%;"></div>
+                        <div style="width:91px;padding-top:1px; float:left; display: inline-block; "><img src="' . base_path() . '/uploaded_file/telin.jpg" style="width: 100%;"></div>
                     </div>
                     <div style="width:102%; height:30px; text-align:center;">
                         <p style="font-size:120%;">銷貨單</p>
                     </div>
-                    <div style="width:102%; height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
+                    <div style="width:102%; padding-left:3px;height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
                         訂單日期：' . Session::get('date') . '
                     </div>
-                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid;">
+                    <div style="width:102%; padding-left:3px;height:20px; border-left: 1px solid;  border-right: 1px solid;">
                         訂單編號：' . Session::get('sn') . '
                     </div>
-                    <div style="width:102%; height:20px;border-left: 1px solid; border-bottom: 1px solid; border-right: 1px solid;">
+                    <div style="width:102%; padding-left:3px;height:20px;border-left: 1px solid; border-bottom: 1px solid; border-right: 1px solid;">
                         客戶編號：' . Session::get('to') . '
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
-                        <div style="width:100px; height:20px;float:left; display: inline-block;">客戶名稱：</div>
+                        <div style="width:100px;padding-left:3px height:20px;float:left; display: inline-block;">客戶名稱：</div>
                         <div style="width:400px; height:20px;float:left; display: inline-block;">' . Session::get('subagent') . '</div>
                         <div style="width:200px; height:20px;float:left; display: inline-block;">統一編號: </div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid;">
-                        <div style="width:100px; height:20px;float:left; display: inline-block; ">送貨地址 ：</div>
+                        <div style="width:100px;padding-left:3px height:20px;float:left; display: inline-block; ">送貨地址 ：</div>
                         <div style="width:400px; height:20px;float:left; display: inline-block;"></div>
                         <div style="width:200px; height:20px;float:left; display: inline-block;"></div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:100px; height:20px;float:left; display: inline-block; ">發票號碼 ： </div>
+                        <div style="width:100px;padding-left:3px height:20px;float:left; display: inline-block; ">發票號碼 ： </div>
                         <div style="width:400px; height:20px;float:left; display: inline-block;"></div>
                         <div style="width:200px; height:20px;float:left; display: inline-block;">倉 庫 別: </div>
                     </div>
@@ -589,28 +589,28 @@ class InventoryController extends BaseController {
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">NT$ -</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ -</div>
                     </div>
-                    <div style="width:102%; height:80px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:100px; height:80px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:300px; height:80px;float:left; display: inline-block; border-right: 1px solid;">' . $first . ' - ' . $last . '</div>
-                        <div style="width:70px; height:80px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:115px; height:80px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:115px; height:80px;float:left; display: inline-block;"></div>
+                    <div style="width:102%; height:119px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:100px; height:119px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:119px;float:left; display: inline-block; border-right: 1px solid;">' . $first . ' - ' . $last . '</div>
+                        <div style="width:70px; height:119px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:119px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:119px;float:left; display: inline-block;"></div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; ">
                         <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">備</div>
-                        <div style="width:374px; height:20px;float:left; display: inline-block; border-right: 1px solid;">YILAN EVENT</div>
+                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;">YILAN EVENT</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總額</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ -</div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; ">
                         <div style="width:100px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:374px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">營業稅</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ -</div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">註</div>
-                        <div style="width:374px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總計</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ -</div>
                     </div>
@@ -620,20 +620,20 @@ class InventoryController extends BaseController {
                         <div style="width:70px; height:20px;float:left; display: inline-block; border-right: 1px solid;">財務處</div>
                         <div style="width:230px; height:20px;float:left; display: inline-block;">承辦人</div>
                     </div>
-                    <div style="width:102%;text-align:center; height:90px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:200px; height:90px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:200px; height:90px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:70px; height:90px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:230px; height:90px;float:left; display: inline-block;"></div>
+                    <div style="width:102%;text-align:center; height:60px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:200px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:200px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:70px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:230px; height:60px;float:left; display: inline-block;">'.Auth::user()->UserEmail.'</div>
                     </div>
-                    <div style="width:102%; height:20px;"></div>
+                    <div style="width:102%; height:10px;"></div>
                     <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;border-top: 1px solid;">
                         <div style="width:350px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
                         <div style="width:350px; height:20px;float:left; display: inline-block;">承辦人</div>
                     </div>
-                    <div style="width:102%;text-align:center; height:390px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:350px; height:390px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:350px; height:390px;float:left; display: inline-block;"></div>
+                    <div style="width:102%;text-align:center; height:392px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:350px; height:392px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:350px; height:392px;float:left; display: inline-block;"></div>
                     </div>
                 </body>
             </html>';
