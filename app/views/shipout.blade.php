@@ -268,11 +268,11 @@
 
                     window.newSubagent = function (element) {
                         if ($('#shipoutto').val() != '') {
-                            var person = prompt("Please enter New Subagent name:", $('#shipoutto').val()+" ");
+                            var person = prompt("Please enter New Subagent name:","please insert sub-agent name only..");
                             if (person == null || person == "") {
                                 txt = "User cancelled the prompt.";
                             } else {
-                                newAgentName = person;
+                                newAgentName = $('#shipoutto').val()+" "+person;
                                 confirmNewAgent();
                             }
                         }else{

@@ -39,7 +39,7 @@
         <div class="row margtop20">
             <div class="form-group">
                 <div class="col-sm-2">
-                    <label class="fw300" style="margin-top: 7px;">Series Number: </label>
+                    <label class="fw300" style="margin-top: 7px;">Form Series: </label>
                 </div>
                 <div class="col-sm-5">
                     <select data-placeholder="Choose a form series number..." class="chosen-select2" style="width: 100%" name="seriesNumber" id="series">

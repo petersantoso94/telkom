@@ -21,8 +21,8 @@
                 <div class="alert alert-success alert-dismissible" role="alert" style="width: 98%; margin: 1%">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     Successfully inserting {{$number}} data.
-                    <?php if(isset($succ)) { ?>
-                    These serial number are successfully inserted : <br>{{$succ}}
+                    <?php if (isset($succ)) { ?>
+                        These serial number are successfully inserted : <br>{{$succ}}
                     <?php } ?>
                 </div>
             <?php } ?>
@@ -32,11 +32,11 @@
                 <div class="alert alert-warning alert-dismissible" role="alert" style="width: 98%; margin: 1%">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     Failed inserting {{$numberf}} data. <br>
-                    <?php if(isset($fail)) { ?>
-                    These serial number are not in Database : <br>{{$fail}}
+                    <?php if (isset($fail)) { ?>
+                        These serial number are not in Database : <br>{{$fail}}
                     <?php } ?>
-                    <?php if(isset($noav)) { ?>
-                    These serial number are not available (not yet ship out(ed)) : <br>{{$noav}}
+                    <?php if (isset($noav)) { ?>
+                        These serial number are not available (not yet ship out(ed)) : <br>{{$noav}}
                     <?php } ?>
                 </div>
             <?php } ?>
@@ -107,6 +107,16 @@
         <div class="row margtop20">
             <div class="form-group">
                 <div class="col-sm-2">
+                    <label class="fw300" style="margin-top: 7px;">Form Series Number: </label>
+                </div>
+                <div class="col-sm-5">
+                    <input type="text" id="formSN" class="input-stretch" name="formSN">
+                </div>
+            </div>
+        </div>
+        <div class="row margtop20">
+            <div class="form-group">
+                <div class="col-sm-2">
                     <label class="fw300" style="margin-top: 7px;">Remark: </label>
                 </div>
                 <div class="col-sm-5">
@@ -139,6 +149,10 @@ var table2 = '';
 var inventoryDataBackup = '';
 var inventoryDataBackup2 = '';
 var semua_sn = '';
+var getForm = '';
+var getShipout = '';
+var shto = '';
+var topsn = '';
 
 $(function () {
     oFileIn = document.getElementById('input-pict');
@@ -168,6 +182,7 @@ function filePicked(oEvent) {
 
 //            $("#my_file_output").html(sCSV);
             oJS.forEach(function (item, index) {
+                topsn = item.id;
                 if (semua_sn == '') {
                     semua_sn += item.id
                 } else {
@@ -206,6 +221,12 @@ $('#btn_ceksn').on('click', function (e) {
         "serverSide": true,
         "ajax": inventoryDataBackup2
     });
+    getShipout = '<?php echo Route('getShipout') ?>';
+    $.post(getShipout, {sn: topsn}, function (data) {
+        shto = data;
+    }).done(function () {
+        refreshFormSN();
+    });
 });
 $('#btn-insert-image').on('click', function (e) {
     $('#input-pict').click();
@@ -217,5 +238,30 @@ $('#input-pict').on('change', function (e) {
 $(document).ready(function () {
     $('#shipindate').val(new Date().toDateInputValue());
 });
+
+$('#shipindate').on('change', function () {
+    refreshFormSN();
+});
+
+var refreshFormSN = function () {
+    var shipoutto = '';
+    var stringtamp = '';
+    if (shto != '') {
+        shipoutto = shto;
+        if (shipoutto.includes('ASPROF'))
+            shipoutto = 'ASF';
+        else if (shipoutto.includes('ASPROT'))
+            shipoutto = 'AST';
+        else
+            shipoutto = shipoutto.substring(0, 3).toUpperCase();
+    }
+    stringtamp = $('#shipindate').val() + '/RE/' + shipoutto;
+    getForm = '<?php echo Route('getForm') ?>';
+    $.post(getForm, {sn: stringtamp}, function (data) {
+        stringtamp += data;
+    }).done(function () {
+        $('#formSN').val(stringtamp);
+    });
+};
 </script>
 @stop

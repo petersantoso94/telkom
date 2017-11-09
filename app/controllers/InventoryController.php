@@ -28,7 +28,7 @@ class InventoryController extends BaseController {
                     if (!empty($data) && $data->count()) {
                         foreach ($data as $key => $value) {
                             foreach ($value as $key => $value) {
-                                $SerialNumber = sprintf("%'019d\n", $counter);
+                                $SerialNumber = sprintf("%'019d", $counter);
                                 if ($value->serial_number != null) {
                                     $SerialNumber = $value->serial_number;
                                 }
@@ -650,6 +650,11 @@ class InventoryController extends BaseController {
     static function getSN($msi) {
         return Inventory::where('MSISDN', $msi)->first()->SerialNumber;
     }
+    
+    static function getShipout() {
+        $lasthist = History::where('SN', 'like', '%' .Input::get('sn'). '%')->where('Status','2')->orderBy('ID','desc')->first()->SubAgent;
+        return $lasthist;
+    }
 
     static function getForm() {
         $lastnum = History::where('ShipoutNumber', 'like', '%' . Input::get('sn') . '%')->orderBy('ID', 'desc')->first();
@@ -685,7 +690,9 @@ class InventoryController extends BaseController {
                     if ($d == 1) {
                         return 'SIM';
                     } else if ($d == 2) {
-                        return 'Voucher';
+                        return 'eVoucher';
+                    } else{
+                        return 'phVoucher';
                     }
                 }
             ),
@@ -699,8 +706,10 @@ class InventoryController extends BaseController {
                         return 'Return';
                     } else if ($d == 2) {
                         return 'Ship Out';
-                    } else {
+                    } else if ($d == 3) {
                         return 'Warehouse';
+                    } else {
+                        return 'Consignment';
                     }
                 }
             ),
@@ -743,7 +752,9 @@ class InventoryController extends BaseController {
                     if ($d == 1) {
                         return 'SIM';
                     } else if ($d == 2) {
-                        return 'Voucher';
+                        return 'eVoucher';
+                    } else{
+                        return 'phVoucher';
                     }
                 }
             ),
@@ -757,8 +768,10 @@ class InventoryController extends BaseController {
                         return 'Return';
                     } else if ($d == 2) {
                         return 'Ship Out';
-                    } else {
+                    } else if ($d == 3) {
                         return 'Warehouse';
+                    } else {
+                        return 'Consignment';
                     }
                 }
             ),
@@ -851,7 +864,9 @@ class InventoryController extends BaseController {
                     if ($d == 1) {
                         return 'SIM';
                     } else if ($d == 2) {
-                        return 'Voucher';
+                        return 'eVoucher';
+                    } else{
+                        return 'phVoucher';
                     }
                 }
             ),
@@ -930,7 +945,9 @@ class InventoryController extends BaseController {
                     if ($d == 1) {
                         return 'SIM';
                     } else if ($d == 2) {
-                        return 'Voucher';
+                        return 'eVoucher';
+                    } else{
+                        return 'phVoucher';
                     }
                 }
             ),
@@ -944,8 +961,10 @@ class InventoryController extends BaseController {
                         return 'Return';
                     } else if ($d == 2) {
                         return 'Ship Out';
-                    } else {
+                    } else if ($d == 3) {
                         return 'Warehouse';
+                    } else {
+                        return 'Consignment';
                     }
                 }
             ),
@@ -984,7 +1003,9 @@ class InventoryController extends BaseController {
                     if ($d == 1) {
                         return 'SIM';
                     } else if ($d == 2) {
-                        return 'Voucher';
+                        return 'eVoucher';
+                    } else{
+                        return 'phVoucher';
                     }
                 }
             ),
@@ -998,8 +1019,10 @@ class InventoryController extends BaseController {
                         return 'Return';
                     } else if ($d == 2) {
                         return 'Ship Out';
-                    } else {
+                    } else if ($d == 3) {
                         return 'Warehouse';
+                    } else {
+                        return 'Consignment';
                     }
                 }
             ),
@@ -1011,8 +1034,9 @@ class InventoryController extends BaseController {
 
         require('ssp.class.php');
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
-        $extraCondition = "m_inventory.`SerialNumber` IN ('" . $array . "')";
-        $extraCondition .= " && m_historymovement.Status " . $string_temp;
+        $extraCondition = "(m_inventory.`SerialNumber` IN ('" . $array . "')";
+        $extraCondition .= " OR m_inventory.`MSISDN` IN ('" . $array . "'))";
+        $extraCondition .= " AND m_historymovement.Status " . $string_temp;
         $join = ' INNER JOIN m_historymovement on m_historymovement.ID = m_inventory.LastStatusID';
 
         echo json_encode(
