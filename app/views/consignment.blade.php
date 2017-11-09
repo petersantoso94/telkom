@@ -44,7 +44,7 @@
                 <div class="col-sm-5">
                     <select data-placeholder="Choose a form series number..." class="chosen-select2" style="width: 100%" name="seriesNumber" id="series">
                         <option></option>
-                        @foreach(DB::table('m_historymovement')->where('Consignment',1)->where('Status', 2)->select('ShipoutNumber')->distinct()->get() as $sn)
+                        @foreach(DB::table('m_historymovement')->where('Status', 4)->select('ShipoutNumber')->distinct()->get() as $sn)
                         @if($sn->ShipoutNumber != '')
                         <option value="{{$sn->ShipoutNumber}}">
                             {{$sn->ShipoutNumber}}
@@ -70,6 +70,23 @@
     <div class="white-pane__bordered margbot20 alert-success" style="background: #dff0d8;">
         <h4>Available inventory with consignment status: </h4>
         <table id="example" class="display table-rwd table-inventory" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Serial Number</th>
+                    <th>Type</th>
+                    <th>Last Status</th>
+                    <th>Last Warehouse</th>
+                    <th>Date</th>
+                    <th>MSISDN</th>
+                    <th>Action</th>
+                    <!--<th>Actions</th>-->
+                </tr>
+            </thead>
+        </table>
+    </div>
+    <div class="white-pane__bordered margbot20 alert-warning">
+        <h4>Missing Inventory: </h4>
+        <table id="example3" class="display table-rwd table-inventory" cellspacing="0" width="100%">
             <thead>
                 <tr>
                     <th>Serial Number</th>
@@ -210,8 +227,10 @@ Date.prototype.toDateInputValue = (function () {
 });
 var table = '';
 var table2 = '';
+var table3 = '';
 var inventoryDataBackup = '';
 var inventoryDataBackup2 = '';
+var inventoryDataBackup3 = '';
 var getSN = '';
 var getForm = '';
 var notin = '';
@@ -249,6 +268,7 @@ var refreshTable = function () {
     if ($.fn.dataTable.isDataTable('#example')) {
         table.fnDestroy();
         table2.fnDestroy();
+        table3.fnDestroy();
     }
     
     var temp1 = document.getElementById('msi').value;
@@ -262,6 +282,7 @@ var refreshTable = function () {
         temp3 = 0;
     inventoryDataBackup = '<?php echo Route('inventoryDataBackupCons') ?>' + '/' + temp1 + ',,,' + temp2 + ',,,' +temp3 + ',,,1';
     inventoryDataBackup2 = '<?php echo Route('inventoryDataBackupCons') ?>' + '/' + temp1 + ',,,' + temp2 + ',,,' + temp3+ ',,,0';
+    inventoryDataBackup3 = '<?php echo Route('inventoryDataBackupCons') ?>' + '/' + temp1 + ',,,' + temp2 + ',,,' + temp3+ ',,,2';
     table = $('#example').dataTable({
         "draw": 10,
         "bDestroy": true,
@@ -275,6 +296,13 @@ var refreshTable = function () {
         "processing": true,
         "serverSide": true,
         "ajax": inventoryDataBackup2
+    });
+    table3 = $('#example3').dataTable({
+        "draw": 10,
+        "bDestroy": true,
+        "processing": true,
+        "serverSide": true,
+        "ajax": inventoryDataBackup3
     });
 };
 

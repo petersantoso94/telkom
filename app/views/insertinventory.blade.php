@@ -71,7 +71,7 @@
                     <label class="fw300" style="margin-top: 7px;">Provider: </label>
                 </div>
                 <div class="col-sm-5">
-                    <input type="text" id="provider" class="input-stretch" name="provider" value="Taiwan Star">
+                    <input type="text" id="provider" class="input-stretch" name="provider" value="TAIWAN STAR">
                 </div>
             </div>
         </div>
@@ -140,7 +140,9 @@
         var stringtamp = '';
         if ($('#provider').val() != '') {
             shipoutto = $('#provider').val();
-            shipoutto = shipoutto.substring(0, 3);
+            shipoutto = shipoutto.substring(0, 3).toUpperCase();
+            if(shipoutto == 'TAI')
+                shipoutto = 'TST';
         }
         stringtamp = $('#shipindate').val() + '/SI/' + shipoutto;
         getForm = '<?php echo Route('getForm') ?>';

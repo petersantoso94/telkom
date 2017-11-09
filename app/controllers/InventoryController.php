@@ -479,6 +479,43 @@ class InventoryController extends BaseController {
 
             return 'success';
         }
+        $type = 'SIM CARD';
+        $first = 0;
+        $last = 0;
+        $firstid = DB::table('m_inventory')
+                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
+                ->where('m_historymovement.Status', '!=', '2')
+                ->where('m_inventory.Missing', '0')
+                ->select('m_inventory.SerialNumber', 'm_inventory.Type')
+                ->orderBy('m_inventory.SerialNumber', 'asc')
+                ->first();
+        $lastid = DB::table('m_inventory')
+                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
+                ->where('m_historymovement.Status', '!=', '2')
+                ->where('m_inventory.Missing', '0')
+                ->select('m_inventory.SerialNumber', 'm_inventory.Type')
+                ->orderBy('m_inventory.SerialNumber', 'desc')
+                ->first();
+        $counter = DB::table('m_inventory')
+                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
+                ->where('m_historymovement.Status', '!=', '2')
+                ->where('m_inventory.Missing', '0')
+                ->select('m_inventory.SerialNumber', 'm_inventory.Type')
+                ->count();
+        if ($firstid != null) {
+            if ($firstid->Type == '2') {
+                $type = 'e-Voucher';
+            } else if ($firstid->Type == '3') {
+                $type = 'ph-Voucher';
+            }
+            $first = $firstid->SerialNumber;
+        }
+        if($lastid != null){
+            $last = $lastid->SerialNumber;
+        }
         $html = '
             <html>
                 <head>
@@ -486,14 +523,16 @@ class InventoryController extends BaseController {
                     <style>
                         @font-face {
                             font-family:traditional;
-                            src:url("public/fonts/traditional.otf");
+                            src:url("public/fonts/traditional.ttf");
                         }
                         body{
+                            font-size: 12px;
                             font-family:traditional;
+                            padding-top: -1cm;
                         }
                         p{
                             font-size: 90%;
-                            line-height: 0.3;
+                            line-height: 0.2;
                             font-family:traditional;
                         }
                     </style>
@@ -512,74 +551,74 @@ class InventoryController extends BaseController {
                     <div style="width:102%; height:30px; text-align:center;">
                         <p style="font-size:120%;">銷貨單</p>
                     </div>
-                    <div style="width:102%; height:30px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
-                        訂單日期：'.Session::get('date').'
+                    <div style="width:102%; height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
+                        訂單日期：' . Session::get('date') . '
                     </div>
-                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid;">
-                        訂單編號：'.Session::get('sn').'
+                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid;">
+                        訂單編號：' . Session::get('sn') . '
                     </div>
-                    <div style="width:102%; height:30px;border-left: 1px solid; border-bottom: 1px solid; border-right: 1px solid;">
-                        客戶編號：'.Session::get('to').'
+                    <div style="width:102%; height:20px;border-left: 1px solid; border-bottom: 1px solid; border-right: 1px solid;">
+                        客戶編號：' . Session::get('to') . '
                     </div>
-                    <div style="width:102%; height:30px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
-                        <div style="width:100px; height:30px;float:left; display: inline-block;">客戶名稱：</div>
-                        <div style="width:400px; height:30px;float:left; display: inline-block;">'.Session::get('subagent').'</div>
-                        <div style="width:200px; height:30px;float:left; display: inline-block;">統一編號: </div>
+                    <div style="width:102%; height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
+                        <div style="width:100px; height:20px;float:left; display: inline-block;">客戶名稱：</div>
+                        <div style="width:400px; height:20px;float:left; display: inline-block;">' . Session::get('subagent') . '</div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block;">統一編號: </div>
                     </div>
-                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid;">
-                        <div style="width:100px; height:30px;float:left; display: inline-block; ">送貨地址 ：</div>
-                        <div style="width:400px; height:30px;float:left; display: inline-block;"></div>
-                        <div style="width:200px; height:30px;float:left; display: inline-block;"></div>
+                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid;">
+                        <div style="width:100px; height:20px;float:left; display: inline-block; ">送貨地址 ：</div>
+                        <div style="width:400px; height:20px;float:left; display: inline-block;"></div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block;"></div>
                     </div>
-                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:100px; height:30px;float:left; display: inline-block; ">發票號碼 ： </div>
-                        <div style="width:400px; height:30px;float:left; display: inline-block;"></div>
-                        <div style="width:200px; height:30px;float:left; display: inline-block;">倉 庫 別: </div>
+                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:100px; height:20px;float:left; display: inline-block; ">發票號碼 ： </div>
+                        <div style="width:400px; height:20px;float:left; display: inline-block;"></div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block;">倉 庫 別: </div>
                     </div>
-                    <div style="width:102%; text-align:center;height:30px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:100px; height:30px;float:left; display: inline-block; border-right: 1px solid;">產品編號</div>
-                        <div style="width:300px; height:30px;float:left; display: inline-block; border-right: 1px solid;">產品名稱</div>
-                        <div style="width:70px; height:30px;float:left; display: inline-block; border-right: 1px solid;">數 量</div>
-                        <div style="width:115px; height:30px;float:left; display: inline-block; border-right: 1px solid;">訂價/單價</div>
-                        <div style="width:115px; height:30px;float:left; display: inline-block;">合計</div>
+                    <div style="width:102%; text-align:center;height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:100px; height:20px;float:left; display: inline-block; border-right: 1px solid;">產品編號</div>
+                        <div style="width:300px; height:20px;float:left; display: inline-block; border-right: 1px solid;">產品名稱</div>
+                        <div style="width:70px; height:20px;float:left; display: inline-block; border-right: 1px solid;">數 量</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">訂價/單價</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">合計</div>
                     </div>
-                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid;">
-                        <div style="width:100px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:300px; height:30px;float:left; display: inline-block; border-right: 1px solid;">SIM CARD</div>
-                        <div style="width:70px; height:30px;float:left; display: inline-block; border-right: 1px solid;">25</div>
-                        <div style="width:115px; height:30px;float:left; display: inline-block; border-right: 1px solid;">NT$ -</div>
-                        <div style="width:115px; height:30px;float:left; display: inline-block;">NT$ -</div>
+                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid;">
+                        <div style="width:100px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:20px;float:left; display: inline-block; border-right: 1px solid;">' . $type . '</div>
+                        <div style="width:70px; height:20px;float:left; display: inline-block; border-right: 1px solid;">' . $counter . '</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">NT$ -</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ -</div>
                     </div>
-                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:100px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:300px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:70px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:115px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:115px; height:30px;float:left; display: inline-block;"></div>
+                    <div style="width:102%; height:80px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:100px; height:80px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:80px;float:left; display: inline-block; border-right: 1px solid;">' . $first . ' - ' . $last . '</div>
+                        <div style="width:70px; height:80px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:80px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:80px;float:left; display: inline-block;"></div>
                     </div>
-                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid; ">
-                        <div style="width:100px; text-align:center; height:30px;float:left; display: inline-block; border-right: 1px solid;">備</div>
-                        <div style="width:375px; height:30px;float:left; display: inline-block; border-right: 1px solid;">YILAN EVENT</div>
-                        <div style="width:115px; height:30px;float:left; display: inline-block; border-right: 1px solid;">總額</div>
-                        <div style="width:115px; height:30px;float:left; display: inline-block;">NT$ -</div>
+                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; ">
+                        <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">備</div>
+                        <div style="width:374px; height:20px;float:left; display: inline-block; border-right: 1px solid;">YILAN EVENT</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總額</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ -</div>
                     </div>
-                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid; ">
-                        <div style="width:100px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:375px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:115px; height:30px;float:left; display: inline-block; border-right: 1px solid;">營業稅</div>
-                        <div style="width:115px; height:30px;float:left; display: inline-block;">NT$ -</div>
+                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; ">
+                        <div style="width:100px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:374px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">營業稅</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ -</div>
                     </div>
-                    <div style="width:102%; height:30px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:100px; text-align:center; height:30px;float:left; display: inline-block; border-right: 1px solid;">註</div>
-                        <div style="width:375px; height:30px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:115px; height:30px;float:left; display: inline-block; border-right: 1px solid;">總計</div>
-                        <div style="width:115px; height:30px;float:left; display: inline-block;">NT$ -</div>
+                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">註</div>
+                        <div style="width:374px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總計</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ -</div>
                     </div>
-                    <div style="width:102%;text-align:center; height:30px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:200px; height:30px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
-                        <div style="width:200px; height:30px;float:left; display: inline-block; border-right: 1px solid;">主管簽章</div>
-                        <div style="width:70px; height:30px;float:left; display: inline-block; border-right: 1px solid;">財務處</div>
-                        <div style="width:230px; height:30px;float:left; display: inline-block;">承辦人</div>
+                    <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:200px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block; border-right: 1px solid;">主管簽章</div>
+                        <div style="width:70px; height:20px;float:left; display: inline-block; border-right: 1px solid;">財務處</div>
+                        <div style="width:230px; height:20px;float:left; display: inline-block;">承辦人</div>
                     </div>
                     <div style="width:102%;text-align:center; height:90px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:200px; height:90px;float:left; display: inline-block; border-right: 1px solid;"></div>
@@ -587,14 +626,14 @@ class InventoryController extends BaseController {
                         <div style="width:70px; height:90px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:230px; height:90px;float:left; display: inline-block;"></div>
                     </div>
-                    <div style="width:102%; height:30px;"></div>
-                    <div style="width:102%;text-align:center; height:30px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;border-top: 1px solid;">
-                        <div style="width:350px; height:30px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
-                        <div style="width:350px; height:30px;float:left; display: inline-block;">承辦人</div>
+                    <div style="width:102%; height:20px;"></div>
+                    <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;border-top: 1px solid;">
+                        <div style="width:350px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
+                        <div style="width:350px; height:20px;float:left; display: inline-block;">承辦人</div>
                     </div>
-                    <div style="width:102%;text-align:center; height:200px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:350px; height:200px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:350px; height:200px;float:left; display: inline-block;"></div>
+                    <div style="width:102%;text-align:center; height:390px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:350px; height:390px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:350px; height:390px;float:left; display: inline-block;"></div>
                     </div>
                 </body>
             </html>';
@@ -767,27 +806,31 @@ class InventoryController extends BaseController {
         $series = explode(',,,', $id)[2];
         $statusAvail = explode(',,,', $id)[3];
         $inv = '';
-        $string_temp = '= 1';
-        if ($statusAvail == 0) {
-            $string_temp = '= 0';
+        $string_temp = '= 4';
+        $string_miss = '= 0';
+        if ($statusAvail == '0') {
+            $string_temp = '!= 4';
+        } else if ($statusAvail == '2') {
+            $statusAvail = 1;
+            $string_temp = '= 4';
+            $string_miss = '= 1';
         }
-        if ($series != 0) {
-            $inv = Inventory::where('MSISDN', 'like', '%' . $msisdn . '%')->where('SerialNumber', 'like', '%' . $serial . '%')->first();
+        if ($series != '0') {
             $serial = '';
             $msisdn = '';
         } else {
             $series = '';
-            if ($msisdn == 0) {
+            if ($msisdn == '0') {
                 $msisdn = '';
             } else {
                 $inv = Inventory::where('MSISDN', 'like', '%' . $msisdn . '%')->first();
-                $hist = History::where('SN', $inv->SerialNumber)->where('Status', 2)->where('Consignment', $statusAvail)->first();
+                $hist = History::where('SN', $inv->SerialNumber)->where('Status', 4)->orderBy('ID', 'desc')->first();
                 $series = $hist->ShipoutNumber;
             }
-            if ($serial == 0) {
+            if ($serial == '0') {
                 $serial = '';
             } else {
-                $hist = History::where('SN', 'like', '%' . $serial . '%')->where('Status', 2)->where('Consignment', $statusAvail)->first();
+                $hist = History::where('SN', 'like', '%' . $serial . '%')->where('Status', 4)->orderBy('ID', 'desc')->first();
                 $series = $hist->ShipoutNumber;
             }
         }
@@ -822,8 +865,10 @@ class InventoryController extends BaseController {
                         return 'Return';
                     } else if ($d == 2) {
                         return 'Ship Out';
-                    } else {
+                    } else if ($d == 3) {
                         return 'Warehouse';
+                    } else {
+                        return 'Consignment';
                     }
                 }
             ),
@@ -835,7 +880,7 @@ class InventoryController extends BaseController {
                     if ($data->Missing == 0) {
                         $hist = History::find($data->LastStatusID);
                         $disa = '';
-                        if ($hist->Status == 2) {
+                        if ($hist->Status != 4) {
                             $disa = 'disabled';
                         }
                         $return = '<button type="button" data-internal="' . $data->SerialNumber . '"  onclick="deleteAttach(this)"
@@ -855,9 +900,9 @@ class InventoryController extends BaseController {
         $sql_details = getConnection();
         require('ssp.class.php');
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
-        $extraCondition = "m_historymovement.Status = 2";
+        $extraCondition = "m_historymovement.Status " . $string_temp;
         $extraCondition .= " && m_historymovement.ShipoutNumber LIKE '%" . $series . "%'";
-        $extraCondition .= " && m_historymovement.Consignment " . $string_temp;
+        $extraCondition .= " && m_inventory.Missing " . $string_miss;
         $join = ' INNER JOIN m_historymovement on m_historymovement.ID = m_inventory.LastStatusID';
 
         echo json_encode(

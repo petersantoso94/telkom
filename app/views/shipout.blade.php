@@ -206,184 +206,198 @@
 <script src="{{Asset('jquery-validation/form-validator/jquery.form-validator.js')}}"></script>
 <script type="text/javascript" src="{{Asset('js/chosen.jquery.min.js')}}"></script>
 <script>
-Date.prototype.toDateInputValue = (function () {
-    var local = new Date(this);
-    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
-    return local.toJSON().slice(0, 10);
-});
-var table = '';
-var table2 = '';
-var table3 = '';
-var inventoryDataBackup = '';
-var inventoryDataBackup2 = '';
-var inventoryDataBackup3 = '';
-var getSN = '';
-var getForm = '';
-var notin = '';
-var postMissing = '<?php echo Route('postMissing') ?>';
-var postNewAgent = '<?php echo Route('postNewAgent') ?>';
-var postAvail = '<?php echo Route('postAvail') ?>';
-var ajax1 = '<?php echo Route('getSubAgent') ?>';
-var getPDF = '<?php echo Route('getPDFShipout') ?>';
-var newAgentName = '';
+                    Date.prototype.toDateInputValue = (function () {
+                        var local = new Date(this);
+                        local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+                        return local.toJSON().slice(0, 10);
+                    });
+                    var table = '';
+                    var table2 = '';
+                    var table3 = '';
+                    var inventoryDataBackup = '';
+                    var inventoryDataBackup2 = '';
+                    var inventoryDataBackup3 = '';
+                    var getSN = '';
+                    var getForm = '';
+                    var notin = '';
+                    var postMissing = '<?php echo Route('postMissing') ?>';
+                    var postNewAgent = '<?php echo Route('postNewAgent') ?>';
+                    var postAvail = '<?php echo Route('postAvail') ?>';
+                    var ajax1 = '<?php echo Route('getSubAgent') ?>';
+                    var getPDF = '<?php echo Route('getPDFShipout') ?>';
+                    var newAgentName = '';
 
-window.deleteAttach = function (element) {
-    notin = $(element).data('internal');
-    if (confirm("Do you want to exclude this inventory (" + notin + ") ?") == true) {
-        $.post(postMissing, {sn: notin}, function (data) {
+                    window.deleteAttach = function (element) {
+                        notin = $(element).data('internal');
+                        if (confirm("Do you want to exclude this inventory (" + notin + ") ?") == true) {
+                            $.post(postMissing, {sn: notin}, function (data) {
 
-        }).done(function () {
-            refreshTable();
-        });
-    }
-};
+                            }).done(function () {
+                                refreshTable();
+                            });
+                        }
+                    };
 
-window.availAttach = function (element) {
-    notin = $(element).data('internal');
-    if (confirm("Do you want to include this inventory (" + notin + ") ?") == true) {
-        $.post(postAvail, {sn: notin}, function (data) {
+                    window.availAttach = function (element) {
+                        notin = $(element).data('internal');
+                        if (confirm("Do you want to include this inventory (" + notin + ") ?") == true) {
+                            $.post(postAvail, {sn: notin}, function (data) {
 
-        }).done(function () {
-            refreshTable();
-        });
-    }
-};
+                            }).done(function () {
+                                refreshTable();
+                            });
+                        }
+                    };
 
-window.printPrev = function (element) {
-    var shipout_date = document.getElementById('shipindate').value;
-    var shipout_SN = document.getElementById('formSN').value;
-    var shipout_to = document.getElementById('shipoutto').value;
-    var shipout_subagent = document.getElementById('subagent').value;
-    var shipout_start = document.getElementById('shipoutstart').value;
-    var shipout_end = document.getElementById('shipoutend').value;
-    $.post(getPDF, 
-    {date: shipout_date,sn: shipout_SN,to: shipout_to,subagent: shipout_subagent
-        ,start: shipout_start,end: shipout_end}
-    , function (data) {
+                    window.printPrev = function (element) {
+                        var shipout_date = document.getElementById('shipindate').value;
+                        var shipout_SN = document.getElementById('formSN').value;
+                        var shipout_to = document.getElementById('shipoutto').value;
+                        var shipout_subagent = document.getElementById('subagent').value;
+                        var shipout_start = document.getElementById('shipoutstart').value;
+                        var shipout_end = document.getElementById('shipoutend').value;
+                        $.post(getPDF,
+                                {date: shipout_date, sn: shipout_SN, to: shipout_to, subagent: shipout_subagent
+                                    , start: shipout_start, end: shipout_end}
+                        , function (data) {
 
-    }).done(function () {
-        window.open(getPDF);
-    });
-};
+                        }).done(function () {
+                            window.open(getPDF);
+                        });
+                    };
 
-window.newSubagent = function (element) {
-    var person = prompt("Please enter New Subagent name:", "{Shipout to}{space}{Subagent name}");
-    if (person == null || person == "") {
-        txt = "User cancelled the prompt.";
-    } else {
-        newAgentName = person;
-        confirmNewAgent();
-    }
-};
+                    window.newSubagent = function (element) {
+                        if ($('#shipoutto').val() != '') {
+                            var person = prompt("Please enter New Subagent name:", $('#shipoutto').val()+" ");
+                            if (person == null || person == "") {
+                                txt = "User cancelled the prompt.";
+                            } else {
+                                newAgentName = person;
+                                confirmNewAgent();
+                            }
+                        }else{
+                            alert("Please choose Shipoutto first, Thank you!");
+                        }
+                    };
 
-var confirmNewAgent = function () {
-    if (confirm("Do you want to safe this New Subagent: '" + newAgentName + "' ?") == true) {
-        $.post(postNewAgent, {agent: newAgentName}, function (data) {
-            
-        }).done(function () {
-            $(".chosen-select2").chosen("destroy");
-            $("#subagent").append('<option value="' + newAgentName + '">' + newAgentName + '</option>');
-            $(".chosen-select2").chosen()
-            $(this).trigger("chosen:updated");
-        });
-    }
-};
+                    var confirmNewAgent = function () {
+                        if (confirm("Do you want to safe this New Subagent: '" + newAgentName + "' ?") == true) {
+                            $.post(postNewAgent, {agent: newAgentName}, function (data) {
 
-$('#btn_cekmsi').on('click', function (e) {
-    getSN = '<?php echo Route('getSN') ?>' + '/' + document.getElementById('msi').value;
-    $.get(getSN, function (data) {
-        $('#shipoutstart').val(data);
-    });
-});
+                            }).done(function () {
+                                $(".chosen-select2").chosen("destroy");
+                                $("#subagent").append('<option value="' + newAgentName + '">' + newAgentName + '</option>');
+                                $(".chosen-select2").chosen()
+                                $(this).trigger("chosen:updated");
+                            });
+                        }
+                    };
 
-var refreshTable = function () {
-    if ($.fn.dataTable.isDataTable('#example')) {
-        table.fnDestroy();
-        table2.fnDestroy();
-        table3.fnDestroy();
-    }
-    inventoryDataBackup = '<?php echo Route('inventoryDataBackupOut') ?>' + '/' + document.getElementById('shipoutstart').value + ',,,' + document.getElementById('shipoutend').value + ',,,1';
-    inventoryDataBackup2 = '<?php echo Route('inventoryDataBackupOut') ?>' + '/' + document.getElementById('shipoutstart').value + ',,,' + document.getElementById('shipoutend').value + ',,,0';
-    inventoryDataBackup3 = '<?php echo Route('inventoryDataBackupOut') ?>' + '/' + document.getElementById('shipoutstart').value + ',,,' + document.getElementById('shipoutend').value + ',,,2';
-    table = $('#example').dataTable({
-        "draw": 10,
-        "bDestroy": true,
-        "processing": true,
-        "serverSide": true,
-        "ajax": inventoryDataBackup
-    });
-    table2 = $('#example2').dataTable({
-        "draw": 10,
-        "bDestroy": true,
-        "processing": true,
-        "serverSide": true,
-        "ajax": inventoryDataBackup2
-    });
-    table3 = $('#example3').dataTable({
-        "draw": 10,
-        "bDestroy": true,
-        "processing": true,
-        "serverSide": true,
-        "ajax": inventoryDataBackup3
-    });
-};
+                    $('#btn_cekmsi').on('click', function (e) {
+                        getSN = '<?php echo Route('getSN') ?>' + '/' + document.getElementById('msi').value;
+                        $.get(getSN, function (data) {
+                            $('#shipoutstart').val(data);
+                        });
+                    });
 
-$('#btn_ceksn').on('click', function (e) {
-    refreshTable();
-});
+                    var refreshTable = function () {
+                        if ($.fn.dataTable.isDataTable('#example')) {
+                            table.fnDestroy();
+                            table2.fnDestroy();
+                            table3.fnDestroy();
+                        }
+                        inventoryDataBackup = '<?php echo Route('inventoryDataBackupOut') ?>' + '/' + document.getElementById('shipoutstart').value + ',,,' + document.getElementById('shipoutend').value + ',,,1';
+                        inventoryDataBackup2 = '<?php echo Route('inventoryDataBackupOut') ?>' + '/' + document.getElementById('shipoutstart').value + ',,,' + document.getElementById('shipoutend').value + ',,,0';
+                        inventoryDataBackup3 = '<?php echo Route('inventoryDataBackupOut') ?>' + '/' + document.getElementById('shipoutstart').value + ',,,' + document.getElementById('shipoutend').value + ',,,2';
+                        table = $('#example').dataTable({
+                            "draw": 10,
+                            "bDestroy": true,
+                            "processing": true,
+                            "serverSide": true,
+                            "ajax": inventoryDataBackup
+                        });
+                        table2 = $('#example2').dataTable({
+                            "draw": 10,
+                            "bDestroy": true,
+                            "processing": true,
+                            "serverSide": true,
+                            "ajax": inventoryDataBackup2
+                        });
+                        table3 = $('#example3').dataTable({
+                            "draw": 10,
+                            "bDestroy": true,
+                            "processing": true,
+                            "serverSide": true,
+                            "ajax": inventoryDataBackup3
+                        });
+                    };
 
-$('#shipoutto').on('change', function (e) {
-    $(".chosen-select2").chosen("destroy");
-    refreshFormSN();
-    $('#subagent')
-            .find('option')
-            .remove();
-    var shipto = document.getElementById('shipoutto').value;
-    $.post(ajax1, {ship: shipto}, function (data) {
-        $.each(data, function (key, val) {
-            $("#subagent").append('<option value="' + val.SubAgent + '">' + val.SubAgent + '</option>');
-        });
-    }).done(function () {
-        $(".chosen-select2").chosen()
-        $(this).trigger("chosen:updated");
-    });
-});
-$('#subagent').on('change', function (e) {
-    refreshFormSN();
-});
+                    $('#btn_ceksn').on('click', function (e) {
+                        refreshTable();
+                    });
 
-var refreshFormSN = function () {
-    var shipoutto = '';
-    var stringtamp = '';
-    if ($('#shipoutto').val() != '') {
-        shipoutto = $('#shipoutto').val();
-        shipoutto = shipoutto.substring(0, 3);
-    }
-    if ($('#subagent').val() != '') {
-        shipoutto = $('#subagent').val().split(' ')[0];
-        shipoutto = shipoutto.substring(0, 3);
-    }
-    stringtamp = $('#shipindate').val() + '/SO/' + shipoutto;
-    getForm = '<?php echo Route('getForm') ?>';
-    $.post(getForm, {sn: stringtamp}, function (data) {
-        stringtamp += data;
-    }).done(function () {
-        $('#formSN').val(stringtamp);
-    });
-};
+                    $('#shipoutto').on('change', function (e) {
+                        $(".chosen-select2").chosen("destroy");
+                        $('#subagent')
+                                .find('option')
+                                .remove();
+                        var shipto = document.getElementById('shipoutto').value;
+                        $.post(ajax1, {ship: shipto}, function (data) {
+                            $.each(data, function (key, val) {
+                                $("#subagent").append('<option value="' + val.SubAgent + '">' + val.SubAgent + '</option>');
+                            });
+                        }).done(function () {
+                            $(".chosen-select2").chosen()
+                            $(this).trigger("chosen:updated");
+                            refreshFormSN();
+                        });
+                    });
+                    $('#subagent').on('change', function (e) {
+                        refreshFormSN();
+                    });
 
-$('#shipindate').on('change', function (e) {
-    refreshFormSN();
-});
-$("#newsub").on("change keyup paste", function () {
-    refreshFormSN();
-})
+                    var refreshFormSN = function () {
+                        var shipoutto = '';
+                        var stringtamp = '';
+                        if ($('#shipoutto').val() != '') {
+                            shipoutto = $('#shipoutto').val();
+                            if (shipoutto.includes('ASPROF'))
+                                shipoutto = 'ASF';
+                            else if (shipoutto.includes('ASPROT'))
+                                shipoutto = 'AST';
+                            else
+                                shipoutto = shipoutto.substring(0, 3).toUpperCase();
+                        }
+                        if ($('#subagent').val() != '') {
+                            shipoutto = $('#subagent').val().split(' ')[0];
+                            if (shipoutto.includes('ASPROF'))
+                                shipoutto = 'ASF';
+                            else if (shipoutto.includes('ASPROT'))
+                                shipoutto = 'AST';
+                            else
+                                shipoutto = shipoutto.substring(0, 3).toUpperCase();
+                        }
+                        stringtamp = $('#shipindate').val() + '/SO/' + shipoutto;
+                        getForm = '<?php echo Route('getForm') ?>';
+                        $.post(getForm, {sn: stringtamp}, function (data) {
+                            stringtamp += data;
+                        }).done(function () {
+                            $('#formSN').val(stringtamp);
+                        });
+                    };
 
-$(document).ready(function () {
-    $('#shipindate').val(new Date().toDateInputValue());
-    $('#formSN').val(new Date().toDateInputValue());
-    $(".chosen-select").chosen()
-    $(".chosen-select2").chosen()
-});
+                    $('#shipindate').on('change', function (e) {
+                        refreshFormSN();
+                    });
+                    $("#newsub").on("change keyup paste", function () {
+                        refreshFormSN();
+                    })
+
+                    $(document).ready(function () {
+                        $('#shipindate').val(new Date().toDateInputValue());
+                        $('#formSN').val(new Date().toDateInputValue());
+                        $(".chosen-select").chosen()
+                        $(".chosen-select2").chosen()
+                    });
 </script>
 @stop

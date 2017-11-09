@@ -32,7 +32,7 @@
             <input type="radio" id="allinvstat" name="filterstat" value="all" checked><label for="filterstat">All</label>
         </div>
         <div class="col-xs-2">
-            <input type="radio" id="shipinstat" name="filterstat" value="sim"><label for="filterstat">Shippin</label>
+            <input type="radio" id="shipinstat" name="filterstat" value="sim"><label for="filterstat">Available</label>
         </div>
         <div class="col-xs-2">
             <input type="radio" id="shipoutstat" name="filterstat" value="voc"><label for="filterstat">Shipout</label>
