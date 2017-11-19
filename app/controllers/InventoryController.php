@@ -6,7 +6,7 @@ class InventoryController extends BaseController {
         return sprintf("%'.19d\n", $num);
     }
 
-    public function showInsertInventory2() { #sim
+    public function showInsertInventory() { #sim
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
@@ -20,20 +20,25 @@ class InventoryController extends BaseController {
                             })->formatDates(true)->get();
                     $SerialNumber = '';
                     $counterfail = 0;
-                    $subagent = '';
                     $cons = 0;
-                    $counter = 48001;
+                    $counter = 1;
                     $date = Input::get('eventDate');
-                    $outprice = 0;
                     if (!empty($data) && $data->count()) {
                         foreach ($data as $key => $value) {
                             foreach ($value as $key => $value) {
+                                $subagent = '';
+                                $outprice = 0;
+                                $status = 2;
+                                $tempSN = '/SO/';
+                                $tempSA = '';
                                 $SerialNumber = sprintf("%'019d", $counter);
                                 if ($value->serial_number != null) {
                                     $SerialNumber = $value->serial_number;
                                 }
                                 if ($value->consignment != null) {
                                     $cons = 1;
+                                    $status = 4;
+                                    $tempSN = '/CO/';
                                 }
                                 $type = 1;
                                 $inv = Inventory::where('SerialNumber', $SerialNumber)->first();
@@ -54,17 +59,40 @@ class InventoryController extends BaseController {
 
                                     //insert shipout
                                     if ($value->shipout_date != null) {
+                                        $statusnum = $value->shipout_date . $tempSN;
                                         $subagent = $value->shipout_to;
                                         $temp_sub = $value->sub_agent;
                                         $temp_sub2 = explode(' ', $temp_sub)[0];
-                                        if ($subagent != $temp_sub2) {
+                                        if (strtolower($subagent) != strtolower($temp_sub2)) {
                                             $subagent .= ' ' . $temp_sub;
+                                        } else {
+                                            $subagent .= ' ' . explode(' ', $temp_sub)[1];
+                                        }
+
+                                        if (strtolower(explode(' ', $subagent)[0]) == 'asprof') {
+                                            $tempSA = 'ASF';
+                                        } else if (strtolower(explode(' ', $subagent)[0]) == 'asprot') {
+                                            $tempSA = 'AST';
+                                        } else {
+                                            $tempSA = substr(explode(' ', $subagent)[0], 0, 3);                                   
+                                                    
                                         }
                                         if ($value->ship_out_price != null) {
                                             $outprice = $value->ship_out_price;
                                         }
-                                        $insertHistory = ['SN' => $SerialNumber, 'Warehouse' => $value->warehouse, 'Status' => 2, 'Price' => $outprice,
-                                            'Date' => $value->shipout_date, 'Remark' => $value->remark, 'SubAgent' => $subagent, 'Consignment' => $cons];
+                                        $statusnum .= $tempSA;
+                                        $lastnum = History::where('ShipoutNumber', 'like', '%' . $statusnum  . '%')->orderBy('ID', 'desc')->first();
+                                        if ($lastnum != null) {
+                                            $lastnum = $lastnum->ShipoutNumber;
+                                            $lastnum = substr($lastnum, -3, 3);
+                                        } else {
+                                            $lastnum = 0;
+                                        }
+                                        $lastnum ++;
+                                        $lastnum = sprintf("%'03d\n", $lastnum);
+                                        $statusnum .= $lastnum;
+                                        $insertHistory = ['SN' => $SerialNumber, 'Warehouse' => $value->warehouse, 'Status' => $status, 'Price' => $outprice,
+                                            'Date' => $value->shipout_date, 'Remark' => $value->remark, 'SubAgent' => $subagent, 'Consignment' => $cons, 'ShipoutNumber' => $statusnum];
                                         if (!empty($insertHistory)) {
                                             $lasthistoryID = DB::table('m_historymovement')->insertGetId($insertHistory);
                                         }
@@ -162,7 +190,7 @@ class InventoryController extends BaseController {
         return View::make('insertinventory')->withPage('insert inventory');
     }
 
-    public function showInsertInventory() {
+    public function showInsertInventory2() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
@@ -513,7 +541,7 @@ class InventoryController extends BaseController {
             }
             $first = $firstid->SerialNumber;
         }
-        if($lastid != null){
+        if ($lastid != null) {
             $last = $lastid->SerialNumber;
         }
         $html = '
@@ -624,7 +652,7 @@ class InventoryController extends BaseController {
                         <div style="width:200px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:200px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:70px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:230px; height:60px;float:left; display: inline-block;">'.Auth::user()->UserEmail.'</div>
+                        <div style="width:230px; height:60px;float:left; display: inline-block;">' . Auth::user()->UserEmail . '</div>
                     </div>
                     <div style="width:102%; height:10px;"></div>
                     <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;border-top: 1px solid;">
@@ -650,9 +678,9 @@ class InventoryController extends BaseController {
     static function getSN($msi) {
         return Inventory::where('MSISDN', $msi)->first()->SerialNumber;
     }
-    
+
     static function getShipout() {
-        $lasthist = History::where('SN', 'like', '%' .Input::get('sn'). '%')->where('Status','2')->orderBy('ID','desc')->first()->SubAgent;
+        $lasthist = History::where('SN', 'like', '%' . Input::get('sn') . '%')->where('Status', '2')->orderBy('ID', 'desc')->first()->SubAgent;
         return $lasthist;
     }
 
@@ -691,7 +719,7 @@ class InventoryController extends BaseController {
                         return 'SIM';
                     } else if ($d == 2) {
                         return 'eVoucher';
-                    } else{
+                    } else {
                         return 'phVoucher';
                     }
                 }
@@ -753,7 +781,7 @@ class InventoryController extends BaseController {
                         return 'SIM';
                     } else if ($d == 2) {
                         return 'eVoucher';
-                    } else{
+                    } else {
                         return 'phVoucher';
                     }
                 }
@@ -865,7 +893,7 @@ class InventoryController extends BaseController {
                         return 'SIM';
                     } else if ($d == 2) {
                         return 'eVoucher';
-                    } else{
+                    } else {
                         return 'phVoucher';
                     }
                 }
@@ -946,7 +974,7 @@ class InventoryController extends BaseController {
                         return 'SIM';
                     } else if ($d == 2) {
                         return 'eVoucher';
-                    } else{
+                    } else {
                         return 'phVoucher';
                     }
                 }
@@ -1004,7 +1032,7 @@ class InventoryController extends BaseController {
                         return 'SIM';
                     } else if ($d == 2) {
                         return 'eVoucher';
-                    } else{
+                    } else {
                         return 'phVoucher';
                     }
                 }
