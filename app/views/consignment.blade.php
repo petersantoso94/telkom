@@ -236,6 +236,7 @@ var getForm = '';
 var notin = '';
 var postMissing = '<?php echo Route('postMissing') ?>';
 var postAvail = '<?php echo Route('postAvail') ?>';
+var postFS = '<?php echo Route('postFormSeries') ?>';
 var ajax1 = '<?php echo Route('getSubAgent') ?>';
 
 window.deleteAttach = function (element) {
@@ -270,39 +271,43 @@ var refreshTable = function () {
         table2.fnDestroy();
         table3.fnDestroy();
     }
-    
+
     var temp1 = document.getElementById('msi').value;
-    if(!temp1)
+    if (!temp1)
         temp1 = 0;
     var temp2 = document.getElementById('shipoutstart').value;
-    if(!temp2)
+    if (!temp2)
         temp2 = 0;
     var temp3 = document.getElementById('series').value;
-    if(!temp3)
+    if (!temp3)
         temp3 = 0;
-    inventoryDataBackup = '<?php echo Route('inventoryDataBackupCons') ?>' + '/' + temp1 + ',,,' + temp2 + ',,,' +temp3 + ',,,1';
-    inventoryDataBackup2 = '<?php echo Route('inventoryDataBackupCons') ?>' + '/' + temp1 + ',,,' + temp2 + ',,,' + temp3+ ',,,0';
-    inventoryDataBackup3 = '<?php echo Route('inventoryDataBackupCons') ?>' + '/' + temp1 + ',,,' + temp2 + ',,,' + temp3+ ',,,2';
-    table = $('#example').dataTable({
-        "draw": 10,
-        "bDestroy": true,
-        "processing": true,
-        "serverSide": true,
-        "ajax": inventoryDataBackup
-    });
-    table2 = $('#example2').dataTable({
-        "draw": 10,
-        "bDestroy": true,
-        "processing": true,
-        "serverSide": true,
-        "ajax": inventoryDataBackup2
-    });
-    table3 = $('#example3').dataTable({
-        "draw": 10,
-        "bDestroy": true,
-        "processing": true,
-        "serverSide": true,
-        "ajax": inventoryDataBackup3
+    $.post(postFS, {fs: temp3}, function (data) {
+
+    }).done(function () {
+        inventoryDataBackup = '<?php echo Route('inventoryDataBackupCons') ?>' + '/' + temp1 + ',,,' + temp2 + ',,,1';
+        inventoryDataBackup2 = '<?php echo Route('inventoryDataBackupCons') ?>' + '/' + temp1 + ',,,' + temp2 + ',,,0';
+        inventoryDataBackup3 = '<?php echo Route('inventoryDataBackupCons') ?>' + '/' + temp1 + ',,,' + temp2 + ',,,2';
+        table = $('#example').dataTable({
+            "draw": 10,
+            "bDestroy": true,
+            "processing": true,
+            "serverSide": true,
+            "ajax": inventoryDataBackup
+        });
+        table2 = $('#example2').dataTable({
+            "draw": 10,
+            "bDestroy": true,
+            "processing": true,
+            "serverSide": true,
+            "ajax": inventoryDataBackup2
+        });
+        table3 = $('#example3').dataTable({
+            "draw": 10,
+            "bDestroy": true,
+            "processing": true,
+            "serverSide": true,
+            "ajax": inventoryDataBackup3
+        });
     });
 };
 
