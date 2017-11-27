@@ -35,13 +35,15 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('inventoryDataBackupCons/{start}', array('as' => 'inventoryDataBackupCons', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackupCons'));
     Route::post('inventoryDataBackupCons', array('as' => 'inventoryDataBackupCons', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackupCons'));
     Route::get('getSN/{msi}', array('as' => 'getSN', 'before' => '', 'uses' => 'InventoryController@getSN'));
-    Route::get('exportExcel', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
+    Route::get('exportExcel/{start}', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
+    Route::post('exportExcel', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
     Route::post('getSN', array('as' => 'getSN', 'before' => '', 'uses' => 'InventoryController@getSN'));
     Route::post('getForm', array('as' => 'getForm', 'before' => '', 'uses' => 'InventoryController@getForm'));
     Route::post('getShipout', array('as' => 'getShipout', 'before' => '', 'uses' => 'InventoryController@getShipout'));
     Route::post('postMissing', array('as' => 'postMissing', 'before' => '', 'uses' => 'InventoryController@postMissing'));
     Route::post('postNewAgent', array('as' => 'postNewAgent', 'before' => '', 'uses' => 'InventoryController@postNewAgent'));
     Route::post('postFormSeries', array('as' => 'postFormSeries', 'before' => '', 'uses' => 'InventoryController@postFormSeries'));
+    Route::get('getFS', array('as' => 'getFS', 'before' => '', 'uses' => 'InventoryController@getFS'));
     Route::any('getPDFShipout', array('as' => 'getPDFShipout', 'before' => '', 'uses' => 'InventoryController@getPDFShipout'));
     Route::post('postAvail', array('as' => 'postAvail', 'before' => '', 'uses' => 'InventoryController@postAvail'));
     Route::post('getSubAgent', array('as' => 'getSubAgent', 'before' => '', 'uses' => 'InventoryController@getSubAgent'));

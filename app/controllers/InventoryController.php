@@ -504,43 +504,83 @@ class InventoryController extends BaseController {
     
     static function postFormSeries() {
         Session::put('FormSeries', Input::get('fs'));
+        Session::put('FormSeriesInv', Input::get('fs'));
     }
     
-    static function exportExcel(){
+    static function exportExcel($filter){
         $excel=new ExcelWriter("telkom_inventory.xls");
         if($excel==false)	
 		echo $excel->error;
         
-        $myArr=array("SERIAL NUMBER","MSISDN","TYPE","LAST STATUS","SHIPOUT TO","FORM SERIES","LAST WAREHOUSE", "DATE");
+        $myArr=array("SERIAL NUMBER","MSISDN","TYPE","LAST STATUS","SHIPOUT TO","SUBAGENT","FORM SERIES","LAST WAREHOUSE", "SHIPOUT DATE","SHIPOUT PRICE", "SHIPIN DATE","SHIPIN PRICE", "REMARK");
 	$excel->writeLine($myArr);
+        $filter = explode(',,,', $filter);
+        $typesym = '>=';
+        $type = '0';
+        $statussym = '>=';
+        $status = '0';
+        $fs = '';
+        if(Session::has('FormSeriesInv'))
+            $fs = Session::get('FormSeriesInv'); 
+        if ($filter[0] != 'all') {
+            $typesym = '=';
+            $type = $filter[0];
+        }
+        if (isset($filter[1])) {
+            $statussym = '=';
+            $status = $filter[1];
+        }
         
-        $invs = Inventory::all();
+        $invs = DB::table('m_inventory')
+            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+            ->where('m_inventory.Type',$typesym,$type)
+            ->where('m_historymovement.Status',$statussym,$status)
+            ->where('m_historymovement.ShipoutNumber','like','%'.$fs.'%')
+            ->get();
+        
         foreach ($invs as $inv) {
-            $type = 'SIM';
+            $type = 'SIM 3G';
             if($inv->Type == 2){
                 $type = 'eVoucher';
             }else if($inv->Type == 3){
                 $type = 'phVoucher';
+            }else if($inv->Type == 4){
+                $type = 'SIM 4G';
             }
             
             $hist = History::where('ID', $inv->LastStatusID)->orderBy('ID','DESC')->first();
             $status = 'Available';
+            $cons = 'no';
+            $shipoutdt = '';
+            $shipoutprice = '0';
+            $histshipin = History::where('SN', $inv->SerialNumber)->where('Status','0')->first();
+            $shipindt = $histshipin->Date;
             if($hist->Status == 1){
                 $status = 'Return';
-            }else if($inv->Type == 2){
+            }else if($hist->Status == 2){
                 $status = 'Shipout';
-            }else if($inv->Type == 3){
+                $shipoutdt = $hist->Date;
+                $shipoutprice = $hist->Price;
+            }else if($hist->Status == 3){
                 $status = 'Warehouse';
-            }else if($inv->Type == 4){
+            }else if($hist->Status == 4){
                 $status = 'Consignment';
             }
             
             $shipout = '';
+            $subagent = '';
+            $tempcount =0;
             if($hist->SubAgent != ''){
-                $shipout = $hist->SubAgent;
+                $shipout = explode(' ', $hist->SubAgent);
+                foreach ($shipout as $word){
+                    if($tempcount > 0 ){
+                        $subagent .= $word .' ';
+                    }
+                    $tempcount++;
+                }
             }
             
-            $myArr=array($inv->SerialNumber,$inv->MSISDN,$type,$status,$shipout,$hist->ShipoutNumber,$inv->LastWarehouse, $hist->Date);
+            $myArr=array($inv->SerialNumber,$inv->MSISDN,$type,$status,$shipout[0],$subagent,$hist->ShipoutNumber,$inv->LastWarehouse, $shipoutdt,$shipoutprice, $shipindt,$inv->Price, $hist->Remark);
             $excel->writeLine($myArr);
         }
         $excel->close();
@@ -636,13 +676,13 @@ class InventoryController extends BaseController {
                     <div style="width:102%; height:30px; text-align:center;">
                         <p style="font-size:120%;">銷貨單</p>
                     </div>
-                    <div style="width:102%; padding-left:3px;height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
+                    <div style="width:101.6%; padding-left:3px;height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
                         訂單日期：' . Session::get('date') . '
                     </div>
-                    <div style="width:102%; padding-left:3px;height:20px; border-left: 1px solid;  border-right: 1px solid;">
+                    <div style="width:101.6%; padding-left:3px;height:20px; border-left: 1px solid;  border-right: 1px solid;">
                         訂單編號：' . Session::get('sn') . '
                     </div>
-                    <div style="width:102%; padding-left:3px;height:20px;border-left: 1px solid; border-bottom: 1px solid; border-right: 1px solid;">
+                    <div style="width:101.6%; padding-left:3px;height:20px;border-left: 1px solid; border-bottom: 1px solid; border-right: 1px solid;">
                         客戶編號：' . Session::get('to') . '
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
@@ -667,14 +707,14 @@ class InventoryController extends BaseController {
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">訂價/單價</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block;">合計</div>
                     </div>
-                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid;">
-                        <div style="width:100px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:300px; height:20px;float:left; display: inline-block; border-right: 1px solid;">' . $type . '</div>
-                        <div style="width:70px; height:20px;float:left; display: inline-block; border-right: 1px solid;">' . $counter . '</div>
-                        <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">NT$ -</div>
-                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ -</div>
+                    <div style="width:102%; height:15px; border-left: 1px solid;  border-right: 1px solid;">
+                        <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $type . '</div>
+                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $counter . '</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;">NT$ -</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;">NT$ -</div>
                     </div>
-                    <div style="width:102%; height:119px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                    <div style="width:102%; height:119px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:100px; height:119px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:300px; height:119px;float:left; display: inline-block; border-right: 1px solid;">' . $first . ' - ' . $last . '</div>
                         <div style="width:70px; height:119px;float:left; display: inline-block; border-right: 1px solid;"></div>
@@ -683,7 +723,7 @@ class InventoryController extends BaseController {
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; ">
                         <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">備</div>
-                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;">YILAN EVENT</div>
+                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總額</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ -</div>
                     </div>
@@ -722,7 +762,7 @@ class InventoryController extends BaseController {
                     </div>
                 </body>
             </html>';
-        return PDF ::load($html, 'F4', 'portrait')->show();
+        return PDF ::load($html, 'F4', 'portrait')->show(Session::get('sn'));
     }
 
     static function postAvail() {
@@ -738,6 +778,11 @@ class InventoryController extends BaseController {
 
     static function getShipout() {
         $lasthist = History::where('SN', 'like', '%' . Input::get('sn') . '%')->where('Status', '2')->orderBy('ID', 'desc')->first()->SubAgent;
+        return $lasthist;
+    }
+    static function getFS() {
+        $lasthist = DB::table('m_historymovement')->select('ShipoutNumber')->distinct()->get();
+        Session::forget('FormSeriesInv');
         return $lasthist;
     }
 
@@ -759,6 +804,9 @@ class InventoryController extends BaseController {
         $filter = explode(',,,', $filter);
         $type = '>0';
         $status = '>=0';
+        $fs = '';
+        if(Session::has('FormSeriesInv'))
+            $fs = Session::get('FormSeriesInv'); 
         if ($filter[0] != 'all') {
             $type = '=' . $filter[0];
         }
@@ -811,6 +859,7 @@ class InventoryController extends BaseController {
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
         $extraCondition = "m_inventory.Type " . $type;
         $extraCondition .= " && m_historymovement.Status " . $status;
+        $extraCondition .= " && m_historymovement.ShipoutNumber LIKE '%" . $fs . "%'";
         $join = ' INNER JOIN m_historymovement on m_historymovement.ID = m_inventory.LastStatusID';
 
         echo json_encode(
@@ -903,7 +952,7 @@ class InventoryController extends BaseController {
     static function inventoryDataBackupCons($id) {
         $msisdn = explode(',,,', $id)[0];
         $serial = explode(',,,', $id)[1];
-        $series = '0';
+        $series = '';
         if(Session::has('FormSeries'))
             $series = Session::get('FormSeries');
         $statusAvail = explode(',,,', $id)[2];
