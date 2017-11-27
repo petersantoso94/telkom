@@ -11,23 +11,26 @@
 @section('main-section')
 <div class="white-pane__bordered margbot20">
     <div class="row">
-        <h4>Inventory type:</h4>
-    </div>
-    <div class="row">
-        <div class="col-xs-1">
-            <input type="radio" id="allinv" name="filtertype" value="all" checked><label for="filtertype">All</label>
+        <div class="col-xs-4">
+            Inventory Type: 
+            <select data-placeholder="Choose a form series number..." class="form-group-lg form-control" style="width: 100%" id="invtype">
+                <option selected="" value="all">All</option>
+                <option value="sim3">SIM 3G</option>
+                <option value="sim4">SIM 4G</option>
+                <option value="evoc">E-VOUCHER</option>
+                <option value="pvoc">PH-VOUCHER</option>
+            </select>
         </div>
-        <div class="col-xs-2">
-            <input type="radio" id="siminv" name="filtertype" value="sim"><label for="filtertype">Sim 3G</label>
-        </div>
-        <div class="col-xs-2">
-            <input type="radio" id="4siminv" name="filtertype" value="sim"><label for="filtertype">Sim 4G</label>
-        </div>
-        <div class="col-xs-2">
-            <input type="radio" id="vocinv" name="filtertype" value="voc"><label for="filtertype">e-Voucher</label>
-        </div>
-        <div class="col-xs-2">
-            <input type="radio" id="pvocinv" name="filtertype" value="voc"><label for="filtertype">ph-Voucher</label>
+        <div class="col-xs-4">
+            Status: 
+            <select data-placeholder="Choose a form series number..." class="form-group-lg form-control" style="width: 100%" id="invstatus">
+                <option selected="" value="all">All</option>
+                <option value="in">AVAILABLE</option>
+                <option value="out">SHIPOUT</option>
+                <option value="ret">RETURN</option>
+                <option value="wh">WAREHOUSE</option>
+                <option value="con">CONSIGNMENT</option>
+            </select>
         </div>
         <div class="col-xs-4">
             Form Series: 
@@ -42,32 +45,8 @@
                 @endforeach
             </select>
         </div>
-        <div class="col-xs-3">
-            <button type="button" onclick="exportExcel(this)"><span class="glyphicon glyphicon-save"></span></button>Export excel
-        </div>
-        <div class="loader" id="loading-animation" style="display:none;"></div>
-    </div>
-    <div class="row">
-        <h4>Last Status:</h4>
-    </div>
-    <div class="row">
-        <div class="col-xs-1">
-            <input type="radio" id="allinvstat" name="filterstat" value="all" checked><label for="filterstat">All</label>
-        </div>
-        <div class="col-xs-2">
-            <input type="radio" id="shipinstat" name="filterstat" value="sim"><label for="filterstat">Available</label>
-        </div>
-        <div class="col-xs-2">
-            <input type="radio" id="shipoutstat" name="filterstat" value="voc"><label for="filterstat">Shipout</label>
-        </div>
-        <div class="col-xs-2">
-            <input type="radio" id="retstat" name="filterstat" value="voc"><label for="filterstat">Return</label>
-        </div>
-        <div class="col-xs-2">
-            <input type="radio" id="whstat" name="filterstat" value="voc"><label for="filterstat">Warehouse</label>
-        </div>
-        <div class="col-xs-3">
-            <input type="radio" id="consstat" name="filterstat" value="voc"><label for="filterstat">Consignment</label>
+        <div class="col-xs-3" style="padding-top: 10px;">
+            <button type="button" onclick="exportExcel(this)"><span class="glyphicon glyphicon-export"></span></button> Export excel
         </div>
     </div>
 </div>
@@ -112,7 +91,7 @@
 
                 var exportExcel = function () {
                     document.getElementById("loading-animation").style.display = "block";
-                    exportExcelLink = '<?php echo Route('exportExcel') ?>'+concat;
+                    exportExcelLink = '<?php echo Route('exportExcel') ?>' + concat;
                     console.log(exportExcelLink);
                     $.get(exportExcelLink, function (data) {
 
@@ -145,93 +124,90 @@
                         drawTable();
                     });
                 });
-                $('#siminv').on('click', function (e) {
-                    if (typeof concat.split(',,,')[1] !== 'undefined') {
-                        var temp = concat.split(',,,')[1];
-                        concat = '/1,,,' + temp;
-                    } else {
-                        concat = '/1';
-                    }
-                    drawTable();
-                });
-                $('#4siminv').on('click', function (e) {
-                    if (typeof concat.split(',,,')[1] !== 'undefined') {
-                        var temp = concat.split(',,,')[1];
-                        concat = '/4,,,' + temp;
-                    } else {
-                        concat = '/4';
-                    }
-                    drawTable();
-                });
-                $('#vocinv').on('click', function (e) {
-                    if (typeof concat.split(',,,')[1] !== 'undefined') {
-                        var temp = concat.split(',,,')[1];
-                        concat = '/2,,,' + temp;
-                    } else {
-                        concat = '/2';
-                    }
-                    drawTable();
-                });
-                $('#pvocinv').on('click', function (e) {
-                    if (typeof concat.split(',,,')[1] !== 'undefined') {
-                        var temp = concat.split(',,,')[1];
-                        concat = '/3,,,' + temp;
-                    } else {
-                        concat = '/3';
-                    }
-                    drawTable();
-                });
-                $('#allinv').on('click', function (e) {
-                    $(".chosen-select").chosen("destroy");
-                    $('#series').append('<option></option>');
-                    if (typeof concat.split(',,,')[1] !== 'undefined') {
-                        var temp = concat.split(',,,')[1];
-                        concat = '/all,,,' + temp;
-                    } else {
-                        concat = '/all';
-                    }
-                    $('#series')
-                            .find('option')
-                            .remove();
-                    $.get(ajax1, function (data) {
-                        $("#series").append('<option></option>');
-                        $.each(data, function (key, val) {
-                            $("#series").append('<option value="' + val.ShipoutNumber + '">' + val.ShipoutNumber + '</option>');
+                $('#invtype').on('change', function (e) {
+                    var temp_type = $(this).val();
+                    if (temp_type == 'all') {
+                        $(".chosen-select").chosen("destroy");
+                        $('#series').append('<option></option>');
+                        if (typeof concat.split(',,,')[1] !== 'undefined') {
+                            var temp = concat.split(',,,')[1];
+                            concat = '/all,,,' + temp;
+                        } else {
+                            concat = '/all';
+                        }
+                        $('#series')
+                                .find('option')
+                                .remove();
+                        $.get(ajax1, function (data) {
+                            $("#series").append('<option></option>');
+                            $.each(data, function (key, val) {
+                                $("#series").append('<option value="' + val.ShipoutNumber + '">' + val.ShipoutNumber + '</option>');
+                            });
+                        }).done(function () {
+                            $(".chosen-select").chosen()
+                            $(this).trigger("chosen:updated");
+                            drawTable();
                         });
-                    }).done(function () {
-                        $(".chosen-select").chosen()
-                        $(this).trigger("chosen:updated");
+                    } else if (temp_type == 'sim3') {
+                        if (typeof concat.split(',,,')[1] !== 'undefined') {
+                            var temp = concat.split(',,,')[1];
+                            concat = '/1,,,' + temp;
+                        } else {
+                            concat = '/1';
+                        }
                         drawTable();
-                    });
+                    } else if (temp_type == 'sim4') {
+                        if (typeof concat.split(',,,')[1] !== 'undefined') {
+                            var temp = concat.split(',,,')[1];
+                            concat = '/4,,,' + temp;
+                        } else {
+                            concat = '/4';
+                        }
+                        drawTable();
+                    } else if (temp_type == 'evoc') {
+                        if (typeof concat.split(',,,')[1] !== 'undefined') {
+                            var temp = concat.split(',,,')[1];
+                            concat = '/2,,,' + temp;
+                        } else {
+                            concat = '/2';
+                        }
+                        drawTable();
+                    } else if (temp_type == 'pvoc') {
+                        if (typeof concat.split(',,,')[1] !== 'undefined') {
+                            var temp = concat.split(',,,')[1];
+                            concat = '/3,,,' + temp;
+                        } else {
+                            concat = '/3';
+                        }
+                        drawTable();
+                    }
                 });
-                $('#shipinstat').on('click', function (e) {
-                    concat = concat.split(',,,')[0];
-                    concat += ',,,0';
-                    drawTable();
-                });
-                $('#shipoutstat').on('click', function (e) {
-                    concat = concat.split(',,,')[0];
-                    concat += ',,,2';
-                    drawTable();
-                });
-                $('#retstat').on('click', function (e) {
-                    concat = concat.split(',,,')[0];
-                    concat += ',,,1';
-                    drawTable();
-                });
-                $('#whstat').on('click', function (e) {
-                    concat = concat.split(',,,')[0];
-                    concat += ',,,3';
-                    drawTable();
-                });
-                $('#consstat').on('click', function (e) {
-                    concat = concat.split(',,,')[0];
-                    concat += ',,,4';
-                    drawTable();
-                });
-                $('#allinvstat').on('click', function (e) {
-                    concat = concat.split(',,,')[0];
-                    drawTable();
+                $('#invstatus').on('change', function (e) {
+                    var temp_type = $(this).val();
+                    if (temp_type == 'all') {
+                        concat = concat.split(',,,')[0];
+                        drawTable();
+                    } else if (temp_type == 'in') {
+                        concat = concat.split(',,,')[0];
+                        concat += ',,,0';
+                        drawTable();
+                    } else if (temp_type == 'out') {
+                        concat = concat.split(',,,')[0];
+                        concat += ',,,2';
+                        drawTable();
+                    } else if (temp_type == 'ret') {
+                        concat = concat.split(',,,')[0];
+                        concat += ',,,1';
+                        drawTable();
+                    } else if (temp_type == 'wh') {
+                        concat = concat.split(',,,')[0];
+                        concat += ',,,3';
+                        drawTable();
+                    } else if (temp_type == 'con') {
+                        concat = concat.split(',,,')[0];
+                        concat += ',,,4';
+                        drawTable();
+                    }
                 });
                 $(document).ready(function () {
                     $(".chosen-select").chosen();

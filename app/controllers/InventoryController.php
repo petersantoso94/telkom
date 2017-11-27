@@ -41,6 +41,9 @@ class InventoryController extends BaseController {
                                 $type = 1;
                                 $inv = Inventory::where('SerialNumber', $SerialNumber)->first();
                                 if ($inv == null) {
+                                    if(substr($value->msisdn, 0, 4) == '0908'){
+                                        $type = 4;
+                                    }
                                     $insertInventory = ['SerialNumber' => $SerialNumber, 'Price' => $value->ship_in_price, 'MSISDN' => $value->msisdn,
                                         'Type' => $type, 'LastWarehouse' => $value->warehouse, 'Remark' => $value->remark, 'userRecord' => Auth::user()->ID, 'Provider' => 'TAIWAN STAR'];
                                     $counter++;
@@ -458,7 +461,7 @@ class InventoryController extends BaseController {
                 $olddata = History::where('SubAgent', $oldname)->get();
                 $counter = 0;
                 foreach ($olddata as $data) {
-                    $data->SubAgent = $shipto." ".$newname;
+                    $data->SubAgent = $shipto . " " . $newname;
                     $data->save();
                     $counter++;
                 }
@@ -501,27 +504,27 @@ class InventoryController extends BaseController {
     static function postNewAgent() {
         Session::put('NewAgent', Input::get('agent'));
     }
-    
+
     static function postFormSeries() {
         Session::put('FormSeries', Input::get('fs'));
         Session::put('FormSeriesInv', Input::get('fs'));
     }
-    
-    static function exportExcel($filter){
-        $excel=new ExcelWriter("telkom_inventory.xls");
-        if($excel==false)	
-		echo $excel->error;
-        
-        $myArr=array("SERIAL NUMBER","MSISDN","TYPE","LAST STATUS","SHIPOUT TO","SUBAGENT","FORM SERIES","LAST WAREHOUSE", "SHIPOUT DATE","SHIPOUT PRICE", "SHIPIN DATE","SHIPIN PRICE", "REMARK");
-	$excel->writeLine($myArr);
+
+    static function exportExcel($filter) {
+        $excel = new ExcelWriter("telkom_inventory.xls");
+        if ($excel == false)
+            echo $excel->error;
+
+        $myArr = array("SERIAL NUMBER", "MSISDN", "TYPE", "LAST STATUS", "SHIPOUT TO", "SUBAGENT", "FORM SERIES", "LAST WAREHOUSE", "SHIPOUT DATE", "SHIPOUT PRICE", "SHIPIN DATE", "SHIPIN PRICE", "REMARK");
+        $excel->writeLine($myArr);
         $filter = explode(',,,', $filter);
         $typesym = '>=';
         $type = '0';
         $statussym = '>=';
         $status = '0';
         $fs = '';
-        if(Session::has('FormSeriesInv'))
-            $fs = Session::get('FormSeriesInv'); 
+        if (Session::has('FormSeriesInv'))
+            $fs = Session::get('FormSeriesInv');
         if ($filter[0] != 'all') {
             $typesym = '=';
             $type = $filter[0];
@@ -530,57 +533,57 @@ class InventoryController extends BaseController {
             $statussym = '=';
             $status = $filter[1];
         }
-        
+
         $invs = DB::table('m_inventory')
-            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-            ->where('m_inventory.Type',$typesym,$type)
-            ->where('m_historymovement.Status',$statussym,$status)
-            ->where('m_historymovement.ShipoutNumber','like','%'.$fs.'%')
-            ->get();
-        
+                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                ->where('m_inventory.Type', $typesym, $type)
+                ->where('m_historymovement.Status', $statussym, $status)
+                ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')
+                ->get();
+
         foreach ($invs as $inv) {
             $type = 'SIM 3G';
-            if($inv->Type == 2){
+            if ($inv->Type == 2) {
                 $type = 'eVoucher';
-            }else if($inv->Type == 3){
+            } else if ($inv->Type == 3) {
                 $type = 'phVoucher';
-            }else if($inv->Type == 4){
+            } else if ($inv->Type == 4) {
                 $type = 'SIM 4G';
             }
-            
-            $hist = History::where('ID', $inv->LastStatusID)->orderBy('ID','DESC')->first();
+
+            $hist = History::where('ID', $inv->LastStatusID)->orderBy('ID', 'DESC')->first();
             $status = 'Available';
             $cons = 'no';
             $shipoutdt = '';
             $shipoutprice = '0';
-            $histshipin = History::where('SN', $inv->SerialNumber)->where('Status','0')->first();
+            $histshipin = History::where('SN', $inv->SerialNumber)->where('Status', '0')->first();
             $shipindt = $histshipin->Date;
-            if($hist->Status == 1){
+            if ($hist->Status == 1) {
                 $status = 'Return';
-            }else if($hist->Status == 2){
+            } else if ($hist->Status == 2) {
                 $status = 'Shipout';
                 $shipoutdt = $hist->Date;
                 $shipoutprice = $hist->Price;
-            }else if($hist->Status == 3){
+            } else if ($hist->Status == 3) {
                 $status = 'Warehouse';
-            }else if($hist->Status == 4){
+            } else if ($hist->Status == 4) {
                 $status = 'Consignment';
             }
-            
+
             $shipout = '';
             $subagent = '';
-            $tempcount =0;
-            if($hist->SubAgent != ''){
+            $tempcount = 0;
+            if ($hist->SubAgent != '') {
                 $shipout = explode(' ', $hist->SubAgent);
-                foreach ($shipout as $word){
-                    if($tempcount > 0 ){
-                        $subagent .= $word .' ';
+                foreach ($shipout as $word) {
+                    if ($tempcount > 0) {
+                        $subagent .= $word . ' ';
                     }
                     $tempcount++;
                 }
             }
-            
-            $myArr=array($inv->SerialNumber,$inv->MSISDN,$type,$status,$shipout[0],$subagent,$hist->ShipoutNumber,$inv->LastWarehouse, $shipoutdt,$shipoutprice, $shipindt,$inv->Price, $hist->Remark);
+
+            $myArr = array($inv->SerialNumber, $inv->MSISDN, $type, $status, $shipout[0], $subagent, $hist->ShipoutNumber, $inv->LastWarehouse, $shipoutdt, $shipoutprice, $shipindt, $inv->Price, $hist->Remark);
             $excel->writeLine($myArr);
         }
         $excel->close();
@@ -780,6 +783,7 @@ class InventoryController extends BaseController {
         $lasthist = History::where('SN', 'like', '%' . Input::get('sn') . '%')->where('Status', '2')->orderBy('ID', 'desc')->first()->SubAgent;
         return $lasthist;
     }
+
     static function getFS() {
         $lasthist = DB::table('m_historymovement')->select('ShipoutNumber')->distinct()->get();
         Session::forget('FormSeriesInv');
@@ -805,8 +809,8 @@ class InventoryController extends BaseController {
         $type = '>0';
         $status = '>=0';
         $fs = '';
-        if(Session::has('FormSeriesInv'))
-            $fs = Session::get('FormSeriesInv'); 
+        if (Session::has('FormSeriesInv'))
+            $fs = Session::get('FormSeriesInv');
         if ($filter[0] != 'all') {
             $type = '=' . $filter[0];
         }
@@ -821,11 +825,13 @@ class InventoryController extends BaseController {
                 'dt' => 1,
                 'formatter' => function( $d, $row ) {
                     if ($d == 1) {
-                        return 'SIM';
+                        return 'SIM 3G';
                     } else if ($d == 2) {
                         return 'eVoucher';
-                    } else {
+                    } else if ($d == 3) {
                         return 'phVoucher';
+                    } else {
+                        return 'SIM 4G';
                     }
                 }
             ),
@@ -886,11 +892,13 @@ class InventoryController extends BaseController {
                 'dt' => 1,
                 'formatter' => function( $d, $row ) {
                     if ($d == 1) {
-                        return 'SIM';
+                        return 'SIM 3G';
                     } else if ($d == 2) {
                         return 'eVoucher';
-                    } else {
+                    } else if ($d == 3) {
                         return 'phVoucher';
+                    } else {
+                        return 'SIM 4G';
                     }
                 }
             ),
@@ -953,7 +961,7 @@ class InventoryController extends BaseController {
         $msisdn = explode(',,,', $id)[0];
         $serial = explode(',,,', $id)[1];
         $series = '';
-        if(Session::has('FormSeries'))
+        if (Session::has('FormSeries'))
             $series = Session::get('FormSeries');
         $statusAvail = explode(',,,', $id)[2];
         $inv = '';
@@ -1000,11 +1008,13 @@ class InventoryController extends BaseController {
                 'dt' => 1,
                 'formatter' => function( $d, $row ) {
                     if ($d == 1) {
-                        return 'SIM';
+                        return 'SIM 3G';
                     } else if ($d == 2) {
                         return 'eVoucher';
-                    } else {
+                    } else if ($d == 3) {
                         return 'phVoucher';
+                    } else {
+                        return 'SIM 4G';
                     }
                 }
             ),
@@ -1081,11 +1091,13 @@ class InventoryController extends BaseController {
                 'dt' => 1,
                 'formatter' => function( $d, $row ) {
                     if ($d == 1) {
-                        return 'SIM';
+                        return 'SIM 3G';
                     } else if ($d == 2) {
                         return 'eVoucher';
-                    } else {
+                    } else if ($d == 3) {
                         return 'phVoucher';
+                    } else {
+                        return 'SIM 4G';
                     }
                 }
             ),
@@ -1139,11 +1151,13 @@ class InventoryController extends BaseController {
                 'dt' => 1,
                 'formatter' => function( $d, $row ) {
                     if ($d == 1) {
-                        return 'SIM';
+                        return 'SIM 3G';
                     } else if ($d == 2) {
                         return 'eVoucher';
-                    } else {
+                    } else if ($d == 3) {
                         return 'phVoucher';
+                    } else {
+                        return 'SIM 4G';
                     }
                 }
             ),
