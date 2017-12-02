@@ -14,6 +14,7 @@
 
 Route::any('/', array('as' => '/', 'uses' => 'LoginController@showLogin'));
 Route::group(array('before' => 'auth'), function() {
+    Route::any('showDashboard', array('as' => 'showDashboard', 'uses' => 'InventoryController@showDashboard'));
     Route::any('showInventory', array('as' => 'showInventory', 'uses' => 'InventoryController@showInventory'));
     Route::any('showInsertInventory', array('as' => 'showInsertInventory', 'uses' => 'InventoryController@showInsertInventory'));
     Route::any('showConsignment', array('as' => 'showConsignment', 'uses' => 'InventoryController@showConsignment'));

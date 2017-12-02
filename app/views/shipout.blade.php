@@ -176,7 +176,7 @@
                     <label class="fw300" style="margin-top: 7px;">Shipout Price (NT$): </label>
                 </div>
                 <div class="col-sm-5">
-                    <input type="text" class="input-stretch" name="price">
+                    <input type="text" class="input-stretch" name="price" id="soprice">
                 </div>
             </div>
         </div>
@@ -256,9 +256,10 @@
                         var shipout_subagent = document.getElementById('subagent').value;
                         var shipout_start = document.getElementById('shipoutstart').value;
                         var shipout_end = document.getElementById('shipoutend').value;
+                        var soprice = document.getElementById('soprice').value;
                         $.post(getPDF,
                                 {date: shipout_date, sn: shipout_SN, to: shipout_to, subagent: shipout_subagent
-                                    , start: shipout_start, end: shipout_end}
+                                    , start: shipout_start, end: shipout_end, price: soprice}
                         , function (data) {
 
                         }).done(function () {

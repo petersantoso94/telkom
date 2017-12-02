@@ -17,6 +17,13 @@
         <link rel="stylesheet" href="{{Asset('css/jquery-ui.min.css')}}">
         <link rel="stylesheet" href="{{Asset('css/jquery-ui.structure.min.css')}}">
         <link rel="stylesheet" href="{{Asset('css/jquery-ui.theme.min.css')}}">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="{{Asset('adminlte/bower_components/font-awesome/css/font-awesome.min.css')}}">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="{{Asset('adminlte/bower_components/Ionicons/css/ionicons.min.css')}}">
+        <link rel="stylesheet" href="{{Asset('adminlte/bower_components/jvectormap/jquery-jvectormap.css')}}">
+        <link rel="stylesheet" href="{{Asset('adminlte/dist/css/AdminLTE.min.css')}}">
+        <link rel="stylesheet" href="{{Asset('adminlte/dist/css/skins/_all-skins.min.css')}}">
         <link rel="stylesheet" href="{{Asset('css/chosen.css')}}">
         <style>
             .loader {
@@ -49,7 +56,9 @@
                     <a href="{{Route('showLogout')}}" class="fl300 cwhite">Logout</a>
                 </div>
 
-
+                <ul class="list-sidebar-menu">
+                    <li><a href="{{Route('showDashboard')}}" @if($page == 'dashboard') class="active-sidemenu" @endif >Dashboard</a></li>
+                </ul>
                 <ul class="list-sidebar-menu">
                     <li><a href="{{Route('showInventory')}}" @if($page == 'inventory') class="active-sidemenu" @endif >View Inventory</a></li>
                 </ul>
@@ -85,6 +94,19 @@
         <script src="{{Asset('lib/js/jquery-1.11.3.min.js')}}"></script>
         <script src="{{Asset('lib/js/bootstrap.min.js')}}"></script>
         <script src="{{Asset('js/header-footer.js')}}"></script>
+        <!-- FastClick -->
+        <script src="{{Asset('adminlte/bower_components/fastclick/lib/fastclick.js')}}"></script>
+        <!-- AdminLTE App -->
+        <script src="{{Asset('adminlte/dist/js/adminlte.min.js')}}"></script>
+        <!-- Sparkline -->
+        <script src="{{Asset('adminlte/bower_components/jquery-sparkline/dist/jquery.sparkline.min.js')}}"></script>
+        <!-- jvectormap  -->
+        <script src="{{Asset('adminlte/plugins/jvectormap/jquery-jvectormap-1.2.2.min.js')}}"></script>
+        <script src="{{Asset('adminlte/plugins/jvectormap/jquery-jvectormap-world-mill-en.js')}}"></script>
+        <!-- SlimScroll -->
+        <script src="{{Asset('adminlte/bower_components/jquery-slimscroll/jquery.slimscroll.min.js')}}"></script>
+        <!-- ChartJS -->
+        <script src="{{Asset('adminlte/bower_components/Chart.js/Chart.js')}}"></script>
         @yield('js-content')
     </body>
 </html>
