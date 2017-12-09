@@ -26,7 +26,7 @@ class LoginController extends \BaseController {
             $email = Input::get('email-parent');
             $password = Input::get('password');
             if (Auth::attempt(array('UserEmail' => $email, 'password' => $password), true)) {
-                return Redirect::route('showInventory');
+                return Redirect::route('showDashboard');
             }
         }
         return View::make('login')

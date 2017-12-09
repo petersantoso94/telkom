@@ -16,76 +16,253 @@
         <section class="content-header">
             <h1>
                 Dashboard
-                <small>Version 2.0</small>
             </h1>
-            <ol class="breadcrumb">
-                <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-                <li class="active">Dashboard</li>
-            </ol>
         </section>
 
         <!-- Main content -->
         <section class="content">
             <!-- Info boxes -->
             <div class="row">
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                    <div class="info-box">
-                        <span class="info-box-icon bg-aqua"><i class="ion ion-ios-gear-outline"></i></span>
+                <div class="col-md-24">
+                    <div class="box">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Monthly Recap Report</h3>
 
-                        <div class="info-box-content">
-                            <span class="info-box-text">CPU Traffic</span>
-                            <span class="info-box-number">90<small>%</small></span>
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                </button>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown">
+                                        <i class="fa fa-wrench"></i></button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#">Action</a></li>
+                                        <li><a href="#">Another action</a></li>
+                                        <li><a href="#">Something else here</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="#">Separated link</a></li>
+                                    </ul>
+                                </div>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
                         </div>
-                        <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
-                </div>
-                <!-- /.col -->
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                    <div class="info-box">
-                        <span class="info-box-icon bg-red"><i class="fa fa-google-plus"></i></span>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a href="#voc" data-toggle="tab" aria-expanded="true">VOUCHER</a></li>
+                                    <li class=""><a href="#sim" data-toggle="tab" aria-expanded="false">SIM CARD</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="voc">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
 
-                        <div class="info-box-content">
-                            <span class="info-box-text">Likes</span>
-                            <span class="info-box-number">41,410</span>
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Monthly average shipout</span>
+                                                        <span class="info-box-number">{{$data['avg_monthly_voc']}}<small> pcs</small></span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_voc_month">More info <i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                            <!-- /.col -->
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-google-plus"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Likes</span>
+                                                        <span class="info-box-number">41,410</span>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+
+
+
+                                            <!-- /.col -->
+
+                                            <!-- fix for small devices only -->
+                                            <div class="clearfix visible-sm-block"></div>
+
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-green"><i class="ion ion-ios-cart-outline"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Sales</span>
+                                                        <span class="info-box-number">760</span>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                            <!-- /.col -->
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">New Members</span>
+                                                        <span class="info-box-number">2,000</span>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                            <!-- /.col -->
+                                        </div>
+                                        <div class="row" id="info_voc_month" style="display: none;">
+                                            <div class="chart">
+                                                <canvas id="barChart" style="height: 229px; width: 594px;" width="742" height="286"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" id="sim">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Monthly average shipout</span>
+                                                        <span class="info-box-number">{{$data['avg_monthly_sim']}}<small> pcs</small></span>
+                                                        <a  class="small-box-footer" href="#info_sim_month" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <!-- /.info-box-content -->
                     </div>
-                    <!-- /.info-box -->
                 </div>
-                <!-- /.col -->
-
-                <!-- fix for small devices only -->
-                <div class="clearfix visible-sm-block"></div>
-
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                    <div class="info-box">
-                        <span class="info-box-icon bg-green"><i class="ion ion-ios-cart-outline"></i></span>
-
-                        <div class="info-box-content">
-                            <span class="info-box-text">Sales</span>
-                            <span class="info-box-number">760</span>
-                        </div>
-                        <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
-                </div>
-                <!-- /.col -->
-                <div class="col-md-6 col-sm-6 col-xs-12">
-                    <div class="info-box">
-                        <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
-
-                        <div class="info-box-content">
-                            <span class="info-box-text">New Members</span>
-                            <span class="info-box-number">2,000</span>
-                        </div>
-                        <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
-                </div>
-                <!-- /.col -->
             </div>
             <!-- /.row -->
+
+            <div class="row">
+                <div class="col-md-24">
+                    <div class="box">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Weekly Recap Report</h3>
+
+                            <div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+                                </button>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown">
+                                        <i class="fa fa-wrench"></i></button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#">Action</a></li>
+                                        <li><a href="#">Another action</a></li>
+                                        <li><a href="#">Something else here</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="#">Separated link</a></li>
+                                    </ul>
+                                </div>
+                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="nav-tabs-custom">
+                                <ul class="nav nav-tabs">
+                                    <li class="active"><a href="#voc_w" data-toggle="tab" aria-expanded="true">VOUCHER</a></li>
+                                    <li class=""><a href="#sim_w" data-toggle="tab" aria-expanded="false">SIM CARD</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active" id="voc_w">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Weekly average shipout</span>
+                                                        <span class="info-box-number">{{$data['avg_weekly_voc']}}<small> pcs</small></span>
+                                                        <a  class="small-box-footer" href="#info_voc_week" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                            <!-- /.col -->
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-google-plus"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Likes</span>
+                                                        <span class="info-box-number">41,410</span>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+
+
+
+                                            <!-- /.col -->
+
+                                            <!-- fix for small devices only -->
+                                            <div class="clearfix visible-sm-block"></div>
+
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-green"><i class="ion ion-ios-cart-outline"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Sales</span>
+                                                        <span class="info-box-number">760</span>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                            <!-- /.col -->
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">New Members</span>
+                                                        <span class="info-box-number">2,000</span>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                            <!-- /.col -->
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" id="sim_w">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Weekly average shipout</span>
+                                                        <span class="info-box-number">{{$data['avg_weekly_sim']}}<small> pcs</small></span>
+                                                        <a  class="small-box-footer" href="#info_sim_week" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="row">
                 <div class="col-md-24">
@@ -850,7 +1027,7 @@
     </div>
     <!-- /.content-wrapper -->
 
-    
+
     <!-- Add the sidebar's background. This div must be placed
          immediately after the control sidebar -->
     <div class="control-sidebar-bg"></div>
@@ -859,5 +1036,82 @@
 @stop
 
 @section('js-content')
+<script>
+    //-------------
+    //- BAR CHART -
+    //-------------
+    var refreshBarChart = function () {
+        var areaChartData = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+            datasets: [
+                {
+                    label: 'Electronics',
+                    fillColor: 'rgba(210, 214, 222, 1)',
+                    strokeColor: 'rgba(210, 214, 222, 1)',
+                    pointColor: 'rgba(210, 214, 222, 1)',
+                    pointStrokeColor: '#c1c7d1',
+                    pointHighlightFill: '#fff',
+                    pointHighlightStroke: 'rgba(220,220,220,1)',
+                    data: [65, 59, 80, 81, 56, 55, 40]
+                },
+                {
+                    label: 'Digital Goods',
+                    fillColor: 'rgba(60,141,188,0.9)',
+                    strokeColor: 'rgba(60,141,188,0.8)',
+                    pointColor: '#3b8bba',
+                    pointStrokeColor: 'rgba(60,141,188,1)',
+                    pointHighlightFill: '#fff',
+                    pointHighlightStroke: 'rgba(60,141,188,1)',
+                    data: [28, 48, 40, 19, 86, 27, 90]
+                }
+            ]
+        }
+        var barChartCanvas = $('#barChart').get(0).getContext('2d')
+        var barChart = new Chart(barChartCanvas)
+        var barChartData = areaChartData
+        barChartData.datasets[1].fillColor = '#00a65a'
+        barChartData.datasets[1].strokeColor = '#00a65a'
+        barChartData.datasets[1].pointColor = '#00a65a'
+        var barChartOptions = {
+            //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+            scaleBeginAtZero: true,
+            //Boolean - Whether grid lines are shown across the chart
+            scaleShowGridLines: true,
+            //String - Colour of the grid lines
+            scaleGridLineColor: 'rgba(0,0,0,.05)',
+            //Number - Width of the grid lines
+            scaleGridLineWidth: 1,
+            //Boolean - Whether to show horizontal lines (except X axis)
+            scaleShowHorizontalLines: true,
+            //Boolean - Whether to show vertical lines (except Y axis)
+            scaleShowVerticalLines: true,
+            //Boolean - If there is a stroke on each bar
+            barShowStroke: true,
+            //Number - Pixel width of the bar stroke
+            barStrokeWidth: 2,
+            //Number - Spacing between each of the X value sets
+            barValueSpacing: 5,
+            //Number - Spacing between data sets within X values
+            barDatasetSpacing: 1,
+            //String - A legend template
+            legendTemplate: '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].fillColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',
+            //Boolean - whether to make the chart responsive
+            responsive: true,
+            maintainAspectRatio: true
+        }
 
+        barChartOptions.datasetFill = false
+        barChart.Bar(barChartData, barChartOptions)
+    }
+    window.showChart = function (element) {
+        var chartID = $(element).data('id');
+        var x = document.getElementById(chartID);
+        if (x.style.display === "none") {
+            x.style.display = "block";
+            refreshBarChart();
+        } else {
+            x.style.display = "none";
+        }
+    }
+</script>
 @stop

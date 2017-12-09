@@ -259,9 +259,91 @@ class InventoryController extends BaseController {
         }
         return View::make('insertinventory')->withPage('insert inventory');
     }
-    
-    public function showDashboard(){
-        return View::make('dashboard')->withPage('dashboard');
+
+    public function showDashboard() {
+        $dataReport = [];
+        $today = getdate();
+        
+        //monthly
+        //SIM
+        $total_shipout_this_year = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                        ->where('m_historymovement.Status', '2')
+                        ->where('m_inventory.Missing', '0')
+                        ->whereIn('m_inventory.Type', array(1, 4))
+                        ->where('m_historymovement.Date','like',"%".$today['year'].'%')
+                        ->count();
+        $last_history_month = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                        ->where('m_historymovement.Status', '2')
+                        ->where('m_inventory.Missing', '0')
+                        ->whereIn('m_inventory.Type', array(1, 4))
+                        ->where('m_historymovement.Date','like',"%".$today['year'].'%')->orderBy('m_historymovement.Date','desc')
+                        ->select('m_historymovement.Date')->distinct()->first();
+        $temp_count1 = 1;
+        if($last_history_month!= null)
+            $temp_count1 = (explode('-', $last_history_month->Date)[1]);
+        $dataReport['avg_monthly_sim'] = (int)($total_shipout_this_year/$temp_count1);
+        //VOC
+        $total_shipout_this_year = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                        ->where('m_historymovement.Status', '2')
+                        ->where('m_inventory.Missing', '0')
+                        ->whereIn('m_inventory.Type', array(2, 3))
+                        ->where('m_historymovement.Date','like',"%".$today['year'].'%')
+                        ->count();
+        $last_history_month = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                        ->where('m_historymovement.Status', '2')
+                        ->where('m_inventory.Missing', '0')
+                        ->whereIn('m_inventory.Type', array(2, 3))
+                        ->where('m_historymovement.Date','like',"%".$today['year'].'%')->orderBy('m_historymovement.Date','desc')
+                        ->select('m_historymovement.Date')->distinct()->first();
+        $temp_count1 = 1;
+        if($last_history_month!= null)
+            $temp_count1 = (explode('-', $last_history_month->Date)[1]);
+        $dataReport['avg_monthly_voc'] = (int)($total_shipout_this_year/$temp_count1);
+        
+        //weekly
+        //SIM
+        $total_shipout_this_month = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                        ->where('m_historymovement.Status', '2')
+                        ->where('m_inventory.Missing', '0')
+                        ->whereIn('m_inventory.Type', array(1, 4))
+                        ->where('m_historymovement.Date','like',"%".$today['year'].'-'.$today['mon'].'%')
+                        ->count();
+        $last_history_week = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                        ->where('m_historymovement.Status', '2')
+                        ->where('m_inventory.Missing', '0')
+                        ->whereIn('m_inventory.Type', array(1, 4))
+                        ->where('m_historymovement.Date','like',"%".$today['year'].'-'.$today['mon'].'%')->orderBy('m_historymovement.Date','desc')
+                        ->select('m_historymovement.Date')->distinct()->first();
+        $week_number  =1;
+        if($last_history_week != null)
+            $week_number = (int)((explode('-', $last_history_week->Date)[2])/7);
+        $dataReport['avg_weekly_sim'] = (int)($total_shipout_this_month/$week_number);
+        //voc
+        $total_shipout_this_month = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                        ->where('m_historymovement.Status', '2')
+                        ->where('m_inventory.Missing', '0')
+                        ->whereIn('m_inventory.Type', array(2, 3))
+                        ->where('m_historymovement.Date','like',"%".$today['year'].'-'.$today['mon'].'%')
+                        ->count();
+        $last_history_week = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                        ->where('m_historymovement.Status', '2')
+                        ->where('m_inventory.Missing', '0')
+                        ->whereIn('m_inventory.Type', array(2, 3))
+                        ->where('m_historymovement.Date','like',"%".$today['year'].'-'.$today['mon'].'%')->orderBy('m_historymovement.Date','desc')
+                        ->select('m_historymovement.Date')->distinct()->first();
+        $week_number  =1;
+        if($last_history_week != null)
+            $week_number = (int)((explode('-', $last_history_week->Date)[2])/7);
+        $dataReport['avg_weekly_voc'] = (int)($total_shipout_this_month/$week_number);
+        return View::make('dashboard')->withPage('dashboard')->withData($dataReport);
     }
 
     public function showWarehouseInventory() {
@@ -493,6 +575,7 @@ class InventoryController extends BaseController {
     }
 
     public function showInventory() {
+        Session::forget('FormSeriesInv');
         return View::make('inventory')->withPage('inventory');
     }
 
@@ -819,13 +902,13 @@ class InventoryController extends BaseController {
                     </div>';
         for ($i = 0; $i < count($type); $i++) {
             if ($type[$i] != '') {
-                $subtotal += (Session::get('price')*$count[$i]);
+                $subtotal += (Session::get('price') * $count[$i]);
                 $html .= '<div style="width:102%; height:15px; border-left: 1px solid;  border-right: 1px solid;">
                         <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $type[$i] . '</div>
                         <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $count[$i] . '</div>
-                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;">NT$ '.Session::get('price').'</div>
-                        <div style="width:115px; height:15px;float:left; display: inline-block;">NT$ '.(Session::get('price')*$count[$i]).'</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;">NT$ ' . Session::get('price') . '</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;">NT$ ' . (Session::get('price') * $count[$i]) . '</div>
                     </div>
                     <div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ';
             } else {
@@ -862,19 +945,19 @@ class InventoryController extends BaseController {
                         <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">備</div>
                         <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總額</div>
-                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ '.$subtotal.'</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . $subtotal . '</div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; ">
                         <div style="width:100px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">營業稅</div>
-                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ '.$subtotal.'</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . $subtotal . '</div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">註</div>
                         <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總計</div>
-                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ '.$subtotal.'</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . $subtotal . '</div>
                     </div>
                     <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:200px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>

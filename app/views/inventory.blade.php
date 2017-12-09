@@ -48,6 +48,7 @@
         <div class="col-xs-3" style="padding-top: 10px;">
             <button type="button" onclick="exportExcel(this)"><span class="glyphicon glyphicon-export"></span></button> Export excel
         </div>
+        <div class="loader" id="loading-animation" style="display:none;"></div>
     </div>
 </div>
 <div class="white-pane__bordered margbot20">
