@@ -55,7 +55,7 @@
                     <!--<a id="profile-trigger" href="{{--Route('showProfile')--}}" @if($page == 'profile') class="active-sidemenu margr20 fl300 cwhite" @else class="margr20 fl300 cwhite" @endif>Profile</a>-->
                     <a href="{{Route('showLogout')}}" class="fl300 cwhite">Logout</a>
                 </div>
-                <ul class="sidebar-menu tree" data-widget="tree">
+                <ul class="sidebar-menu tree list-sidebar-menu" data-widget="tree">
                     <li class="treeview">
                         <a href="#">
                             <i class="fa fa-area-chart"></i> <span>Reporting View</span>

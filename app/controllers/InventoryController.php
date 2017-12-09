@@ -92,6 +92,12 @@ class InventoryController extends BaseController {
 
                                     $inv->LastStatusID = $lasthistoryID;
                                     $inv->save();
+
+                                    $allhist = History::where('SN', $inv->SerialNumber)->get();
+                                    foreach ($allhist as $hist) {
+                                        $hist->LastStatus = $status;
+                                        $hist->save();
+                                    }
                                 }
                             }
                         }
@@ -189,6 +195,12 @@ class InventoryController extends BaseController {
 
                                 $inv->LastStatusID = $lasthistoryID;
                                 $inv->save();
+
+                                $allhist = History::where('SN', $inv->SerialNumber)->get();
+                                foreach ($allhist as $hist) {
+                                    $hist->LastStatus = $status;
+                                    $hist->save();
+                                }
                             }
                         }
                     }
@@ -260,86 +272,86 @@ class InventoryController extends BaseController {
     public function showDashboard() {
         $dataReport = [];
         $today = getdate();
-        
+
         //monthly
         //SIM
         $total_shipout_this_year = DB::table('m_inventory')
-                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
-                        ->where('m_inventory.Missing', '0')
-                        ->whereIn('m_inventory.Type', array(1, 4))
-                        ->where('m_historymovement.Date','like',"%".$today['year'].'%')
-                        ->count();
+                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                ->where('m_historymovement.Status', '2')
+                ->where('m_inventory.Missing', '0')
+                ->whereIn('m_inventory.Type', array(1, 4))
+                ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '%')
+                ->count();
         $last_history_month = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                         ->where('m_historymovement.Status', '2')
                         ->where('m_inventory.Missing', '0')
                         ->whereIn('m_inventory.Type', array(1, 4))
-                        ->where('m_historymovement.Date','like',"%".$today['year'].'%')->orderBy('m_historymovement.Date','desc')
+                        ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '%')->orderBy('m_historymovement.Date', 'desc')
                         ->select('m_historymovement.Date')->distinct()->first();
         $temp_count1 = 1;
-        if($last_history_month!= null)
+        if ($last_history_month != null)
             $temp_count1 = (explode('-', $last_history_month->Date)[1]);
-        $dataReport['avg_monthly_sim'] = (int)($total_shipout_this_year/$temp_count1);
+        $dataReport['avg_monthly_sim'] = (int) ($total_shipout_this_year / $temp_count1);
         //VOC
         $total_shipout_this_year = DB::table('m_inventory')
-                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
-                        ->where('m_inventory.Missing', '0')
-                        ->whereIn('m_inventory.Type', array(2, 3))
-                        ->where('m_historymovement.Date','like',"%".$today['year'].'%')
-                        ->count();
+                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                ->where('m_historymovement.Status', '2')
+                ->where('m_inventory.Missing', '0')
+                ->whereIn('m_inventory.Type', array(2, 3))
+                ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '%')
+                ->count();
         $last_history_month = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                         ->where('m_historymovement.Status', '2')
                         ->where('m_inventory.Missing', '0')
                         ->whereIn('m_inventory.Type', array(2, 3))
-                        ->where('m_historymovement.Date','like',"%".$today['year'].'%')->orderBy('m_historymovement.Date','desc')
+                        ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '%')->orderBy('m_historymovement.Date', 'desc')
                         ->select('m_historymovement.Date')->distinct()->first();
         $temp_count1 = 1;
-        if($last_history_month!= null)
+        if ($last_history_month != null)
             $temp_count1 = (explode('-', $last_history_month->Date)[1]);
-        $dataReport['avg_monthly_voc'] = (int)($total_shipout_this_year/$temp_count1);
-        
+        $dataReport['avg_monthly_voc'] = (int) ($total_shipout_this_year / $temp_count1);
+
         //weekly
         //SIM
         $total_shipout_this_month = DB::table('m_inventory')
-                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
-                        ->where('m_inventory.Missing', '0')
-                        ->whereIn('m_inventory.Type', array(1, 4))
-                        ->where('m_historymovement.Date','like',"%".$today['year'].'-'.$today['mon'].'%')
-                        ->count();
+                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                ->where('m_historymovement.Status', '2')
+                ->where('m_inventory.Missing', '0')
+                ->whereIn('m_inventory.Type', array(1, 4))
+                ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '-' . $today['mon'] . '%')
+                ->count();
         $last_history_week = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                         ->where('m_historymovement.Status', '2')
                         ->where('m_inventory.Missing', '0')
                         ->whereIn('m_inventory.Type', array(1, 4))
-                        ->where('m_historymovement.Date','like',"%".$today['year'].'-'.$today['mon'].'%')->orderBy('m_historymovement.Date','desc')
+                        ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '-' . $today['mon'] . '%')->orderBy('m_historymovement.Date', 'desc')
                         ->select('m_historymovement.Date')->distinct()->first();
-        $week_number  =1;
-        if($last_history_week != null)
-            $week_number = (int)((explode('-', $last_history_week->Date)[2])/7);
-        $dataReport['avg_weekly_sim'] = (int)($total_shipout_this_month/$week_number);
+        $week_number = 1;
+        if ($last_history_week != null)
+            $week_number = (int) ((explode('-', $last_history_week->Date)[2]) / 7);
+        $dataReport['avg_weekly_sim'] = (int) ($total_shipout_this_month / $week_number);
         //voc
         $total_shipout_this_month = DB::table('m_inventory')
-                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
-                        ->where('m_inventory.Missing', '0')
-                        ->whereIn('m_inventory.Type', array(2, 3))
-                        ->where('m_historymovement.Date','like',"%".$today['year'].'-'.$today['mon'].'%')
-                        ->count();
+                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                ->where('m_historymovement.Status', '2')
+                ->where('m_inventory.Missing', '0')
+                ->whereIn('m_inventory.Type', array(2, 3))
+                ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '-' . $today['mon'] . '%')
+                ->count();
         $last_history_week = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                         ->where('m_historymovement.Status', '2')
                         ->where('m_inventory.Missing', '0')
                         ->whereIn('m_inventory.Type', array(2, 3))
-                        ->where('m_historymovement.Date','like',"%".$today['year'].'-'.$today['mon'].'%')->orderBy('m_historymovement.Date','desc')
+                        ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '-' . $today['mon'] . '%')->orderBy('m_historymovement.Date', 'desc')
                         ->select('m_historymovement.Date')->distinct()->first();
-        $week_number  =1;
-        if($last_history_week != null)
-            $week_number = (int)((explode('-', $last_history_week->Date)[2])/7);
-        $dataReport['avg_weekly_voc'] = (int)($total_shipout_this_month/$week_number);
+        $week_number = 1;
+        if ($last_history_week != null)
+            $week_number = (int) ((explode('-', $last_history_week->Date)[2]) / 7);
+        $dataReport['avg_weekly_voc'] = (int) ($total_shipout_this_month / $week_number);
         return View::make('dashboard')->withPage('dashboard')->withData($dataReport);
     }
 
@@ -373,6 +385,12 @@ class InventoryController extends BaseController {
                     $inv->LastStatusID = $hist->ID;
                     $inv->LastWarehouse = $moveto;
                     $inv->save();
+
+                    $allhist = History::where('SN', $inv->SerialNumber)->get();
+                    foreach ($allhist as $hist) {
+                        $hist->LastStatus = 3;
+                        $hist->save();
+                    }
                     $counter++;
                 }
             }
@@ -421,6 +439,12 @@ class InventoryController extends BaseController {
                     $inv->LastStatusID = $hist->ID;
                     $inv->Missing = 1;
                     $inv->save();
+
+                    $allhist = History::where('SN', $inv->SerialNumber)->get();
+                    foreach ($allhist as $hist) {
+                        $hist->LastStatus = 2;
+                        $hist->save();
+                    }
                     $counter++;
                 }
             }
@@ -449,7 +473,7 @@ class InventoryController extends BaseController {
                     $hist->SubAgent = $subagent;
                     $hist->Price = $price;
                     $hist->ShipoutNumber = $series;
-                    $hist->Status = 2;
+                    $hist->Status = 4;
                     $hist->Remark = Input::get('remark');
                     $hist->Date = Input::get('eventDate');
                     $hist->userRecord = Auth::user()->ID;
@@ -459,6 +483,12 @@ class InventoryController extends BaseController {
                     $inv->LastStatusID = $hist->ID;
                     $inv->Missing = 1;
                     $inv->save();
+
+                    $allhist = History::where('SN', $inv->SerialNumber)->get();
+                    foreach ($allhist as $hist) {
+                        $hist->LastStatus = 4;
+                        $hist->save();
+                    }
                     $counter++;
                 }
             }
@@ -511,6 +541,12 @@ class InventoryController extends BaseController {
 
                                 $inv->LastStatusID = $lasthistoryID;
                                 $inv->save();
+
+                                $allhist = History::where('SN', $inv->SerialNumber)->get();
+                                foreach ($allhist as $hist) {
+                                    $hist->LastStatus = 1;
+                                    $hist->save();
+                                }
                             } else {
                                 if ($notavail == '') {
                                     $notavail .= $value->id;
@@ -595,7 +631,7 @@ class InventoryController extends BaseController {
         Session::put('FormSeries', Input::get('fs'));
         Session::put('FormSeriesInv', Input::get('fs'));
     }
-    
+
     static function postWarehouse() {
         Session::put('WarehouseInv', Input::get('wh'));
     }
@@ -1026,6 +1062,17 @@ class InventoryController extends BaseController {
     }
 
     static function inventoryDataBackup($filter) {
+//        $allinv = Inventory::all();
+//        foreach ($allinv as $inv) {
+//            $lastHist = History::where('ID', $inv->LastStatusID)->first();
+//            $lastHist = $lastHist->Status;
+//            $allhist = History::where('SN', $inv->SerialNumber)->get();
+//            foreach ($allhist as $hist) {
+//                $hist->LastStatus = $lastHist;
+//                $hist->save();
+//            }
+//        }
+//        dd('abc');
         $table = 'm_inventory';
         $filter = explode(',,,', $filter);
         $type = '> 0';
@@ -1043,60 +1090,115 @@ class InventoryController extends BaseController {
             $status = '= ' . $filter[1];
         }
         $primaryKey = 'm_inventory`.`SerialNumber';
-        $columns = array(
-            array('db' => 'SerialNumber', 'dt' => 0),
-            array(
-                'db' => 'Type',
-                'dt' => 1,
-                'formatter' => function( $d, $row ) {
-                    if ($d == 1) {
-                        return 'SIM 3G';
-                    } else if ($d == 2) {
-                        return 'eVoucher';
-                    } else if ($d == 3) {
-                        return 'phVoucher';
-                    } else {
-                        return 'SIM 4G';
+        if ($fs != '') {
+            $columns = array(
+                array('db' => 'SerialNumber', 'dt' => 0),
+                array(
+                    'db' => 'Type',
+                    'dt' => 1,
+                    'formatter' => function( $d, $row ) {
+                        if ($d == 1) {
+                            return 'SIM 3G';
+                        } else if ($d == 2) {
+                            return 'eVoucher';
+                        } else if ($d == 3) {
+                            return 'phVoucher';
+                        } else {
+                            return 'SIM 4G';
+                        }
                     }
-                }
-            ),
-            array(
-                'db' => 'Status',
-                'dt' => 2,
-                'formatter' => function( $d, $row ) {
-                    if ($d == 0) {
-                        return 'Ship In';
-                    } else if ($d == 1) {
-                        return 'Return';
-                    } else if ($d == 2) {
-                        return 'Ship Out';
-                    } else if ($d == 3) {
-                        return 'Warehouse';
-                    } else {
-                        return 'Consignment';
+                ),
+                array(
+                    'db' => 'LastStatus',
+                    'dt' => 2,
+                    'formatter' => function( $d, $row ) {
+                        if ($d == 0) {
+                            return 'Ship In';
+                        } else if ($d == 1) {
+                            return 'Return';
+                        } else if ($d == 2) {
+                            return 'Ship Out';
+                        } else if ($d == 3) {
+                            return 'Warehouse';
+                        } else if ($d == 4) {
+                            return 'Consignment';
+                        }
                     }
-                }
-            ),
-            array('db' => 'SubAgent', 'dt' => 3),
-            array('db' => 'ShipoutNumber', 'dt' => 4),
-            array('db' => 'LastWarehouse', 'dt' => 5),
-            array('db' => 'Date', 'dt' => 6),
-            array('db' => 'MSISDN', 'dt' => 7)
-        );
+                ),
+                array('db' => 'SubAgent', 'dt' => 3),
+                array('db' => 'ShipoutNumber', 'dt' => 4),
+                array('db' => 'LastWarehouse', 'dt' => 5),
+                array('db' => 'Date', 'dt' => 6),
+                array('db' => 'MSISDN', 'dt' => 7)
+            );
 
-        $sql_details = getConnection();
+            $sql_details = getConnection();
 
-        require('ssp.class.php');
+            require('ssp.class.php');
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
-        $extraCondition = "m_inventory.Type " . $type;
-        $extraCondition .= " && m_historymovement.Status " . $status;
-        $extraCondition .= " && m_historymovement.ShipoutNumber LIKE '%" . $fs . "%'";
-        if($wh != '')
-            $extraCondition .= " && m_historymovement.Warehouse LIKE '%" . $wh . "%'";
-        $join = ' INNER JOIN m_historymovement on m_historymovement.ID = m_inventory.LastStatusID';
+            $extraCondition = "m_inventory.Type " . $type;
+            $extraCondition .= " && m_historymovement.LastStatus " . $status;
+            if ($wh != '')
+                $extraCondition .= " && m_historymovement.Warehouse LIKE '%" . $wh . "%'";
 
-        echo json_encode(
-                SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
+            $extraCondition .= " && m_historymovement.ShipoutNumber LIKE '%" . $fs . "%'";
+            $join = ' INNER JOIN m_historymovement on m_historymovement.SN = m_inventory.SerialNumber';
+            echo json_encode(
+                    SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
+        }else {
+            $columns = array(
+                array('db' => 'SerialNumber', 'dt' => 0),
+                array(
+                    'db' => 'Type',
+                    'dt' => 1,
+                    'formatter' => function( $d, $row ) {
+                        if ($d == 1) {
+                            return 'SIM 3G';
+                        } else if ($d == 2) {
+                            return 'eVoucher';
+                        } else if ($d == 3) {
+                            return 'phVoucher';
+                        } else {
+                            return 'SIM 4G';
+                        }
+                    }
+                ),
+                array(
+                    'db' => 'Status',
+                    'dt' => 2,
+                    'formatter' => function( $d, $row ) {
+                        if ($d == 0) {
+                            return 'Ship In';
+                        } else if ($d == 1) {
+                            return 'Return';
+                        } else if ($d == 2) {
+                            return 'Ship Out';
+                        } else if ($d == 3) {
+                            return 'Warehouse';
+                        } else if ($d == 4) {
+                            return 'Consignment';
+                        }
+                    }
+                ),
+                array('db' => 'SubAgent', 'dt' => 3),
+                array('db' => 'ShipoutNumber', 'dt' => 4),
+                array('db' => 'LastWarehouse', 'dt' => 5),
+                array('db' => 'Date', 'dt' => 6),
+                array('db' => 'MSISDN', 'dt' => 7)
+            );
+
+            $sql_details = getConnection();
+
+            require('ssp.class.php');
+//        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
+            $extraCondition = "m_inventory.Type " . $type;
+            $extraCondition .= " && m_historymovement.Status " . $status;
+            if ($wh != '')
+                $extraCondition .= " && m_historymovement.Warehouse LIKE '%" . $wh . "%'";
+            $join = ' INNER JOIN m_historymovement on m_historymovement.ID = m_inventory.LastStatusID';
+            echo json_encode(
+                    SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
+        }
     }
 
     static function inventoryDataBackupOut($id) {
