@@ -55,30 +55,45 @@
                     <!--<a id="profile-trigger" href="{{--Route('showProfile')--}}" @if($page == 'profile') class="active-sidemenu margr20 fl300 cwhite" @else class="margr20 fl300 cwhite" @endif>Profile</a>-->
                     <a href="{{Route('showLogout')}}" class="fl300 cwhite">Logout</a>
                 </div>
-
-                <ul class="list-sidebar-menu">
-                    <li><a href="{{Route('showDashboard')}}" @if($page == 'dashboard') class="active-sidemenu" @endif >Dashboard</a></li>
-                </ul>
-                <ul class="list-sidebar-menu">
-                    <li><a href="{{Route('showInventory')}}" @if($page == 'inventory') class="active-sidemenu" @endif >View Inventory</a></li>
-                </ul>
-                <ul class="list-sidebar-menu">
-                    <li><a href="{{Route('showInsertInventory')}}" @if($page == 'insert inventory') class="active-sidemenu" @endif >Inventory Shipin</a></li>
-                </ul>
-                <ul class="list-sidebar-menu">
-                    <li><a href="{{Route('showInventoryShipout')}}" @if($page == 'inventory shipout') class="active-sidemenu" @endif >Inventory Shipout</a></li>
-                </ul>
-                <ul class="list-sidebar-menu">
-                    <li><a href="{{Route('showReturnInventory')}}" @if($page == 'inventory return') class="active-sidemenu" @endif >Inventory Return</a></li>
-                </ul>
-                <ul class="list-sidebar-menu">
-                    <li><a href="{{Route('showConsignment')}}" @if($page == 'consignment') class="active-sidemenu" @endif >Consignment</a></li>
-                </ul>
-                <ul class="list-sidebar-menu">
-                    <li><a href="{{Route('showWarehouseInventory')}}" @if($page == 'inventory warehouse') class="active-sidemenu" @endif >Move Warehouse</a></li>
-                </ul>
-                <ul class="list-sidebar-menu">
-                    <li><a href="{{Route('showChange')}}" @if($page == 'edit name') class="active-sidemenu" @endif >Edit Name</a></li>
+                <ul class="sidebar-menu tree" data-widget="tree">
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-area-chart"></i> <span>Reporting View</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu list-sidebar-menu" style="display: none;">
+                            <li><a href="{{Route('showDashboard')}}" @if($page == 'dashboard') class="active-sidemenu" @endif >Dashboard</a></li>
+                            <li><a href="{{Route('showInventory')}}" @if($page == 'inventory') class="active-sidemenu" @endif >View Inventory</a></li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-spinner"></i> <span>Main Process</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu list-sidebar-menu" style="display: none;">
+                            <li><a href="{{Route('showInsertInventory')}}" @if($page == 'insert inventory') class="active-sidemenu" @endif >Inventory Shipin</a></li>
+                            <li><a href="{{Route('showInventoryShipout')}}" @if($page == 'inventory shipout') class="active-sidemenu" @endif >Inventory Shipout</a></li>
+                            <li><a href="{{Route('showReturnInventory')}}" @if($page == 'inventory return') class="active-sidemenu" @endif >Inventory Return</a></li>
+                            <li><a href="{{Route('showConsignment')}}" @if($page == 'consignment') class="active-sidemenu" @endif >Consignment</a></li>
+                            <li><a href="{{Route('showWarehouseInventory')}}" @if($page == 'inventory warehouse') class="active-sidemenu" @endif >Move Warehouse</a></li>
+                        </ul>
+                    </li>
+                    <li class="treeview">
+                        <a href="#">
+                            <i class="fa fa-cog"></i> <span>Setting</span>
+                            <span class="pull-right-container">
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </span>
+                        </a>
+                        <ul class="treeview-menu list-sidebar-menu" style="display: none;">
+                            <li><a href="{{Route('showChange')}}" @if($page == 'edit name') class="active-sidemenu" @endif >Edit Name</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </section>

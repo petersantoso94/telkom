@@ -225,10 +225,7 @@ class InventoryController extends BaseController {
                             if ($value->serial_number != null) {
                                 $inv = Inventory::where('SerialNumber', $value->serial_number)->first();
                                 if ($inv == null) {
-                                    $type = 1;
-                                    if ($value->msisdn == null) {
-                                        $type = 2;
-                                    }
+                                    $type = $value->type;
                                     $insertInventory = ['SerialNumber' => $value->serial_number, 'MSISDN' => $value->msisdn, 'LastWarehouse' => $wh,
                                         'Type' => $type, 'Remark' => $remark, 'userRecord' => Auth::user()->ID];
                                     $counter++;
@@ -487,6 +484,7 @@ class InventoryController extends BaseController {
             $successins = '';
 //                    $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Asia/Taipei'));
             $date = Input::get('eventDate');
+            $fn = Input::get('formSN');
             $remark = Input::get('remark');
             if (!empty($data) && $data->count()) {
                 foreach ($data as $key => $value) {
@@ -499,14 +497,14 @@ class InventoryController extends BaseController {
                             $hist = History::where('ID', $lastmovement)->first();
                             if ($hist->Status == 2) {
                                 $counter++;
-                                if ($notavail == '') {
+                                if ($successins == '') {
                                     $successins .= $value->id;
                                 } else {
                                     $successins .= $value->id . ', ';
                                 }
 
                                 //can return, update
-                                $insertHistory = ['SN' => $value->id, 'Date' => $date, 'Remark' => $remark, 'Status' => 1];
+                                $insertHistory = ['SN' => $value->id, 'Date' => $date, 'Remark' => $remark, 'Status' => 1, 'ShipoutNumber' => $fn];
                                 if (!empty($insertHistory)) {
                                     $lasthistoryID = DB::table('m_historymovement')->insertGetId($insertHistory);
                                 }
@@ -576,6 +574,7 @@ class InventoryController extends BaseController {
 
     public function showInventory() {
         Session::forget('FormSeriesInv');
+        Session::forget('WarehouseInv');
         return View::make('inventory')->withPage('inventory');
     }
 
@@ -595,6 +594,10 @@ class InventoryController extends BaseController {
     static function postFormSeries() {
         Session::put('FormSeries', Input::get('fs'));
         Session::put('FormSeriesInv', Input::get('fs'));
+    }
+    
+    static function postWarehouse() {
+        Session::put('WarehouseInv', Input::get('wh'));
     }
 
     static function exportExcel($filter) {
@@ -1002,8 +1005,10 @@ class InventoryController extends BaseController {
     }
 
     static function getFS() {
-        $lasthist = DB::table('m_historymovement')->select('ShipoutNumber')->distinct()->get();
+        $lasthist['FS'] = DB::table('m_historymovement')->select('ShipoutNumber')->distinct()->get();
+        $lasthist['WH'] = DB::table('m_historymovement')->select('Warehouse')->distinct()->get();
         Session::forget('FormSeriesInv');
+        Session::forget('WarehouseInv');
         return $lasthist;
     }
 
@@ -1023,16 +1028,19 @@ class InventoryController extends BaseController {
     static function inventoryDataBackup($filter) {
         $table = 'm_inventory';
         $filter = explode(',,,', $filter);
-        $type = '>0';
-        $status = '>=0';
+        $type = '> 0';
+        $status = '>= 0';
         $fs = '';
+        $wh = '';
         if (Session::has('FormSeriesInv'))
             $fs = Session::get('FormSeriesInv');
+        if (Session::has('WarehouseInv'))
+            $wh = Session::get('WarehouseInv');
         if ($filter[0] != 'all') {
-            $type = '=' . $filter[0];
+            $type = '= ' . $filter[0];
         }
         if (isset($filter[1])) {
-            $status = '=' . $filter[1];
+            $status = '= ' . $filter[1];
         }
         $primaryKey = 'm_inventory`.`SerialNumber';
         $columns = array(
@@ -1083,6 +1091,8 @@ class InventoryController extends BaseController {
         $extraCondition = "m_inventory.Type " . $type;
         $extraCondition .= " && m_historymovement.Status " . $status;
         $extraCondition .= " && m_historymovement.ShipoutNumber LIKE '%" . $fs . "%'";
+        if($wh != '')
+            $extraCondition .= " && m_historymovement.Warehouse LIKE '%" . $wh . "%'";
         $join = ' INNER JOIN m_historymovement on m_historymovement.ID = m_inventory.LastStatusID';
 
         echo json_encode(

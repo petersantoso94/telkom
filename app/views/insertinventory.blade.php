@@ -50,9 +50,10 @@
             <div class="col-xs-18">
                 Notes:<br>
                 1. File format must be in xlsx, xls (not CSV) <br>
-                2. Header must be these strings ( 'NUMBER_CHKSUM' , 'SERIAL_NUMBER' , 'MSISDN' ), 
+                2. Header must be these strings ( 'SERIAL_NUMBER' , 'MSISDN', 'TYPE' ), 
                 UPPER or lower case doesn't matter <br>
-                3. For SIM card, MSISDN is required. No MSISDN will be counted as voucher.
+                3. For SIM card, MSISDN is required. <br>
+                4. TYPE column's value: 1->SIM 3G, 2->e-Voucher, 3->ph-Voucher, 4->SIM 4G
             </div>
         </div>
         <div class="row margtop20">

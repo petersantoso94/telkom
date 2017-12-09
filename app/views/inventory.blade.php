@@ -33,6 +33,19 @@
             </select>
         </div>
         <div class="col-xs-4">
+            Warehouse: 
+            <select data-placeholder="Choose a warehouse..." class="chosen-select" style="width: 100%" id="wh">
+                <option></option>
+                @foreach(DB::table('m_historymovement')->select('Warehouse')->distinct()->get() as $sn)
+                @if($sn->Warehouse != '')
+                <option value="{{$sn->Warehouse}}">
+                    {{$sn->Warehouse}}
+                </option>
+                @endif
+                @endforeach
+            </select>
+        </div>
+        <div class="col-xs-4">
             Form Series: 
             <select data-placeholder="Choose a form series number..." class="chosen-select" style="width: 100%" name="seriesNumber" id="series">
                 <option></option>
@@ -81,6 +94,7 @@
                 var exportExcelLink = '<?php echo Route('exportExcel') ?>';
                 var ajax1 = '<?php echo Route('getFS') ?>';
                 var postFS = '<?php echo Route('postFormSeries') ?>';
+                var postWH = '<?php echo Route('postWarehouse') ?>';
 
                 table = $('#example').dataTable({
                     "draw": 10,
@@ -104,6 +118,7 @@
 
                 var drawTable = function () {
                     inventoryDataBackup = '<?php echo Route('inventoryDataBackup') ?>' + concat;
+                    console.log(inventoryDataBackup);
                     if ($.fn.dataTable.isDataTable('#example')) {
                         table.fnDestroy();
                     }
@@ -125,6 +140,16 @@
                         drawTable();
                     });
                 });
+                $('#wh').on('change', function (e) {
+                    var temp3 = document.getElementById('wh').value;
+                    if (!temp3)
+                        temp3 = '';
+                    $.post(postWH, {wh: temp3}, function (data) {
+
+                    }).done(function () {
+                        drawTable();
+                    });
+                });
                 $('#invtype').on('change', function (e) {
                     var temp_type = $(this).val();
                     if (temp_type == 'all') {
@@ -139,10 +164,23 @@
                         $('#series')
                                 .find('option')
                                 .remove();
+                        $('#wh')
+                                .find('option')
+                                .remove();
                         $.get(ajax1, function (data) {
                             $("#series").append('<option></option>');
+                            $("#wh").append('<option></option>');
                             $.each(data, function (key, val) {
-                                $("#series").append('<option value="' + val.ShipoutNumber + '">' + val.ShipoutNumber + '</option>');
+                                if (key == 'FS') {
+                                    $.each(val, function (key, val) {
+                                        $("#series").append('<option value="' + val.ShipoutNumber + '">' + val.ShipoutNumber + '</option>');
+                                    });
+                                } else {
+                                    $.each(val, function (key, val) {
+                                        if(val.Warehouse != null)
+                                            $("#wh").append('<option value="' + val.Warehouse + '">' + val.Warehouse + '</option>');
+                                    });
+                                }
                             });
                         }).done(function () {
                             $(".chosen-select").chosen()
