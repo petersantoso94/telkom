@@ -37,7 +37,7 @@
         <div class="row margtop20">
             <div class="col-xs-8">
                 <div class="form-group">
-                    <div class="col-md-9">
+                    <div class="col-md-12">
                         <input type="file" name="sample_file" class="vis-hide" style="height:0px; overflow: hidden" id="input-pict" data-validation="required" required>
                         <button type="button" class="button btndef btn-mini no-shadow" id="btn-insert-image"><span class="glyphicon glyphicon-picture cgrey"></span> insert file</button>
                         <span id='pict-name'></span>
@@ -72,7 +72,7 @@
         <div class="row margtop20">
             <div class="col-xs-8">
                 <div class="form-group">
-                    <div class="col-md-9">
+                    <div class="col-md-12">
                         <input type="file" name="sample_file" class="vis-hide" style="height:0px; overflow: hidden" id="input-pict2" data-validation="required" required>
                         <button type="button" class="button btndef btn-mini no-shadow" id="btn-insert-image2"><span class="glyphicon glyphicon-picture cgrey"></span> insert file</button>
                         <span id='pict-name2'></span>
@@ -107,7 +107,7 @@
         <div class="row margtop20">
             <div class="col-xs-8">
                 <div class="form-group">
-                    <div class="col-md-9">
+                    <div class="col-md-12">
                         <input type="file" name="sample_file" class="vis-hide" style="height:0px; overflow: hidden" id="input-pict3" data-validation="required" required>
                         <button type="button" class="button btndef btn-mini no-shadow" id="btn-insert-image3"><span class="glyphicon glyphicon-picture cgrey"></span> insert file</button>
                         <span id='pict-name3'></span>

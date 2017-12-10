@@ -681,8 +681,6 @@ class InventoryController extends BaseController {
                                             $inv->ApfDate = $value->apf_returned_date;
                                             $inv->save();
                                         }
-                                    } else {
-                                        break;
                                     }
                                 }
                                 $counter++;
@@ -710,11 +708,8 @@ class InventoryController extends BaseController {
                                 if ($msisdn != '' && $msisdn != null) {
                                     $inv = Inventory::where('MSISDN', $msisdn)->first();
                                     if ($inv != null) {
-                                        $inv->ValidDate = $value->prepaid_card_valid_date;
                                         $inv->ActivationDate = $value->activation_date;
                                         $inv->save();
-                                    } else {
-                                        break;
                                     }
                                 }
                                 $counter++;
