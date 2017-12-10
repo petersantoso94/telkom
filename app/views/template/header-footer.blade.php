@@ -92,6 +92,7 @@
                         </a>
                         <ul class="treeview-menu list-sidebar-menu" style="display: none;">
                             <li><a href="{{Route('showChange')}}" @if($page == 'edit name') class="active-sidemenu" @endif >Edit Name</a></li>
+                            <li><a href="{{Route('showInsertReporting')}}" @if($page == 'insert reporting') class="active-sidemenu" @endif >Insert Reporting</a></li>
                         </ul>
                     </li>
                 </ul>

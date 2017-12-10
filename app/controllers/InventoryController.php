@@ -275,13 +275,18 @@ class InventoryController extends BaseController {
 
         //monthly
         //SIM
-        $total_shipout_this_year = DB::table('m_inventory')
-                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                ->where('m_historymovement.Status', '2')
-                ->where('m_inventory.Missing', '0')
-                ->whereIn('m_inventory.Type', array(1, 4))
-                ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '%')
-                ->count();
+        if (Session::has('sim_month')) {
+            $total_shipout_this_year = Session::get('sim_month');
+        } else {
+            $total_shipout_this_year = DB::table('m_inventory')
+                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                    ->where('m_historymovement.Status', '2')
+                    ->where('m_inventory.Missing', '0')
+                    ->whereIn('m_inventory.Type', array(1, 4))
+                    ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '%')
+                    ->count('m_inventory.SerialNumber');
+            Session::put('sim_month', $total_shipout_this_year);
+        }
         $last_history_month = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                         ->where('m_historymovement.Status', '2')
@@ -294,13 +299,18 @@ class InventoryController extends BaseController {
             $temp_count1 = (explode('-', $last_history_month->Date)[1]);
         $dataReport['avg_monthly_sim'] = (int) ($total_shipout_this_year / $temp_count1);
         //VOC
-        $total_shipout_this_year = DB::table('m_inventory')
-                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                ->where('m_historymovement.Status', '2')
-                ->where('m_inventory.Missing', '0')
-                ->whereIn('m_inventory.Type', array(2, 3))
-                ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '%')
-                ->count();
+        if (Session::has('voc_month')) {
+            $total_shipout_this_year = Session::get('voc_month');
+        } else {
+            $total_shipout_this_year = DB::table('m_inventory')
+                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                    ->where('m_historymovement.Status', '2')
+                    ->where('m_inventory.Missing', '0')
+                    ->whereIn('m_inventory.Type', array(2, 3))
+                    ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '%')
+                    ->count('m_inventory.SerialNumber');
+            Session::put('voc_month', $total_shipout_this_year);
+        }
         $last_history_month = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                         ->where('m_historymovement.Status', '2')
@@ -315,13 +325,18 @@ class InventoryController extends BaseController {
 
         //weekly
         //SIM
-        $total_shipout_this_month = DB::table('m_inventory')
-                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                ->where('m_historymovement.Status', '2')
-                ->where('m_inventory.Missing', '0')
-                ->whereIn('m_inventory.Type', array(1, 4))
-                ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '-' . $today['mon'] . '%')
-                ->count();
+        if (Session::has('sim_week')) {
+            $total_shipout_this_month = Session::get('sim_week');
+        } else {
+            $total_shipout_this_month = DB::table('m_inventory')
+                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                    ->where('m_historymovement.Status', '2')
+                    ->where('m_inventory.Missing', '0')
+                    ->whereIn('m_inventory.Type', array(1, 4))
+                    ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '-' . $today['mon'] . '%')
+                    ->count('m_inventory.SerialNumber');
+            Session::put('sim_week', $total_shipout_this_month);
+        }
         $last_history_week = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                         ->where('m_historymovement.Status', '2')
@@ -334,13 +349,18 @@ class InventoryController extends BaseController {
             $week_number = (int) ((explode('-', $last_history_week->Date)[2]) / 7);
         $dataReport['avg_weekly_sim'] = (int) ($total_shipout_this_month / $week_number);
         //voc
-        $total_shipout_this_month = DB::table('m_inventory')
-                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                ->where('m_historymovement.Status', '2')
-                ->where('m_inventory.Missing', '0')
-                ->whereIn('m_inventory.Type', array(2, 3))
-                ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '-' . $today['mon'] . '%')
-                ->count();
+        if (Session::has('voc_week')) {
+            $total_shipout_this_month = Session::get('voc_week');
+        } else {
+            $total_shipout_this_month = DB::table('m_inventory')
+                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                    ->where('m_historymovement.Status', '2')
+                    ->where('m_inventory.Missing', '0')
+                    ->whereIn('m_inventory.Type', array(2, 3))
+                    ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '-' . $today['mon'] . '%')
+                    ->count('m_inventory.SerialNumber');
+            Session::put('voc_week', $total_shipout_this_month);
+        }
         $last_history_week = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                         ->where('m_historymovement.Status', '2')
@@ -606,6 +626,107 @@ class InventoryController extends BaseController {
             }
         }
         return View::make('change')->withPage('edit name');
+    }
+
+    public function showInsertReporting() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (Input::get('jenis') == 'ivr') {
+                $input = Input::file('sample_file');
+                if ($input != '') {
+                    if (Input::hasFile('sample_file')) {
+                        $destination = base_path() . '/uploaded_file/';
+                        $extention = Input::file('sample_file')->getClientOriginalExtension();
+                        $filename = 'temp.' . $extention;
+                        Input::file('sample_file')->move($destination, $filename);
+                        $data = Excel::load(base_path() . '/uploaded_file/' . 'temp.' . $extention, function($reader) {
+                                    
+                                })->get();
+                        $counter = 0;
+                        if (!empty($data) && $data->count()) {
+                            foreach ($data as $key => $value) {
+                                $msisdn = $value->new_msisdn;
+                                if ($msisdn != '' && $msisdn != null) {
+                                    $ivr = new Ivr();
+                                    $ivr->MSISDN_ = $msisdn;
+                                    $ivr->Date = $value->ivr_purchase_date;
+                                    $ivr->PurchaseAmount = $value->ivr_purchase_amount;
+                                    $ivr->save();
+                                }
+                                $counter++;
+                            }
+                        }
+                        return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumber($counter);
+                    }
+                }
+                return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
+            } else if (Input::get('jenis') == 'apf') {
+                $input = Input::file('sample_file');
+                if ($input != '') {
+                    if (Input::hasFile('sample_file')) {
+                        $destination = base_path() . '/uploaded_file/';
+                        $extention = Input::file('sample_file')->getClientOriginalExtension();
+                        $filename = 'temp.' . $extention;
+                        Input::file('sample_file')->move($destination, $filename);
+                        $data = Excel::load(base_path() . '/uploaded_file/' . 'temp.' . $extention, function($reader) {
+                                    
+                                })->get();
+                        $counter = 0;
+                        if (!empty($data) && $data->count()) {
+                            foreach ($data as $key => $value) {
+                                $msisdn = $value->msisdn;
+                                if ($msisdn != '' && $msisdn != null) {
+                                    $inv = Inventory::where('MSISDN', $msisdn)->first();
+                                    if ($inv != null) {
+                                        if ($inv->ApfDate == null || $inv->ApfDate == '') {
+                                            $inv->ApfDate = $value->apf_returned_date;
+                                            $inv->save();
+                                        }
+                                    } else {
+                                        break;
+                                    }
+                                }
+                                $counter++;
+                            }
+                        }
+                        return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberapf($counter);
+                    }
+                }
+                return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
+            } else if (Input::get('jenis') == 'act') {
+                $input = Input::file('sample_file');
+                if ($input != '') {
+                    if (Input::hasFile('sample_file')) {
+                        $destination = base_path() . '/uploaded_file/';
+                        $extention = Input::file('sample_file')->getClientOriginalExtension();
+                        $filename = 'temp.' . $extention;
+                        Input::file('sample_file')->move($destination, $filename);
+                        $data = Excel::load(base_path() . '/uploaded_file/' . 'temp.' . $extention, function($reader) {
+                                    
+                                })->get();
+                        $counter = 0;
+                        if (!empty($data) && $data->count()) {
+                            foreach ($data as $key => $value) {
+                                $msisdn = $value->new_msisdn;
+                                if ($msisdn != '' && $msisdn != null) {
+                                    $inv = Inventory::where('MSISDN', $msisdn)->first();
+                                    if ($inv != null) {
+                                        $inv->ValidDate = $value->prepaid_card_valid_date;
+                                        $inv->ActivationDate = $value->activation_date;
+                                        $inv->save();
+                                    } else {
+                                        break;
+                                    }
+                                }
+                                $counter++;
+                            }
+                        }
+                        return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberac($counter);
+                    }
+                }
+                return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
+            }
+        }
+        return View::make('insertreporting')->withPage('insert reporting');
     }
 
     public function showInventory() {

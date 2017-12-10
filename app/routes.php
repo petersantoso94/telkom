@@ -22,6 +22,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::any('showInventoryShipout', array('as' => 'showInventoryShipout', 'uses' => 'InventoryController@showInventoryShipout'));
     Route::any('showWarehouseInventory', array('as' => 'showWarehouseInventory', 'uses' => 'InventoryController@showWarehouseInventory'));
     Route::any('showChange', array('as' => 'showChange', 'uses' => 'InventoryController@showChange'));
+    Route::any('showInsertReporting', array('as' => 'showInsertReporting', 'uses' => 'InventoryController@showInsertReporting'));
     Route::get('showLogout', array('as' => 'showLogout', 'uses' => 'LoginController@showLogout'));
 
     //ajax
