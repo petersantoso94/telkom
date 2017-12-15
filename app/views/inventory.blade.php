@@ -33,30 +33,39 @@
             </select>
         </div>
         <div class="col-xs-4">
-            Warehouse: 
-            <select data-placeholder="Choose a warehouse..." class="chosen-select" style="width: 100%" id="wh">
-                <option></option>
-                @foreach(DB::table('m_historymovement')->select('Warehouse')->distinct()->get() as $sn)
-                @if($sn->Warehouse != '')
-                <option value="{{$sn->Warehouse}}">
-                    {{$sn->Warehouse}}
-                </option>
-                @endif
-                @endforeach
-            </select>
+            <div class="row">
+                Warehouse: 
+                <select data-placeholder="Choose a warehouse..." class="chosen-select" style="width: 100%" id="wh">
+                    <option></option>
+                    @foreach(DB::table('m_historymovement')->select('Warehouse')->distinct()->get() as $sn)
+                    @if($sn->Warehouse != '')
+                    <option value="{{$sn->Warehouse}}">
+                        {{$sn->Warehouse}}
+                    </option>
+                    @endif
+                    @endforeach
+                </select>
+            </div>
+            <div class="row">
+                Form Series: 
+                <select data-placeholder="Choose a form series number..." class="chosen-select" style="width: 100%" name="seriesNumber" id="series">
+                    <option></option>
+                    @foreach(DB::table('m_historymovement')->select('ShipoutNumber')->distinct()->get() as $sn)
+                    @if($sn->ShipoutNumber != '')
+                    <option value="{{$sn->ShipoutNumber}}">
+                        {{$sn->ShipoutNumber}}
+                    </option>
+                    @endif
+                    @endforeach
+                </select>
+            </div>
         </div>
-        <div class="col-xs-4">
-            Form Series: 
-            <select data-placeholder="Choose a form series number..." class="chosen-select" style="width: 100%" name="seriesNumber" id="series">
-                <option></option>
-                @foreach(DB::table('m_historymovement')->select('ShipoutNumber')->distinct()->get() as $sn)
-                @if($sn->ShipoutNumber != '')
-                <option value="{{$sn->ShipoutNumber}}">
-                    {{$sn->ShipoutNumber}}
-                </option>
-                @endif
-                @endforeach
-            </select>
+        <div class="col-xs-4" style="margin-left: 10px;">
+            <div class="row">
+                <label style="margin-top: 7px;">Serial number: </label>
+                <input type="text" id='sn' data-validation="required" required>
+                <button type="button" class="button" id="btn_setsn" style="background-color: #424242; color: white;">Set</button>
+            </div>
         </div>
         <div class="col-xs-3" style="padding-top: 10px;">
             <button type="button" onclick="exportExcel(this)"><span class="glyphicon glyphicon-export"></span></button> Export excel
@@ -93,9 +102,44 @@
                 var concat = '/all';
                 var exportExcelLink = '<?php echo Route('exportExcel') ?>';
                 var ajax1 = '<?php echo Route('getFS') ?>';
+                var ajax2 = '<?php echo Route('postFS') ?>';
                 var postFS = '<?php echo Route('postFormSeries') ?>';
                 var postWH = '<?php echo Route('postWarehouse') ?>';
 
+                $('#btn_setsn').on('click', function () {
+                    var sn = document.getElementById('sn').value;
+                    if (sn != '') {
+                        $(".chosen-select").chosen("destroy");
+                        $('#series')
+                                .find('option')
+                                .remove();
+                        $('#wh')
+                                .find('option')
+                                .remove();
+                        $.post(ajax2, {sns: sn}, function (data) {
+                            $("#series").append('<option></option>');
+                            $("#wh").append('<option></option>');
+                                console.log(data);
+                            $.each(data, function (key, val) {
+                                if (key == 'FS') {
+                                    $.each(val, function (key, val) {
+                                        $("#series").append('<option value="' + val.ShipoutNumber + '">' + val.ShipoutNumber + '</option>');
+                                    });
+                                } else {
+                                    $.each(val, function (key, val) {
+                                        if (val.Warehouse != null)
+                                            $("#wh").append('<option value="' + val.Warehouse + '">' + val.Warehouse + '</option>');
+                                    });
+                                }
+                            });
+                        }).done(function () {
+                            $(".chosen-select").chosen()
+                            $(this).trigger("chosen:updated");
+                        });
+                    }else{
+                        alert('Please insert serial number first!')
+                    }
+                });
                 table = $('#example').dataTable({
                     "draw": 10,
                     "processing": true,
@@ -177,7 +221,7 @@
                                     });
                                 } else {
                                     $.each(val, function (key, val) {
-                                        if(val.Warehouse != null)
+                                        if (val.Warehouse != null)
                                             $("#wh").append('<option value="' + val.Warehouse + '">' + val.Warehouse + '</option>');
                                     });
                                 }

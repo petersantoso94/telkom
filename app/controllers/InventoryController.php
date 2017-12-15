@@ -758,7 +758,8 @@ class InventoryController extends BaseController {
         $writer->openToFile($filePath);
         $myArr = array("SERIAL NUMBER", "MSISDN", "TYPE", "LAST STATUS", "SHIPOUT TO", "SUBAGENT", "FORM SERIES", "LAST WAREHOUSE", "SHIPOUT DATE", "SHIPOUT PRICE", "SHIPIN DATE", "SHIPIN PRICE", "REMARK");
         $writer->addRow($myArr); // add a row at a time
-
+        
+        $invs = '';
         $filter = explode(',,,', $filter);
         $typesym = '>=';
         $type = '0';
@@ -782,22 +783,26 @@ class InventoryController extends BaseController {
             $invs = DB::table('m_inventory')
                     ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                     ->where('m_inventory.Type', $typesym, $type)
-                    ->where('m_historymovement.Status', $statussym, $status)
-                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%');
+                    ->where('m_historymovement.Status', $statussym, $status)->get();
             if ($wh != '') {
-                $invs->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%');
+                $invs = DB::table('m_inventory')
+                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                    ->where('m_inventory.Type', $typesym, $type)->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%')
+                    ->where('m_historymovement.Status', $statussym, $status)->get();
             }
-            $invs = $invs->get();
-        } else {
+        } else if($fs != ''){
             $invs = DB::table('m_inventory')
                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                     ->where('m_inventory.Type', $typesym, $type)
-                    ->where('m_historymovement.Status', $statussym, $status)
-                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%');
+                    ->where('m_historymovement.LastStatus', $statussym, $status)
+                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->get();
             if ($wh != '') {
-                $invs->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%');
+                $invs = DB::table('m_inventory')
+                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                    ->where('m_inventory.Type', $typesym, $type)
+                    ->where('m_historymovement.Status', $statussym, $status)->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%')
+                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->get();
             }
-            $invs = $invs->get();
         }
         foreach ($invs as $inv) {
             $type = 'SIM 3G';
@@ -841,7 +846,7 @@ class InventoryController extends BaseController {
                     $tempcount++;
                 }
             }
-            if($shipout != ''){
+            if ($shipout != '') {
                 $agent = $shipout[0];
             }
             $myArr = array($inv->SerialNumber, $inv->MSISDN, $type, $status, $agent, $subagent, $hist->ShipoutNumber, $inv->LastWarehouse, $shipoutdt, $shipoutprice, $shipindt, $inv->Price, $hist->Remark);
@@ -880,13 +885,12 @@ class InventoryController extends BaseController {
             $invs = DB::table('m_inventory')
                     ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                     ->where('m_inventory.Type', $typesym, $type)
-                    ->where('m_historymovement.Status', $statussym, $status)
-                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%');
+                    ->where('m_historymovement.Status', $statussym, $status);
             if ($wh != '') {
                 $invs->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%');
             }
             $invs = $invs->get();
-        } else {
+        } else if($fs != ''){
             $invs = DB::table('m_inventory')
                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                     ->where('m_inventory.Type', $typesym, $type)
@@ -1272,6 +1276,15 @@ class InventoryController extends BaseController {
 
     static function getFS() {
         $lasthist['FS'] = DB::table('m_historymovement')->select('ShipoutNumber')->distinct()->get();
+        $lasthist['WH'] = DB::table('m_historymovement')->select('Warehouse')->distinct()->get();
+        Session::forget('FormSeriesInv');
+        Session::forget('WarehouseInv');
+        return $lasthist;
+    }
+
+    static function postFS() {
+        $sns = Input::get('sns');
+        $lasthist['FS'] = DB::table('m_historymovement')->where('SN', 'LIKE', '%' . $sns . '%')->select('ShipoutNumber')->distinct()->get();
         $lasthist['WH'] = DB::table('m_historymovement')->select('Warehouse')->distinct()->get();
         Session::forget('FormSeriesInv');
         Session::forget('WarehouseInv');
