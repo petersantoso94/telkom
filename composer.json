@@ -7,7 +7,8 @@
 	"require": {
 		"laravel/framework": "4.2.*",
                 "maatwebsite/excel": "1.3.5",
-                "thujohn/pdf": "dev-master"
+                "thujohn/pdf": "dev-master",
+		"box/spout": "^2.7"
 	},
 	"autoload": {
 		"classmap": [

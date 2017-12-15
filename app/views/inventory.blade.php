@@ -112,7 +112,7 @@
 
                     }).done(function () {
                         document.getElementById("loading-animation").style.display = "none";
-                        window.location.href = '<?php echo url() . '/telkom_inventory.xls' ?>';
+                        window.location.href = '<?php echo url() . '/publictest.xlsx' ?>';
                     });
                 };
 

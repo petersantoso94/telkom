@@ -753,6 +753,104 @@ class InventoryController extends BaseController {
     }
 
     static function exportExcel($filter) {
+        $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+        $filePath = public_path() . "test.xlsx";
+        $writer->openToFile($filePath);
+        $myArr = array("SERIAL NUMBER", "MSISDN", "TYPE", "LAST STATUS", "SHIPOUT TO", "SUBAGENT", "FORM SERIES", "LAST WAREHOUSE", "SHIPOUT DATE", "SHIPOUT PRICE", "SHIPIN DATE", "SHIPIN PRICE", "REMARK");
+        $writer->addRow($myArr); // add a row at a time
+
+        $filter = explode(',,,', $filter);
+        $typesym = '>=';
+        $type = '0';
+        $statussym = '>=';
+        $status = '0';
+        $fs = '';
+        $wh = '';
+        if (Session::has('WarehouseInv'))
+            $wh = Session::get('WarehouseInv');
+        if (Session::has('FormSeriesInv'))
+            $fs = Session::get('FormSeriesInv');
+        if ($filter[0] != 'all') {
+            $typesym = '=';
+            $type = $filter[0];
+        }
+        if (isset($filter[1])) {
+            $statussym = '=';
+            $status = $filter[1];
+        }
+        if ($fs == '') {
+            $invs = DB::table('m_inventory')
+                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                    ->where('m_inventory.Type', $typesym, $type)
+                    ->where('m_historymovement.Status', $statussym, $status)
+                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%');
+            if ($wh != '') {
+                $invs->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%');
+            }
+            $invs = $invs->get();
+        } else {
+            $invs = DB::table('m_inventory')
+                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                    ->where('m_inventory.Type', $typesym, $type)
+                    ->where('m_historymovement.Status', $statussym, $status)
+                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%');
+            if ($wh != '') {
+                $invs->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%');
+            }
+            $invs = $invs->get();
+        }
+        foreach ($invs as $inv) {
+            $type = 'SIM 3G';
+            if ($inv->Type == 2) {
+                $type = 'eVoucher';
+            } else if ($inv->Type == 3) {
+                $type = 'phVoucher';
+            } else if ($inv->Type == 4) {
+                $type = 'SIM 4G';
+            }
+
+            $hist = History::where('ID', $inv->LastStatusID)->orderBy('ID', 'DESC')->first();
+            $status = 'Available';
+            $cons = 'no';
+            $shipoutdt = '';
+            $shipoutprice = '0';
+            $histshipin = History::where('SN', $inv->SerialNumber)->where('Status', '0')->first();
+            $shipindt = $histshipin->Date;
+            if ($hist->Status == 1) {
+                $status = 'Return';
+            } else if ($hist->Status == 2) {
+                $status = 'Shipout';
+                $shipoutdt = $hist->Date;
+                $shipoutprice = $hist->Price;
+            } else if ($hist->Status == 3) {
+                $status = 'Warehouse';
+            } else if ($hist->Status == 4) {
+                $status = 'Consignment';
+            }
+
+            $shipout = '';
+            $agent = '';
+            $subagent = '';
+            $tempcount = 0;
+            if ($hist->SubAgent != '') {
+                $shipout = explode(' ', $hist->SubAgent);
+                foreach ($shipout as $word) {
+                    if ($tempcount > 0) {
+                        $subagent .= $word . ' ';
+                    }
+                    $tempcount++;
+                }
+            }
+            if($shipout != ''){
+                $agent = $shipout[0];
+            }
+            $myArr = array($inv->SerialNumber, $inv->MSISDN, $type, $status, $agent, $subagent, $hist->ShipoutNumber, $inv->LastWarehouse, $shipoutdt, $shipoutprice, $shipindt, $inv->Price, $hist->Remark);
+            $writer->addRow($myArr);
+        }
+        $writer->close();
+    }
+
+    static function exportExcel2($filter) {
         $excel = new ExcelWriter("telkom_inventory.xls");
         if ($excel == false)
             echo $excel->error;
@@ -765,6 +863,9 @@ class InventoryController extends BaseController {
         $statussym = '>=';
         $status = '0';
         $fs = '';
+        $wh = '';
+        if (Session::has('WarehouseInv'))
+            $wh = Session::get('WarehouseInv');
         if (Session::has('FormSeriesInv'))
             $fs = Session::get('FormSeriesInv');
         if ($filter[0] != 'all') {
@@ -775,14 +876,27 @@ class InventoryController extends BaseController {
             $statussym = '=';
             $status = $filter[1];
         }
-
-        $invs = DB::table('m_inventory')
-                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                ->where('m_inventory.Type', $typesym, $type)
-                ->where('m_historymovement.Status', $statussym, $status)
-                ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')
-                ->get();
-
+        if ($fs == '') {
+            $invs = DB::table('m_inventory')
+                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                    ->where('m_inventory.Type', $typesym, $type)
+                    ->where('m_historymovement.Status', $statussym, $status)
+                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%');
+            if ($wh != '') {
+                $invs->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%');
+            }
+            $invs = $invs->get();
+        } else {
+            $invs = DB::table('m_inventory')
+                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                    ->where('m_inventory.Type', $typesym, $type)
+                    ->where('m_historymovement.Status', $statussym, $status)
+                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%');
+            if ($wh != '') {
+                $invs->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%');
+            }
+            $invs = $invs->get();
+        }
         foreach ($invs as $inv) {
             $type = 'SIM 3G';
             if ($inv->Type == 2) {
@@ -1255,7 +1369,7 @@ class InventoryController extends BaseController {
             $extraCondition = "m_inventory.Type " . $type;
             $extraCondition .= " && m_historymovement.LastStatus " . $status;
             if ($wh != '')
-                $extraCondition .= " && m_historymovement.Warehouse LIKE '%" . $wh . "%'";
+                $extraCondition .= " && m_inventory.LastWarehouse LIKE '%" . $wh . "%'";
 
             $extraCondition .= " && m_historymovement.ShipoutNumber LIKE '%" . $fs . "%'";
             $join = ' INNER JOIN m_historymovement on m_historymovement.SN = m_inventory.SerialNumber';
@@ -1310,7 +1424,7 @@ class InventoryController extends BaseController {
             $extraCondition = "m_inventory.Type " . $type;
             $extraCondition .= " && m_historymovement.Status " . $status;
             if ($wh != '')
-                $extraCondition .= " && m_historymovement.Warehouse LIKE '%" . $wh . "%'";
+                $extraCondition .= " && m_inventory.LastWarehouse LIKE '%" . $wh . "%'";
             $join = ' INNER JOIN m_historymovement on m_historymovement.ID = m_inventory.LastStatusID';
             echo json_encode(
                     SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
