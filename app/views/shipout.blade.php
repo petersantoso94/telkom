@@ -176,7 +176,7 @@
                     <label class="fw300" style="margin-top: 7px;">Shipout Price (NT$): </label>
                 </div>
                 <div class="col-sm-5">
-                    <input type="text" class="input-stretch" name="price" id="soprice">
+                    <input type="text" class="input-stretch" name="price" id="soprice" value="0">
                 </div>
             </div>
         </div>

@@ -638,23 +638,34 @@ class InventoryController extends BaseController {
                         $extention = Input::file('sample_file')->getClientOriginalExtension();
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
-                        $data = Excel::load(base_path() . '/uploaded_file/' . 'temp.' . $extention, function($reader) {
-                                    
-                                })->get();
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                        $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+//$reader = ReaderFactory::create(Type::CSV); // for CSV files
+//$reader = ReaderFactory::create(Type::ODS); // for ODS files
+
+                        $reader->open($filePath);
                         $counter = 0;
-                        if (!empty($data) && $data->count()) {
-                            foreach ($data as $key => $value) {
-                                $msisdn = $value->new_msisdn;
-                                if ($msisdn != '' && $msisdn != null) {
-                                    $ivr = new Ivr();
-                                    $ivr->MSISDN_ = $msisdn;
-                                    $ivr->Date = $value->ivr_purchase_date;
-                                    $ivr->PurchaseAmount = $value->ivr_purchase_amount;
-                                    $ivr->save();
+                        foreach ($reader->getSheetIterator() as $sheet) {
+                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                if ($rowNumber > 1) {
+                                    // do stuff with the row
+                                    $msisdn = $value[2];
+                                    if ($msisdn != '' && $msisdn != null) {
+                                        $inv = Inventory::where('MSISDN', $msisdn)->first();
+                                        if ($inv != null) {
+                                            $ivr = new Ivr();
+                                            $ivr->MSISDN_ = $msisdn;
+                                            $ivr->Date = $value[1];
+                                            $ivr->PurchaseAmount = $value[4];
+                                            $ivr->save();
+                                            $counter++;
+                                        }
+                                    }
                                 }
-                                $counter++;
                             }
                         }
+
+                        $reader->close();
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumber($counter);
                     }
                 }
@@ -758,7 +769,7 @@ class InventoryController extends BaseController {
         $writer->openToFile($filePath);
         $myArr = array("SERIAL NUMBER", "MSISDN", "TYPE", "LAST STATUS", "SHIPOUT TO", "SUBAGENT", "FORM SERIES", "LAST WAREHOUSE", "SHIPOUT DATE", "SHIPOUT PRICE", "SHIPIN DATE", "SHIPIN PRICE", "REMARK");
         $writer->addRow($myArr); // add a row at a time
-        
+
         $invs = '';
         $filter = explode(',,,', $filter);
         $typesym = '>=';
@@ -781,27 +792,27 @@ class InventoryController extends BaseController {
         }
         if ($fs == '') {
             $invs = DB::table('m_inventory')
-                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                    ->where('m_inventory.Type', $typesym, $type)
-                    ->where('m_historymovement.Status', $statussym, $status)->get();
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_inventory.Type', $typesym, $type)
+                            ->where('m_historymovement.Status', $statussym, $status)->get();
             if ($wh != '') {
                 $invs = DB::table('m_inventory')
-                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                    ->where('m_inventory.Type', $typesym, $type)->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%')
-                    ->where('m_historymovement.Status', $statussym, $status)->get();
+                                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                                ->where('m_inventory.Type', $typesym, $type)->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%')
+                                ->where('m_historymovement.Status', $statussym, $status)->get();
             }
-        } else if($fs != ''){
+        } else if ($fs != '') {
             $invs = DB::table('m_inventory')
-                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
-                    ->where('m_inventory.Type', $typesym, $type)
-                    ->where('m_historymovement.LastStatus', $statussym, $status)
-                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->get();
+                            ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                            ->where('m_inventory.Type', $typesym, $type)
+                            ->where('m_historymovement.LastStatus', $statussym, $status)
+                            ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->get();
             if ($wh != '') {
                 $invs = DB::table('m_inventory')
-                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
-                    ->where('m_inventory.Type', $typesym, $type)
-                    ->where('m_historymovement.Status', $statussym, $status)->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%')
-                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->get();
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', $typesym, $type)
+                                ->where('m_historymovement.Status', $statussym, $status)->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%')
+                                ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->get();
             }
         }
         foreach ($invs as $inv) {
@@ -890,7 +901,7 @@ class InventoryController extends BaseController {
                 $invs->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%');
             }
             $invs = $invs->get();
-        } else if($fs != ''){
+        } else if ($fs != '') {
             $invs = DB::table('m_inventory')
                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                     ->where('m_inventory.Type', $typesym, $type)
@@ -963,8 +974,10 @@ class InventoryController extends BaseController {
             Session::put('date', $date);
             Session::put('subagent', $subagent);
             Session::put('to', $to);
-            Session::put('start', $start);
-            Session::put('end', $end);
+            if ($start != '' && $end != '') {
+                Session::put('start', $start);
+                Session::put('end', $end);
+            }
             Session::put('price', $price);
 
             return 'success';
@@ -975,13 +988,22 @@ class InventoryController extends BaseController {
         $last = ['', '', '', ''];
         $temp_count = 0;
         $subtotal = 0;
-        $alltype = DB::table('m_inventory')
-                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
-                        ->where('m_historymovement.Status', '!=', '2')
-                        ->where('m_inventory.Missing', '0')
-                        ->select('m_inventory.Type')
-                        ->distinct()->get();
+        if (Session::has('start')) {
+            $alltype = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
+                            ->where('m_historymovement.Status', '!=', '2')
+                            ->where('m_inventory.Missing', '0')
+                            ->select('m_inventory.Type')
+                            ->distinct()->get();
+            $wh = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
+                            ->where('m_historymovement.Status', '!=', '2')
+                            ->where('m_inventory.Missing', '0')
+                            ->select('m_inventory.LastWarehouse')
+                            ->distinct()->first()->LastWarehouse;
+        }
         if ($alltype != null) {
             foreach ($alltype as $types) {
                 if ($types->Type == '1') {
@@ -1107,6 +1129,9 @@ class InventoryController extends BaseController {
                 }
             }
         }
+        if (Session::get('price') == 0) {
+            $wh = 'TELIN TAIWAN';
+        }
         $html = '
             <html>
                 <head>
@@ -1154,7 +1179,7 @@ class InventoryController extends BaseController {
                     <div style="width:102%; height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block;">客戶名稱 ：</div>
                         <div style="width:430px; height:20px;float:left; display: inline-block;">' . Session::get('subagent') . '</div>
-                        <div style="width:200px; height:20px;float:left; display: inline-block;">統一編號: </div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block;">統一編號: 54013468</div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">送貨地址 ：</div>
@@ -1162,9 +1187,9 @@ class InventoryController extends BaseController {
                         <div style="width:200px; height:20px;float:left; display: inline-block;"></div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:80px;padding-left:3px height:20px;float:left; display: inline-block; ">發票號碼 ： </div>
-                        <div style="width:420px; height:20px;float:left; display: inline-block;"></div>
-                        <div style="width:200px; height:20px;float:left; display: inline-block;">倉 庫 別: </div>
+                        <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">發票號碼 :</div>
+                        <div style="width:430px; height:20px;float:left; display: inline-block;">QS 48949608</div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block;">倉 庫 別:' . $wh . ' (紅白電訊)</div>
                     </div>
                     <div style="width:102%; text-align:center;height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:100px; height:20px;float:left; display: inline-block; border-right: 1px solid;">產品編號</div>
@@ -1175,13 +1200,13 @@ class InventoryController extends BaseController {
                     </div>';
         for ($i = 0; $i < count($type); $i++) {
             if ($type[$i] != '') {
-                $subtotal += (Session::get('price') * $count[$i]);
+                $subtotal += round(((Session::get('price') / 1.05) * $count[$i]), 4);
                 $html .= '<div style="width:102%; height:15px; border-left: 1px solid;  border-right: 1px solid;">
                         <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $type[$i] . '</div>
                         <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $count[$i] . '</div>
-                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;">NT$ ' . Session::get('price') . '</div>
-                        <div style="width:115px; height:15px;float:left; display: inline-block;">NT$ ' . (Session::get('price') * $count[$i]) . '</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;">NT$ ' . round((Session::get('price') / 1.05), 4) . '</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;">NT$ ' . round(((Session::get('price') / 1.05) * $count[$i]), 4) . '</div>
                     </div>
                     <div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ';
             } else {
@@ -1224,13 +1249,315 @@ class InventoryController extends BaseController {
                         <div style="width:100px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">營業稅</div>
-                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . $subtotal . '</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . $subtotal / 0.05 . '</div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">註</div>
                         <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總計</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . ($subtotal + ($subtotal / 0.05)) . '</div>
+                    </div>
+                    <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:200px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block; border-right: 1px solid;">主管簽章</div>
+                        <div style="width:70px; height:20px;float:left; display: inline-block; border-right: 1px solid;">財務處</div>
+                        <div style="width:230px; height:20px;float:left; display: inline-block;">承辦人</div>
+                    </div>
+                    <div style="width:102%;text-align:center; height:60px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:200px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:200px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:70px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:230px; height:60px;float:left; display: inline-block;">' . Auth::user()->UserEmail . '</div>
+                    </div>
+                    <div style="width:102%; height:10px;"></div>
+                    <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;border-top: 1px solid;">
+                        <div style="width:350px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
+                        <div style="width:350px; height:20px;float:left; display: inline-block;">承辦人</div>
+                    </div>
+                    <div style="width:102%;text-align:center; height:392px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:350px; height:392px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:350px; height:392px;float:left; display: inline-block;"></div>
+                    </div>
+                </body>
+            </html>';
+        return PDF ::load($html, 'F4', 'portrait')->show(Session::get('sn'));
+    }
+    static function getPDFCons() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $sn = Input::get('sn');
+            $date = Input::get('date');
+            $to = Input::get('to');
+            $subagent = Input::get('subagent');
+            $price = Input::get('price');
+
+            Session::put('sn', $sn);
+            Session::put('date', $date);
+            Session::put('subagent', $subagent);
+            Session::put('to', $to);
+            Session::put('price', $price);
+
+            return 'success';
+        }
+        $type = ['', '', '', ''];
+        $count = ['', '', '', ''];
+        $first = ['', '', '', ''];
+        $last = ['', '', '', ''];
+        $temp_count = 0;
+        $subtotal = 0;
+        if (Session::has('snCons')) {
+            $alltype = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_inventory.Missing', '0')
+                            ->select('m_inventory.Type')
+                            ->distinct()->get();
+            $wh = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_inventory.Missing', '0')
+                            ->select('m_inventory.LastWarehouse')
+                            ->distinct()->first()->LastWarehouse;
+        }
+        if ($alltype != null) {
+            foreach ($alltype as $types) {
+                if ($types->Type == '1') {
+                    $type[$temp_count] = 'SIM 3G';
+                    $counters = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_inventory.Missing', '0')
+                            ->where('m_inventory.Type', '1')
+                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
+                            ->count();
+                    $count[$temp_count] = $counters;
+                    $firstid = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '1')
+                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
+                            ->orderBy('m_inventory.SerialNumber', 'asc')
+                            ->first();
+                    $first[$temp_count] = $firstid->SerialNumber;
+                    $lastid = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '1')
+                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
+                            ->orderBy('m_inventory.SerialNumber', 'desc')
+                            ->first();
+                    $last[$temp_count] = $lastid->SerialNumber;
+                    $temp_count++;
+                } else if ($types->Type == '2') {
+                    $type[$temp_count] = 'E-VOUCHER';
+                    $counters = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_inventory.Missing', '0')
+                            ->where('m_inventory.Type', '2')
+                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
+                            ->count();
+                    $count[$temp_count] = $counters;
+                    $firstid = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '2')
+                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
+                            ->orderBy('m_inventory.SerialNumber', 'asc')
+                            ->first();
+                    $first[$temp_count] = $firstid->SerialNumber;
+                    $lastid = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '2')
+                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
+                            ->orderBy('m_inventory.SerialNumber', 'desc')
+                            ->first();
+                    $last[$temp_count] = $lastid->SerialNumber;
+                    $temp_count++;
+                } else if ($types->Type == '3') {
+                    $type[$temp_count] = 'PH-VOUCHER';
+                    $counters = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_inventory.Missing', '0')
+                            ->where('m_inventory.Type', '3')
+                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
+                            ->count();
+                    $count[$temp_count] = $counters;
+                    $firstid = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '2')
+                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
+                            ->orderBy('m_inventory.SerialNumber', 'asc')
+                            ->first();
+                    $first[$temp_count] = $firstid->SerialNumber;
+                    $lastid = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '3')
+                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
+                            ->orderBy('m_inventory.SerialNumber', 'desc')
+                            ->first();
+                    $last[$temp_count] = $lastid->SerialNumber;
+                    $temp_count++;
+                } else if ($types->Type == '4') {
+                    $type[$temp_count] = 'SIM 4G';
+                    $counters = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_inventory.Missing', '0')
+                            ->where('m_inventory.Type', '4')
+                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
+                            ->count();
+                    $count[$temp_count] = $counters;
+                    $firstid = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '4')
+                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
+                            ->orderBy('m_inventory.SerialNumber', 'asc')
+                            ->first();
+                    $first[$temp_count] = $firstid->SerialNumber;
+                    $lastid = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '4')
+                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
+                            ->orderBy('m_inventory.SerialNumber', 'desc')
+                            ->first();
+                    $last[$temp_count] = $lastid->SerialNumber;
+                    $temp_count++;
+                }
+            }
+        }
+        if (Session::get('price') == 0) {
+            $wh = 'TELIN TAIWAN';
+        }
+        $html = '
+            <html>
+                <head>
+                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                    <style>
+                        @font-face {
+                            font-family:traditional;
+                            src:url("public/fonts/traditional.ttf");
+                        }
+                        body{
+                            font-size: 12px;
+                            font-family:traditional;
+                            padding-top: -1cm;
+                        }
+                        p{
+                            font-size: 90%;
+                            line-height: 0.3;
+                            font-family:traditional;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div style="width:102%; height:93px; border-style: solid;border-width: 2px;">
+                        <div style="width:91px;padding-top:1px; float:left; display: inline-block;"><img src="' . base_path() . '/uploaded_file/as.jpg" style="width: 100%;"></div>
+                        <div style="width:500px; float:left; text-align:center; display: inline-block; padding-top:3px;">
+                            <p>台灣紅白電訊股份有限公司</p>
+                            <p>Telekomunikasi Indonesia International (Taiwan) Limited</p>
+                            <p>114 台北市內湖區洲子街77號7樓之1</p>
+                            <p>Tel: +886 (02) 87525071, Fax: +886 (02) 87523619</p>
+                        </div>
+                        <div style="width:91px;padding-top:1px; float:left; display: inline-block; "><img src="' . base_path() . '/uploaded_file/telin.jpg" style="width: 100%;"></div>
+                    </div>
+                    <div style="width:102%; height:30px; text-align:center;">
+                        <p style="font-size:120%;">借貨單</p>
+                    </div>
+                    <div style="width:101.6%; padding-left:3px;height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
+                        訂單日期：' . Session::get('date') . '
+                    </div>
+                    <div style="width:101.6%; padding-left:3px;height:20px; border-left: 1px solid;  border-right: 1px solid;">
+                        訂單編號：' . Session::get('sn') . '
+                    </div>
+                    <div style="width:101.6%; padding-left:3px;height:20px;border-left: 1px solid; border-bottom: 1px solid; border-right: 1px solid;">
+                        客戶編號：' . Session::get('to') . '
+                    </div>
+                    <div style="width:102%; height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
+                        <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block;">客戶名稱 ：</div>
+                        <div style="width:430px; height:20px;float:left; display: inline-block;">' . Session::get('subagent') . '</div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block;">統一編號: 54013468</div>
+                    </div>
+                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid;">
+                        <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">送貨地址 ：</div>
+                        <div style="width:430px; height:20px;float:left; display: inline-block;"></div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block;"></div>
+                    </div>
+                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">發票號碼 :</div>
+                        <div style="width:430px; height:20px;float:left; display: inline-block;">QS 48949608</div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block;">倉 庫 別:' . $wh . ' (紅白電訊)</div>
+                    </div>
+                    <div style="width:102%; text-align:center;height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:100px; height:20px;float:left; display: inline-block; border-right: 1px solid;">產品編號</div>
+                        <div style="width:300px; height:20px;float:left; display: inline-block; border-right: 1px solid;">產品名稱</div>
+                        <div style="width:70px; height:20px;float:left; display: inline-block; border-right: 1px solid;">數 量</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">訂價/單價</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">合計</div>
+                    </div>';
+        for ($i = 0; $i < count($type); $i++) {
+            if ($type[$i] != '') {
+                $subtotal += round(((Session::get('price') / 1.05) * $count[$i]), 4);
+                $html .= '<div style="width:102%; height:15px; border-left: 1px solid;  border-right: 1px solid;">
+                        <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $type[$i] . '</div>
+                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $count[$i] . '</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;">NT$ ' . round((Session::get('price') / 1.05), 4) . '</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;">NT$ ' . round(((Session::get('price') / 1.05) * $count[$i]), 4) . '</div>
+                    </div>
+                    <div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ';
+            } else {
+                $html .= '<div style="width:102%; height:15px; border-left: 1px solid;  border-right: 1px solid;">
+                        <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $type[$i] . '</div>
+                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $count[$i] . '</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;"></div>
+                    </div>
+                    <div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ';
+            }
+            if ($i == count($type) - 1)
+                $html .= 'border-bottom: 1px solid;';
+            if ($type[$i] != '') {
+                $html .= '">
+                        <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $first[$i] . ' - ' . $last[$i] . '</div>
+                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;"></div>
+                    </div>';
+            } else {
+                $html .= '">
+                        <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;"></div>
+                    </div>';
+            }
+        }
+        $html .= '<div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; ">
+                        <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">備</div>
+                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總額</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . $subtotal . '</div>
+                    </div>
+                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; ">
+                        <div style="width:100px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">營業稅</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . $subtotal / 0.05 . '</div>
+                    </div>
+                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">註</div>
+                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總計</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . ($subtotal + ($subtotal / 0.05)) . '</div>
                     </div>
                     <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:200px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
@@ -1571,6 +1898,7 @@ class InventoryController extends BaseController {
         if ($serial == 0) {
             $serial = '';
         }
+        Session::put('snCons', $series);
         $table = 'm_inventory';
         $primaryKey = 'm_inventory`.`SerialNumber';
         $columns = array(
