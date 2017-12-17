@@ -438,6 +438,7 @@ class InventoryController extends BaseController {
             $counter = 0;
             $allInvAvail = Inventory::whereBetween('SerialNumber', [$firstsn, $lastsn])->where('Missing', 0)->get();
             foreach ($allInvAvail as $inv) {
+                $status_ = 2;
                 $history = History::where('ID', $inv['LastStatusID'])->first();
                 if ($history->Status != 2) { //available
                     $hist = new History();
@@ -447,9 +448,10 @@ class InventoryController extends BaseController {
                     if ($price == '0') {
                         $hist->Warehouse = 'TELIN TAIWAN';
                         $inv->LastWarehouse = 'TELIN TAIWAN';
+                        $status_ = 4;
                     }
                     $hist->ShipoutNumber = $series;
-                    $hist->Status = 2;
+                    $hist->Status = $status_;
                     $hist->Remark = Input::get('remark');
                     $hist->Date = Input::get('eventDate');
                     $hist->userRecord = Auth::user()->ID;
@@ -457,12 +459,11 @@ class InventoryController extends BaseController {
 
                     //update last status
                     $inv->LastStatusID = $hist->ID;
-                    $inv->Missing = 1;
                     $inv->save();
 
                     $allhist = History::where('SN', $inv->SerialNumber)->get();
                     foreach ($allhist as $hist) {
-                        $hist->LastStatus = 2;
+                        $hist->LastStatus = $status_;
                         $hist->save();
                     }
                     $counter++;
@@ -474,6 +475,7 @@ class InventoryController extends BaseController {
     }
 
     public function showConsignment() {
+        Session::forget('snCons');
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $firstsn = Input::get('shipoutstart');
             $lastsn = Input::get('shipoutend');
@@ -493,7 +495,7 @@ class InventoryController extends BaseController {
                     $hist->SubAgent = $subagent;
                     $hist->Price = $price;
                     $hist->ShipoutNumber = $series;
-                    $hist->Status = 4;
+                    $hist->Status = 2;
                     $hist->Remark = Input::get('remark');
                     $hist->Date = Input::get('eventDate');
                     $hist->userRecord = Auth::user()->ID;
@@ -501,12 +503,11 @@ class InventoryController extends BaseController {
 
                     //update last status
                     $inv->LastStatusID = $hist->ID;
-                    $inv->Missing = 1;
                     $inv->save();
 
                     $allhist = History::where('SN', $inv->SerialNumber)->get();
                     foreach ($allhist as $hist) {
-                        $hist->LastStatus = 4;
+                        $hist->LastStatus = 2;
                         $hist->save();
                     }
                     $counter++;
@@ -1282,6 +1283,7 @@ class InventoryController extends BaseController {
             </html>';
         return PDF ::load($html, 'F4', 'portrait')->show(Session::get('sn'));
     }
+
     static function getPDFCons() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sn = Input::get('sn');
@@ -1307,13 +1309,13 @@ class InventoryController extends BaseController {
         if (Session::has('snCons')) {
             $alltype = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
                             ->where('m_inventory.Missing', '0')
                             ->select('m_inventory.Type')
                             ->distinct()->get();
             $wh = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
                             ->where('m_inventory.Missing', '0')
                             ->select('m_inventory.LastWarehouse')
                             ->distinct()->first()->LastWarehouse;
@@ -1324,7 +1326,7 @@ class InventoryController extends BaseController {
                     $type[$temp_count] = 'SIM 3G';
                     $counters = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
                             ->where('m_inventory.Missing', '0')
                             ->where('m_inventory.Type', '1')
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
@@ -1332,7 +1334,7 @@ class InventoryController extends BaseController {
                     $count[$temp_count] = $counters;
                     $firstid = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
                             ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '1')
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'asc')
@@ -1340,7 +1342,7 @@ class InventoryController extends BaseController {
                     $first[$temp_count] = $firstid->SerialNumber;
                     $lastid = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
                             ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '1')
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'desc')
@@ -1351,7 +1353,7 @@ class InventoryController extends BaseController {
                     $type[$temp_count] = 'E-VOUCHER';
                     $counters = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
                             ->where('m_inventory.Missing', '0')
                             ->where('m_inventory.Type', '2')
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
@@ -1359,7 +1361,7 @@ class InventoryController extends BaseController {
                     $count[$temp_count] = $counters;
                     $firstid = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
                             ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '2')
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'asc')
@@ -1367,7 +1369,7 @@ class InventoryController extends BaseController {
                     $first[$temp_count] = $firstid->SerialNumber;
                     $lastid = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
                             ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '2')
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'desc')
@@ -1378,7 +1380,7 @@ class InventoryController extends BaseController {
                     $type[$temp_count] = 'PH-VOUCHER';
                     $counters = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
                             ->where('m_inventory.Missing', '0')
                             ->where('m_inventory.Type', '3')
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
@@ -1386,7 +1388,7 @@ class InventoryController extends BaseController {
                     $count[$temp_count] = $counters;
                     $firstid = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
                             ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '2')
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'asc')
@@ -1394,7 +1396,7 @@ class InventoryController extends BaseController {
                     $first[$temp_count] = $firstid->SerialNumber;
                     $lastid = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
                             ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '3')
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'desc')
@@ -1405,7 +1407,7 @@ class InventoryController extends BaseController {
                     $type[$temp_count] = 'SIM 4G';
                     $counters = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
                             ->where('m_inventory.Missing', '0')
                             ->where('m_inventory.Type', '4')
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
@@ -1413,7 +1415,7 @@ class InventoryController extends BaseController {
                     $count[$temp_count] = $counters;
                     $firstid = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
                             ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '4')
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'asc')
@@ -1421,7 +1423,7 @@ class InventoryController extends BaseController {
                     $first[$temp_count] = $firstid->SerialNumber;
                     $lastid = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.Session::get('snCons').'%')
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
                             ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '4')
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'desc')
@@ -1867,7 +1869,7 @@ class InventoryController extends BaseController {
         $string_temp = '= 4';
         $string_miss = '= 0';
         if ($statusAvail == '0') {
-            $string_temp = '!= 4';
+            $string_temp = '= 2';
         } else if ($statusAvail == '2') {
             $statusAvail = 1;
             $string_temp = '= 4';
@@ -1883,13 +1885,15 @@ class InventoryController extends BaseController {
             } else {
                 $inv = Inventory::where('MSISDN', 'like', '%' . $msisdn . '%')->first();
                 $hist = History::where('SN', $inv->SerialNumber)->where('Status', 4)->orderBy('ID', 'desc')->first();
-                $series = $hist->ShipoutNumber;
+                if ($hist != null)
+                    $series = $hist->ShipoutNumber;
             }
             if ($serial == '0') {
                 $serial = '';
             } else {
                 $hist = History::where('SN', 'like', '%' . $serial . '%')->where('Status', 4)->orderBy('ID', 'desc')->first();
-                $series = $hist->ShipoutNumber;
+                if ($hist != null)
+                    $series = $hist->ShipoutNumber;
             }
         }
         if ($msisdn == 0) {
