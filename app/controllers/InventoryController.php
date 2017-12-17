@@ -520,13 +520,6 @@ class InventoryController extends BaseController {
 
     public function showReturnInventory() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $destination = base_path() . '/uploaded_file/';
-            $extention = Input::file('sample_file')->getClientOriginalExtension();
-            $filename = 'tempreturn.' . $extention;
-            Input::file('sample_file')->move($destination, $filename);
-            $data = Excel::load(base_path() . '/uploaded_file/' . 'tempreturn.' . $extention, function($reader) {
-                        
-                    })->get();
             $SerialNumber = "";
             $counter = 0;
             $counterfail = 0;
@@ -537,25 +530,35 @@ class InventoryController extends BaseController {
             $date = Input::get('eventDate');
             $fn = Input::get('formSN');
             $remark = Input::get('remark');
-            if (!empty($data) && $data->count()) {
-                foreach ($data as $key => $value) {
-                    if ($value->id != null) {
-                        $inv = Inventory::where('SerialNumber', $value->id)->first();
+            $destination = base_path() . '/uploaded_file/';
+            $extention = Input::file('sample_file')->getClientOriginalExtension();
+            $filename = 'tempreturn.' . $extention;
+            Input::file('sample_file')->move($destination, $filename);
+            $filePath = base_path() . '/uploaded_file/' . 'tempreturn.' . $extention;
+            $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+//$reader = ReaderFactory::create(Type::CSV); // for CSV files
+//$reader = ReaderFactory::create(Type::ODS); // for ODS files
+
+            $reader->open($filePath);
+            $counter = 0;
+            foreach ($reader->getSheetIterator() as $sheet) {
+                foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                    if ($rowNumber > 1) {
+                        $inv = Inventory::where('SerialNumber', 'LIKE', '%' . $value[0] . '%')->orWhere('MSISDN', 'LIKE', '%' . $value[0] . '%')->first();
                         if ($inv != null) {
-                            $inv = Inventory::where('SerialNumber', $value->id)->first();
                             $lastmovement = $inv->LastStatusID;
                             //update history
                             $hist = History::where('ID', $lastmovement)->first();
                             if ($hist->Status == 2) {
                                 $counter++;
                                 if ($successins == '') {
-                                    $successins .= $value->id;
+                                    $successins .= $value[0];
                                 } else {
-                                    $successins .= $value->id . ', ';
+                                    $successins .= ', '.$value[0] ;
                                 }
 
                                 //can return, update
-                                $insertHistory = ['SN' => $value->id, 'Date' => $date, 'Remark' => $remark, 'Status' => 1, 'ShipoutNumber' => $fn];
+                                $insertHistory = ['SN' => $inv->SerialNumber, 'Date' => $date, 'Remark' => $remark, 'Status' => 1, 'ShipoutNumber' => $fn];
                                 if (!empty($insertHistory)) {
                                     $lasthistoryID = DB::table('m_historymovement')->insertGetId($insertHistory);
                                 }
@@ -570,18 +573,18 @@ class InventoryController extends BaseController {
                                 }
                             } else {
                                 if ($notavail == '') {
-                                    $notavail .= $value->id;
+                                    $notavail .= $value[0];
                                 } else {
-                                    $notavail .= $value->id . ', ';
+                                    $notavail .= ', '.$value[0];
                                 }
                                 $counterfail++;
                             }
                         } else {
                             $counterfail++;
                             if ($nodata == '') {
-                                $nodata .= $value->id;
+                                $nodata .= $value[0];
                             } else {
-                                $nodata .= $value->id . ', ';
+                                $nodata .= ', '.$value[0];
                             }
                         }
                     }

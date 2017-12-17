@@ -57,7 +57,7 @@
         <div class="row margbot20">
             <div class="col-xs-18">
                 Notes:<br>
-                1. File format must be in <b> xls only!</b><br>
+                1. File format must be in <b> xlsx only!</b><br>
                 2. 1 column needed, with header 'id' before you start writing the <b>serial number</b> or <b>MSISDN</b><br>
                 3. Use SerialNumber or MSISDN on each row
             </div>
@@ -136,7 +136,7 @@
 <script type="text/javascript" src="{{Asset('lib/bootstrap/js/jquery.dataTables.min.js')}}"></script>
 <script src="{{Asset('jquery-validation/form-validator/jquery.form-validator.js')}}"></script>
 <script type="text/javascript" src="{{Asset('js/chosen.jquery.min.js')}}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
 <script>
 Date.prototype.toDateInputValue = (function () {
@@ -172,13 +172,12 @@ function filePicked(oEvent) {
     // Ready The Event For When A File Gets Selected
     reader.onload = function (e) {
         var data = e.target.result;
-        var cfb = XLS.CFB.read(data, {type: 'binary'});
-        var wb = XLS.parse_xlscfb(cfb);
+        var cfb = XLSX.read(data, {type: 'binary'});
         // Loop Over Each Sheet
-        wb.SheetNames.forEach(function (sheetName) {
+        cfb.SheetNames.forEach(function (sheetName) {
             // Obtain The Current Row As CSV
-            var sCSV = XLS.utils.make_csv(wb.Sheets[sheetName]);
-            var oJS = XLS.utils.sheet_to_row_object_array(wb.Sheets[sheetName]);
+            var sCSV = XLS.utils.make_csv(cfb.Sheets[sheetName]);
+            var oJS = XLS.utils.sheet_to_row_object_array(cfb.Sheets[sheetName]);
 
 //            $("#my_file_output").html(sCSV);
             oJS.forEach(function (item, index) {
