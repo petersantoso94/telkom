@@ -9,7 +9,7 @@
 @stop
 
 @section('main-section')
-<form method="POST" action="{{route('showInventoryShipout')}}" accept-charset="UTF-8" enctype="multipart/form-data">
+<form method="POST" action="{{route('showInventoryShipout')}}" accept-charset="UTF-8" enctype="multipart/form-data" id="form-so">
     <div class="white-pane__bordered margbot20">
         <div class="row">
             <div class="col-xs-12">
@@ -121,10 +121,10 @@
         </div>
         <div class="row margtop20">
             <div class="form-group">
-                <div class="col-sm-2">
+                <div class="col-xs-2">
                     <label class="fw300" style="margin-top: 7px;">Shipout to: </label>
                 </div>
-                <div class="col-sm-5" style="margin-top: 5px;">
+                <div class="col-xs-2" style="margin-top: 5px;">
                     <select data-placeholder="Choose a destination..." class="chosen-select" style="width: 100%" name="shipout" id="shipoutto">
                         <option></option>
                         <option value="TOKO">TOKO</option>
@@ -135,6 +135,11 @@
                         <option value="PRE-EMPTIVE">PRE-EMPTIVE</option>
                         <option value="COLUMBIA">COLUMBIA</option>
                     </select>
+                </div>
+                <div class="col-xs-3" style="margin-left: 10px;">
+                    <div class="checkbox">
+                        <input type="checkbox" id="cons-stat">as consignment
+                    </div>
                 </div>
             </div>
         </div>
@@ -173,7 +178,7 @@
         <div class="row margtop20">
             <div class="form-group">
                 <div class="col-sm-2">
-                    <label class="fw300" style="margin-top: 7px;">Shipout Price (NT$): </label>
+                    <label class="fw300" style="margin-top: 7px;">Price (NT$): </label>
                 </div>
                 <div class="col-sm-5">
                     <input type="text" class="input-stretch" name="price" id="soprice" value="0">
@@ -192,10 +197,10 @@
         </div>
         <div class="row margtop20">
             <div class="col-xs-6">
-                <input type="submit" class="button btnblue btn-wide wide-h" style="background-color: #424242; color: white;">
+                <button type="button" class="button btnblue btn-wide wide-h" style="background-color: #424242; color: white;" id="btn-form-so">submit</button>
             </div>
             <div class="col-xs-1">
-                <button type="button" onclick="printPrev(this)"><span class="glyphicon glyphicon-print"></span></button>
+                <button type="button" onclick="printPrev(this)" disabled="" id="btn-print-pdf-so"><span class="glyphicon glyphicon-print"></span></button>
             </div>
         </div>
     </div>
@@ -221,11 +226,47 @@
                     var getForm = '';
                     var notin = '';
                     var postMissing = '<?php echo Route('postMissing') ?>';
+                    var postConsStat = '<?php echo Route('postConsStat') ?>';
                     var postNewAgent = '<?php echo Route('postNewAgent') ?>';
                     var postAvail = '<?php echo Route('postAvail') ?>';
                     var ajax1 = '<?php echo Route('getSubAgent') ?>';
                     var getPDF = '<?php echo Route('getPDFShipout') ?>';
                     var newAgentName = '';
+
+                    $('#cons-stat').on('click', function (e) {
+                        refreshFormSN();
+                        var atLeastOneIsChecked = $('#cons-stat:checkbox:checked').length > 0;
+                        if (atLeastOneIsChecked) {
+                            $.post(postConsStat, {cs: '1'}, function (data) {
+                                console.log(data);
+                            });
+                        } else {
+                            $.post(postConsStat, {cs: '0'}, function (data) {
+                                console.log(data);
+                            });
+                        }
+                    });
+
+                    $('#btn-form-so').on('click', function (e) {
+                        var atLeastOneIsChecked = $('#cons-stat:checkbox:checked').length > 0;
+                        if (atLeastOneIsChecked) {
+                            if (confirm("Do you want to submit this as Consignment?") == true) {
+                                $.post(postConsStat, {cs: '1'}, function (data) {
+
+                                }).done(function () {
+                                    document.getElementById("form-so").submit();
+                                });
+                            }
+                        } else {
+                            if (confirm("Do you want to submit this as Shipout?") == true) {
+                                $.post(postConsStat, {cs: '0'}, function (data) {
+
+                                }).done(function () {
+                                    document.getElementById("form-so").submit();
+                                });
+                            }
+                        }
+                    });
 
                     window.deleteAttach = function (element) {
                         notin = $(element).data('internal');
@@ -250,6 +291,11 @@
                     };
 
                     window.printPrev = function (element) {
+                        var atLeastOneIsChecked = $('#cons-stat:checkbox:checked').length > 0;
+                        var cse = '0';
+                        if(atLeastOneIsChecked){
+                            cse = '1';
+                        }
                         var shipout_date = document.getElementById('shipindate').value;
                         var shipout_SN = document.getElementById('formSN').value;
                         var shipout_to = document.getElementById('shipoutto').value;
@@ -259,7 +305,7 @@
                         var soprice = document.getElementById('soprice').value;
                         $.post(getPDF,
                                 {date: shipout_date, sn: shipout_SN, to: shipout_to, subagent: shipout_subagent
-                                    , start: shipout_start, end: shipout_end, price: soprice}
+                                    , start: shipout_start, end: shipout_end, price: soprice, cs: cse}
                         , function (data) {
 
                         }).done(function () {
@@ -269,14 +315,14 @@
 
                     window.newSubagent = function (element) {
                         if ($('#shipoutto').val() != '') {
-                            var person = prompt("Please enter New Subagent name:","please insert sub-agent name only..");
+                            var person = prompt("Please enter New Subagent name:", "please insert sub-agent name only..");
                             if (person == null || person == "") {
                                 txt = "User cancelled the prompt.";
                             } else {
-                                newAgentName = $('#shipoutto').val()+" "+person;
+                                newAgentName = $('#shipoutto').val() + " " + person;
                                 confirmNewAgent();
                             }
-                        }else{
+                        } else {
                             alert("Please choose Shipoutto first, Thank you!");
                         }
                     };
@@ -335,6 +381,7 @@
 
                     $('#btn_ceksn').on('click', function (e) {
                         refreshTable();
+                        $('#btn-print-pdf-so').removeAttr('disabled');
                     });
 
                     $('#shipoutto').on('change', function (e) {
@@ -378,7 +425,12 @@
                             else
                                 shipoutto = shipoutto.substring(0, 3).toUpperCase();
                         }
-                        stringtamp = $('#shipindate').val() + '/SO/' + shipoutto;
+                        var atLeastOneIsChecked = $('#cons-stat:checkbox:checked').length > 0;
+                        if (atLeastOneIsChecked) {
+                            stringtamp = $('#shipindate').val() + '/CO/' + shipoutto;
+                        } else {
+                            stringtamp = $('#shipindate').val() + '/SO/' + shipoutto;
+                        }
                         getForm = '<?php echo Route('getForm') ?>';
                         $.post(getForm, {sn: stringtamp}, function (data) {
                             stringtamp += data;

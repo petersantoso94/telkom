@@ -431,6 +431,7 @@ class InventoryController extends BaseController {
             $price = Input::get('price');
             $series = Input::get('formSN');
             $subagent = Input::get('subagent');
+            $cs = Session::get('ConsStat');
 
             if (Input::get('newagent') != '') {
                 $subagent = Input::get('newagent');
@@ -445,9 +446,11 @@ class InventoryController extends BaseController {
                     $hist->SN = $inv->SerialNumber;
                     $hist->SubAgent = $subagent;
                     $hist->Price = $price;
-                    if ($price == '0') {
+                    if ($price == '0' && $cs == 0) {
                         $hist->Warehouse = 'TELIN TAIWAN';
                         $inv->LastWarehouse = 'TELIN TAIWAN';
+                    }
+                    if ($cs == 1) {
                         $status_ = 4;
                     }
                     $hist->ShipoutNumber = $series;
@@ -469,6 +472,7 @@ class InventoryController extends BaseController {
                     $counter++;
                 }
             }
+            Session::forget('ConsStat');
             return View::make('shipout')->withResponse('Success')->withPage('inventory shipout')->withNumber($counter);
         }
         return View::make('shipout')->withPage('inventory shipout');
@@ -513,9 +517,9 @@ class InventoryController extends BaseController {
                     $counter++;
                 }
             }
-            return View::make('shipout')->withResponse('Success')->withPage('inventory shipout')->withNumber($counter);
+            return View::make('consignment')->withResponse('Success')->withPage('shipout consignment')->withNumber($counter);
         }
-        return View::make('consignment')->withPage('consignment');
+        return View::make('consignment')->withPage('shipout consignment');
     }
 
     public function showReturnInventory() {
@@ -554,7 +558,7 @@ class InventoryController extends BaseController {
                                 if ($successins == '') {
                                     $successins .= $value[0];
                                 } else {
-                                    $successins .= ', '.$value[0] ;
+                                    $successins .= ', ' . $value[0];
                                 }
 
                                 //can return, update
@@ -575,7 +579,7 @@ class InventoryController extends BaseController {
                                 if ($notavail == '') {
                                     $notavail .= $value[0];
                                 } else {
-                                    $notavail .= ', '.$value[0];
+                                    $notavail .= ', ' . $value[0];
                                 }
                                 $counterfail++;
                             }
@@ -584,7 +588,7 @@ class InventoryController extends BaseController {
                             if ($nodata == '') {
                                 $nodata .= $value[0];
                             } else {
-                                $nodata .= ', '.$value[0];
+                                $nodata .= ', ' . $value[0];
                             }
                         }
                     }
@@ -754,6 +758,10 @@ class InventoryController extends BaseController {
         $inv->save();
     }
 
+    static function postConsStat() {
+        Session::put('conses', Input::get('cs'));
+    }
+
     static function postNewAgent() {
         Session::put('NewAgent', Input::get('agent'));
     }
@@ -854,17 +862,17 @@ class InventoryController extends BaseController {
             $tempcount = 0;
             if ($hist->SubAgent != '') {
                 $shipout = explode(' ', $hist->SubAgent);
-                foreach ($shipout as $word) {
-                    if ($tempcount > 0) {
-                        $subagent .= $word . ' ';
-                    }
-                    $tempcount++;
-                }
+//                foreach ($shipout as $word) {
+//                    if ($tempcount > 0) {
+//                        $subagent .= $word . ' ';
+//                    }
+//                    $tempcount++;
+//                }
             }
             if ($shipout != '') {
                 $agent = $shipout[0];
             }
-            $myArr = array($inv->SerialNumber, $inv->MSISDN, $type, $status, $agent, $subagent, $hist->ShipoutNumber, $inv->LastWarehouse, $shipoutdt, $shipoutprice, $shipindt, $inv->Price, $hist->Remark);
+            $myArr = array($inv->SerialNumber, $inv->MSISDN, $type, $status, $agent, $hist->SubAgent, $hist->ShipoutNumber, $inv->LastWarehouse, $shipoutdt, $shipoutprice, $shipindt, $inv->Price, $hist->Remark);
             $writer->addRow($myArr);
         }
         $writer->close();
@@ -978,6 +986,7 @@ class InventoryController extends BaseController {
             Session::put('date', $date);
             Session::put('subagent', $subagent);
             Session::put('to', $to);
+            Session::put('conses', Input::get('cs'));
             if ($start != '' && $end != '') {
                 Session::put('start', $start);
                 Session::put('end', $end);
@@ -992,6 +1001,7 @@ class InventoryController extends BaseController {
         $last = ['', '', '', ''];
         $temp_count = 0;
         $subtotal = 0;
+        $temp_string = '';
         if (Session::has('start')) {
             $alltype = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
@@ -1133,9 +1143,12 @@ class InventoryController extends BaseController {
                 }
             }
         }
-        if (Session::get('price') == 0) {
+        if (Session::get('price') == 0 && Session::get('ConsStat') == 0) {
             $wh = 'TELIN TAIWAN';
+            $temp_string = '銷貨單';
         }
+        if (Session::get('conses') == 1)
+            $temp_string = '借貨單';
         $html = '
             <html>
                 <head>
@@ -1169,7 +1182,7 @@ class InventoryController extends BaseController {
                         <div style="width:91px;padding-top:1px; float:left; display: inline-block; "><img src="' . base_path() . '/uploaded_file/telin.jpg" style="width: 100%;"></div>
                     </div>
                     <div style="width:102%; height:30px; text-align:center;">
-                        <p style="font-size:120%;">銷貨單</p>
+                        <p style="font-size:120%;">'.$temp_string.'</p>
                     </div>
                     <div style="width:101.6%; padding-left:3px;height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
                         訂單日期：' . Session::get('date') . '
@@ -1204,13 +1217,13 @@ class InventoryController extends BaseController {
                     </div>';
         for ($i = 0; $i < count($type); $i++) {
             if ($type[$i] != '') {
-                $subtotal += round(((Session::get('price') / 1.05) * $count[$i]), 4);
+                $subtotal += round(((Session::get('price') / 1.05) * $count[$i]), 0);
                 $html .= '<div style="width:102%; height:15px; border-left: 1px solid;  border-right: 1px solid;">
                         <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $type[$i] . '</div>
                         <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $count[$i] . '</div>
                         <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;">NT$ ' . round((Session::get('price') / 1.05), 4) . '</div>
-                        <div style="width:115px; height:15px;float:left; display: inline-block;">NT$ ' . round(((Session::get('price') / 1.05) * $count[$i]), 4) . '</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;">NT$ ' . round(((Session::get('price') / 1.05) * $count[$i]), 0) . '</div>
                     </div>
                     <div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ';
             } else {
@@ -1253,13 +1266,13 @@ class InventoryController extends BaseController {
                         <div style="width:100px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">營業稅</div>
-                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . $subtotal / 0.05 . '</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . round(($subtotal * 0.05),0) . '</div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">註</div>
                         <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總計</div>
-                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . ($subtotal + ($subtotal / 0.05)) . '</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . round(($subtotal + ($subtotal * 0.05)),0) . '</div>
                     </div>
                     <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:200px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
@@ -1472,7 +1485,7 @@ class InventoryController extends BaseController {
                         <div style="width:91px;padding-top:1px; float:left; display: inline-block; "><img src="' . base_path() . '/uploaded_file/telin.jpg" style="width: 100%;"></div>
                     </div>
                     <div style="width:102%; height:30px; text-align:center;">
-                        <p style="font-size:120%;">借貨單</p>
+                        <p style="font-size:120%;">銷貨單</p>
                     </div>
                     <div style="width:101.6%; padding-left:3px;height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
                         訂單日期：' . Session::get('date') . '

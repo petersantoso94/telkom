@@ -79,7 +79,7 @@
                             <li><a href="{{Route('showInsertInventory')}}" @if($page == 'insert inventory') class="active-sidemenu" @endif >Inventory Shipin</a></li>
                             <li><a href="{{Route('showInventoryShipout')}}" @if($page == 'inventory shipout') class="active-sidemenu" @endif >Inventory Shipout</a></li>
                             <li><a href="{{Route('showReturnInventory')}}" @if($page == 'inventory return') class="active-sidemenu" @endif >Inventory Return</a></li>
-                            <li><a href="{{Route('showConsignment')}}" @if($page == 'consignment') class="active-sidemenu" @endif >Consignment</a></li>
+                            <li><a href="{{Route('showConsignment')}}" @if($page == 'shipout consignment') class="active-sidemenu" @endif >Shipout Consignment</a></li>
                             <li><a href="{{Route('showWarehouseInventory')}}" @if($page == 'inventory warehouse') class="active-sidemenu" @endif >Move Warehouse</a></li>
                         </ul>
                     </li>

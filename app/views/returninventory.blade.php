@@ -171,6 +171,7 @@ function filePicked(oEvent) {
 
     // Ready The Event For When A File Gets Selected
     reader.onload = function (e) {
+        semua_sn = '';
         var data = e.target.result;
         var cfb = XLSX.read(data, {type: 'binary'});
         // Loop Over Each Sheet

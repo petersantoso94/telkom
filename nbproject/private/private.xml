@@ -6,12 +6,13 @@
             <file>file:/D:/xampp/htdocs/telkom/app/controllers/InventoryController.php</file>
             <file>file:/D:/xampp/htdocs/telkom/js/inventory.js</file>
             <file>file:/D:/xampp/htdocs/telkom/app/views/insertinventory.blade.php</file>
+            <file>file:/D:/xampp/htdocs/telkom/app/views/returninventory.blade.php</file>
             <file>file:/D:/xampp/htdocs/telkom/app/views/shipout.blade.php</file>
             <file>file:/D:/xampp/htdocs/telkom/app/routes.php</file>
+            <file>file:/D:/xampp/htdocs/telkom/app/config/app.php</file>
             <file>file:/D:/xampp/htdocs/telkom/app/views/inventory.blade.php</file>
             <file>file:/D:/xampp/htdocs/telkom/app/views/template/header-footer.blade.php</file>
-            <file>file:/D:/xampp/htdocs/telkom/app/controllers/LoginController.php</file>
-            <file>file:/D:/xampp/htdocs/telkom/app/views/login.blade.php</file>
+            <file>file:/D:/xampp/htdocs/telkom/app/views/insertreporting.blade.php</file>
         </group>
     </open-files>
 </project-private>
