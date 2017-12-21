@@ -425,6 +425,11 @@ class InventoryController extends BaseController {
     }
 
     public function showInventoryShipout() {
+        Session::forget('temp_inv_start');
+        Session::forget('temp_inv_end');
+        Session::forget('temp_inv_price');
+        Session::forget('temp_inv_arr');
+        Session::forget('temp_inv_qty');
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $firstsn = Input::get('shipoutstart');
             $lastsn = Input::get('shipoutend');
@@ -980,7 +985,6 @@ class InventoryController extends BaseController {
             $subagent = Input::get('subagent');
             $start = Input::get('start');
             $end = Input::get('end');
-            $price = Input::get('price');
 
             Session::put('sn', $sn);
             Session::put('date', $date);
@@ -991,7 +995,6 @@ class InventoryController extends BaseController {
                 Session::put('start', $start);
                 Session::put('end', $end);
             }
-            Session::put('price', $price);
 
             return 'success';
         }
@@ -1182,7 +1185,7 @@ class InventoryController extends BaseController {
                         <div style="width:91px;padding-top:1px; float:left; display: inline-block; "><img src="' . base_path() . '/uploaded_file/telin.jpg" style="width: 100%;"></div>
                     </div>
                     <div style="width:102%; height:30px; text-align:center;">
-                        <p style="font-size:120%;">'.$temp_string.'</p>
+                        <p style="font-size:120%;">' . $temp_string . '</p>
                     </div>
                     <div style="width:101.6%; padding-left:3px;height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
                         訂單日期：' . Session::get('date') . '
@@ -1266,13 +1269,13 @@ class InventoryController extends BaseController {
                         <div style="width:100px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">營業稅</div>
-                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . round(($subtotal * 0.05),0) . '</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . round(($subtotal * 0.05), 0) . '</div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">註</div>
                         <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總計</div>
-                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . round(($subtotal + ($subtotal * 0.05)),0) . '</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . round(($subtotal + ($subtotal * 0.05)), 0) . '</div>
                     </div>
                     <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:200px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
@@ -1520,13 +1523,13 @@ class InventoryController extends BaseController {
                     </div>';
         for ($i = 0; $i < count($type); $i++) {
             if ($type[$i] != '') {
-                $subtotal += round(((Session::get('price') / 1.05) * $count[$i]), 4);
+                $subtotal += round(((Session::get('temp_inv_price') / 1.05) * $count[$i]), 4);
                 $html .= '<div style="width:102%; height:15px; border-left: 1px solid;  border-right: 1px solid;">
                         <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $type[$i] . '</div>
                         <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $count[$i] . '</div>
-                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;">NT$ ' . round((Session::get('price') / 1.05), 4) . '</div>
-                        <div style="width:115px; height:15px;float:left; display: inline-block;">NT$ ' . round(((Session::get('price') / 1.05) * $count[$i]), 4) . '</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;">NT$ ' . round((Session::get('temp_inv_price') / 1.05), 4) . '</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;">NT$ ' . round(((Session::get('temp_inv_price') / 1.05) * $count[$i]), 4) . '</div>
                     </div>
                     <div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ';
             } else {
@@ -1788,6 +1791,61 @@ class InventoryController extends BaseController {
                     SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
         }
     }
+    
+    static function delInv(){
+        Session::forget('temp_inv_start');
+        Session::forget('temp_inv_end');
+        Session::forget('temp_inv_price');
+        Session::forget('temp_inv_arr');
+        Session::forget('temp_inv_qty');
+    }
+
+    static function addInv() {
+        $start = Input::get('start');
+        $end = Input::get('end');
+        $price = Input::get('price');
+        $arrInv = '';
+        $qty = 0;
+
+        $allInv = Inventory::where('SerialNumber', '>=', $start)->where('SerialNumber', '<=', $end)->select('SerialNumber')->get();
+        foreach ($allInv as $value) {
+            if ($arrInv == '')
+                $arrInv = "'".$value->SerialNumber."'";
+            else
+                $arrInv .= ',' ."'". $value->SerialNumber."'";
+        }
+        $qty = DB::table('m_inventory')
+            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+            ->where('m_inventory.SerialNumber', '>=', $start)->where('m_inventory.SerialNumber', '<=', $end)
+                ->where('m_historymovement.Status','!=','2')->count();
+        
+        if (Session::has('temp_inv_start')) {
+            Session::put('temp_inv_start', Session::get('temp_inv_start') . ',,,' . $start);
+        } else {
+            Session::put('temp_inv_start', $start);
+        }
+        if (Session::has('temp_inv_end')) {
+            Session::put('temp_inv_end', Session::get('temp_inv_end') . ',,,' . $end);
+        } else {
+            Session::put('temp_inv_end', $end);
+        }
+        if (Session::has('temp_inv_price')) {
+            Session::put('temp_inv_price', Session::get('temp_inv_price') . ',,,' . $price);
+        } else {
+            Session::put('temp_inv_price', $price);
+        }
+        if (Session::has('temp_inv_arr')) {
+            Session::put('temp_inv_arr', Session::get('temp_inv_arr') . ',' . $arrInv);
+        } else {
+            Session::put('temp_inv_arr', $arrInv);
+        }
+        if (Session::has('temp_inv_qty')) {
+            Session::put('temp_inv_qty', Session::get('temp_inv_qty') . ',,,' . $qty);
+        } else {
+            Session::put('temp_inv_qty', $qty);
+        }
+        return Session::get('temp_inv_arr');
+    }
 
     static function inventoryDataBackupOut($id) {
         $startid = explode(',,,', $id)[0];
@@ -1865,7 +1923,7 @@ class InventoryController extends BaseController {
 
         require('ssp.class.php');
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
-        $extraCondition = "m_inventory.`SerialNumber` >= '" . $startid . "' && " . "m_inventory.`SerialNumber` <= '" . $endid . "'";
+        $extraCondition = "m_inventory.`SerialNumber` IN (" .Session::get('temp_inv_arr') .")";
         $extraCondition .= " && m_historymovement.Status " . $string_temp;
         $extraCondition .= " && m_inventory.Missing " . $string_miss;
         $join = ' INNER JOIN m_historymovement on m_historymovement.ID = m_inventory.LastStatusID';

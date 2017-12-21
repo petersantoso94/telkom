@@ -73,14 +73,14 @@
 </div>
 <div class="white-pane__bordered margbot20" width="100%">
     <div class="row">
-        <div class="col-xs-5" style="margin-left: 10px;">
+        <div class="col-xs-7" style="margin-left: 10px;">
             <div class="row">
                 <label style="margin-top: 7px;">Serial number: </label>
                 <input type="text" id='sn' data-validation="required" required>
                 <button type="button" class="button" id="btn_setsn" style="background-color: #424242; color: white;">Set</button>
             </div>
         </div>
-        <div class="col-xs-6" style="margin-left: 10px;">
+        <div class="col-xs-8" style="margin-left: 10px;">
             <div class="row">
                 <label style="margin-top: 7px;">Fabiao number: </label>
                 <input type="text" id='fabiao' data-validation="required" required>

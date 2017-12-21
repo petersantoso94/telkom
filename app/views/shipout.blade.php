@@ -21,31 +21,33 @@
                 <div class="col-sm-2">
                     <label class="fw300" style="margin-top: 7px;">MSISDN: </label>
                 </div>
-                <div class="col-sm-5">
+                <div class="col-sm-4">
                     <input type="text" class="input-stretch" id='msi'>
                 </div>
-                <div class="col-sm-2"><button type="button" class="button btn-wide wide-h" id="btn_cekmsi" style="background-color: #424242; color: white;">Check</button></div>
+                <div class="col-sm-2"><button type="button" class="button btn-wide wide-h" id="btn_cekmsi" style="background-color: #424242; color: white;">Set</button></div>
             </div>
         </div>
         <div class="row margtop20">
             <div class="form-group">
                 <div class="col-sm-2">
-                    <label class="fw300" style="margin-top: 7px;">First serial number: </label>
+                    <label class="fw300" style="margin-top: 7px;">Serial number: </label>
                 </div>
-                <div class="col-sm-5">
-                    <input type="text" class="input-stretch" id='shipoutstart' name='shipoutstart' data-validation="required" required>
+                <div class="col-sm-8">
+                    <div class="input-group">
+                        <input type="text" class="input-small form-control" id='shipoutstart' name='shipoutstart' data-validation="required" required> 
+                        <span class="input-group-addon">to</span>
+                        <input type="text" class="input-small form-control" id='shipoutend' name='shipoutend' data-validation="required" required>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="row margtop20">
-            <div class="form-group">
-                <div class="col-sm-2">
-                    <label class="fw300" style="margin-top: 7px;">Last serial number: </label>
+                <div class="col-sm-3">
+                    <div class="input-group">
+                        <span class="input-group-addon">$</span>
+                        <input type="text" class="form-control" id="price-inv" value="0">
+                        <span class="input-group-addon">.00</span>
+                    </div>
                 </div>
-                <div class="col-sm-5">
-                    <input type="text" class="input-stretch" id='shipoutend' name='shipoutend' data-validation="required" required>
-                </div>
-                <div class="col-sm-2"><button type="button" class="button btn-wide wide-h" id="btn_ceksn" style="background-color: #424242; color: white;">Check</button></div>
+                <div class="col-sm-2"><button type="button" class="button btn-wide wide-h" id="btn_ceksn" style="background-color: #424242; color: white;">Add</button></div>
+                <div class="col-sm-2"><button type="button" class="button btn-wide wide-h" id="btn_reset" style="background-color: #424242; color: white;">Reset</button></div>
             </div>
         </div>
         <div class="row">
@@ -178,16 +180,6 @@
         <div class="row margtop20">
             <div class="form-group">
                 <div class="col-sm-2">
-                    <label class="fw300" style="margin-top: 7px;">Price (NT$): </label>
-                </div>
-                <div class="col-sm-5">
-                    <input type="text" class="input-stretch" name="price" id="soprice" value="0">
-                </div>
-            </div>
-        </div>
-        <div class="row margtop20">
-            <div class="form-group">
-                <div class="col-sm-2">
                     <label class="fw300" style="margin-top: 7px;">Remark: </label>
                 </div>
                 <div class="col-sm-5">
@@ -229,6 +221,8 @@
                     var postConsStat = '<?php echo Route('postConsStat') ?>';
                     var postNewAgent = '<?php echo Route('postNewAgent') ?>';
                     var postAvail = '<?php echo Route('postAvail') ?>';
+                    var addInv = '<?php echo Route('addInv') ?>';
+                    var delInv = '<?php echo Route('delInv') ?>';
                     var ajax1 = '<?php echo Route('getSubAgent') ?>';
                     var getPDF = '<?php echo Route('getPDFShipout') ?>';
                     var newAgentName = '';
@@ -293,7 +287,7 @@
                     window.printPrev = function (element) {
                         var atLeastOneIsChecked = $('#cons-stat:checkbox:checked').length > 0;
                         var cse = '0';
-                        if(atLeastOneIsChecked){
+                        if (atLeastOneIsChecked) {
                             cse = '1';
                         }
                         var shipout_date = document.getElementById('shipindate').value;
@@ -302,10 +296,9 @@
                         var shipout_subagent = document.getElementById('subagent').value;
                         var shipout_start = document.getElementById('shipoutstart').value;
                         var shipout_end = document.getElementById('shipoutend').value;
-                        var soprice = document.getElementById('soprice').value;
                         $.post(getPDF,
                                 {date: shipout_date, sn: shipout_SN, to: shipout_to, subagent: shipout_subagent
-                                    , start: shipout_start, end: shipout_end, price: soprice, cs: cse}
+                                    , start: shipout_start, end: shipout_end, cs: cse}
                         , function (data) {
 
                         }).done(function () {
@@ -347,6 +340,14 @@
                         });
                     });
 
+                    $("#price-inv").keyup(function () {
+                        setTimeout(function () {
+                            if ($("#price-inv").val().trim().length === 0) {
+                                $("#price-inv").val(0);
+                            }
+                        }, 1000);
+                    });
+
                     var refreshTable = function () {
                         if ($.fn.dataTable.isDataTable('#example')) {
                             table.fnDestroy();
@@ -378,10 +379,32 @@
                             "ajax": inventoryDataBackup3
                         });
                     };
-
+                    
+                    $('#btn_reset').on('click', function (e) {
+                        $.post(delInv,function (data) {});
+                        if ($.fn.dataTable.isDataTable('#example')) {
+                            table.fnDestroy();
+                            table2.fnDestroy();
+                            table3.fnDestroy();
+                        }
+                    });
+                    
                     $('#btn_ceksn').on('click', function (e) {
-                        refreshTable();
-                        $('#btn-print-pdf-so').removeAttr('disabled');
+                        var str = document.getElementById('shipoutstart').value;
+                        var ended = document.getElementById('shipoutend').value;
+                        var priced = document.getElementById('price-inv').value;
+
+                        if (str == '' || ended == '') {
+                            alert("Please enter valid start and end Serial Number!")
+                        } else {
+                            $.post(addInv, {start: str, end: ended,
+                                price: priced}, function (data) {
+                                console.log(data);
+                            }).done(function () {
+                                refreshTable();
+                                $('#btn-print-pdf-so').removeAttr('disabled');
+                            });
+                        }
                     });
 
                     $('#shipoutto').on('change', function (e) {
