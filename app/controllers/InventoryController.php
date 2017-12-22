@@ -425,11 +425,12 @@ class InventoryController extends BaseController {
     }
 
     public function showInventoryShipout() {
-        Session::forget('temp_inv_start');
-        Session::forget('temp_inv_end');
-        Session::forget('temp_inv_price');
-        Session::forget('temp_inv_arr');
-        Session::forget('temp_inv_qty');
+        $allinvs = DB::table('m_inventory')
+                        ->whereIn('SerialNumber', Session::get('temp_inv_arr'))->get();
+        foreach ($allinvs as $upt_inv) {
+            $upt_inv->TempPrice = 0;
+            $upt_inv->save();
+        }
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $firstsn = Input::get('shipoutstart');
             $lastsn = Input::get('shipoutend');
@@ -442,7 +443,7 @@ class InventoryController extends BaseController {
                 $subagent = Input::get('newagent');
             }
             $counter = 0;
-            $allInvAvail = Inventory::whereBetween('SerialNumber', [$firstsn, $lastsn])->where('Missing', 0)->get();
+            $allInvAvail = Inventory::whereIn('SerialNumber', Session::get('temp_inv_arr'))->where('Missing', 0)->get();
             foreach ($allInvAvail as $inv) {
                 $status_ = 2;
                 $history = History::where('ID', $inv['LastStatusID'])->first();
@@ -477,9 +478,20 @@ class InventoryController extends BaseController {
                     $counter++;
                 }
             }
+            Session::forget('temp_inv_start');
+            Session::forget('temp_inv_end');
+            Session::forget('temp_inv_price');
+            Session::forget('temp_inv_arr');
+            Session::forget('temp_inv_qty');
             Session::forget('ConsStat');
             return View::make('shipout')->withResponse('Success')->withPage('inventory shipout')->withNumber($counter);
         }
+        Session::forget('temp_inv_start');
+        Session::forget('temp_inv_end');
+        Session::forget('temp_inv_price');
+        Session::forget('temp_inv_arr');
+        Session::forget('temp_inv_qty');
+        Session::forget('ConsStat');
         return View::make('shipout')->withPage('inventory shipout');
     }
 
@@ -1791,8 +1803,14 @@ class InventoryController extends BaseController {
                     SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
         }
     }
-    
-    static function delInv(){
+
+    static function delInv() {
+        $allinvs = DB::table('m_inventory')
+                        ->whereIn('SerialNumber', Session::get('temp_inv_arr'))->get();
+        foreach ($allinvs as $upt_inv) {
+            $upt_inv->TempPrice = 0;
+            $upt_inv->save();
+        }
         Session::forget('temp_inv_start');
         Session::forget('temp_inv_end');
         Session::forget('temp_inv_price');
@@ -1801,50 +1819,127 @@ class InventoryController extends BaseController {
     }
 
     static function addInv() {
-        $start = Input::get('start');
-        $end = Input::get('end');
-        $price = Input::get('price');
-        $arrInv = '';
-        $qty = 0;
+        try {
+            //BIKIN TYPE -> KALO PRICE AMA TYPE SAMA, QTY DIJUMLAH
+            $start = Input::get('start');
+            $end = Input::get('end');
+            $price = Input::get('price');
+            $arrInv = '';
+            $qty = 0;
+            $idx = 0;
+            $redundant = false;
+            $check_double = false;
 
-        $allInv = Inventory::where('SerialNumber', '>=', $start)->where('SerialNumber', '<=', $end)->select('SerialNumber')->get();
-        foreach ($allInv as $value) {
-            if ($arrInv == '')
-                $arrInv = "'".$value->SerialNumber."'";
-            else
-                $arrInv .= ',' ."'". $value->SerialNumber."'";
+            $allInv = Inventory::where('SerialNumber', '>=', $start)->where('SerialNumber', '<=', $end)->select('SerialNumber')->get();
+            foreach ($allInv as $value) {
+                if ($arrInv == '')
+                    $arrInv = "'" . $value->SerialNumber . "'";
+                else
+                    $arrInv .= ',' . "'" . $value->SerialNumber . "'";
+            }
+            $qty = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('m_inventory.SerialNumber', '>=', $start)->where('m_inventory.SerialNumber', '<=', $end)
+                            ->where('m_historymovement.Status', '!=', '2')->count();
+            if ($qty == 0) {
+                $redundant = true;
+            }
+
+            $cur_type = Inventory::where('SerialNumber', $start)->first()->Type;
+            if (!$redundant) {
+                $update_invs = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                                ->where('m_inventory.SerialNumber', '>=', $start)->where('m_inventory.SerialNumber', '<=', $end)
+                                ->where('m_historymovement.Status', '!=', '2')->get();
+                foreach ($update_invs as $upt_inv) {
+                    $upt_inv->TempPrice = $price;
+                    $upt_inv->save();
+                }
+                if (Session::has('temp_inv_start')) {
+                    $last_inv = explode(',,,', Session::get('temp_inv_start'));
+                    $counter = 0;
+                    $temp_string_a = '';
+                    foreach ($last_inv as $invs) {
+                        if (strpos($invs, '+') !== false) {
+                            $invs = explode('+', $invs)[0];
+                        }
+                        $inventories = Inventory::where('SerialNumber', $invs)->first()->Type;
+                        if ($cur_type == $inventories) {
+                            $last_price = explode(',,,', Session::get('temp_inv_price'));
+                            if ($last_price[$counter] == $price) {
+                                $last_inv[$counter] .= '+' . $start;
+                                $idx = $counter;
+                                $check_double = true;
+                            }
+                        }
+                        if ($temp_string_a == '') {
+                            $temp_string_a = $last_inv[$counter];
+                        } else {
+                            $temp_string_a .= ',,,' . $last_inv[$counter];
+                        }
+                        $counter++;
+                    }
+                    if (!$check_double) {
+                        Session::put('temp_inv_start', Session::get('temp_inv_start') . ',,,' . $start);
+                    } else {
+                        Session::put('temp_inv_start', $temp_string_a);
+                    }
+                } else {
+                    Session::put('temp_inv_start', $start);
+                }
+                if (Session::has('temp_inv_end')) {
+                    if ($check_double) {
+                        $last_inv = explode(',,,', Session::get('temp_inv_end'));
+                        $last_inv[$idx] .= '+' . $end;
+                        $temp_string_a = '';
+                        foreach ($last_inv as $invs) {
+                            if ($temp_string_a == '') {
+                                $temp_string_a = $invs;
+                            } else {
+                                $temp_string_a .= ',,,' . $invs;
+                            }
+                        }
+                        Session::put('temp_inv_end', $temp_string_a);
+                    } else
+                        Session::put('temp_inv_end', Session::get('temp_inv_end') . ',,,' . $end);
+                } else {
+                    Session::put('temp_inv_end', $end);
+                }
+                if (Session::has('temp_inv_price')) {
+                    if (!$check_double)
+                        Session::put('temp_inv_price', Session::get('temp_inv_price') . ',,,' . $price);
+                } else {
+                    Session::put('temp_inv_price', $price);
+                }
+
+                if (Session::has('temp_inv_qty')) {
+                    if ($check_double) {
+                        $last_inv = explode(',,,', Session::get('temp_inv_qty'));
+                        $last_inv[$idx] += $qty;
+                        $temp_string_a = '';
+                        foreach ($last_inv as $invs) {
+                            if ($temp_string_a == '') {
+                                $temp_string_a = $invs;
+                            } else {
+                                $temp_string_a .= ',,,' . $invs;
+                            }
+                        }
+                        Session::put('temp_inv_qty', $temp_string_a);
+                    } else
+                        Session::put('temp_inv_qty', Session::get('temp_inv_qty') . ',,,' . $qty);
+                } else {
+                    Session::put('temp_inv_qty', $qty);
+                }
+            }
+            if (Session::has('temp_inv_arr')) {
+                Session::put('temp_inv_arr', Session::get('temp_inv_arr') . ',' . $arrInv);
+            } else {
+                Session::put('temp_inv_arr', $arrInv);
+            }
+            return Session::get('temp_inv_start') . 'Qty: ' . Session::get('temp_inv_qty');
+        } catch (Exception $e) {
+            return ('Caught exception: ' . $e->getMessage() . "\n" . " The exception was created on line: " . $e->getLine());
         }
-        $qty = DB::table('m_inventory')
-            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-            ->where('m_inventory.SerialNumber', '>=', $start)->where('m_inventory.SerialNumber', '<=', $end)
-                ->where('m_historymovement.Status','!=','2')->count();
-        
-        if (Session::has('temp_inv_start')) {
-            Session::put('temp_inv_start', Session::get('temp_inv_start') . ',,,' . $start);
-        } else {
-            Session::put('temp_inv_start', $start);
-        }
-        if (Session::has('temp_inv_end')) {
-            Session::put('temp_inv_end', Session::get('temp_inv_end') . ',,,' . $end);
-        } else {
-            Session::put('temp_inv_end', $end);
-        }
-        if (Session::has('temp_inv_price')) {
-            Session::put('temp_inv_price', Session::get('temp_inv_price') . ',,,' . $price);
-        } else {
-            Session::put('temp_inv_price', $price);
-        }
-        if (Session::has('temp_inv_arr')) {
-            Session::put('temp_inv_arr', Session::get('temp_inv_arr') . ',' . $arrInv);
-        } else {
-            Session::put('temp_inv_arr', $arrInv);
-        }
-        if (Session::has('temp_inv_qty')) {
-            Session::put('temp_inv_qty', Session::get('temp_inv_qty') . ',,,' . $qty);
-        } else {
-            Session::put('temp_inv_qty', $qty);
-        }
-        return Session::get('temp_inv_arr');
     }
 
     static function inventoryDataBackupOut($id) {
@@ -1895,9 +1990,10 @@ class InventoryController extends BaseController {
                 }
             ),
             array('db' => 'LastWarehouse', 'dt' => 3),
-            array('db' => 'Date', 'dt' => 4),
-            array('db' => 'MSISDN', 'dt' => 5),
-            array('db' => 'SerialNumber', 'dt' => 6, 'formatter' => function( $d, $row ) {
+            array('db' => 'TempPrice', 'dt' => 4),
+            array('db' => 'Date', 'dt' => 5),
+            array('db' => 'MSISDN', 'dt' => 6),
+            array('db' => 'SerialNumber', 'dt' => 7, 'formatter' => function( $d, $row ) {
                     $data = Inventory::find($d);
                     if ($data->Missing == 0) {
                         $hist = History::find($data->LastStatusID);
@@ -1923,7 +2019,7 @@ class InventoryController extends BaseController {
 
         require('ssp.class.php');
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
-        $extraCondition = "m_inventory.`SerialNumber` IN (" .Session::get('temp_inv_arr') .")";
+        $extraCondition = "m_inventory.`SerialNumber` IN (" . Session::get('temp_inv_arr') . ")";
         $extraCondition .= " && m_historymovement.Status " . $string_temp;
         $extraCondition .= " && m_inventory.Missing " . $string_miss;
         $join = ' INNER JOIN m_historymovement on m_historymovement.ID = m_inventory.LastStatusID';

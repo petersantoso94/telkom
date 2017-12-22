@@ -68,6 +68,7 @@
                     <th>Type</th>
                     <th>Last Status</th>
                     <th>Last Warehouse</th>
+                    <th>Shipout Price</th>
                     <th>Date</th>
                     <th>MSISDN</th>
                     <th>Action</th>
@@ -85,6 +86,7 @@
                     <th>Type</th>
                     <th>Last Status</th>
                     <th>Last Warehouse</th>
+                    <th>Shipout Price</th>
                     <th>Date</th>
                     <th>MSISDN</th>
                     <th>Action</th>
@@ -102,6 +104,7 @@
                     <th>Type</th>
                     <th>Last Status</th>
                     <th>Last Warehouse</th>
+                    <th>Shipout Price</th>
                     <th>Date</th>
                     <th>MSISDN</th>
                     <th>Action</th>
@@ -126,7 +129,7 @@
                 <div class="col-xs-2">
                     <label class="fw300" style="margin-top: 7px;">Shipout to: </label>
                 </div>
-                <div class="col-xs-2" style="margin-top: 5px;">
+                <div class="col-xs-3" style="margin-top: 5px;">
                     <select data-placeholder="Choose a destination..." class="chosen-select" style="width: 100%" name="shipout" id="shipoutto">
                         <option></option>
                         <option value="TOKO">TOKO</option>
@@ -379,16 +382,25 @@
                             "ajax": inventoryDataBackup3
                         });
                     };
-                    
+
                     $('#btn_reset').on('click', function (e) {
-                        $.post(delInv,function (data) {});
+                        $.post(delInv, function (data) {});
                         if ($.fn.dataTable.isDataTable('#example')) {
                             table.fnDestroy();
                             table2.fnDestroy();
                             table3.fnDestroy();
+                            $('#example')
+                                    .find('tbody')
+                                    .remove();
+                            $('#example2')
+                                    .find('tbody')
+                                    .remove();
+                            $('#example3')
+                                    .find('tbody')
+                                    .remove();
                         }
                     });
-                    
+
                     $('#btn_ceksn').on('click', function (e) {
                         var str = document.getElementById('shipoutstart').value;
                         var ended = document.getElementById('shipoutend').value;
