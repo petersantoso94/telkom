@@ -431,7 +431,7 @@ class InventoryController extends BaseController {
             $price = Input::get('price');
             $series = Input::get('formSN');
             $subagent = Input::get('subagent');
-            $cs = Session::get('ConsStat');
+            $cs = Session::get('conses');
 
             if (Input::get('newagent') != '') {
                 $subagent = Input::get('newagent');
@@ -477,7 +477,7 @@ class InventoryController extends BaseController {
             Session::forget('temp_inv_price');
             Session::forget('temp_inv_arr');
             Session::forget('temp_inv_qty');
-            Session::forget('ConsStat');
+            Session::forget('conses');
             $allinvs = DB::table('m_inventory')
                             ->whereIn('SerialNumber', Session::get('temp_inv_arr'))->get();
             foreach ($allinvs as $upt_inv) {
@@ -500,7 +500,7 @@ class InventoryController extends BaseController {
             $need_update->TempPrice = 0;
             $need_update->save();
         }
-        Session::forget('ConsStat');
+        Session::forget('conses');
         return View::make('shipout')->withPage('inventory shipout');
     }
 
@@ -1051,7 +1051,7 @@ class InventoryController extends BaseController {
             }
         }
 
-        if (Session::get('price') == 0 && Session::get('ConsStat') == 0) {
+        if (Session::get('conses') == 0) {
             $wh = 'TELIN TAIWAN';
             $temp_string = '銷貨單';
         }
