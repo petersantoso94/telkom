@@ -41,7 +41,7 @@
                 </div>
                 <div class="col-sm-3">
                     <div class="input-group">
-                        <span class="input-group-addon">$</span>
+                        <span class="input-group-addon">NT$</span>
                         <input type="text" class="form-control" id="price-inv" value="0">
                         <span class="input-group-addon">.00</span>
                     </div>

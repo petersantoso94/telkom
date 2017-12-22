@@ -425,12 +425,6 @@ class InventoryController extends BaseController {
     }
 
     public function showInventoryShipout() {
-        $allinvs = DB::table('m_inventory')
-                        ->whereIn('SerialNumber', Session::get('temp_inv_arr'))->get();
-        foreach ($allinvs as $upt_inv) {
-            $upt_inv->TempPrice = 0;
-            $upt_inv->save();
-        }
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $firstsn = Input::get('shipoutstart');
             $lastsn = Input::get('shipoutend');
@@ -484,6 +478,13 @@ class InventoryController extends BaseController {
             Session::forget('temp_inv_arr');
             Session::forget('temp_inv_qty');
             Session::forget('ConsStat');
+            $allinvs = DB::table('m_inventory')
+                            ->whereIn('SerialNumber', Session::get('temp_inv_arr'))->get();
+            foreach ($allinvs as $upt_inv) {
+                $need_update = Inventory::where('SerialNumber', $upt_inv->SerialNumber)->first();
+                $need_update->TempPrice = 0;
+                $need_update->save();
+            }
             return View::make('shipout')->withResponse('Success')->withPage('inventory shipout')->withNumber($counter);
         }
         Session::forget('temp_inv_start');
@@ -491,6 +492,14 @@ class InventoryController extends BaseController {
         Session::forget('temp_inv_price');
         Session::forget('temp_inv_arr');
         Session::forget('temp_inv_qty');
+
+        $allinvs = DB::table('m_inventory')
+                        ->whereIn('SerialNumber', Session::get('temp_inv_arr'))->get();
+        foreach ($allinvs as $upt_inv) {
+            $need_update = Inventory::where('SerialNumber', $upt_inv->SerialNumber)->first();
+            $need_update->TempPrice = 0;
+            $need_update->save();
+        }
         Session::forget('ConsStat');
         return View::make('shipout')->withPage('inventory shipout');
     }
@@ -1010,154 +1019,38 @@ class InventoryController extends BaseController {
 
             return 'success';
         }
-        $type = ['', '', '', ''];
-        $count = ['', '', '', ''];
-        $first = ['', '', '', ''];
-        $last = ['', '', '', ''];
+
+        $all_start = [];
+        $all_end = [];
+        $all_qty = [];
+        $all_price = [];
+        $all_type = [];
         $temp_count = 0;
         $subtotal = 0;
         $temp_string = '';
-        if (Session::has('start')) {
-            $alltype = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
-                            ->where('m_historymovement.Status', '!=', '2')
-                            ->where('m_inventory.Missing', '0')
-                            ->select('m_inventory.Type')
-                            ->distinct()->get();
+        if (Session::has('temp_inv_arr')) {
             $wh = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
+                            ->whereRaw('m_inventory.SerialNumber IN (' . Session::get('temp_inv_arr') . ')')
                             ->where('m_historymovement.Status', '!=', '2')
                             ->where('m_inventory.Missing', '0')
                             ->select('m_inventory.LastWarehouse')
                             ->distinct()->first()->LastWarehouse;
         }
-        if ($alltype != null) {
-            foreach ($alltype as $types) {
-                if ($types->Type == '1') {
-                    $type[$temp_count] = 'SIM 3G';
-                    $counters = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
-                            ->where('m_historymovement.Status', '!=', '2')
-                            ->where('m_inventory.Missing', '0')
-                            ->where('m_inventory.Type', '1')
-                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
-                            ->count();
-                    $count[$temp_count] = $counters;
-                    $firstid = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
-                            ->where('m_historymovement.Status', '!=', '2')
-                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '1')
-                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
-                            ->orderBy('m_inventory.SerialNumber', 'asc')
-                            ->first();
-                    $first[$temp_count] = $firstid->SerialNumber;
-                    $lastid = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
-                            ->where('m_historymovement.Status', '!=', '2')
-                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '1')
-                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
-                            ->orderBy('m_inventory.SerialNumber', 'desc')
-                            ->first();
-                    $last[$temp_count] = $lastid->SerialNumber;
-                    $temp_count++;
-                } else if ($types->Type == '2') {
-                    $type[$temp_count] = 'E-VOUCHER';
-                    $counters = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
-                            ->where('m_historymovement.Status', '!=', '2')
-                            ->where('m_inventory.Missing', '0')
-                            ->where('m_inventory.Type', '2')
-                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
-                            ->count();
-                    $count[$temp_count] = $counters;
-                    $firstid = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
-                            ->where('m_historymovement.Status', '!=', '2')
-                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '2')
-                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
-                            ->orderBy('m_inventory.SerialNumber', 'asc')
-                            ->first();
-                    $first[$temp_count] = $firstid->SerialNumber;
-                    $lastid = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
-                            ->where('m_historymovement.Status', '!=', '2')
-                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '2')
-                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
-                            ->orderBy('m_inventory.SerialNumber', 'desc')
-                            ->first();
-                    $last[$temp_count] = $lastid->SerialNumber;
-                    $temp_count++;
-                } else if ($types->Type == '3') {
-                    $type[$temp_count] = 'PH-VOUCHER';
-                    $counters = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
-                            ->where('m_historymovement.Status', '!=', '2')
-                            ->where('m_inventory.Missing', '0')
-                            ->where('m_inventory.Type', '3')
-                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
-                            ->count();
-                    $count[$temp_count] = $counters;
-                    $firstid = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
-                            ->where('m_historymovement.Status', '!=', '2')
-                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '2')
-                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
-                            ->orderBy('m_inventory.SerialNumber', 'asc')
-                            ->first();
-                    $first[$temp_count] = $firstid->SerialNumber;
-                    $lastid = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
-                            ->where('m_historymovement.Status', '!=', '2')
-                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '3')
-                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
-                            ->orderBy('m_inventory.SerialNumber', 'desc')
-                            ->first();
-                    $last[$temp_count] = $lastid->SerialNumber;
-                    $temp_count++;
-                } else if ($types->Type == '4') {
-                    $type[$temp_count] = 'SIM 4G';
-                    $counters = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
-                            ->where('m_historymovement.Status', '!=', '2')
-                            ->where('m_inventory.Missing', '0')
-                            ->where('m_inventory.Type', '4')
-                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
-                            ->count();
-                    $count[$temp_count] = $counters;
-                    $firstid = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
-                            ->where('m_historymovement.Status', '!=', '2')
-                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '4')
-                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
-                            ->orderBy('m_inventory.SerialNumber', 'asc')
-                            ->first();
-                    $first[$temp_count] = $firstid->SerialNumber;
-                    $lastid = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_inventory.SerialNumber', '>=', Session::get('start'))->where('m_inventory.SerialNumber', '<=', Session::get('end'))
-                            ->where('m_historymovement.Status', '!=', '2')
-                            ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '4')
-                            ->select('m_inventory.SerialNumber', 'm_inventory.Type')
-                            ->orderBy('m_inventory.SerialNumber', 'desc')
-                            ->first();
-                    $last[$temp_count] = $lastid->SerialNumber;
-                    $temp_count++;
+        if (Session::has('temp_inv_start')) {
+            $all_start = explode(',,,', Session::get('temp_inv_start'));
+            $all_end = explode(',,,', Session::get('temp_inv_end'));
+            $all_qty = explode(',,,', Session::get('temp_inv_qty'));
+            $all_price = explode(',,,', Session::get('temp_inv_price'));
+            foreach ($all_start as $starting) {
+                if (strpos($starting, '+') !== false) {
+                    $starting = explode('+', $starting)[0];
                 }
+                $type_a = Inventory::where('SerialNumber', $starting)->first()->Type;
+                array_push($all_type, $type_a);
             }
         }
+
         if (Session::get('price') == 0 && Session::get('ConsStat') == 0) {
             $wh = 'TELIN TAIWAN';
             $temp_string = '銷貨單';
@@ -1230,37 +1123,86 @@ class InventoryController extends BaseController {
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">訂價/單價</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block;">合計</div>
                     </div>';
-        for ($i = 0; $i < count($type); $i++) {
-            if ($type[$i] != '') {
-                $subtotal += round(((Session::get('price') / 1.05) * $count[$i]), 0);
+        for ($i = 0; $i < count($all_start); $i++) {
+            if ($all_start[$i] != '') {
+                $subtotal += round((($all_price[$i] / 1.05) * $all_qty[$i]), 0);
+                $tipe = '';
+                switch ($all_type[$i]) {
+                    case 3:
+                        $tipe = 'ph-Voucher';
+                        break;
+                    case 1:
+                        $tipe = 'SIM 3G';
+                        break;
+                    case 2:
+                        $tipe = 'e-Voucher';
+                        break;
+                    case 4:
+                        $tipe = 'SIM 4G';
+                        break;
+                }
                 $html .= '<div style="width:102%; height:15px; border-left: 1px solid;  border-right: 1px solid;">
                         <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $type[$i] . '</div>
-                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $count[$i] . '</div>
-                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;">NT$ ' . round((Session::get('price') / 1.05), 4) . '</div>
-                        <div style="width:115px; height:15px;float:left; display: inline-block;">NT$ ' . round(((Session::get('price') / 1.05) * $count[$i]), 0) . '</div>
+                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $tipe . '</div>
+                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $all_qty[$i] . '</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;">NT$ ' . round(($all_price[$i] / 1.05), 4) . '</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;">NT$ ' . round((($all_price[$i] / 1.05) * $all_qty[$i]), 0) . '</div>
                     </div>
-                    <div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ';
+                    ';
             } else {
                 $html .= '<div style="width:102%; height:15px; border-left: 1px solid;  border-right: 1px solid;">
                         <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $type[$i] . '</div>
-                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $count[$i] . '</div>
-                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:115px; height:15px;float:left; display: inline-block;"></div>
-                    </div>
-                    <div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ';
-            }
-            if ($i == count($type) - 1)
-                $html .= 'border-bottom: 1px solid;';
-            if ($type[$i] != '') {
-                $html .= '">
-                        <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $first[$i] . ' - ' . $last[$i] . '</div>
+                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:15px;float:left; display: inline-block;"></div>
                     </div>';
+            }
+
+            if ($all_start[$i] != '') {
+                $starts = $all_start[$i];
+                $ends = $all_end[$i];
+                $temp_cot = 0;
+                if (strpos($all_start[$i], '+') !== false) {
+                    $starts = explode('+', $all_start[$i]);
+                }
+                if (strpos($all_end[$i], '+') !== false) {
+                    $ends = explode('+', $all_end[$i]);
+                }
+                if (count($starts) > 1) {
+                    foreach ($starts as $temp1) {
+                        $html .= '<div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ';
+                        if ($i == count($all_start) - 1)
+                            $html .= 'border-bottom: 1px solid;';
+                        $html .= '"><div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>';
+                        $html .= '<div style="width:306px; height:15px;float:left; display: inline-block; border-right: 1px solid;">';
+                        if ($temp_cot == 0)
+                            $html .= $temp1 . ' - ' . $ends[$temp_cot];
+                        else {
+                            $html .= ', ' . $temp1 . ' - ' . $ends[$temp_cot];
+                        }
+                        $temp_cot++;
+                        $html .= '</div>';
+                        $html .= '
+                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;"></div>';
+                        $html .= '</div>';
+                    }
+                } else {
+                    $html .= '<div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ';
+                    if ($i == count($all_start) - 1)
+                        $html .= 'border-bottom: 1px solid;';
+                    $html .= '">
+                        <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">';
+                    $html .= $starts . ' - ' . $ends;
+                    $html .= '</div>
+                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;"></div>';
+                    $html .= '</div>';
+                }
             } else {
                 $html .= '">
                         <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
@@ -1808,8 +1750,9 @@ class InventoryController extends BaseController {
         $allinvs = DB::table('m_inventory')
                         ->whereIn('SerialNumber', Session::get('temp_inv_arr'))->get();
         foreach ($allinvs as $upt_inv) {
-            $upt_inv->TempPrice = 0;
-            $upt_inv->save();
+            $need_update = Inventory::where('SerialNumber', $upt_inv->SerialNumber)->first();
+            $need_update->TempPrice = 0;
+            $need_update->save();
         }
         Session::forget('temp_inv_start');
         Session::forget('temp_inv_end');
@@ -1852,8 +1795,9 @@ class InventoryController extends BaseController {
                                 ->where('m_inventory.SerialNumber', '>=', $start)->where('m_inventory.SerialNumber', '<=', $end)
                                 ->where('m_historymovement.Status', '!=', '2')->get();
                 foreach ($update_invs as $upt_inv) {
-                    $upt_inv->TempPrice = $price;
-                    $upt_inv->save();
+                    $need_update = Inventory::where('SerialNumber', $upt_inv->SerialNumber)->first();
+                    $need_update->TempPrice = $price;
+                    $need_update->save();
                 }
                 if (Session::has('temp_inv_start')) {
                     $last_inv = explode(',,,', Session::get('temp_inv_start'));
