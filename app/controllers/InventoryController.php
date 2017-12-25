@@ -1175,11 +1175,11 @@ class InventoryController extends BaseController {
                         if ($i == count($all_start) - 1)
                             $html .= 'border-bottom: 1px solid;';
                         $html .= '"><div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>';
-                        $html .= '<div style="width:306px; height:15px;float:left; display: inline-block; border-right: 1px solid;">';
-                        if ($temp_cot == 0)
+                        $html .= '<div style="width:302px; height:15px;float:left; display: inline-block; border-right: 1px solid; padding-left: 4px;">';
+                        if ($temp_cot == count($starts) - 1)
                             $html .= $temp1 . ' - ' . $ends[$temp_cot];
                         else {
-                            $html .= ', ' . $temp1 . ' - ' . $ends[$temp_cot];
+                            $html .=  $temp1 . ' - ' . $ends[$temp_cot].', ';
                         }
                         $temp_cot++;
                         $html .= '</div>';
