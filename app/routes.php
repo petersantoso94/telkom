@@ -40,7 +40,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('exportExcel/{start}', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
     Route::post('exportExcel', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
     Route::post('addInv', array('as' => 'addInv', 'before' => '', 'uses' => 'InventoryController@addInv'));
-    Route::post('delInv', array('as' => 'delInv', 'before' => '', 'uses' => 'InventoryController@delInv'));
+    Route::any('delInv', array('as' => 'delInv', 'before' => '', 'uses' => 'InventoryController@delInv'));
     Route::post('getSN', array('as' => 'getSN', 'before' => '', 'uses' => 'InventoryController@getSN'));
     Route::post('getForm', array('as' => 'getForm', 'before' => '', 'uses' => 'InventoryController@getForm'));
     Route::post('getShipout', array('as' => 'getShipout', 'before' => '', 'uses' => 'InventoryController@getShipout'));

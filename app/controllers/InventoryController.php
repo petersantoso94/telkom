@@ -487,19 +487,20 @@ class InventoryController extends BaseController {
             }
             return View::make('shipout')->withResponse('Success')->withPage('inventory shipout')->withNumber($counter);
         }
-        Session::forget('temp_inv_start');
-        Session::forget('temp_inv_end');
-        Session::forget('temp_inv_price');
-        Session::forget('temp_inv_arr');
-        Session::forget('temp_inv_qty');
 
+        $array = explode(',', Session::get('temp_inv_arr'));
         $allinvs = DB::table('m_inventory')
-                        ->whereIn('SerialNumber', Session::get('temp_inv_arr'))->get();
+                        ->whereIn('SerialNumber', $array)->get();
         foreach ($allinvs as $upt_inv) {
             $need_update = Inventory::where('SerialNumber', $upt_inv->SerialNumber)->first();
             $need_update->TempPrice = 0;
             $need_update->save();
         }
+        Session::forget('temp_inv_start');
+        Session::forget('temp_inv_end');
+        Session::forget('temp_inv_price');
+        Session::forget('temp_inv_arr');
+        Session::forget('temp_inv_qty');
         Session::forget('conses');
         return View::make('shipout')->withPage('inventory shipout');
     }
@@ -683,16 +684,30 @@ class InventoryController extends BaseController {
                             foreach ($sheet->getRowIterator() as $rowNumber => $value) {
                                 if ($rowNumber > 1) {
                                     // do stuff with the row
-                                    $msisdn = $value[2];
+                                    $msisdn = (string) $value[2];
+
                                     if ($msisdn != '' && $msisdn != null) {
+                                        if (substr($msisdn, 0, 2) === '\'0') {
+                                            $msisdn = substr($msisdn, 2);
+                                        } else if (substr($msisdn, 0, 1) === '\'' || substr($msisdn, 0, 1) === '0') {
+                                            $msisdn = substr($msisdn, 1);
+                                        }
                                         $inv = Inventory::where('MSISDN', $msisdn)->first();
                                         if ($inv != null) {
-                                            $ivr = new Ivr();
-                                            $ivr->MSISDN_ = $msisdn;
-                                            $ivr->Date = $value[1];
-                                            $ivr->PurchaseAmount = $value[4];
-                                            $ivr->save();
-                                            $counter++;
+                                            $cek_ivr = Ivr::where('MSISDN_', $msisdn)->where('Date', $value[1])->where('PurchaseAmount', $value[4])->first();
+                                            if ($cek_ivr == null || $cek_ivr == '') {
+                                                $date_return = $value[1];
+                                                $date_return = strtotime($date_return);
+                                                $date_return = date('Y-m-d', $date_return);
+                                                $ivr = new Ivr();
+                                                $ivr->MSISDN_ = $msisdn;
+                                                $ivr->Date = $date_return;
+                                                $ivr->PurchaseAmount = $value[4];
+                                                $ivr->save();
+                                                $counter++;
+                                            } else {
+                                                continue;
+                                            }
                                         }
                                     }
                                 }
@@ -712,25 +727,41 @@ class InventoryController extends BaseController {
                         $extention = Input::file('sample_file')->getClientOriginalExtension();
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
-                        $data = Excel::load(base_path() . '/uploaded_file/' . 'temp.' . $extention, function($reader) {
-                                    
-                                })->get();
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                        $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
+                        $reader->setShouldFormatDates(true);
                         $counter = 0;
-                        if (!empty($data) && $data->count()) {
-                            foreach ($data as $key => $value) {
-                                $msisdn = $value->msisdn;
-                                if ($msisdn != '' && $msisdn != null) {
-                                    $inv = Inventory::where('MSISDN', $msisdn)->first();
-                                    if ($inv != null) {
-                                        if ($inv->ApfDate == null || $inv->ApfDate == '') {
-                                            $inv->ApfDate = $value->apf_returned_date;
-                                            $inv->save();
+                        $reader->open($filePath);
+                        foreach ($reader->getSheetIterator() as $sheet) {
+                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                if ($rowNumber > 1) {
+                                    // do stuff with the row
+                                    $msisdn = (string) $value[0];
+                                    if ($msisdn != '' && $msisdn != null) {
+                                        if (substr($msisdn, 0, 2) === '\'0') {
+                                            $msisdn = substr($msisdn, 2);
+                                        } else if (substr($msisdn, 0, 1) === '\'' || substr($msisdn, 0, 1) === '0') {
+                                            $msisdn = substr($msisdn, 1);
+                                        }
+                                        $inv = Inventory::where('MSISDN', 'LIKE', '%' . $msisdn . '%')->first();
+                                        if ($inv != null) {
+                                            if ($inv->ApfDate == '' || $inv->ApfDate == null) {
+                                                $date_return = $value[1];
+                                                $date_return = strtotime($date_return);
+                                                $date_return = date('Y-m-d', $date_return);
+                                                $inv->ApfDate = $date_return;
+                                                $inv->save();
+                                                $counter++;
+                                            } else {
+                                                continue;
+                                            }
                                         }
                                     }
                                 }
-                                $counter++;
                             }
                         }
+
+                        $reader->close();
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberapf($counter);
                     }
                 }
@@ -743,23 +774,41 @@ class InventoryController extends BaseController {
                         $extention = Input::file('sample_file')->getClientOriginalExtension();
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
-                        $data = Excel::load(base_path() . '/uploaded_file/' . 'temp.' . $extention, function($reader) {
-                                    
-                                })->get();
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                        $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
+                        $reader->setShouldFormatDates(true);
                         $counter = 0;
-                        if (!empty($data) && $data->count()) {
-                            foreach ($data as $key => $value) {
-                                $msisdn = $value->new_msisdn;
-                                if ($msisdn != '' && $msisdn != null) {
-                                    $inv = Inventory::where('MSISDN', $msisdn)->first();
-                                    if ($inv != null) {
-                                        $inv->ActivationDate = $value->activation_date;
-                                        $inv->save();
+                        $reader->open($filePath);
+                        foreach ($reader->getSheetIterator() as $sheet) {
+                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                if ($rowNumber > 1) {
+                                    // do stuff with the row
+                                    $msisdn = (string) $value[2];
+                                    if ($msisdn != '' && $msisdn != null) {
+                                        if (substr($msisdn, 0, 2) === '\'0') {
+                                            $msisdn = substr($msisdn, 2);
+                                        } else if (substr($msisdn, 0, 1) === '\'' || substr($msisdn, 0, 1) === '0') {
+                                            $msisdn = substr($msisdn, 1);
+                                        }
+                                        $inv = Inventory::where('MSISDN', 'LIKE', '%' . $msisdn . '%')->first();
+                                        if ($inv != null) {
+                                            if ($inv->ActivationDate == '' || $inv->ActivationDate == null) {
+                                                $date_return = $value[1];
+                                                $date_return = strtotime($date_return);
+                                                $date_return = date('Y-m-d', $date_return);
+                                                $inv->ActivationDate = $date_return;
+                                                $inv->save();
+                                                $counter++;
+                                            } else {
+                                                continue;
+                                            }
+                                        }
                                     }
                                 }
-                                $counter++;
                             }
                         }
+
+                        $reader->close();
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberac($counter);
                     }
                 }
@@ -782,6 +831,30 @@ class InventoryController extends BaseController {
         $inv = Inventory::find($sn);
         $inv->Missing = 1;
         $inv->save();
+
+        $idx = 0;
+        $found = false;
+        $all_start = explode(',,,', Session::get('temp_inv_start'));
+        $all_end = explode(',,,', Session::get('temp_inv_end'));
+        for ($i = 0; $i < count($all_start); $i++) {
+            if ($sn >= $all_start[$i] && $sn <= $all_end[$i]) {
+                $idx = $i;
+                $found = true;
+            }
+        }
+        if ($found) {
+            $last_inv = explode(',,,', Session::get('temp_inv_qty'));
+            $last_inv[$idx] -= 1;
+            $temp_string_a = '';
+            foreach ($last_inv as $invs) {
+                if ($temp_string_a == '') {
+                    $temp_string_a = $invs;
+                } else {
+                    $temp_string_a .= ',,,' . $invs;
+                }
+            }
+            Session::put('temp_inv_qty', $temp_string_a);
+        }
     }
 
     static function postConsStat() {
@@ -1025,6 +1098,7 @@ class InventoryController extends BaseController {
         $all_qty = [];
         $all_price = [];
         $all_type = [];
+        $font_color = '';
         $temp_count = 0;
         $subtotal = 0;
         $temp_string = '';
@@ -1035,7 +1109,10 @@ class InventoryController extends BaseController {
                             ->where('m_historymovement.Status', '!=', '2')
                             ->where('m_inventory.Missing', '0')
                             ->select('m_inventory.LastWarehouse')
-                            ->distinct()->first()->LastWarehouse;
+                            ->distinct()->first();
+            if ($wh) {
+                $wh = $wh->LastWarehouse;
+            }
         }
         if (Session::has('temp_inv_start')) {
             $all_start = explode(',,,', Session::get('temp_inv_start'));
@@ -1055,8 +1132,10 @@ class InventoryController extends BaseController {
             $wh = 'TELIN TAIWAN';
             $temp_string = '銷貨單';
         }
-        if (Session::get('conses') == 1)
+        if (Session::get('conses') == 1) {
             $temp_string = '借貨單';
+            $font_color = 'color:red;';
+        }
         $html = '
             <html>
                 <head>
@@ -1090,7 +1169,7 @@ class InventoryController extends BaseController {
                         <div style="width:91px;padding-top:1px; float:left; display: inline-block; "><img src="' . base_path() . '/uploaded_file/telin.jpg" style="width: 100%;"></div>
                     </div>
                     <div style="width:102%; height:30px; text-align:center;">
-                        <p style="font-size:120%;">' . $temp_string . '</p>
+                        <p style="font-size:120%;' . $font_color . '">' . $temp_string . '</p>
                     </div>
                     <div style="width:101.6%; padding-left:3px;height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
                         訂單日期：' . Session::get('date') . '
@@ -1171,15 +1250,19 @@ class InventoryController extends BaseController {
                 }
                 if (count($starts) > 1) {
                     foreach ($starts as $temp1) {
-                        $html .= '<div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ';
-                        if ($i == count($all_start) - 1)
-                            $html .= 'border-bottom: 1px solid;';
-                        $html .= '"><div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>';
-                        $html .= '<div style="width:302px; height:15px;float:left; display: inline-block; border-right: 1px solid; padding-left: 4px;">';
+                        $html .= '<div style="width:102%; height:15px; padding-top:-3px; border-left: 1px solid;  border-right: 1px solid;">';
+                        $html .= '<div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>';
+                        $html .= '<div style="width:302px; height:15px;float:left; display: inline-block; border-right: 1px solid; padding-left: 4px;font-size:9px">';
                         if ($temp_cot == count($starts) - 1)
-                            $html .= $temp1 . ' - ' . $ends[$temp_cot];
+                            if ($temp1 === $ends[$temp_cot])
+                                $html .= $temp1;
+                            else
+                                $html .= $temp1 . ' - ' . $ends[$temp_cot];
                         else {
-                            $html .=  $temp1 . ' - ' . $ends[$temp_cot].', ';
+                            if ($temp1 === $ends[$temp_cot])
+                                $html .= $temp1;
+                            else
+                                $html .= $temp1 . ' - ' . $ends[$temp_cot] . ', ';
                         }
                         $temp_cot++;
                         $html .= '</div>';
@@ -1190,30 +1273,22 @@ class InventoryController extends BaseController {
                         $html .= '</div>';
                     }
                 } else {
-                    $html .= '<div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ';
-                    if ($i == count($all_start) - 1)
-                        $html .= 'border-bottom: 1px solid;';
-                    $html .= '">
-                        <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">';
-                    $html .= $starts . ' - ' . $ends;
+                    $html .= '<div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ">';
+                    $html .= '<div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid; font-size:9px">';
+                    if ($starts === $ends)
+                        $html .= $starts;
+                    else
+                        $html .= $starts . ' - ' . $ends;
                     $html .= '</div>
                         <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:15px;float:left; display: inline-block;"></div>';
                     $html .= '</div>';
                 }
-            } else {
-                $html .= '">
-                        <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:115px; height:15px;float:left; display: inline-block;"></div>
-                    </div>';
             }
         }
-        $html .= '<div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; ">
+        $html .= '<div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-top:1px solid;">
                         <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">備</div>
                         <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總額</div>
@@ -1477,13 +1552,13 @@ class InventoryController extends BaseController {
                     </div>';
         for ($i = 0; $i < count($type); $i++) {
             if ($type[$i] != '') {
-                $subtotal += round(((Session::get('temp_inv_price') / 1.05) * $count[$i]), 4);
+                $subtotal += round(((Session::get('temp_inv_price') / 1.05) * $count[$i]), 0);
                 $html .= '<div style="width:102%; height:15px; border-left: 1px solid;  border-right: 1px solid;">
                         <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $type[$i] . '</div>
                         <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $count[$i] . '</div>
                         <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;">NT$ ' . round((Session::get('temp_inv_price') / 1.05), 4) . '</div>
-                        <div style="width:115px; height:15px;float:left; display: inline-block;">NT$ ' . round(((Session::get('temp_inv_price') / 1.05) * $count[$i]), 4) . '</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;">NT$ ' . round(((Session::get('temp_inv_price') / 1.05) * $count[$i]), 0) . '</div>
                     </div>
                     <div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ';
             } else {
@@ -1526,13 +1601,13 @@ class InventoryController extends BaseController {
                         <div style="width:100px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">營業稅</div>
-                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . $subtotal / 0.05 . '</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . round($subtotal * 0.05, 0) . '</div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">註</div>
                         <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總計</div>
-                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . ($subtotal + ($subtotal / 0.05)) . '</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . round(($subtotal + ($subtotal * 0.05)), 0) . '</div>
                     </div>
                     <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:200px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
@@ -1565,6 +1640,30 @@ class InventoryController extends BaseController {
         $inv = Inventory::find($sn);
         $inv->Missing = 0;
         $inv->save();
+
+        $idx = 0;
+        $found = false;
+        $all_start = explode(',,,', Session::get('temp_inv_start'));
+        $all_end = explode(',,,', Session::get('temp_inv_end'));
+        for ($i = 0; $i < count($all_start); $i++) {
+            if ($sn >= $all_start[$i] && $sn <= $all_end[$i]) {
+                $idx = $i;
+                $found = true;
+            }
+        }
+        if ($found) {
+            $last_inv = explode(',,,', Session::get('temp_inv_qty'));
+            $last_inv[$idx] += 1;
+            $temp_string_a = '';
+            foreach ($last_inv as $invs) {
+                if ($temp_string_a == '') {
+                    $temp_string_a = $invs;
+                } else {
+                    $temp_string_a .= ',,,' . $invs;
+                }
+            }
+            Session::put('temp_inv_qty', $temp_string_a);
+        }
     }
 
     static function getSN($msi) {
@@ -1747,8 +1846,9 @@ class InventoryController extends BaseController {
     }
 
     static function delInv() {
+        $array = explode(',', Session::get('temp_inv_arr'));
         $allinvs = DB::table('m_inventory')
-                        ->whereIn('SerialNumber', Session::get('temp_inv_arr'))->get();
+                        ->whereIn('SerialNumber', $array)->get();
         foreach ($allinvs as $upt_inv) {
             $need_update = Inventory::where('SerialNumber', $upt_inv->SerialNumber)->first();
             $need_update->TempPrice = 0;
@@ -1783,7 +1883,7 @@ class InventoryController extends BaseController {
             $qty = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                             ->where('m_inventory.SerialNumber', '>=', $start)->where('m_inventory.SerialNumber', '<=', $end)
-                            ->where('m_historymovement.Status', '!=', '2')->count();
+                            ->where('m_historymovement.Status', '!=', '2')->where('m_inventory.Missing', '0')->count();
             if ($qty == 0) {
                 $redundant = true;
             }

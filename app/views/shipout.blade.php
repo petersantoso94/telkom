@@ -384,7 +384,7 @@
                     };
 
                     $('#btn_reset').on('click', function (e) {
-                        $.post(delInv, function (data) {});
+                        $.post(delInv, function (data) {console.log(data);});
                         if ($.fn.dataTable.isDataTable('#example')) {
                             table.fnDestroy();
                             table2.fnDestroy();
