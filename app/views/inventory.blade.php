@@ -170,9 +170,9 @@
                             console.log(exportExcelLink);
                             $.get(exportExcelLink, function (data) {
 
-                            }).done(function () {
+                            }).done(function (data) {
                                 document.getElementById("loading-animation").style.display = "none";
-                                window.location.href = '<?php echo url() . '/publictest.xlsx' ?>';
+                                window.location.href = "<?php echo url() ?>"+'public/'+data;
                             });
                         };
 

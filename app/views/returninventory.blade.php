@@ -125,8 +125,11 @@
             </div>
         </div>
         <div class="row margtop20">
-            <div class="col-xs-8">
+            <div class="col-xs-7">
                 <input type="submit" class="button btnblue btn-wide wide-h" style="background-color: #424242; color: white;" id='btn-sub' disabled="true">
+            </div>
+            <div class="col-xs-1">
+                <button type="button" onclick="printPrev(this)" disabled="" id="btn-print-pdf-so"><span class="glyphicon glyphicon-print"></span></button>
             </div>
         </div>
     </form>
@@ -139,129 +142,143 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.8.0/jszip.js"></script>
 <script>
-Date.prototype.toDateInputValue = (function () {
-    var local = new Date(this);
-    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
-    return local.toJSON().slice(0, 10);
-});
-var table = '';
-var table2 = '';
-var inventoryDataBackup = '';
-var inventoryDataBackup2 = '';
-var semua_sn = '';
-var getForm = '';
-var getShipout = '';
-var shto = '';
-var topsn = '';
+                    Date.prototype.toDateInputValue = (function () {
+                        var local = new Date(this);
+                        local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+                        return local.toJSON().slice(0, 10);
+                    });
+                    var table = '';
+                    var table2 = '';
+                    var inventoryDataBackup = '';
+                    var inventoryDataBackup2 = '';
+                    var semua_sn = '';
+                    var getForm = '';
+                    var getShipout = '';
+                    var shto = '';
+                    var topsn = '';
+                    var getPDFret = '<?php echo Route('getPDFReturn') ?>';
 
-$(function () {
-    oFileIn = document.getElementById('input-pict');
-    if (oFileIn.addEventListener) {
-        oFileIn.addEventListener('change', filePicked, false);
-    }
-});
+                    $(function () {
+                        oFileIn = document.getElementById('input-pict');
+                        if (oFileIn.addEventListener) {
+                            oFileIn.addEventListener('change', filePicked, false);
+                        }
+                    });
 
+                    window.printPrev = function (element) {
+                        var shipout_date = document.getElementById('shipindate').value;
+                        var shipout_SN = document.getElementById('formSN').value;
+                        $.post(getPDFret,
+                                {date: shipout_date, sn: shipout_SN, array_SN:semua_sn}
+                        , function (data) {
+                            
+                        }).done(function (data) {
+                            console.log(data);
+                            window.open(getPDFret);
+                        });
+                    };
 
-function filePicked(oEvent) {
-    // Get The File From The Input
-    var oFile = oEvent.target.files[0];
-    var sFilename = oFile.name;
-    // Create A File Reader HTML5
-    var reader = new FileReader();
+                    function filePicked(oEvent) {
+                        // Get The File From The Input
+                        var oFile = oEvent.target.files[0];
+                        var sFilename = oFile.name;
+                        // Create A File Reader HTML5
+                        var reader = new FileReader();
 
-    // Ready The Event For When A File Gets Selected
-    reader.onload = function (e) {
-        semua_sn = '';
-        var data = e.target.result;
-        var cfb = XLSX.read(data, {type: 'binary'});
-        // Loop Over Each Sheet
-        cfb.SheetNames.forEach(function (sheetName) {
-            // Obtain The Current Row As CSV
-            var sCSV = XLS.utils.make_csv(cfb.Sheets[sheetName]);
-            var oJS = XLS.utils.sheet_to_row_object_array(cfb.Sheets[sheetName]);
+                        // Ready The Event For When A File Gets Selected
+                        reader.onload = function (e) {
+                            semua_sn = '';
+                            var data = e.target.result;
+                            var cfb = XLSX.read(data, {type: 'binary'});
+                            // Loop Over Each Sheet
+                            cfb.SheetNames.forEach(function (sheetName) {
+                                // Obtain The Current Row As CSV
+                                var sCSV = XLS.utils.make_csv(cfb.Sheets[sheetName]);
+                                var oJS = XLS.utils.sheet_to_row_object_array(cfb.Sheets[sheetName]);
 
 //            $("#my_file_output").html(sCSV);
-            oJS.forEach(function (item, index) {
-                topsn = item.id;
-                if (semua_sn == '') {
-                    semua_sn += item.id
-                } else {
-                    semua_sn += ',' + item.id
-                }
-            });
+                                oJS.forEach(function (item, index) {
+                                    topsn = item.id;
+                                    if (semua_sn == '') {
+                                        semua_sn += item.id
+                                    } else {
+                                        semua_sn += ',' + item.id
+                                    }
+                                });
 
-            console.log(semua_sn)
-            console.log(oJS[0].id)
-        });
-    };
+                                console.log(semua_sn)
+                                console.log(oJS[0].id)
+                            });
+                        };
 
-    // Tell JS To Start Reading The File.. You could delay this if desired
-    reader.readAsBinaryString(oFile);
-}
+                        // Tell JS To Start Reading The File.. You could delay this if desired
+                        reader.readAsBinaryString(oFile);
+                    }
 
-$('#btn_ceksn').on('click', function (e) {
-    $('#btn-sub').removeAttr('disabled');
-    if ($.fn.dataTable.isDataTable('#example')) {
-        table.fnDestroy();
-        table2.fnDestroy();
-    }
-    inventoryDataBackup = '<?php echo Route('inventoryDataBackupReturn') ?>' + '/' + semua_sn + ',,,1';
-    inventoryDataBackup2 = '<?php echo Route('inventoryDataBackupReturn') ?>' + '/' + semua_sn + ',,,0';
-    table = $('#example').dataTable({
-        "draw": 10,
-        "bDestroy": true,
-        "processing": true,
-        "serverSide": true,
-        "ajax": inventoryDataBackup
-    });
-    table2 = $('#example2').dataTable({
-        "draw": 10,
-        "bDestroy": true,
-        "processing": true,
-        "serverSide": true,
-        "ajax": inventoryDataBackup2
-    });
-    getShipout = '<?php echo Route('getShipout') ?>';
-    $.post(getShipout, {sn: topsn}, function (data) {
-        shto = data;
-    }).done(function () {
-        refreshFormSN();
-    });
-});
-$('#btn-insert-image').on('click', function (e) {
-    $('#input-pict').click();
+                    $('#btn_ceksn').on('click', function (e) {
+                        $('#btn-sub').removeAttr('disabled');
+                        if ($.fn.dataTable.isDataTable('#example')) {
+                            table.fnDestroy();
+                            table2.fnDestroy();
+                        }
+                        inventoryDataBackup = '<?php echo Route('inventoryDataBackupReturn') ?>' + '/' + semua_sn + ',,,1';
+                        inventoryDataBackup2 = '<?php echo Route('inventoryDataBackupReturn') ?>' + '/' + semua_sn + ',,,0';
+                        table = $('#example').dataTable({
+                            "draw": 10,
+                            "bDestroy": true,
+                            "processing": true,
+                            "serverSide": true,
+                            "ajax": inventoryDataBackup
+                        });
+                        table2 = $('#example2').dataTable({
+                            "draw": 10,
+                            "bDestroy": true,
+                            "processing": true,
+                            "serverSide": true,
+                            "ajax": inventoryDataBackup2
+                        });
+                        getShipout = '<?php echo Route('getShipout') ?>';
+                        $.post(getShipout, {sn: topsn}, function (data) {
+                            shto = data;
+                        }).done(function () {
+                            refreshFormSN();
+                            $('#btn-print-pdf-so').removeAttr('disabled');
+                        });
+                    });
+                    $('#btn-insert-image').on('click', function (e) {
+                        $('#input-pict').click();
 
-});
-$('#input-pict').on('change', function (e) {
-    $('#pict-name').html($('#input-pict').val().split('\\').pop());
-});
-$(document).ready(function () {
-    $('#shipindate').val(new Date().toDateInputValue());
-});
+                    });
+                    $('#input-pict').on('change', function (e) {
+                        $('#pict-name').html($('#input-pict').val().split('\\').pop());
+                    });
+                    $(document).ready(function () {
+                        $('#shipindate').val(new Date().toDateInputValue());
+                    });
 
-$('#shipindate').on('change', function () {
-    refreshFormSN();
-});
+                    $('#shipindate').on('change', function () {
+                        refreshFormSN();
+                    });
 
-var refreshFormSN = function () {
-    var shipoutto = '';
-    var stringtamp = '';
-    if (shto != '') {
-        shipoutto = shto;
-        if (shipoutto.includes('ASPROF'))
-            shipoutto = 'ASF';
-        else if (shipoutto.includes('ASPROT'))
-            shipoutto = 'AST';
-        else
-            shipoutto = shipoutto.substring(0, 3).toUpperCase();
-    }
-    stringtamp = $('#shipindate').val() + '/RE/' + shipoutto;
-    getForm = '<?php echo Route('getForm') ?>';
-    $.post(getForm, {sn: stringtamp}, function (data) {
-        stringtamp += data;
-    }).done(function () {
-        $('#formSN').val(stringtamp);
-    });
-};
+                    var refreshFormSN = function () {
+                        var shipoutto = '';
+                        var stringtamp = '';
+                        if (shto != '') {
+                            shipoutto = shto;
+                            if (shipoutto.includes('ASPROF'))
+                                shipoutto = 'ASF';
+                            else if (shipoutto.includes('ASPROT'))
+                                shipoutto = 'AST';
+                            else
+                                shipoutto = shipoutto.substring(0, 3).toUpperCase();
+                        }
+                        stringtamp = $('#shipindate').val() + '/RE/' + shipoutto;
+                        getForm = '<?php echo Route('getForm') ?>';
+                        $.post(getForm, {sn: stringtamp}, function (data) {
+                            stringtamp += data;
+                        }).done(function () {
+                            $('#formSN').val(stringtamp);
+                        });
+                    };
 </script>
 @stop
