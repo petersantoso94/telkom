@@ -445,7 +445,7 @@ class InventoryController extends BaseController {
                     $hist = new History();
                     $hist->SN = $inv->SerialNumber;
                     $hist->SubAgent = $subagent;
-                    $hist->Price = $price;
+                    $hist->Price = $inv->TempPrice;
                     if ($price == '0' && $cs == 0) {
                         $hist->Warehouse = 'TELIN TAIWAN';
                         $inv->LastWarehouse = 'TELIN TAIWAN';

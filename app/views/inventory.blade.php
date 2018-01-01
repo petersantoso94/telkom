@@ -65,7 +65,7 @@
                 <button type="button" onclick="exportExcel(this)"><span class="glyphicon glyphicon-export"></span></button> Export excel
             </div>
             <div class="row" style="margin-top: 15px">
-                <button type="button" onclick="printPDF(this)"><span class="glyphicon glyphicon-print"></span></button> Print PDF
+                <button type="button" onclick="printPDF(this)" disabled="" id="print-pdf"><span class="glyphicon glyphicon-print"></span></button> Print PDF
             </div>
         </div>
         <div class="loader" id="loading-animation" style="display:none;"></div>
@@ -197,6 +197,7 @@
                             $.post(postFS, {fs: temp3}, function (data) {
 
                             }).done(function () {
+                                $('#print-pdf').removeAttr('disabled');
                                 drawTable();
                             });
                         });
@@ -243,6 +244,7 @@
                                         }
                                     });
                                 }).done(function () {
+                                    $('#print-pdf').attr("disabled", "disabled");
                                     $(".chosen-select").chosen()
                                     $(this).trigger("chosen:updated");
                                     drawTable();
