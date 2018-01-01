@@ -54,6 +54,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::any('getPDFShipout', array('as' => 'getPDFShipout', 'before' => '', 'uses' => 'InventoryController@getPDFShipout'));
     Route::any('getPDFReturn', array('as' => 'getPDFReturn', 'before' => '', 'uses' => 'InventoryController@getPDFReturn'));
     Route::any('getPDFCons', array('as' => 'getPDFCons', 'before' => '', 'uses' => 'InventoryController@getPDFCons'));
+    Route::any('getPDFInv', array('as' => 'getPDFInv', 'before' => '', 'uses' => 'InventoryController@getPDFInv'));
     Route::post('postAvail', array('as' => 'postAvail', 'before' => '', 'uses' => 'InventoryController@postAvail'));
     Route::post('getSubAgent', array('as' => 'getSubAgent', 'before' => '', 'uses' => 'InventoryController@getSubAgent'));
 });

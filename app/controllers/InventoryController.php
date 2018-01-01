@@ -871,47 +871,47 @@ class InventoryController extends BaseController {
         if ($filter[0] != 'all') {
             $typesym = '=';
             $type = $filter[0];
-            if($filter[0] == '1'){
+            if ($filter[0] == '1') {
                 $filenames = 'sim3g';
-            }else if($filter[0] == '2'){
+            } else if ($filter[0] == '2') {
                 $filenames = 'evoc';
-            }else if($filter[0] == '3'){
+            } else if ($filter[0] == '3') {
                 $filenames = 'phvoc';
-            }else if($filter[0] == '4'){
+            } else if ($filter[0] == '4') {
                 $filenames = 'sim4g';
             }
         }
-        if (Session::has('WarehouseInv')){
+        if (Session::has('WarehouseInv')) {
             $wh = Session::get('WarehouseInv');
-            $filenames .= '_'.$wh;
+            $filenames .= '_' . $wh;
         }
-        if (Session::has('FormSeriesInv')){
+        if (Session::has('FormSeriesInv')) {
             $fs = Session::get('FormSeriesInv');
-            $filenames .= '_'.str_replace('/','_', $fs);
+            $filenames .= '_' . str_replace('/', '_', $fs);
         }
         if (isset($filter[1])) {
             $statussym = '=';
             $status = $filter[1];
-            if($filter[1] == '0'){
+            if ($filter[1] == '0') {
                 $filenames .= '_shipin';
-            }else if($filter[1] == '1'){
+            } else if ($filter[1] == '1') {
                 $filenames .= '_return';
-            }else if($filter[1] == '2'){
+            } else if ($filter[1] == '2') {
                 $filenames .= '_shipout';
-            }else if($filter[1] == '3'){
+            } else if ($filter[1] == '3') {
                 $filenames .= '_warehouse';
-            }else if($filter[1] == '4'){
+            } else if ($filter[1] == '4') {
                 $filenames .= '_consignment';
             }
         }
-        
+
         $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
-        $filePath = public_path() . "/inventory_".$filenames.".xlsx";
+        $filePath = public_path() . "/inventory_" . $filenames . ".xlsx";
         $writer->openToFile($filePath);
         $myArr = array("SERIAL NUMBER", "MSISDN", "TYPE", "LAST STATUS", "SHIPOUT TO", "SUBAGENT", "FORM SERIES", "LAST WAREHOUSE", "SHIPOUT DATE", "SHIPOUT PRICE", "SHIPIN DATE", "SHIPIN PRICE", "REMARK");
         $writer->addRow($myArr); // add a row at a time
 
-        
+
         if ($fs == '') {
             $invs = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
@@ -986,7 +986,7 @@ class InventoryController extends BaseController {
             $writer->addRow($myArr);
         }
         $writer->close();
-        return "/inventory_".$filenames.".xlsx";
+        return "/inventory_" . $filenames . ".xlsx";
     }
 
     static function exportExcel2($filter) {
@@ -1379,7 +1379,7 @@ class InventoryController extends BaseController {
                             ->where('m_inventory.Missing', '0')
                             ->select('m_inventory.LastWarehouse')
                             ->distinct()->first();
-            if($wh){
+            if ($wh) {
                 $wh = $wh->LastWarehouse;
             }
         }
@@ -1649,7 +1649,206 @@ class InventoryController extends BaseController {
             </html>';
         return PDF ::load($html, 'F4', 'portrait')->show(Session::get('sn'));
     }
-    
+
+    static function getPDFInv() {
+        $type = ['', '', '', ''];
+        $count = ['', '', '', ''];
+        $first = ['', '', '', ''];
+        $last = ['', '', '', ''];
+        $temp_count = 0;
+        $subtotal = 0;
+        $date_item = '';
+        $shipout_item = '';
+        $alltype = '';
+        $wh = '';
+        $inv_item = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                        ->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('FormSeriesInv') . '%')->first();
+        if ($inv_item) {
+            $date_item = $inv_item->Date;
+            $shipout_item = $inv_item->SubAgent;
+            $wh = $inv_item->Warehouse;
+        }
+        if (Session::has('FormSeriesInv')) {
+            $alltype = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                            ->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('FormSeriesInv') . '%')
+                            ->select(DB::raw(' m_historymovement.Price, m_inventory.Type, COUNT(m_inventory.SerialNumber) AS "Qty"'))
+                            ->groupBy('m_historymovement.Price', 'm_inventory.Type')->get();
+        }
+        $html = '
+            <html>
+                <head>
+                    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+                    <style>
+                        @font-face {
+                            font-family:traditional;
+                            src:url("public/fonts/traditional.ttf");
+                        }
+                        body{
+                            font-size: 12px;
+                            font-family:traditional;
+                            padding-top: -1cm;
+                        }
+                        p{
+                            font-size: 90%;
+                            line-height: 0.3;
+                            font-family:traditional;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div style="width:102%; height:93px; border-style: solid;border-width: 2px;">
+                        <div style="width:91px;padding-top:1px; float:left; display: inline-block;"><img src="' . base_path() . '/uploaded_file/as.jpg" style="width: 100%;"></div>
+                        <div style="width:500px; float:left; text-align:center; display: inline-block; padding-top:3px;">
+                            <p>台灣紅白電訊股份有限公司</p>
+                            <p>Telekomunikasi Indonesia International (Taiwan) Limited</p>
+                            <p>114 台北市內湖區洲子街77號7樓之1</p>
+                            <p>Tel: +886 (02) 87525071, Fax: +886 (02) 87523619</p>
+                        </div>
+                        <div style="width:91px;padding-top:1px; float:left; display: inline-block; "><img src="' . base_path() . '/uploaded_file/telin.jpg" style="width: 100%;"></div>
+                    </div>
+                    <div style="width:102%; height:30px; text-align:center;">
+                        <p style="font-size:120%;">銷貨單</p>
+                    </div>
+                    <div style="width:101.6%; padding-left:3px;height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
+                        訂單日期：' . $date_item . '
+                    </div>
+                    <div style="width:101.6%; padding-left:3px;height:20px; border-left: 1px solid;  border-right: 1px solid;">
+                        訂單編號：' . Session::get('FormSeriesInv') . '
+                    </div>
+                    <div style="width:101.6%; padding-left:3px;height:20px;border-left: 1px solid; border-bottom: 1px solid; border-right: 1px solid;">
+                        客戶編號：' . explode(' ', $shipout_item)[0] . '
+                    </div>
+                    <div style="width:102%; height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
+                        <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block;">客戶名稱 ：</div>
+                        <div style="width:430px; height:20px;float:left; display: inline-block;">' . $shipout_item . '</div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block;">統一編號: 54013468</div>
+                    </div>
+                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid;">
+                        <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">送貨地址 ：</div>
+                        <div style="width:430px; height:20px;float:left; display: inline-block;"></div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block;"></div>
+                    </div>
+                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">發票號碼 :</div>
+                        <div style="width:430px; height:20px;float:left; display: inline-block;">QS 48949608</div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block;">倉 庫 別:' . $wh . ' (紅白電訊)</div>
+                    </div>
+                    <div style="width:102%; text-align:center;height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:100px; height:20px;float:left; display: inline-block; border-right: 1px solid;">產品編號</div>
+                        <div style="width:300px; height:20px;float:left; display: inline-block; border-right: 1px solid;">產品名稱</div>
+                        <div style="width:70px; height:20px;float:left; display: inline-block; border-right: 1px solid;">數 量</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">訂價/單價</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">合計</div>
+                    </div>';
+        foreach ($alltype as $per_inv) {
+            if ($per_inv != '') {
+                $subtotal += round((($per_inv->Price / 1.05) * $per_inv->Qty), 0);
+                $tipe = '';
+                switch ($per_inv->Type) {
+                    case 3:
+                        $tipe = 'ph-Voucher';
+                        break;
+                    case 1:
+                        $tipe = 'SIM 3G';
+                        break;
+                    case 2:
+                        $tipe = 'e-Voucher';
+                        break;
+                    case 4:
+                        $tipe = 'SIM 4G';
+                        break;
+                }
+                $html .= '<div style="width:102%; height:15px; border-left: 1px solid;  border-right: 1px solid;">
+                        <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $tipe . '</div>
+                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $per_inv->Qty . '</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;">NT$ ' . round(($per_inv->Price / 1.05), 4) . '</div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;">NT$ ' . round((($per_inv->Price / 1.05) * $per_inv->Qty), 0) . '</div>
+                    </div>
+                    ';
+            } else {
+                $html .= '<div style="width:102%; height:15px; border-left: 1px solid;  border-right: 1px solid;">
+                        <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;"></div>
+                    </div>';
+            }
+
+            if ($per_inv != '') {
+                $starts = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_historymovement.Price', $per_inv->Price)->where('m_inventory.Type', $per_inv->Type)
+                                ->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('FormSeriesInv') . '%')
+                                ->orderBy('m_inventory.SerialNumber', 'ASC')->first();
+                $ends = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_historymovement.Price', $per_inv->Price)->where('m_inventory.Type', $per_inv->Type)
+                                ->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('FormSeriesInv') . '%')
+                                ->orderBy('m_inventory.SerialNumber', 'DESC')->first();
+
+                $html .= '<div style="width:102%; height:15px; padding-top:-3px; border-left: 1px solid;  border-right: 1px solid;">';
+                $html .= '<div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>';
+                $html .= '<div style="width:302px; height:15px;float:left; display: inline-block; border-right: 1px solid; padding-left: 4px;font-size:9px">';
+                if ($starts->SerialNumber === $ends->SerialNumber)
+                    $html .= $starts->SerialNumber;
+                else
+                    $html .= $starts->SerialNumber . ' - ' . $ends->SerialNumber;
+                $html .= '</div>';
+                $html .= '
+                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;"></div>';
+                $html .= '</div>';
+            }
+        }
+        $html .= '<div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-top: 1px solid; ">
+                        <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">備</div>
+                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總額</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . $subtotal . '</div>
+                    </div>
+                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; ">
+                        <div style="width:100px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">營業稅</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . round($subtotal * 0.05, 0) . '</div>
+                    </div>
+                    <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">註</div>
+                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總計</div>
+                        <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . round(($subtotal + ($subtotal * 0.05)), 0) . '</div>
+                    </div>
+                    <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:200px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block; border-right: 1px solid;">主管簽章</div>
+                        <div style="width:70px; height:20px;float:left; display: inline-block; border-right: 1px solid;">財務處</div>
+                        <div style="width:230px; height:20px;float:left; display: inline-block;">承辦人</div>
+                    </div>
+                    <div style="width:102%;text-align:center; height:60px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:200px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:200px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:70px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:230px; height:60px;float:left; display: inline-block;">' . Auth::user()->UserEmail . '</div>
+                    </div>
+                    <div style="width:102%; height:10px;"></div>
+                    <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;border-top: 1px solid;">
+                        <div style="width:350px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
+                        <div style="width:350px; height:20px;float:left; display: inline-block;">承辦人</div>
+                    </div>
+                    <div style="width:102%;text-align:center; height:392px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
+                        <div style="width:350px; height:392px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:350px; height:392px;float:left; display: inline-block;"></div>
+                    </div>
+                </body>
+            </html>';
+        return PDF ::load($html, 'F4', 'portrait')->show(Session::get('sn'));
+    }
+
     static function getPDFReturn() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sn = Input::get('sn');
@@ -1684,7 +1883,7 @@ class InventoryController extends BaseController {
                             ->where('m_inventory.Missing', '0')->whereIn('m_inventory.SerialNumber', $arr_sn)->orWhereIn('m_inventory.MSISDN', $arr_sn)
                             ->select('m_inventory.LastWarehouse')
                             ->distinct()->first();
-            if($wh){
+            if ($wh) {
                 $wh = $wh->LastWarehouse;
             }
         }
