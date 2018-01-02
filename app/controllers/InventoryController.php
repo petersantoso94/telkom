@@ -432,15 +432,14 @@ class InventoryController extends BaseController {
             $series = Input::get('formSN');
             $subagent = Input::get('subagent');
             $cs = Session::get('conses');
-
-            if (Input::get('newagent') != '') {
-                $subagent = Input::get('newagent');
-            }
+            $invs = str_replace("'", '', Session::get('temp_inv_arr'));
+            $arr_inv  = explode(',',$invs);
+            
             $counter = 0;
-            $allInvAvail = Inventory::whereIn('SerialNumber', Session::get('temp_inv_arr'))->where('Missing', 0)->get();
+            $allInvAvail = Inventory::whereIn('SerialNumber', $arr_inv)->where('Missing', 0)->get();
             foreach ($allInvAvail as $inv) {
                 $status_ = 2;
-                $history = History::where('ID', $inv['LastStatusID'])->first();
+                $history = History::where('ID', $inv->LastStatusID)->first();
                 if ($history->Status != 2) { //available
                     $hist = new History();
                     $hist->SN = $inv->SerialNumber;
@@ -1661,6 +1660,8 @@ class InventoryController extends BaseController {
         $shipout_item = '';
         $alltype = '';
         $wh = '';
+        $title = '銷貨單';
+        $color = '';
         $inv_item = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                         ->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('FormSeriesInv') . '%')->first();
@@ -1668,6 +1669,17 @@ class InventoryController extends BaseController {
             $date_item = $inv_item->Date;
             $shipout_item = $inv_item->SubAgent;
             $wh = $inv_item->Warehouse;
+
+            switch ($inv_item->Status) {
+                case 4:
+                    $color = 'color:red;';
+                    $title = '借貨單';
+                    break;
+                case 1:
+                    $color = 'color:red;';
+                    $title = '還貨單';
+                    break;
+            }
         }
         if (Session::has('FormSeriesInv')) {
             $alltype = DB::table('m_inventory')
@@ -1709,7 +1721,7 @@ class InventoryController extends BaseController {
                         <div style="width:91px;padding-top:1px; float:left; display: inline-block; "><img src="' . base_path() . '/uploaded_file/telin.jpg" style="width: 100%;"></div>
                     </div>
                     <div style="width:102%; height:30px; text-align:center;">
-                        <p style="font-size:120%;">銷貨單</p>
+                        <p style="font-size:120%;' . $color . '">' . $title . '</p>
                     </div>
                     <div style="width:101.6%; padding-left:3px;height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
                         訂單日期：' . $date_item . '
