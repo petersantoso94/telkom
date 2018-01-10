@@ -433,8 +433,8 @@ class InventoryController extends BaseController {
             $subagent = Input::get('subagent');
             $cs = Session::get('conses');
             $invs = str_replace("'", '', Session::get('temp_inv_arr'));
-            $arr_inv  = explode(',',$invs);
-            
+            $arr_inv = explode(',', $invs);
+
             $counter = 0;
             $allInvAvail = Inventory::whereIn('SerialNumber', $arr_inv)->where('Missing', 0)->get();
             foreach ($allInvAvail as $inv) {
@@ -714,6 +714,8 @@ class InventoryController extends BaseController {
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
                         $reader->setShouldFormatDates(true);
                         $counter = 0;
+                        $arr_msisdn = [];
+                        $arr_date = [];
                         $reader->open($filePath);
                         foreach ($reader->getSheetIterator() as $sheet) {
                             foreach ($sheet->getRowIterator() as $rowNumber => $value) {
@@ -721,30 +723,36 @@ class InventoryController extends BaseController {
                                     // do stuff with the row
                                     $msisdn = (string) $value[0];
                                     if ($msisdn != '' && $msisdn != null) {
-                                        if (substr($msisdn, 0, 2) === '\'0') {
-                                            $msisdn = substr($msisdn, 2);
-                                        } else if (substr($msisdn, 0, 1) === '\'' || substr($msisdn, 0, 1) === '0') {
+                                        $msisdn = str_replace('\'', '', $msisdn);
+                                        if (substr($msisdn, 0, 1) === '0') {
                                             $msisdn = substr($msisdn, 1);
                                         }
-                                        $inv = Inventory::where('MSISDN', 'LIKE', '%' . $msisdn . '%')->first();
-                                        if ($inv != null) {
-                                            if ($inv->ApfDate == '' || $inv->ApfDate == null) {
-                                                $date_return = $value[1];
-                                                $date_return = strtotime($date_return);
-                                                $date_return = date('Y-m-d', $date_return);
-                                                $inv->ApfDate = $date_return;
-                                                $inv->save();
-                                                $counter++;
-                                            } else {
-                                                continue;
-                                            }
-                                        }
+                                        array_push($arr_msisdn, $msisdn);
+                                        $date_return = $value[1];
+                                        $date_return = strtotime($date_return);
+                                        $date_return = date('Y-m-d', $date_return);
+                                        array_push($arr_date, $date_return);
                                     }
                                 }
                             }
                         }
 
                         $reader->close();
+                        $table = Inventory::getModel()->getTable();
+                        $cases = [];
+                        $ids = [];
+                        $params = [];
+                        $counter = count($arr_msisdn);
+
+                        for ($i = 0; $i < count($arr_msisdn); $i++) {
+                            $id = (int) $arr_msisdn[$i];
+                            $cases[] = "WHEN {$id} then ?";
+                            $params[] = $arr_date[$i];
+                            $ids[] = $id;
+                        }
+                        $ids = implode(',', $ids);
+                        $cases = implode(' ', $cases);
+                        DB::update("UPDATE `{$table}` SET `ApfDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberapf($counter);
                     }
                 }
@@ -762,36 +770,56 @@ class InventoryController extends BaseController {
                         $reader->setShouldFormatDates(true);
                         $counter = 0;
                         $reader->open($filePath);
+                        $arr_msisdn = [];
+                        $arr_return = [];
                         foreach ($reader->getSheetIterator() as $sheet) {
                             foreach ($sheet->getRowIterator() as $rowNumber => $value) {
                                 if ($rowNumber > 1) {
                                     // do stuff with the row
                                     $msisdn = (string) $value[2];
                                     if ($msisdn != '' && $msisdn != null) {
-                                        if (substr($msisdn, 0, 2) === '\'0') {
-                                            $msisdn = substr($msisdn, 2);
-                                        } else if (substr($msisdn, 0, 1) === '\'' || substr($msisdn, 0, 1) === '0') {
+                                        $msisdn = str_replace('\'', '', $msisdn);
+                                        if (substr($msisdn, 0, 1) === '0') {
                                             $msisdn = substr($msisdn, 1);
                                         }
-                                        $inv = Inventory::where('MSISDN', 'LIKE', '%' . $msisdn . '%')->first();
-                                        if ($inv != null) {
-                                            if ($inv->ActivationDate == '' || $inv->ActivationDate == null) {
-                                                $date_return = $value[1];
-                                                $date_return = strtotime($date_return);
-                                                $date_return = date('Y-m-d', $date_return);
-                                                $inv->ActivationDate = $date_return;
-                                                $inv->save();
-                                                $counter++;
-                                            } else {
-                                                continue;
-                                            }
-                                        }
+                                        array_push($arr_msisdn, $msisdn);
+                                        $date_return = $value[1];
+                                        $date_return = explode('/', $date_return);
+                                        $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                        $date_return = strtotime($date_return);
+                                        $date_return = date('Y-m-d', $date_return);
+                                        array_push($arr_return, $date_return);
                                     }
                                 }
                             }
                         }
-
                         $reader->close();
+                        $table = Inventory::getModel()->getTable();
+                        $cases = [];
+                        $ids = [];
+                        $params = [];
+                        $counter = count($arr_msisdn);
+
+                        for ($i = 0; $i < count($arr_msisdn); $i++) {
+                            $id = (int) $arr_msisdn[$i];
+                            $cases[] = "WHEN {$id} then ?";
+                            $params[] = $arr_return[$i];
+                            $ids[] = $id;
+//                            $inv = Inventory::where('MSISDN', 'LIKE', '%' . $arr_msisdn[$i] . '%')->first();
+//                            if ($inv != null) {
+//                                if ($inv->ActivationDate == '' || $inv->ActivationDate == null) {
+//                                    $inv->ActivationDate = $arr_return[$i];
+//                                    $inv->save();
+//                                    $counter++;
+//                                } else {
+//                                    continue;
+//                                }
+//                            }
+                        }
+                        $ids = implode(',', $ids);
+                        $cases = implode(' ', $cases);
+                        DB::update("UPDATE `{$table}` SET `ActivationDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
+
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberac($counter);
                     }
                 }
@@ -1090,11 +1118,13 @@ class InventoryController extends BaseController {
             $subagent = Input::get('subagent');
             $start = Input::get('start');
             $end = Input::get('end');
+            $fabiao = Input::get('fabiao');
 
             Session::put('sn', $sn);
             Session::put('date', $date);
             Session::put('subagent', $subagent);
             Session::put('to', $to);
+            Session::put('fabiao', $fabiao);
             Session::put('conses', Input::get('cs'));
             if ($start != '' && $end != '') {
                 Session::put('start', $start);
@@ -1203,7 +1233,7 @@ class InventoryController extends BaseController {
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">發票號碼 :</div>
-                        <div style="width:430px; height:20px;float:left; display: inline-block;">QS 48949608</div>
+                        <div style="width:430px; height:20px;float:left; display: inline-block;">' . Session::get('fabiao') . '</div>
                         <div style="width:200px; height:20px;float:left; display: inline-block;">倉 庫 別:' . $wh . ' (紅白電訊)</div>
                     </div>
                     <div style="width:102%; text-align:center;height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">

@@ -122,6 +122,12 @@
                 <div class="col-sm-5">
                     <input type="date" class="input-stretch" id='shipindate' name="eventDate" data-validation="required" required>
                 </div>
+                <div class="col-sm-2">
+                    <label class="fw300" style="margin-top: 7px;">發票 number: </label>
+                </div>
+                <div class="col-sm-5">
+                    <input type="text" class="input-stretch" id='fabiao' name="fabiaoNumber">
+                </div>
             </div>
         </div>
         <div class="row margtop20">
@@ -299,9 +305,10 @@
                         var shipout_subagent = document.getElementById('subagent').value;
                         var shipout_start = document.getElementById('shipoutstart').value;
                         var shipout_end = document.getElementById('shipoutend').value;
+                        var fabiaonum = document.getElementById('fabiao').value;
                         $.post(getPDF,
                                 {date: shipout_date, sn: shipout_SN, to: shipout_to, subagent: shipout_subagent
-                                    , start: shipout_start, end: shipout_end, cs: cse}
+                                    , start: shipout_start, end: shipout_end, cs: cse, fabiao: fabiaonum}
                         , function (data) {
 
                         }).done(function () {
