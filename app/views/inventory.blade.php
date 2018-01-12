@@ -83,7 +83,7 @@
         <div class="col-xs-8" style="margin-left: 10px;">
             <div class="row">
                 <label style="margin-top: 7px;">Fabiao number: </label>
-                <input type="text" id='fabiao' data-validation="required" required>
+                <input type="text" id='fabiao'>
                 <button type="button" class="button" id="btn_setfb" style="background-color: #424242; color: white;">Change</button>
             </div>
         </div>        
@@ -98,6 +98,7 @@
                 <th>Last Status</th>
                 <th>Shipout to</th>
                 <th>Form Series</th>
+                <th>Fabiao Number</th>
                 <th>Last Warehouse</th>
                 <th>Date</th>
                 <th>MSISDN</th>
@@ -122,6 +123,7 @@
                     var postFS = '<?php echo Route('postFormSeries') ?>';
                     var postWH = '<?php echo Route('postWarehouse') ?>';
                     var getPDF = '<?php echo Route('getPDFInv') ?>';
+                    var changeFB = '<?php echo Route('changeFB') ?>';
 
                     window.printPDF = function (element) {
                         window.open(getPDF);
@@ -159,6 +161,21 @@
                             });
                         } else {
                             alert('Please insert serial number first!')
+                        }
+                    });
+                    $('#btn_setfb').on('click', function () {
+                        var fb = document.getElementById('fabiao').value;
+                        if (fb != '') {
+                            if (confirm("Do you want to change fabiao number into "+fb+" ?") == true) {
+                                $.post(changeFB, {fab: fb}, function (data) {
+
+                                }).done(function (data) {
+                                    alert('Successfully update '+data+' data!');
+                                    drawTable();
+                                });
+                            }
+                        } else {
+                            alert('Please insert fabiao number first!')
                         }
                     });
                     table = $('#example').dataTable({

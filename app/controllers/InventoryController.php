@@ -455,6 +455,7 @@ class InventoryController extends BaseController {
                     $hist->ShipoutNumber = $series;
                     $hist->Status = $status_;
                     $hist->Remark = Input::get('remark');
+                    $hist->FabiaoNumber = Input::get('fabiaoNumber');
                     $hist->Date = Input::get('eventDate');
                     $hist->userRecord = Auth::user()->ID;
                     $hist->save();
@@ -866,6 +867,18 @@ class InventoryController extends BaseController {
             }
             Session::put('temp_inv_qty', $temp_string_a);
         }
+    }
+
+    static function changeFB() {
+        $hists = History::where('ShipoutNumber',Session::get('FormSeriesInv'))->get();
+        $fabiao = Input::get('fab');
+        $counter = 0;
+        foreach($hists as $hist){
+            $hist->FabiaoNumber = $fabiao;
+            $hist->save();
+            $counter++;
+        }
+        return $counter;
     }
 
     static function postConsStat() {
@@ -1690,6 +1703,7 @@ class InventoryController extends BaseController {
         $shipout_item = '';
         $alltype = '';
         $wh = '';
+        $fabiao = '';
         $title = '銷貨單';
         $color = '';
         $inv_item = DB::table('m_inventory')
@@ -1699,6 +1713,7 @@ class InventoryController extends BaseController {
             $date_item = $inv_item->Date;
             $shipout_item = $inv_item->SubAgent;
             $wh = $inv_item->Warehouse;
+            $fabiao = $inv_item->FabiaoNumber;
 
             switch ($inv_item->Status) {
                 case 4:
@@ -1774,7 +1789,7 @@ class InventoryController extends BaseController {
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">發票號碼 :</div>
-                        <div style="width:430px; height:20px;float:left; display: inline-block;">QS 48949608</div>
+                        <div style="width:430px; height:20px;float:left; display: inline-block;">'.$fabiao.'</div>
                         <div style="width:200px; height:20px;float:left; display: inline-block;">倉 庫 別:' . $wh . ' (紅白電訊)</div>
                     </div>
                     <div style="width:102%; text-align:center;height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
@@ -2342,9 +2357,10 @@ class InventoryController extends BaseController {
                 ),
                 array('db' => 'SubAgent', 'dt' => 3),
                 array('db' => 'ShipoutNumber', 'dt' => 4),
-                array('db' => 'LastWarehouse', 'dt' => 5),
-                array('db' => 'Date', 'dt' => 6),
-                array('db' => 'MSISDN', 'dt' => 7)
+                array('db' => 'FabiaoNumber', 'dt' => 5),
+                array('db' => 'LastWarehouse', 'dt' => 6),
+                array('db' => 'Date', 'dt' => 7),
+                array('db' => 'MSISDN', 'dt' => 8)
             );
 
             $sql_details = getConnection();
@@ -2397,9 +2413,10 @@ class InventoryController extends BaseController {
                 ),
                 array('db' => 'SubAgent', 'dt' => 3),
                 array('db' => 'ShipoutNumber', 'dt' => 4),
-                array('db' => 'LastWarehouse', 'dt' => 5),
-                array('db' => 'Date', 'dt' => 6),
-                array('db' => 'MSISDN', 'dt' => 7)
+                array('db' => 'FabiaoNumber', 'dt' => 5),
+                array('db' => 'LastWarehouse', 'dt' => 6),
+                array('db' => 'Date', 'dt' => 7),
+                array('db' => 'MSISDN', 'dt' => 8)
             );
 
             $sql_details = getConnection();
