@@ -270,109 +270,8 @@ class InventoryController extends BaseController {
     }
 
     public function showDashboard() {
-        $dataReport = [];
-        $today = getdate();
 
-        //monthly
-        //SIM
-        if (Session::has('sim_month')) {
-            $total_shipout_this_year = Session::get('sim_month');
-        } else {
-            $total_shipout_this_year = DB::table('m_inventory')
-                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                    ->where('m_historymovement.Status', '2')
-                    ->where('m_inventory.Missing', '0')
-                    ->whereIn('m_inventory.Type', array(1, 4))
-                    ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '%')
-                    ->count('m_inventory.SerialNumber');
-            Session::put('sim_month', $total_shipout_this_year);
-        }
-        $last_history_month = DB::table('m_inventory')
-                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
-                        ->where('m_inventory.Missing', '0')
-                        ->whereIn('m_inventory.Type', array(1, 4))
-                        ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '%')->orderBy('m_historymovement.Date', 'desc')
-                        ->select('m_historymovement.Date')->distinct()->first();
-        $temp_count1 = 1;
-        if ($last_history_month != null)
-            $temp_count1 = (explode('-', $last_history_month->Date)[1]);
-        $dataReport['avg_monthly_sim'] = (int) ($total_shipout_this_year / $temp_count1);
-        //VOC
-        if (Session::has('voc_month')) {
-            $total_shipout_this_year = Session::get('voc_month');
-        } else {
-            $total_shipout_this_year = DB::table('m_inventory')
-                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                    ->where('m_historymovement.Status', '2')
-                    ->where('m_inventory.Missing', '0')
-                    ->whereIn('m_inventory.Type', array(2, 3))
-                    ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '%')
-                    ->count('m_inventory.SerialNumber');
-            Session::put('voc_month', $total_shipout_this_year);
-        }
-        $last_history_month = DB::table('m_inventory')
-                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
-                        ->where('m_inventory.Missing', '0')
-                        ->whereIn('m_inventory.Type', array(2, 3))
-                        ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '%')->orderBy('m_historymovement.Date', 'desc')
-                        ->select('m_historymovement.Date')->distinct()->first();
-        $temp_count1 = 1;
-        if ($last_history_month != null)
-            $temp_count1 = (explode('-', $last_history_month->Date)[1]);
-        $dataReport['avg_monthly_voc'] = (int) ($total_shipout_this_year / $temp_count1);
-
-        //weekly
-        //SIM
-        if (Session::has('sim_week')) {
-            $total_shipout_this_month = Session::get('sim_week');
-        } else {
-            $total_shipout_this_month = DB::table('m_inventory')
-                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                    ->where('m_historymovement.Status', '2')
-                    ->where('m_inventory.Missing', '0')
-                    ->whereIn('m_inventory.Type', array(1, 4))
-                    ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '-' . $today['mon'] . '%')
-                    ->count('m_inventory.SerialNumber');
-            Session::put('sim_week', $total_shipout_this_month);
-        }
-        $last_history_week = DB::table('m_inventory')
-                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
-                        ->where('m_inventory.Missing', '0')
-                        ->whereIn('m_inventory.Type', array(1, 4))
-                        ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '-' . $today['mon'] . '%')->orderBy('m_historymovement.Date', 'desc')
-                        ->select('m_historymovement.Date')->distinct()->first();
-        $week_number = 1;
-        if ($last_history_week != null)
-            $week_number = (int) ((explode('-', $last_history_week->Date)[2]) / 7);
-        $dataReport['avg_weekly_sim'] = (int) ($total_shipout_this_month / $week_number);
-        //voc
-        if (Session::has('voc_week')) {
-            $total_shipout_this_month = Session::get('voc_week');
-        } else {
-            $total_shipout_this_month = DB::table('m_inventory')
-                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                    ->where('m_historymovement.Status', '2')
-                    ->where('m_inventory.Missing', '0')
-                    ->whereIn('m_inventory.Type', array(2, 3))
-                    ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '-' . $today['mon'] . '%')
-                    ->count('m_inventory.SerialNumber');
-            Session::put('voc_week', $total_shipout_this_month);
-        }
-        $last_history_week = DB::table('m_inventory')
-                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
-                        ->where('m_inventory.Missing', '0')
-                        ->whereIn('m_inventory.Type', array(2, 3))
-                        ->where('m_historymovement.Date', 'like', "%" . $today['year'] . '-' . $today['mon'] . '%')->orderBy('m_historymovement.Date', 'desc')
-                        ->select('m_historymovement.Date')->distinct()->first();
-        $week_number = 1;
-        if ($last_history_week != null)
-            $week_number = (int) ((explode('-', $last_history_week->Date)[2]) / 7);
-        $dataReport['avg_weekly_voc'] = (int) ($total_shipout_this_month / $week_number);
-        return View::make('dashboard')->withPage('dashboard')->withData($dataReport);
+        return View::make('dashboard')->withPage('dashboard');
     }
 
     public function showWarehouseInventory() {
@@ -664,6 +563,9 @@ class InventoryController extends BaseController {
 
                         $reader->open($filePath);
                         $counter = 0;
+                        $arr_msisdn = [];
+                        $arr_buydate = [];
+                        $arr_buy = [];
                         foreach ($reader->getSheetIterator() as $sheet) {
                             foreach ($sheet->getRowIterator() as $rowNumber => $value) {
                                 if ($rowNumber > 1) {
@@ -671,35 +573,37 @@ class InventoryController extends BaseController {
                                     $msisdn = (string) $value[2];
 
                                     if ($msisdn != '' && $msisdn != null) {
-                                        if (substr($msisdn, 0, 2) === '\'0') {
-                                            $msisdn = substr($msisdn, 2);
-                                        } else if (substr($msisdn, 0, 1) === '\'' || substr($msisdn, 0, 1) === '0') {
+                                        $msisdn = str_replace('\'', '', $msisdn);
+                                        if (substr($msisdn, 0, 1) === '0') {
                                             $msisdn = substr($msisdn, 1);
                                         }
-                                        $inv = Inventory::where('MSISDN', $msisdn)->first();
-                                        if ($inv != null) {
-                                            $cek_ivr = Ivr::where('MSISDN_', $msisdn)->where('Date', $value[1])->where('PurchaseAmount', $value[4])->first();
-                                            if ($cek_ivr == null || $cek_ivr == '') {
-                                                $date_return = $value[1];
-                                                $date_return = strtotime($date_return);
-                                                $date_return = date('Y-m-d', $date_return);
-                                                $ivr = new Ivr();
-                                                $ivr->MSISDN_ = $msisdn;
-                                                $ivr->Date = $date_return;
-                                                $ivr->PurchaseAmount = $value[4];
-                                                $ivr->save();
-                                                $counter++;
-                                            } else {
-                                                continue;
-                                            }
+                                        array_push($arr_msisdn, $msisdn);
+                                        $date_return = $value[1];
+                                        if (is_object($date_return)) {
+                                            $date_return = $date_return->format('Y-m-d');
+                                        } else {
+                                            $date_return = explode('/', $date_return);
+                                            $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                            $date_return = strtotime($date_return);
+                                            $date_return = date('Y-m-d', $date_return);
                                         }
+                                        array_push($arr_buydate, $date_return);
+                                        array_push($arr_buy, $value[4]);
                                     }
                                 }
                             }
                         }
-
                         $reader->close();
-                        return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumber($counter);
+                        $for_raw = '';
+                        for ($i = 0; $i < count($arr_msisdn); $i++) {
+                            $unik = $arr_msisdn[$i] . '-' . $arr_buydate[$i] . '-' . $arr_buy[$i];
+                            if ($i == 0)
+                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_buydate[$i] . "','" . $unik . "','" . $arr_buy[$i] . "',CURDATE(),CURDATE(),'-','" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            else
+                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_buydate[$i] . "','" . $unik . "','" . $arr_buy[$i] . "',CURDATE(),CURDATE(),'-','" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                        }
+                        DB::insert("INSERT INTO m_ivr VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Unik=Unik;");
+                        return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumber(count($arr_msisdn));
                     }
                 }
                 return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
@@ -838,6 +742,29 @@ class InventoryController extends BaseController {
 
     //============================ajax===============================
 
+
+
+    static function getIVR() {
+//        $year = '2018';
+        $year = Input::get('year');
+        $data = [];
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status >= 10')->get();
+        if(!count($all_ivr)){
+            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        }
+        foreach ($all_ivr as $ivr) {
+            if (!isset($data[$ivr->Status]))
+                $data[$ivr->Status] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            for ($i = 0; $i < 12; $i++) {
+                if ($i == $ivr->Month - 1) {
+                    $data[$ivr->Status][$i] = $ivr->Counter;
+                }
+            }
+        }
+        return $data;
+    }
+
     static function postMissing() {
         $sn = Input::get('sn');
         $inv = Inventory::find($sn);
@@ -870,10 +797,10 @@ class InventoryController extends BaseController {
     }
 
     static function changeFB() {
-        $hists = History::where('ShipoutNumber',Session::get('FormSeriesInv'))->get();
+        $hists = History::where('ShipoutNumber', Session::get('FormSeriesInv'))->get();
         $fabiao = Input::get('fab');
         $counter = 0;
-        foreach($hists as $hist){
+        foreach ($hists as $hist) {
             $hist->FabiaoNumber = $fabiao;
             $hist->save();
             $counter++;
@@ -1789,7 +1716,7 @@ class InventoryController extends BaseController {
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">發票號碼 :</div>
-                        <div style="width:430px; height:20px;float:left; display: inline-block;">'.$fabiao.'</div>
+                        <div style="width:430px; height:20px;float:left; display: inline-block;">' . $fabiao . '</div>
                         <div style="width:200px; height:20px;float:left; display: inline-block;">倉 庫 別:' . $wh . ' (紅白電訊)</div>
                     </div>
                     <div style="width:102%; text-align:center;height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">

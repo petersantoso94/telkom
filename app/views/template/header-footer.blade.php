@@ -12,6 +12,7 @@
         <title>So mini - @yield('title')</title>
         <link href='https://fonts.googleapis.com/css?family=Roboto:100,400,300' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="{{Asset('lib/css/bootstrap.min.css')}}" />
+        <link rel="stylesheet" href="{{Asset('lib/c3/c3.css')}}" />
         <link rel="stylesheet" href="{{Asset('css/dist/template/header-footer.css')}}" />
         <link rel="stylesheet" type="text/css" href="{{Asset('lib/bootstrap/css/jquery.dataTables.css')}}">
         <link rel="stylesheet" href="{{Asset('css/jquery-ui.min.css')}}">
@@ -109,6 +110,8 @@
 
         <script src="{{Asset('lib/js/jquery-1.11.3.min.js')}}"></script>
         <script src="{{Asset('lib/js/bootstrap.min.js')}}"></script>
+        <script src="{{Asset('lib/c3/d3.js')}}"></script>
+        <script src="{{Asset('lib/c3/c3.min.js')}}"></script>
         <script src="{{Asset('js/header-footer.js')}}"></script>
         <!-- FastClick -->
         <script src="{{Asset('adminlte/bower_components/fastclick/lib/fastclick.js')}}"></script>
