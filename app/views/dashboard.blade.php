@@ -289,11 +289,38 @@
 <script>
     var getIVR = '<?php echo Route('getIVR') ?>';
     var l_year = document.getElementById('ivr_year').value;
-
+    var colorNames = Object.keys(window.chartColors);
     $('#ivr_year').on('change', function (e) {
         l_year = document.getElementById('ivr_year').value;
         refreshBarChart();
     });
+
+    var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    var color = Chart.helpers.color;
+    var barChartData = {
+        labels: MONTHS,
+        datasets: []
+    };
+
+    window.onload = function () {
+        var ctx = document.getElementById("barChart_ivr").getContext("2d");
+        window.myBar = new Chart(ctx, {
+            type: 'bar',
+            data: barChartData,
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Monthly internet subscriber'
+                }
+            }
+        });
+
+        refreshBarChart();
+    };
 
 
     //-------------
@@ -304,58 +331,20 @@
         $.post(getIVR, {year: l_year}, function (data) {
 
         }).done(function (data) {
+            barChartData.datasets = [];
             $.each(data, function (index, value) {
-                datasetz.push({
+                var colorName = colorNames[barChartData.datasets.length % colorNames.length];
+                var dsColor = window.chartColors[colorName];
+                barChartData.datasets.push({
                     label: index,
-                    fillColor: 'rgba(210, 214, 222, 1)',
-                    strokeColor: 'rgba(210, 214, 222, 1)',
-                    pointColor: 'rgba(210, 214, 222, 1)',
-                    pointStrokeColor: '#c1c7d1',
-                    pointHighlightFill: '#fff',
-                    pointHighlightStroke: 'rgba(220,220,220,1)',
+                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                    borderColor: dsColor,
+                    borderWidth: 1,
                     data: value
                 });
             });
-            var areaChartData = {
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
-                datasets: datasetz
-            }
-            var barChartCanvas = $('#barChart_ivr').get(0).getContext('2d')
-            var barChart = new Chart(barChartCanvas)
-            var barChartData = areaChartData
-            barChartData.datasets[1].fillColor = '#00a65a'
-            barChartData.datasets[1].strokeColor = '#00a65a'
-            barChartData.datasets[1].pointColor = '#00a65a'
-            var barChartOptions = {
-                //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
-                scaleBeginAtZero: true,
-                //Boolean - Whether grid lines are shown across the chart
-                scaleShowGridLines: true,
-                //String - Colour of the grid lines
-                scaleGridLineColor: 'rgba(0,0,0,.05)',
-                //Number - Width of the grid lines
-                scaleGridLineWidth: 1,
-                //Boolean - Whether to show horizontal lines (except X axis)
-                scaleShowHorizontalLines: true,
-                //Boolean - Whether to show vertical lines (except Y axis)
-                scaleShowVerticalLines: true,
-                //Boolean - If there is a stroke on each bar
-                barShowStroke: true,
-                //Number - Pixel width of the bar stroke
-                barStrokeWidth: 2,
-                //Number - Spacing between each of the X value sets
-                barValueSpacing: 5,
-                //Number - Spacing between data sets within X values
-                barDatasetSpacing: 1,
-                //String - A legend template
-                legendTemplate: '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].fillColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',
-                //Boolean - whether to make the chart responsive
-                responsive: true,
-                maintainAspectRatio: true
-            }
-
-            barChartOptions.datasetFill = false
-            barChart.Bar(barChartData, barChartOptions)
+            console.log(barChartData);
+            window.myBar.update();
         });
 
 

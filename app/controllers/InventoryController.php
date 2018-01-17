@@ -749,10 +749,10 @@ class InventoryController extends BaseController {
         $year = Input::get('year');
         $data = [];
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status >= 10')->get();
-        if(!count($all_ivr)){
-            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        }
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
         foreach ($all_ivr as $ivr) {
             if (!isset($data[$ivr->Status]))
                 $data[$ivr->Status] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];

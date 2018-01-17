@@ -110,8 +110,8 @@
 
         <script src="{{Asset('lib/js/jquery-1.11.3.min.js')}}"></script>
         <script src="{{Asset('lib/js/bootstrap.min.js')}}"></script>
-        <script src="{{Asset('lib/c3/d3.js')}}"></script>
-        <script src="{{Asset('lib/c3/c3.min.js')}}"></script>
+        <!--<script src="{{Asset('lib/c3/d3.js')}}"></script>-->
+        <!--<script src="{{Asset('lib/c3/c3.min.js')}}"></script>-->
         <script src="{{Asset('js/header-footer.js')}}"></script>
         <!-- FastClick -->
         <script src="{{Asset('adminlte/bower_components/fastclick/lib/fastclick.js')}}"></script>
@@ -125,7 +125,9 @@
         <!-- SlimScroll -->
         <script src="{{Asset('adminlte/bower_components/jquery-slimscroll/jquery.slimscroll.min.js')}}"></script>
         <!-- ChartJS -->
-        <script src="{{Asset('adminlte/bower_components/Chart.js/Chart.js')}}"></script>
+        <!--<script src="{{Asset('adminlte/bower_components/Chart.js/Chart.js')}}"></script>-->
+        <script src="{{Asset('lib/js/Chart.bundle.js')}}"></script>
+        <script src="{{Asset('lib/js/utils.js')}}"></script>
         @yield('js-content')
     </body>
 </html>
