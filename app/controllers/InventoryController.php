@@ -6,103 +6,168 @@ class InventoryController extends BaseController {
         return sprintf("%'.19d\n", $num);
     }
 
-    public function showInsertInventory3() { #sim
+    public function showInsertInventory2() { #sim
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
                 if (Input::hasFile('sample_file')) {
                     $destination = base_path() . '/uploaded_file/';
                     $extention = Input::file('sample_file')->getClientOriginalExtension();
-                    $filename = 'tempbase.' . $extention;
+                    $filename = 'temp.' . $extention;
                     Input::file('sample_file')->move($destination, $filename);
-                    $data = Excel::load(base_path() . '/uploaded_file/' . 'tempbase.' . $extention, function($reader) {
-                                
-                            })->formatDates(true)->get();
-                    $SerialNumber = '';
-                    $counterfail = 0;
-                    $counter = 1;
-                    $date = Input::get('eventDate');
-                    if (!empty($data) && $data->count()) {
-                        foreach ($data as $key => $value) {
-                            foreach ($value as $key => $value) {
-                                $subagent = '';
-                                $outprice = 0;
-                                $status = 2;
-                                $tempSN = '/SO/';
-                                $tempSA = '';
-                                $SerialNumber = sprintf("%'019d", $counter);
-                                if ($value->serial_number != null) {
-                                    $SerialNumber = $value->serial_number;
-                                }
-                                if ($value->consignment != null) {
-                                    $status = 4;
-                                    $tempSN = '/CO/';
-                                }
-                                $type = 1;
-                                $inv = Inventory::where('SerialNumber', $SerialNumber)->first();
-                                if ($inv == null) {
-                                    if (substr($value->msisdn, 0, 4) == '0908') {
+                    $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                    $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+//$reader = ReaderFactory::create(Type::CSV); // for CSV files
+//$reader = ReaderFactory::create(Type::ODS); // for ODS files
+
+                    $reader->open($filePath);
+                    $counter = 0;
+                    $arr_sn = [];
+                    $arr_msisdn = [];
+                    $arr_sn = [];
+                    $arr_shipinprice = [];
+                    $arr_type = [];
+                    $arr_lastwarehouse = [];
+                    $arr_remark = [];
+                    $arr_laststatusid = [];
+
+                    //for history
+                    $arr_sn_hist = [];
+                    $arr_id_hist = [];
+                    $arr_price_hist = [];
+                    $arr_hist_date = [];
+                    $arr_remark_hist = [];
+                    $arr_subagent_hist = [];
+                    $arr_shipoutnumber_hist = [];
+                    $arr_status_hist = [];
+                    $arr_laststatus_hist = [];
+                    $arr_wh_hist = [];
+                    $check_counter = History::select('ID')->orderBy('ID', 'DESC')->first();
+                    if ($check_counter == null)
+                        $id_counter = 1;
+                    else
+                        $id_counter = $check_counter->ID + 1;
+                    foreach ($reader->getSheetIterator() as $sheet) {
+                        foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                            if ($rowNumber > 1) {
+                                if ($value[1] != null && $value[1] != '') {
+                                    // do stuff with the row
+                                    $type = 1;
+                                    $wh = 'TELIN TAIWAN';
+                                    $sn = (string) $value[1];
+                                    array_push($arr_sn, $sn);
+                                    array_push($arr_msisdn, $value[2]);
+                                    array_push($arr_shipinprice, $value[12]);
+                                    if (strtolower($value[14]) == '4g') {
                                         $type = 4;
                                     }
-                                    $insertInventory = ['SerialNumber' => $SerialNumber, 'Price' => $value->ship_in_price, 'MSISDN' => $value->msisdn,
-                                        'Type' => $type, 'LastWarehouse' => $value->warehouse, 'Remark' => $value->remark, 'userRecord' => Auth::user()->ID, 'Provider' => 'TAIWAN STAR'];
-                                    $counter++;
-                                    $shipinNumber = $value->shipin_date . '/SI/TST001';
-                                    if (!empty($insertInventory)) {
-                                        $insertnya = DB::table('m_inventory')->insertGetId($insertInventory);
+                                    array_push($arr_type, $type);
+                                    if ($value[4] != null && $value[4] != '') {
+                                        $wh = $value[4];
                                     }
+                                    array_push($arr_lastwarehouse, $wh);
+                                    array_push($arr_remark, $value[9]);
 
-                                    $inv = Inventory::where('SerialNumber', $SerialNumber)->first();
-                                    //insert history
-                                    $insertHistory = ['SN' => $SerialNumber, 'Price' => $value->ship_in_price, 'Date' => $value->shipin_date, 'Remark' => $value->remark, 'ShipoutNumber' => $shipinNumber];
-                                    if (!empty($insertHistory)) {
-                                        $lasthistoryID = DB::table('m_historymovement')->insertGetId($insertHistory);
+                                    //shipin
+                                    $status = 0;
+                                    array_push($arr_sn_hist, $sn);
+                                    array_push($arr_id_hist, $id_counter);
+                                    $date_shipin = $value[3];
+                                    if (is_object($date_shipin)) {
+                                        $date_shipin = $date_shipin->format('Y-m-d');
+                                    } else {
+                                        $date_shipin = strtotime($date_shipin);
+                                        $date_shipin = date('Y-m-d', $date_shipin);
                                     }
+                                    array_push($arr_hist_date, $date_shipin);
+                                    array_push($arr_price_hist, $value[12]);
+                                    array_push($arr_remark_hist, $value[9]);
+                                    $shipinNumber = $date_shipin . '/SI/TST001';
+                                    array_push($arr_shipoutnumber_hist, $shipinNumber);
+                                    array_push($arr_status_hist, $status);
+                                    array_push($arr_subagent_hist, '-');
+                                    array_push($arr_wh_hist, $wh);
 
-                                    //insert shipout
-                                    if ($value->shipout_date != null) {
-                                        $statusnum = $value->shipout_date . $tempSN;
-                                        $subagent = $value->shipout_to;
-                                        $temp_sub = $value->sub_agent;
-                                        $temp_sub2 = explode(' ', $temp_sub)[0];
-                                        if (strtolower($subagent) != strtolower($temp_sub2)) {
-                                            $subagent .= ' ' . $temp_sub;
-                                        } else {
-                                            $subagent .= ' ' . explode(' ', $temp_sub)[1];
+
+                                    //there is shipout
+                                    if ($value[7] != null && $value[7] != '') {
+                                        $id_counter++;
+                                        $status = 2;
+                                        $tempSA = '';
+                                        $tempSN = '/SO/';
+                                        if ($value[11] != null) {
+                                            $status = 4;
+                                            $tempSN = '/CO/';
                                         }
-
-                                        if (strtolower(explode(' ', $subagent)[0]) == 'asprof') {
-                                            $tempSA = 'ASF';
-                                        } else if (strtolower(explode(' ', $subagent)[0]) == 'asprot') {
-                                            $tempSA = 'AST';
-                                        } else {
+                                        $subagent = $value[6];
+                                        if ($subagent != null && $subagent != '') {
+                                            $temp_sub = $value[8];
+                                            if ($temp_sub != null && $temp_sub != '') {
+                                                $temp_sub2 = explode(' ', $temp_sub)[0];
+                                                if (strtolower($subagent) != strtolower($temp_sub2)) {
+                                                    $subagent .= ' ' . $temp_sub;
+                                                } else {
+                                                    if (isset(explode(' ', $temp_sub)[1]))
+                                                        $subagent .= ' ' . explode(' ', $temp_sub)[1];
+                                                }
+                                            }
                                             $tempSA = substr(explode(' ', $subagent)[0], 0, 3);
+                                            if (strtolower(explode(' ', $subagent)[0]) == 'asprof') {
+                                                $tempSA = 'ASF';
+                                            } else if (strtolower(explode(' ', $subagent)[0]) == 'asprot') {
+                                                $tempSA = 'AST';
+                                            }
                                         }
-                                        if ($value->ship_out_price != null) {
-                                            $outprice = $value->ship_out_price;
+
+                                        array_push($arr_sn_hist, $sn);
+                                        array_push($arr_status_hist, $status);
+                                        array_push($arr_laststatus_hist, $status);
+                                        array_push($arr_id_hist, $id_counter);
+                                        array_push($arr_price_hist, $value[13]);
+                                        $date_shipout = $value[7];
+                                        if (is_object($date_shipout)) {
+                                            $date_shipout = $date_shipout->format('Y-m-d');
+                                        } else {
+                                            $date_shipout = strtotime($date_shipout);
+                                            $date_shipout = date('Y-m-d', $date_shipout);
                                         }
+                                        $statusnum = $date_shipout . $tempSN;
                                         $statusnum .= $tempSA;
                                         $statusnum .= '001';
-                                        $insertHistory = ['SN' => $SerialNumber, 'Warehouse' => $value->warehouse, 'Status' => $status, 'Price' => $outprice,
-                                            'Date' => $value->shipout_date, 'Remark' => $value->remark, 'SubAgent' => $subagent, 'ShipoutNumber' => $statusnum];
-                                        if (!empty($insertHistory)) {
-                                            $lasthistoryID = DB::table('m_historymovement')->insertGetId($insertHistory);
-                                        }
+                                        array_push($arr_shipoutnumber_hist, $statusnum);
+                                        array_push($arr_hist_date, $date_shipout);
+                                        array_push($arr_remark_hist, $value[9]);
+                                        array_push($arr_subagent_hist, $subagent);
+                                        array_push($arr_wh_hist, $wh);
                                     }
-
-                                    $inv->LastStatusID = $lasthistoryID;
-                                    $inv->save();
-
-                                    $allhist = History::where('SN', $inv->SerialNumber)->get();
-                                    foreach ($allhist as $hist) {
-                                        $hist->LastStatus = $status;
-                                        $hist->save();
-                                    }
+                                    array_push($arr_laststatus_hist, $status);
+                                    array_push($arr_laststatusid, $id_counter);
+                                    $id_counter++;
                                 }
                             }
                         }
                     }
-                    return View::make('insertinventory')->withResponse('Success')->withPage('insert inventory')->withNumber($counter)->withNumberf($counterfail);
+                    $reader->close();
+                    $for_raw = '';
+                    for ($i = 0; $i < count($arr_sn); $i++) {
+                        if ($i == 0)
+                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                        else
+                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                    }
+                    DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
+
+                    $for_raw = '';
+                    for ($i = 0; $i < count($arr_id_hist); $i++) {
+                        if ($i == 0)
+                            $for_raw .= "('" . $arr_id_hist[$i] . "','" . $arr_sn_hist[$i] . "','" . $arr_subagent_hist[$i] . "','" . $arr_wh_hist[$i] . "','" . $arr_price_hist[$i] . "','" . $arr_shipoutnumber_hist[$i] . "',NULL,'" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                        else
+                            $for_raw .= ",('" . $arr_id_hist[$i] . "','" . $arr_sn_hist[$i] . "','" . $arr_subagent_hist[$i] . "','" . $arr_wh_hist[$i] . "','" . $arr_price_hist[$i] . "','" . $arr_shipoutnumber_hist[$i] . "',NULL,'" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                    }
+                    DB::insert("INSERT INTO m_historymovement VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE ID=ID;");
+
+
+                    return View::make('insertinventory')->withResponse('Success')->withPage('insert inventory')->withNumber(count($arr_sn));
                 }
             }
             return View::make('insertinventory')->withResponse('Failed')->withPage('insert inventory');
@@ -110,101 +175,165 @@ class InventoryController extends BaseController {
         return View::make('insertinventory')->withPage('insert inventory');
     }
 
-    public function showInsertInventory2() { #vocher
+    public function showInsertInventory3() { #vocher
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
                 if (Input::hasFile('sample_file')) {
                     $destination = base_path() . '/uploaded_file/';
                     $extention = Input::file('sample_file')->getClientOriginalExtension();
-                    $filename = 'tempbase.' . $extention;
+                    $filename = 'temp.' . $extention;
                     Input::file('sample_file')->move($destination, $filename);
-                    $data = Excel::load(base_path() . '/uploaded_file/' . 'tempbase.' . $extention, function($reader) {
-                                
-                            })->formatDates(true)->get();
-                    $SerialNumber = '';
-                    $counterfail = 0;
-                    $counter = 1;
-                    $date = Input::get('eventDate');
-                    if (!empty($data) && $data->count()) {
-                        foreach ($data as $key => $value) {
-                            $subagent = '';
-                            $outprice = 0;
-                            $status = 2;
-                            $tempSN = '/SO/';
-                            $tempSA = '';
-                            $SerialNumber = sprintf("%'019d", $counter);
-                            if ($value->serial_number != null) {
-                                $SerialNumber = $value->serial_number;
-                            }
-                            if ($value->consignment != null) {
-                                $status = 4;
-                                $tempSN = '/CO/';
-                            }
-                            $type = 2;
-                            $inv = Inventory::where('SerialNumber', $SerialNumber)->first();
-                            if ($inv == null) {
-                                if (strtolower($value->type_voucher) == 'physical') {
-                                    $type = 3;
-                                }
-                                $insertInventory = ['SerialNumber' => $SerialNumber, 'Price' => $value->ship_in_price,
-                                    'Type' => $type, 'LastWarehouse' => $value->warehouse, 'Remark' => $value->remark, 'userRecord' => Auth::user()->ID, 'Provider' => 'TAIWAN STAR'];
-                                $counter++;
-                                $shipinNumber = $value->ship_in_date . '/SI/TST001';
-                                if (!empty($insertInventory)) {
-                                    $insertnya = DB::table('m_inventory')->insertGetId($insertInventory);
-                                }
+                    $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                    $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+//$reader = ReaderFactory::create(Type::CSV); // for CSV files
+//$reader = ReaderFactory::create(Type::ODS); // for ODS files
 
-                                $inv = Inventory::where('SerialNumber', $SerialNumber)->first();
-                                //insert history
-                                $insertHistory = ['SN' => $SerialNumber, 'Price' => $value->ship_in_price, 'Date' => $value->ship_in_date, 'Remark' => $value->remark, 'ShipoutNumber' => $shipinNumber];
-                                if (!empty($insertHistory)) {
-                                    $lasthistoryID = DB::table('m_historymovement')->insertGetId($insertHistory);
-                                }
+                    $reader->open($filePath);
+                    $counter = 0;
+                    $arr_sn = [];
+                    $arr_shipinprice = [];
+                    $arr_type = [];
+                    $arr_lastwarehouse = [];
+                    $arr_remark = [];
+                    $arr_laststatusid = [];
 
-                                //insert shipout
-                                if ($value->ship_out_date != null) {
-                                    $statusnum = $value->ship_out_date . $tempSN;
-                                    $subagent = $value->ship_out_to;
-                                    $temp_sub = $value->sub_agent;
-                                    $temp_sub2 = explode(' ', $temp_sub)[0];
-                                    if (strtolower($subagent) != strtolower($temp_sub2)) {
-                                        $subagent .= ' ' . $temp_sub;
+                    //for history
+                    $arr_sn_hist = [];
+                    $arr_id_hist = [];
+                    $arr_price_hist = [];
+                    $arr_hist_date = [];
+                    $arr_remark_hist = [];
+                    $arr_subagent_hist = [];
+                    $arr_shipoutnumber_hist = [];
+                    $arr_status_hist = [];
+                    $arr_laststatus_hist = [];
+                    $arr_wh_hist = [];
+                    $check_counter = History::select('ID')->orderBy('ID', 'DESC')->first();
+                    if ($check_counter == null)
+                        $id_counter = 1;
+                    else
+                        $id_counter = $check_counter->ID + 1;
+                    foreach ($reader->getSheetIterator() as $sheet) {
+                        foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                            if ($rowNumber > 1) {
+                                if ($value[0] != null && $value[0] != '') {
+                                    // do stuff with the row
+                                    $type = 2;
+                                    $wh = 'TELIN TAIWAN';
+                                    $sn = (string) $value[0];
+                                    array_push($arr_sn, $sn);
+                                    array_push($arr_shipinprice, $value[13]);
+                                    if (strtolower($value[11]) == 'physical') {
+                                        $type = 3;
+                                    }
+                                    array_push($arr_type, $type);
+                                    if ($value[4] != null && $value[4] != '') {
+                                        $wh = $value[4];
+                                    }
+                                    array_push($arr_lastwarehouse, $wh);
+                                    array_push($arr_remark, $value[9]);
+
+                                    //shipin
+                                    $status = 0;
+                                    array_push($arr_sn_hist, $sn);
+                                    array_push($arr_id_hist, $id_counter);
+                                    $date_shipin = $value[3];
+                                    if (is_object($date_shipin)) {
+                                        $date_shipin = $date_shipin->format('Y-m-d');
                                     } else {
-                                        $subagent .= ' ' . explode(' ', $temp_sub)[1];
+                                        $date_shipin = strtotime($date_shipin);
+                                        $date_shipin = date('Y-m-d', $date_shipin);
                                     }
+                                    array_push($arr_hist_date, $date_shipin);
+                                    array_push($arr_price_hist, $value[13]);
+                                    array_push($arr_remark_hist, $value[9]);
+                                    $shipinNumber = $date_shipin . '/SI/TST001';
+                                    array_push($arr_shipoutnumber_hist, $shipinNumber);
+                                    array_push($arr_status_hist, $status);
+                                    array_push($arr_subagent_hist, '-');
+                                    array_push($arr_wh_hist, $wh);
 
-                                    if (strtolower(explode(' ', $subagent)[0]) == 'asprof') {
-                                        $tempSA = 'ASF';
-                                    } else if (strtolower(explode(' ', $subagent)[0]) == 'asprot') {
-                                        $tempSA = 'AST';
-                                    } else {
-                                        $tempSA = substr(explode(' ', $subagent)[0], 0, 3);
-                                    }
-                                    if ($value->ship_out_price != null) {
-                                        $outprice = $value->ship_out_price;
-                                    }
-                                    $statusnum .= $tempSA;
-                                    $statusnum .= '001';
-                                    $insertHistory = ['SN' => $SerialNumber, 'Warehouse' => $value->warehouse, 'Status' => $status, 'Price' => $outprice,
-                                        'Date' => $value->ship_out_date, 'Remark' => $value->remark, 'SubAgent' => $subagent, 'ShipoutNumber' => $statusnum];
-                                    if (!empty($insertHistory)) {
-                                        $lasthistoryID = DB::table('m_historymovement')->insertGetId($insertHistory);
-                                    }
-                                }
 
-                                $inv->LastStatusID = $lasthistoryID;
-                                $inv->save();
+                                    //there is shipout
+                                    if ($value[7] != null && $value[7] != '') {
+                                        $id_counter++;
+                                        $status = 2;
+                                        $tempSA = '';
+                                        $tempSN = '/SO/';
+                                        if ($value[15] != null) {
+                                            $status = 4;
+                                            $tempSN = '/CO/';
+                                        }
+                                        $subagent = $value[6];
+                                        if ($subagent != null && $subagent != '') {
+                                            $temp_sub = $value[8];
+                                            if ($temp_sub != null && $temp_sub != '') {
+                                                $temp_sub2 = explode(' ', $temp_sub)[0];
+                                                if (strtolower($subagent) != strtolower($temp_sub2)) {
+                                                    $subagent .= ' ' . $temp_sub;
+                                                } else {
+                                                    if (isset(explode(' ', $temp_sub)[1]))
+                                                        $subagent .= ' ' . explode(' ', $temp_sub)[1];
+                                                }
+                                            }
+                                            $tempSA = substr(explode(' ', $subagent)[0], 0, 3);
+                                            if (strtolower(explode(' ', $subagent)[0]) == 'asprof') {
+                                                $tempSA = 'ASF';
+                                            } else if (strtolower(explode(' ', $subagent)[0]) == 'asprot') {
+                                                $tempSA = 'AST';
+                                            }
+                                        }
 
-                                $allhist = History::where('SN', $inv->SerialNumber)->get();
-                                foreach ($allhist as $hist) {
-                                    $hist->LastStatus = $status;
-                                    $hist->save();
+                                        array_push($arr_sn_hist, $sn);
+                                        array_push($arr_status_hist, $status);
+                                        array_push($arr_laststatus_hist, $status);
+                                        array_push($arr_id_hist, $id_counter);
+                                        array_push($arr_price_hist, $value[14]);
+                                        $date_shipout = $value[7];
+                                        if (is_object($date_shipout)) {
+                                            $date_shipout = $date_shipout->format('Y-m-d');
+                                        } else {
+                                            $date_shipout = strtotime($date_shipout);
+                                            $date_shipout = date('Y-m-d', $date_shipout);
+                                        }
+                                        $statusnum = $date_shipout . $tempSN;
+                                        $statusnum .= $tempSA;
+                                        $statusnum .= '001';
+                                        array_push($arr_shipoutnumber_hist, $statusnum);
+                                        array_push($arr_hist_date, $date_shipout);
+                                        array_push($arr_remark_hist, $value[9]);
+                                        array_push($arr_subagent_hist, $subagent);
+                                        array_push($arr_wh_hist, $wh);
+                                    }
+                                    array_push($arr_laststatus_hist, $status);
+                                    array_push($arr_laststatusid, $id_counter);
+                                    $id_counter++;
                                 }
                             }
                         }
                     }
-                    return View::make('insertinventory')->withResponse('Success')->withPage('insert inventory')->withNumber($counter)->withNumberf($counterfail);
+                    $reader->close();
+                    $for_raw = '';
+                    for ($i = 0; $i < count($arr_sn); $i++) {
+                        if ($i == 0)
+                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                        else
+                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                    }
+                    DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
+
+                    $for_raw = '';
+                    for ($i = 0; $i < count($arr_id_hist); $i++) {
+                        if ($i == 0)
+                            $for_raw .= "('" . $arr_id_hist[$i] . "','" . $arr_sn_hist[$i] . "','" . $arr_subagent_hist[$i] . "','" . $arr_wh_hist[$i] . "','" . $arr_price_hist[$i] . "','" . $arr_shipoutnumber_hist[$i] . "',NULL,'" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                        else
+                            $for_raw .= ",('" . $arr_id_hist[$i] . "','" . $arr_sn_hist[$i] . "','" . $arr_subagent_hist[$i] . "','" . $arr_wh_hist[$i] . "','" . $arr_price_hist[$i] . "','" . $arr_shipoutnumber_hist[$i] . "',NULL,'" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                    }
+                    DB::insert("INSERT INTO m_historymovement VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE ID=ID;");
+
+
+                    return View::make('insertinventory')->withResponse('Success')->withPage('insert inventory')->withNumber(count($arr_sn));
                 }
             }
             return View::make('insertinventory')->withResponse('Failed')->withPage('insert inventory');
@@ -710,22 +839,69 @@ class InventoryController extends BaseController {
                             $cases[] = "WHEN {$id} then ?";
                             $params[] = $arr_return[$i];
                             $ids[] = $id;
-//                            $inv = Inventory::where('MSISDN', 'LIKE', '%' . $arr_msisdn[$i] . '%')->first();
-//                            if ($inv != null) {
-//                                if ($inv->ActivationDate == '' || $inv->ActivationDate == null) {
-//                                    $inv->ActivationDate = $arr_return[$i];
-//                                    $inv->save();
-//                                    $counter++;
-//                                } else {
-//                                    continue;
-//                                }
-//                            }
                         }
                         $ids = implode(',', $ids);
                         $cases = implode(' ', $cases);
                         DB::update("UPDATE `{$table}` SET `ActivationDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
 
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberac($counter);
+                    }
+                }
+                return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
+            } else if (Input::get('jenis') == 'churn') {
+                $input = Input::file('sample_file');
+                if ($input != '') {
+                    if (Input::hasFile('sample_file')) {
+                        $destination = base_path() . '/uploaded_file/';
+                        $extention = Input::file('sample_file')->getClientOriginalExtension();
+                        $filename = 'temp.' . $extention;
+                        Input::file('sample_file')->move($destination, $filename);
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                        $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
+                        $reader->setShouldFormatDates(true);
+                        $counter = 0;
+                        $reader->open($filePath);
+                        $arr_msisdn = [];
+                        $arr_return = [];
+                        foreach ($reader->getSheetIterator() as $sheet) {
+                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                if ($rowNumber > 1) {
+                                    // do stuff with the row
+                                    $msisdn = (string) $value[2];
+                                    if ($msisdn != '' && $msisdn != null) {
+                                        $msisdn = str_replace('\'', '', $msisdn);
+                                        if (substr($msisdn, 0, 1) === '0') {
+                                            $msisdn = substr($msisdn, 1);
+                                        }
+                                        array_push($arr_msisdn, $msisdn);
+                                        $date_return = $value[1];
+                                        $date_return = explode('/', $date_return);
+                                        $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                        $date_return = strtotime($date_return);
+                                        $date_return = date('Y-m-d', $date_return);
+                                        array_push($arr_return, $date_return);
+                                    }
+                                }
+                            }
+                        }
+                        $reader->close();
+                        $table = Inventory::getModel()->getTable();
+                        $cases = [];
+                        $ids = [];
+                        $params = [];
+                        $counter = count($arr_msisdn);
+
+                        for ($i = 0; $i < count($arr_msisdn); $i++) {
+                            $id = (int) $arr_msisdn[$i];
+                            $cases[] = "WHEN {$id} then ?";
+                            $params[] = $arr_return[$i];
+                            $ids[] = $id;
+                        }
+                        $ids = implode(',', $ids);
+                        $cases = implode(' ', $cases);
+                        DB::update("UPDATE `{$table}` SET `ChurnDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
+
+                        return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberch($counter);
                     }
                 }
                 return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
