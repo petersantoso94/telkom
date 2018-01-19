@@ -941,6 +941,29 @@ class InventoryController extends BaseController {
         return $data;
     }
 
+    static function getCHURN() {
+//        $year = '2018';
+        $year = Input::get('year');
+        $data = [];
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE %Churn%')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                if (!isset($data[$ivr->Status]))
+                    $data[$ivr->Status] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data[$ivr->Status][$i] = $ivr->Counter;
+                    }
+                }
+            }
+        }
+        return $data;
+    }
+
     static function postMissing() {
         $sn = Input::get('sn');
         $inv = Inventory::find($sn);
