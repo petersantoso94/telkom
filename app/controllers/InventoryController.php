@@ -6,7 +6,7 @@ class InventoryController extends BaseController {
         return sprintf("%'.19d\n", $num);
     }
 
-    public function showInsertInventory3() { #sim
+    public function showInsertInventory4() { #sim
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
@@ -224,7 +224,7 @@ class InventoryController extends BaseController {
                                     $sn = (string) $value[0];
                                     array_push($arr_sn, $sn);
                                     array_push($arr_shipinprice, $value[13]);
-                                    if (substr($value[0],0,6) == 'KR0350' || substr($value[0],0,6) == 'KR1850') {
+                                    if (substr($value[0], 0, 6) == 'KR0350' || substr($value[0], 0, 6) == 'KR1850') {
                                         $type = 3;
                                     }
                                     array_push($arr_type, $type);
@@ -905,7 +905,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
-            }else if (Input::get('jenis') == 'productive') {
+            } else if (Input::get('jenis') == 'productive') {
                 $input = Input::file('sample_file');
                 if ($input != '') {
                     if (Input::hasFile('sample_file')) {
@@ -920,33 +920,40 @@ class InventoryController extends BaseController {
 
                         $reader->open($filePath);
                         $counter = 0;
+                        $month_temp = 0;
+                        $year_temp = 0;
                         $arr_msisdn = [];
-                        $arr_buydate = [];
-                        $arr_buy = [];
+                        $arr_month = [];
+                        $arr_year = [];
+                        $arr_mo = [];
+                        $arr_mt = [];
+                        $arr_internet = [];
+                        $arr_sms = [];
+                        $arr_services = [];
                         foreach ($reader->getSheetIterator() as $sheet) {
-                            dd($sheet->getName());
-                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                if ($rowNumber > 1) {
-                                    // do stuff with the row
-                                    $msisdn = (string) $value[2];
+                            $date_temp = $sheet->getName();
+                            $month_temp = substr($date_temp, 4, 2);
+                            $year_temp = substr($date_temp, 0, 4);
+                            if (substr($date_temp, 0, 1) === '2') {
+                                foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                    if ($rowNumber > 1) {
+                                        // do stuff with the row
+                                        $msisdn = (string) $value[0];
 
-                                    if ($msisdn != '' && $msisdn != null) {
-                                        $msisdn = str_replace('\'', '', $msisdn);
-                                        if (substr($msisdn, 0, 1) === '0') {
-                                            $msisdn = substr($msisdn, 1);
+                                        if ($msisdn != '' && $msisdn != null) {
+                                            $msisdn = str_replace('\'', '', $msisdn);
+                                            if (substr($msisdn, 0, 1) === '0') {
+                                                $msisdn = substr($msisdn, 1);
+                                            }
+                                            array_push($arr_msisdn, $msisdn);
+                                            array_push($arr_month, $month_temp);
+                                            array_push($arr_year, $year_temp);
+                                            array_push($arr_mo,$value[4]);
+                                            array_push($arr_mt,$value[5]);
+                                            array_push($arr_internet,$value[6]);
+                                            array_push($arr_sms,$value[7]);
+                                            array_push($arr_services,$value[11]);
                                         }
-                                        array_push($arr_msisdn, $msisdn);
-                                        $date_return = $value[1];
-                                        if (is_object($date_return)) {
-                                            $date_return = $date_return->format('Y-m-d');
-                                        } else {
-                                            $date_return = explode('/', $date_return);
-                                            $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
-                                            $date_return = strtotime($date_return);
-                                            $date_return = date('Y-m-d', $date_return);
-                                        }
-                                        array_push($arr_buydate, $date_return);
-                                        array_push($arr_buy, $value[4]);
                                     }
                                 }
                             }
@@ -954,14 +961,14 @@ class InventoryController extends BaseController {
                         $reader->close();
                         $for_raw = '';
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
-                            $unik = $arr_msisdn[$i] . '-' . $arr_buydate[$i] . '-' . $arr_buy[$i];
+                            $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i];
                             if ($i == 0)
-                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_buydate[$i] . "','" . $unik . "','" . $arr_buy[$i] . "',CURDATE(),CURDATE(),'-','" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "','" . $arr_services[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
                             else
-                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_buydate[$i] . "','" . $unik . "','" . $arr_buy[$i] . "',CURDATE(),CURDATE(),'-','" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "','" . $arr_services[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
                         }
-                        DB::insert("INSERT INTO m_ivr VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Unik=Unik;");
-                        return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumber(count($arr_msisdn));
+                        DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Unik=Unik;");
+                        return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberpr(count($arr_msisdn));
                     }
                 }
                 return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
