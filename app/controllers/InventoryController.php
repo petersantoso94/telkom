@@ -6,7 +6,7 @@ class InventoryController extends BaseController {
         return sprintf("%'.19d\n", $num);
     }
 
-    public function showInsertInventory2() { #sim
+    public function showInsertInventory3() { #sim
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
@@ -175,7 +175,7 @@ class InventoryController extends BaseController {
         return View::make('insertinventory')->withPage('insert inventory');
     }
 
-    public function showInsertInventory3() { #vocher
+    public function showInsertInventory2() { #vocher
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
@@ -224,7 +224,7 @@ class InventoryController extends BaseController {
                                     $sn = (string) $value[0];
                                     array_push($arr_sn, $sn);
                                     array_push($arr_shipinprice, $value[13]);
-                                    if (strtolower($value[11]) == 'physical') {
+                                    if (substr($value[0],0,6) == 'KR0350' || substr($value[0],0,6) == 'KR1850') {
                                         $type = 3;
                                     }
                                     array_push($arr_type, $type);
@@ -902,6 +902,66 @@ class InventoryController extends BaseController {
                         DB::update("UPDATE `{$table}` SET `ChurnDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
 
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberch($counter);
+                    }
+                }
+                return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
+            }else if (Input::get('jenis') == 'productive') {
+                $input = Input::file('sample_file');
+                if ($input != '') {
+                    if (Input::hasFile('sample_file')) {
+                        $destination = base_path() . '/uploaded_file/';
+                        $extention = Input::file('sample_file')->getClientOriginalExtension();
+                        $filename = 'temp.' . $extention;
+                        Input::file('sample_file')->move($destination, $filename);
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                        $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+//$reader = ReaderFactory::create(Type::CSV); // for CSV files
+//$reader = ReaderFactory::create(Type::ODS); // for ODS files
+
+                        $reader->open($filePath);
+                        $counter = 0;
+                        $arr_msisdn = [];
+                        $arr_buydate = [];
+                        $arr_buy = [];
+                        foreach ($reader->getSheetIterator() as $sheet) {
+                            dd($sheet->getName());
+                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                if ($rowNumber > 1) {
+                                    // do stuff with the row
+                                    $msisdn = (string) $value[2];
+
+                                    if ($msisdn != '' && $msisdn != null) {
+                                        $msisdn = str_replace('\'', '', $msisdn);
+                                        if (substr($msisdn, 0, 1) === '0') {
+                                            $msisdn = substr($msisdn, 1);
+                                        }
+                                        array_push($arr_msisdn, $msisdn);
+                                        $date_return = $value[1];
+                                        if (is_object($date_return)) {
+                                            $date_return = $date_return->format('Y-m-d');
+                                        } else {
+                                            $date_return = explode('/', $date_return);
+                                            $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                            $date_return = strtotime($date_return);
+                                            $date_return = date('Y-m-d', $date_return);
+                                        }
+                                        array_push($arr_buydate, $date_return);
+                                        array_push($arr_buy, $value[4]);
+                                    }
+                                }
+                            }
+                        }
+                        $reader->close();
+                        $for_raw = '';
+                        for ($i = 0; $i < count($arr_msisdn); $i++) {
+                            $unik = $arr_msisdn[$i] . '-' . $arr_buydate[$i] . '-' . $arr_buy[$i];
+                            if ($i == 0)
+                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_buydate[$i] . "','" . $unik . "','" . $arr_buy[$i] . "',CURDATE(),CURDATE(),'-','" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            else
+                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_buydate[$i] . "','" . $unik . "','" . $arr_buy[$i] . "',CURDATE(),CURDATE(),'-','" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                        }
+                        DB::insert("INSERT INTO m_ivr VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Unik=Unik;");
+                        return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumber(count($arr_msisdn));
                     }
                 }
                 return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
