@@ -115,7 +115,7 @@
                                             </div>
                                             <!-- /.col -->
                                         </div>
-                                        <div class="row" id="info_ivr_month" style="display: none;">
+                                        <div class="row toogling" id="info_ivr_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="ivr_year">
                                                     @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
@@ -129,7 +129,7 @@
                                                 <canvas id="barChart_ivr" style="height: 229px; width: 594px;" width="742" height="286"></canvas>
                                             </div>
                                         </div>
-                                        <div class="row" id="info_churn_month" style="display: none;">
+                                        <div class="row toogling" id="info_churn_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="churn_year">
                                                     @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
@@ -304,17 +304,17 @@
     var getIVR = '<?php echo Route('getIVR') ?>';
     var getCHURN = '<?php echo Route('getCHURN') ?>';
     var l_year = document.getElementById('ivr_year').value;
-//    var c_year = document.getElementById('churn_year').value;
+    var c_year = document.getElementById('churn_year').value;
     var colorNames = Object.keys(window.chartColors);
     $('#ivr_year').on('change', function (e) {
         l_year = document.getElementById('ivr_year').value;
         refreshBarChart();
     });
 
-//    $('#churn_year').on('change', function (e) {
-//        c_year = document.getElementById('churn_year').value;
-//        refreshBarChart();
-//    });
+    $('#churn_year').on('change', function (e) {
+        c_year = document.getElementById('churn_year').value;
+        refreshBarChart();
+    });
 
     var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     var color = Chart.helpers.color;
@@ -322,10 +322,10 @@
         labels: MONTHS,
         datasets: []
     };
-//    var barChartData2 = {
-//        labels: MONTHS,
-//        datasets: []
-//    };
+    var barChartData2 = {
+        labels: MONTHS,
+        datasets: []
+    };
 
     window.onload = function () {
         var ctx = document.getElementById("barChart_ivr").getContext("2d");
@@ -344,28 +344,28 @@
             }
         });
 
-//        var ctx2 = document.getElementById("barChart_churn").getContext("2d");
-//        window.myBar2 = new Chart(ctx2, {
-//            type: 'bar',
-//            data: barChartData2,
-//            options: {
-//                responsive: true,
-//                legend: {
-//                    position: 'top',
-//                },
-//                title: {
-//                    display: true,
-//                    text: 'Monthly internet subscriber'
-//                }, scales: {
-//                    xAxes: [{
-//                            stacked: true,
-//                        }],
-//                    yAxes: [{
-//                            stacked: true
-//                        }]
-//                }
-//            }
-//        });
+        var ctx2 = document.getElementById("barChart_churn").getContext("2d");
+        window.myBar2 = new Chart(ctx2, {
+            type: 'bar',
+            data: barChartData2,
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Monthly internet subscriber'
+                }, scales: {
+                    xAxes: [{
+                            stacked: true,
+                        }],
+                    yAxes: [{
+                            stacked: true
+                        }]
+                }
+            }
+        });
 
         refreshBarChart();
     };
@@ -394,29 +394,32 @@
             console.log(barChartData);
             window.myBar.update();
         });
-        
-//        $.post(getCHURN, {year: c_year}, function (data) {
-//
-//        }).done(function (data) {
-//            barChartData2.datasets = [];
-//            $.each(data, function (index, value) {
-//                var colorName = colorNames[barChartData2.datasets.length % colorNames.length];
-//                var dsColor = window.chartColors[colorName];
-//                barChartData2.datasets.push({
-//                    label: index,
-//                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
-//                    borderColor: dsColor,
-//                    borderWidth: 1,
-//                    data: value
-//                });
-//            });
-//            console.log(barChartData2);
-//            window.myBar2.update();
-//        });
+
+        $.post(getCHURN, {year: c_year}, function (data) {
+
+        }).done(function (data) {
+            barChartData2.datasets = [];
+            $.each(data, function (index, value) {
+                $.each(value, function (index2, value2) {
+                    var colorName = colorNames[barChartData2.datasets.length % colorNames.length];
+                    var dsColor = window.chartColors[colorName];
+                    barChartData2.datasets.push({
+                        label: index2,
+                        backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                        borderColor: dsColor,
+                        borderWidth: 1,
+                        data: value2
+                    });
+                });
+            });
+            console.log(barChartData2);
+            window.myBar2.update();
+        });
     }
     window.showChart = function (element) {
         var chartID = $(element).data('id');
         var x = document.getElementById(chartID);
+        $('.toogling').hide();
         if (x.style.display === "none") {
             x.style.display = "block";
             refreshBarChart();

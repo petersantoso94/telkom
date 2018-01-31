@@ -818,8 +818,8 @@ class InventoryController extends BaseController {
                                         }
                                         array_push($arr_msisdn, $msisdn);
                                         $date_return = $value[1];
-                                        $date_return = explode('/', $date_return);
-                                        $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+//                                        $date_return = explode('/', $date_return);
+//                                        $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                         $date_return = strtotime($date_return);
                                         $date_return = date('Y-m-d', $date_return);
                                         array_push($arr_return, $date_return);
@@ -948,11 +948,11 @@ class InventoryController extends BaseController {
                                             array_push($arr_msisdn, $msisdn);
                                             array_push($arr_month, $month_temp);
                                             array_push($arr_year, $year_temp);
-                                            array_push($arr_mo,$value[4]);
-                                            array_push($arr_mt,$value[5]);
-                                            array_push($arr_internet,$value[6]);
-                                            array_push($arr_sms,$value[7]);
-                                            array_push($arr_services,$value[11]);
+                                            array_push($arr_mo, $value[4]);
+                                            array_push($arr_mt, $value[5]);
+                                            array_push($arr_internet, $value[6]);
+                                            array_push($arr_sms, $value[7]);
+                                            array_push($arr_services, $value[11]);
                                         }
                                     }
                                 }
@@ -997,11 +997,20 @@ class InventoryController extends BaseController {
 //            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 //        }
         foreach ($all_ivr as $ivr) {
-            if (!isset($data[$ivr->Status]))
-                $data[$ivr->Status] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $stats = '30 days';
+            if($ivr->Status == '180'){
+                $stats = '1 GB';
+            }else if($ivr->Status == '300'){
+                $stats = '2 GB';
+            }
+            if (!isset($data[$stats]))
+                $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             for ($i = 0; $i < 12; $i++) {
                 if ($i == $ivr->Month - 1) {
-                    $data[$ivr->Status][$i] = $ivr->Counter;
+                    if(!$data[$stats][$i])
+                        $data[$stats][$i] = $ivr->Counter;
+                    else
+                        $data[$stats][$i] += $ivr->Counter;
                 }
             }
         }
@@ -1009,21 +1018,33 @@ class InventoryController extends BaseController {
     }
 
     static function getCHURN() {
-//        $year = '2018';
         $year = Input::get('year');
+//        $year = '2017';
         $data = [];
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE %Churn%')->get();
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Churn%\'')->get();
+        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 //            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 //        }
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
-                if (!isset($data[$ivr->Status]))
-                    $data[$ivr->Status] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if (!isset($data['churn'][$ivr->Status]))
+                    $data['churn'][$ivr->Status] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $ivr->Month - 1) {
-                        $data[$ivr->Status][$i] = $ivr->Counter;
+                        $data['churn'][$ivr->Status][$i] = -($ivr->Counter);
+                    }
+                }
+            }
+        }
+        if ($all_act != null) {
+            foreach ($all_act as $ivr) {
+                if (!isset($data['act'][$ivr->Status]))
+                    $data['act'][$ivr->Status] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data['act'][$ivr->Status][$i] = ($ivr->Counter);
                     }
                 }
             }
