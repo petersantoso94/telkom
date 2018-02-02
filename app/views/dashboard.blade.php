@@ -106,8 +106,8 @@
                                                     <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
 
                                                     <div class="info-box-content">
-                                                        <span class="info-box-text">New Members</span>
-                                                        <span class="info-box-number">2,000</span>
+                                                        <span class="info-box-text">Service Usage</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_sum_month">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
                                                     </div>
                                                     <!-- /.info-box-content -->
                                                 </div>
@@ -155,6 +155,20 @@
                                             </div>
                                             <div class="chart">
                                                 <canvas id="barChart_prod" style="height: 229px; width: 594px;" width="742" height="286"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_sum_month" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="sum_year">
+                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="chart">
+                                                <canvas id="barChart_sum" style="height: 229px; width: 594px;" width="742" height="286"></canvas>
                                             </div>
                                         </div>
                                     </div>
@@ -318,9 +332,11 @@
     var getIVR = '<?php echo Route('getIVR') ?>';
     var getCHURN = '<?php echo Route('getCHURN') ?>';
     var getProductive = '<?php echo Route('getProductive') ?>';
+    var getSumService = '<?php echo Route('getSumService') ?>';
     var l_year = document.getElementById('ivr_year').value;
     var c_year = document.getElementById('churn_year').value;
     var p_year = document.getElementById('prod_year').value;
+    var s_year = document.getElementById('sum_year').value;
     var colorNames = Object.keys(window.chartColors);
     $('#ivr_year').on('change', function (e) {
         l_year = document.getElementById('ivr_year').value;
@@ -336,6 +352,11 @@
         p_year = document.getElementById('prod_year').value;
         refreshBarChart();
     });
+    
+    $('#sum_year').on('change', function (e) {
+        s_year = document.getElementById('sum_year').value;
+        refreshBarChart();
+    });
 
     var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     var color = Chart.helpers.color;
@@ -348,6 +369,10 @@
         datasets: []
     };
     var barChartData3 = {
+        labels: MONTHS,
+        datasets: []
+    };
+    var barChartData4 = {
         labels: MONTHS,
         datasets: []
     };
@@ -414,6 +439,22 @@
                 }
             }
         });
+        
+        var ctx4 = document.getElementById("barChart_sum").getContext("2d");
+        window.myBar4 = new Chart(ctx4, {
+            type: 'bar',
+            data: barChartData4,
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'top',
+                },
+                title: {
+                    display: true,
+                    text: 'Monthly Total Service Usage'
+                }
+            }
+        });
 
         refreshBarChart();
     };
@@ -439,7 +480,6 @@
                     data: value
                 });
             });
-            console.log(barChartData);
             window.myBar.update();
         });
 
@@ -460,7 +500,6 @@
                     });
                 });
             });
-            console.log(barChartData2);
             window.myBar2.update();
         });
 
@@ -479,8 +518,24 @@
                     data: value
                 });
             });
-            console.log(barChartData3);
             window.myBar3.update();
+        });
+        $.post(getSumService, {year: s_year}, function (data) {
+
+        }).done(function (data) {
+            barChartData4.datasets = [];
+            $.each(data, function (index, value) {
+                var colorName = colorNames[barChartData4.datasets.length % colorNames.length];
+                var dsColor = window.chartColors[colorName];
+                barChartData4.datasets.push({
+                    label: index,
+                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                    borderColor: dsColor,
+                    borderWidth: 1,
+                    data: value
+                });
+            });
+            window.myBar4.update();
         });
     }
     window.showChart = function (element) {
