@@ -998,16 +998,16 @@ class InventoryController extends BaseController {
 //        }
         foreach ($all_ivr as $ivr) {
             $stats = '30 days';
-            if($ivr->Status == '180'){
+            if ($ivr->Status == '180') {
                 $stats = '1 GB';
-            }else if($ivr->Status == '300'){
+            } else if ($ivr->Status == '300') {
                 $stats = '2 GB';
             }
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             for ($i = 0; $i < 12; $i++) {
                 if ($i == $ivr->Month - 1) {
-                    if(!$data[$stats][$i])
+                    if (!$data[$stats][$i])
                         $data[$stats][$i] = $ivr->Counter;
                     else
                         $data[$stats][$i] += $ivr->Counter;
@@ -1045,6 +1045,47 @@ class InventoryController extends BaseController {
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $ivr->Month - 1) {
                         $data['act'][$ivr->Status][$i] = ($ivr->Counter);
+                    }
+                }
+            }
+        }
+        return $data;
+    }
+
+    static function getProductive() {
+        $year = Input::get('year');
+//        $year = '2017';
+        $data = [];
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%services%\'')->get();
+//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $stats = 'no service';
+                $temp_stat = $ivr->Status;
+                if (substr($temp_stat, 0, 1) == '1') {
+                    $stats = 'Voice only';
+                } else if (substr($temp_stat, 0, 1) == '2') {
+                    $stats = 'Internet only';
+                } else if (substr($temp_stat, 0, 1) == '3') {
+                    $stats = 'Voice + Internet';
+                } else if (substr($temp_stat, 0, 1) == '5') {
+                    $stats = 'SMS only';
+                } else if (substr($temp_stat, 0, 1) == '6') {
+                    $stats = 'Voice + SMS';
+                } else if (substr($temp_stat, 0, 1) == '7') {
+                    $stats = 'Internet + SMS';
+                } else if (substr($temp_stat, 0, 1) == '8') {
+                    $stats = 'All';
+                }
+                if (!isset($data[$stats]))
+                    $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data[$stats][$i] = $ivr->Counter;
                     }
                 }
             }
