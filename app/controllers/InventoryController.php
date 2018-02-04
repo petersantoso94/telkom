@@ -905,6 +905,66 @@ class InventoryController extends BaseController {
                     }
                 }
                 return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
+            }else if (Input::get('jenis') == 'topup') {
+                $input = Input::file('sample_file');
+                if ($input != '') {
+                    if (Input::hasFile('sample_file')) {
+                        $destination = base_path() . '/uploaded_file/';
+                        $extention = Input::file('sample_file')->getClientOriginalExtension();
+                        $filename = 'temp.' . $extention;
+                        Input::file('sample_file')->move($destination, $filename);
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                        $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
+                        $reader->setShouldFormatDates(true);
+                        $counter = 0;
+                        $reader->open($filePath);
+                        $arr_msisdn = [];
+                        $arr_voc = [];
+                        $arr_return = [];
+                        foreach ($reader->getSheetIterator() as $sheet) {
+                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                if ($rowNumber > 1) {
+                                    // do stuff with the row
+                                    $msisdn = (string) $value[3];
+                                    $voc = (string) $value[11];
+                                    if ($msisdn != '' && $msisdn != null) {
+                                        $msisdn = str_replace('\'', '', $msisdn);
+                                        if (substr($msisdn, 0, 1) === '0') {
+                                            $msisdn = substr($msisdn, 1);
+                                        }
+                                        array_push($arr_voc, $voc);
+                                        array_push($arr_msisdn, $msisdn);
+                                        $date_return = $value[1];
+                                        $date_return = strtotime($date_return);
+                                        $date_return = date('Y-m-d', $date_return);
+                                        array_push($arr_return, $date_return);
+                                    }
+                                }
+                            }
+                        }
+                        $reader->close();
+                        $table = Inventory::getModel()->getTable();
+                        $cases1 = [];
+                        $cases2 = [];
+                        $ids = [];
+                        $params = [];
+                        $counter = count($arr_msisdn);
+
+                        for ($i = 0; $i < count($arr_msisdn); $i++) {
+                            $id =  $arr_voc[$i];
+                            $cases2[] = "WHEN `SerialNumber` = '{$id}' then '{$arr_return[$i]}'";
+                            $cases1[] = "WHEN `SerialNumber` = '{$id}' then '{$arr_msisdn[$i]}'";
+                            $ids[] = $id;
+                        }
+                        $ids = implode(',', $ids);
+                        $cases1 = implode(' ', $cases1);
+                        $cases2 = implode(' ', $cases2);
+                        DB::update("UPDATE `{$table}` SET `TopUpMSISDN` = CASE {$cases1} END, `TopUpDate` = CASE {$cases2} END");
+
+                        return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumbertop($counter);
+                    }
+                }
+                return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
             } else if (Input::get('jenis') == 'productive') {
                 $input = Input::file('sample_file');
                 if ($input != '') {

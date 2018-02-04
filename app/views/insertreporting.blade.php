@@ -208,6 +208,44 @@
             </div>
         </form>
     </div>
+    <div class='col-xs-8'>
+        <form method="POST" accept-charset="UTF-8" enctype="multipart/form-data" id='form-topup'>
+            <div class="white-pane__bordered margbot20">
+                <div class="row">
+                    <?php if (isset($numbertop)) { ?>
+                        <?php if ($numbertop > 0) { ?>
+                            <div class="alert alert-success alert-dismissible" role="alert" style="width: 98%; margin: 1%">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                Successfully inserting {{$numbertop}} data.
+                            </div>
+                        <?php } ?>
+                    <?php } ?>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h4>Recharge Report</h4>
+                    </div>
+                </div>
+                <div class="row margtop20">
+                    <div class="col-xs-8">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <input type="file" name="sample_file" class="vis-hide" style="height:0px; overflow: hidden" id="input-pict6" data-validation="required" required>
+                                <button type="button" class="button btndef btn-mini no-shadow" id="btn-insert-image6"><span class="glyphicon glyphicon-picture cgrey"></span> insert file</button>
+                                <span id='pict-name6'></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name='jenis' value='topup'>
+                <div class="row margtop20">
+                    <div class="col-xs-8">
+                        <button type="button" id='btn-submit-topup' class="button btnblue btn-wide wide-h" style="background-color: #424242; color: white;">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 @stop
 @section('js-content')
@@ -245,6 +283,12 @@ $('#btn-insert-image5').on('click', function (e) {
 $('#input-pict5').on('change', function (e) {
     $('#pict-name5').html($('#input-pict5').val().split('\\').pop());
 });
+$('#btn-insert-image6').on('click', function (e) {
+    $('#input-pict6').click();
+});
+$('#input-pict6').on('change', function (e) {
+    $('#pict-name6').html($('#input-pict6').val().split('\\').pop());
+});
 $('#btn-submit-apf').on('click', function (e) {
     document.getElementById("form-apf").submit();
 });
@@ -259,6 +303,9 @@ $('#btn-submit-churn').on('click', function (e) {
 });
 $('#btn-submit-productive').on('click', function (e) {
     document.getElementById("form-productive").submit();
+});
+$('#btn-submit-topup').on('click', function (e) {
+    document.getElementById("form-topup").submit();
 });
 </script>
 @stop
