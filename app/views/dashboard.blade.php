@@ -1,11 +1,15 @@
 @extends('template.header-footer')
 
 @section('title')
-{{$page}}
+<a href="{{Route('showDashboard')}}">Dashboard</a>
 @stop
 
 @section('title-view')
-{{$page}}
+<a href="{{Route('showDashboard')}}" style="color: #ffffff;
+                 font-weight: 400;
+                 display: inline-block;
+                 font-size: 18px;
+                 padding: 5px 0;">Dashboard</a>
 @stop
 
 @section('main-section')
@@ -461,7 +465,7 @@
                 },
                 title: {
                     display: true,
-                    text: 'Monthly internet subscriber'
+                    text: 'Subscriber and Churn'
                 }, scales: {
                     xAxes: [{
                             stacked: true,
