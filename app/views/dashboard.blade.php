@@ -742,12 +742,14 @@
     window.showChart = function (element) {
         chartID = $(element).data('id');
         var x = document.getElementById(chartID);
-        $('.toogling').hide();
         if (x.style.display === "none") {
+            $('.toogling').hide();
             x.style.display = "block";
+            $(element).html('Hide Chart <i class="fa fa-arrow-circle-right"></i>');
             refreshBarChart();
-        } else {
+        } else if (x.style.display === "block") {
             x.style.display = "none";
+            $(element).html('Show Chart <i class="fa fa-arrow-circle-right"></i>');
         }
     }
 </script>
