@@ -41,6 +41,14 @@
                 0% { transform: rotate(0deg); }
                 100% { transform: rotate(360deg); }
             }
+            .legend {
+                width: 100%;
+                top: 5px;
+                right: 20px;
+                text-align: center;
+            }
+            .legend ul li{list-style:none;float:left;margin-right:8px;display:inline-block;}
+            .legend ul li span{ width:50px; height:15px; margin-right:5px; float:left; }
         </style>
         @yield('css-content')
     </head>

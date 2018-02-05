@@ -126,7 +126,8 @@
                                                 </select>
                                             </div>
                                             <div class="chart">
-                                                <canvas id="barChart_ivr" style="height: 229px; width: 594px;" width="742" height="286"></canvas>
+                                                <div id="legend" class="legend"></div>
+                                                <canvas id="barChart_ivr" ></canvas>
                                             </div>
                                         </div>
                                         <div class="row toogling" id="info_churn_month" style="display: none;">
@@ -140,7 +141,8 @@
                                                 </select>
                                             </div>
                                             <div class="chart">
-                                                <canvas id="barChart_churn" style="height: 229px; width: 594px;" width="742" height="286"></canvas>
+                                                <div id="legend2" class="legend"></div>
+                                                <canvas id="barChart_churn"></canvas>
                                             </div>
                                         </div>
                                         <div class="row toogling" id="info_prod_month" style="display: none;">
@@ -154,7 +156,8 @@
                                                 </select>
                                             </div>
                                             <div class="chart">
-                                                <canvas id="barChart_prod" style="height: 229px; width: 594px;" width="742" height="286"></canvas>
+                                                <div id="legend3" class="legend"></div>
+                                                <canvas id="barChart_prod"></canvas>
                                             </div>
                                         </div>
                                         <div class="row toogling" id="info_sum_month" style="display: none;">
@@ -168,7 +171,8 @@
                                                 </select>
                                             </div>
                                             <div class="chart">
-                                                <canvas id="barChart_sum" style="height: 229px; width: 594px;" width="742" height="286"></canvas>
+                                                <div id="legend4" class="legend"></div>
+                                                <canvas id="barChart_sum"></canvas>
                                             </div>
                                         </div>
                                     </div>
@@ -352,7 +356,7 @@
         p_year = document.getElementById('prod_year').value;
         refreshBarChart();
     });
-    
+
     $('#sum_year').on('change', function (e) {
         s_year = document.getElementById('sum_year').value;
         refreshBarChart();
@@ -384,12 +388,52 @@
             data: barChartData,
             options: {
                 responsive: true,
+                maintainAspectRatio: true,
                 legend: {
-                    position: 'top',
+                    display: false
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    } // end callbacks:
                 },
                 title: {
                     display: true,
                     text: 'Monthly internet subscriber'
+                }, scales: {
+                    yAxes: [{
+                            id: 'A',
+                            type: 'linear',
+                            position: 'left',
+                            ticks: {
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            }
+                        }, {
+                            id: 'B',
+                            type: 'linear',
+                            position: 'right',
+                            ticks: {
+                                max: 1,
+                                min: 0,
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            }
+                        }]
                 }
             }
         });
@@ -400,8 +444,20 @@
             data: barChartData2,
             options: {
                 responsive: true,
+                maintainAspectRatio: true,
                 legend: {
-                    position: 'top',
+                    display: false
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    } // end callbacks:
                 },
                 title: {
                     display: true,
@@ -411,6 +467,32 @@
                             stacked: true,
                         }],
                     yAxes: [{
+                            id: 'A',
+                            type: 'linear',
+                            position: 'left',
+                            stacked: true,
+                            ticks: {
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            }
+                        }, {
+                            id: 'B',
+                            type: 'linear',
+                            position: 'right',
+                            ticks: {
+                                max: 1,
+                                min: 0,
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            },
                             stacked: true
                         }]
                 }
@@ -423,8 +505,20 @@
             data: barChartData3,
             options: {
                 responsive: true,
+                maintainAspectRatio: true,
                 legend: {
-                    position: 'top',
+                    display: false
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    } // end callbacks:
                 },
                 title: {
                     display: true,
@@ -434,24 +528,90 @@
                             stacked: true,
                         }],
                     yAxes: [{
+                            id: 'A',
+                            type: 'linear',
+                            position: 'left',
+                            stacked: true,
+                            ticks: {
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            }
+                        }, {
+                            id: 'B',
+                            type: 'linear',
+                            position: 'right',
+                            ticks: {
+                                max: 1,
+                                min: 0,
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            },
                             stacked: true
                         }]
                 }
             }
         });
-        
+
         var ctx4 = document.getElementById("barChart_sum").getContext("2d");
         window.myBar4 = new Chart(ctx4, {
             type: 'bar',
             data: barChartData4,
             options: {
                 responsive: true,
+                maintainAspectRatio: true,
                 legend: {
-                    position: 'top',
+                    display: false
+                },
+                tooltips: {
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    } // end callbacks:
                 },
                 title: {
                     display: true,
                     text: 'Monthly Total Service Usage'
+                }, scales: {
+                    yAxes: [{
+                            id: 'A',
+                            type: 'linear',
+                            position: 'left',
+                            ticks: {
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            }
+                        }, {
+                            id: 'B',
+                            type: 'linear',
+                            position: 'right',
+                            ticks: {
+                                max: 1,
+                                min: 0,
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            },
+                        }]
                 }
             }
         });
@@ -465,81 +625,122 @@
     //-------------
     var refreshBarChart = function () {
         var datasetz = [];
-        $.post(getIVR, {year: l_year}, function (data) {
+        if (chartID == 'info_ivr_month') {
+            $.post(getIVR, {year: l_year}, function (data) {
 
-        }).done(function (data) {
-            barChartData.datasets = [];
-            $.each(data, function (index, value) {
-                var colorName = colorNames[barChartData.datasets.length % colorNames.length];
-                var dsColor = window.chartColors[colorName];
-                barChartData.datasets.push({
-                    label: index,
-                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
-                    borderColor: dsColor,
-                    borderWidth: 1,
-                    data: value
-                });
-            });
-            window.myBar.update();
-        });
-
-        $.post(getCHURN, {year: c_year}, function (data) {
-
-        }).done(function (data) {
-            barChartData2.datasets = [];
-            $.each(data, function (index, value) {
-                $.each(value, function (index2, value2) {
-                    var colorName = colorNames[barChartData2.datasets.length % colorNames.length];
+            }).done(function (data) {
+                barChartData.datasets = [];
+                $.each(data, function (index, value) {
+                    var colorName = colorNames[barChartData.datasets.length % colorNames.length];
                     var dsColor = window.chartColors[colorName];
-                    barChartData2.datasets.push({
-                        label: index2,
+                    barChartData.datasets.push({
+                        label: index,
+                        yAxisID: 'A',
                         backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                         borderColor: dsColor,
                         borderWidth: 1,
-                        data: value2
+                        data: value
                     });
                 });
+                window.myBar.update();
+                // Find the scale in the chart instance
+                var axis = myBar.scales.A;
+                var max = axis.max;
+                var min = axis.min;
+                myBar.options.scales.yAxes[1].ticks.min = min;
+                myBar.options.scales.yAxes[1].ticks.max = max;
+                window.myBar.update();
+                document.getElementById('legend').innerHTML = myBar.generateLegend();
             });
-            window.myBar2.update();
-        });
+        } else if (chartID == 'info_churn_month') {
 
-        $.post(getProductive, {year: p_year}, function (data) {
+            $.post(getCHURN, {year: c_year}, function (data) {
 
-        }).done(function (data) {
-            barChartData3.datasets = [];
-            $.each(data, function (index, value) {
-                var colorName = colorNames[barChartData3.datasets.length % colorNames.length];
-                var dsColor = window.chartColors[colorName];
-                barChartData3.datasets.push({
-                    label: index,
-                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
-                    borderColor: dsColor,
-                    borderWidth: 1,
-                    data: value
+            }).done(function (data) {
+                barChartData2.datasets = [];
+                $.each(data, function (index, value) {
+                    $.each(value, function (index2, value2) {
+                        var colorName = colorNames[barChartData2.datasets.length % colorNames.length];
+                        var dsColor = window.chartColors[colorName];
+                        barChartData2.datasets.push({
+                            label: index2,
+                            yAxisID: 'A',
+                            backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                            borderColor: dsColor,
+                            borderWidth: 1,
+                            data: value2
+                        });
+                    });
                 });
+                window.myBar2.update();
+                // Find the scale in the chart instance
+                var axis = myBar2.scales.A;
+                var max = axis.max;
+                var min = axis.min;
+                myBar2.options.scales.yAxes[1].ticks.min = min;
+                myBar2.options.scales.yAxes[1].ticks.max = max;
+                window.myBar2.update();
+                document.getElementById('legend2').innerHTML = myBar2.generateLegend();
             });
-            window.myBar3.update();
-        });
-        $.post(getSumService, {year: s_year}, function (data) {
+        } else if (chartID == 'info_prod_month') {
+            $.post(getProductive, {year: p_year}, function (data) {
 
-        }).done(function (data) {
-            barChartData4.datasets = [];
-            $.each(data, function (index, value) {
-                var colorName = colorNames[barChartData4.datasets.length % colorNames.length];
-                var dsColor = window.chartColors[colorName];
-                barChartData4.datasets.push({
-                    label: index,
-                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
-                    borderColor: dsColor,
-                    borderWidth: 1,
-                    data: value
+            }).done(function (data) {
+                barChartData3.datasets = [];
+                $.each(data, function (index, value) {
+                    var colorName = colorNames[barChartData3.datasets.length % colorNames.length];
+                    var dsColor = window.chartColors[colorName];
+                    barChartData3.datasets.push({
+                        label: index,
+                        yAxisID: 'A',
+                        backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                        borderColor: dsColor,
+                        borderWidth: 1,
+                        data: value
+                    });
                 });
+                window.myBar3.update();
+                // Find the scale in the chart instance
+                var axis = myBar3.scales.A;
+                var max = axis.max;
+                var min = axis.min;
+                myBar3.options.scales.yAxes[1].ticks.min = min;
+                myBar3.options.scales.yAxes[1].ticks.max = max;
+                window.myBar3.update();
+                document.getElementById('legend3').innerHTML = myBar3.generateLegend();
             });
-            window.myBar4.update();
-        });
+        } else if (chartID == 'info_sum_month') {
+            $.post(getSumService, {year: s_year}, function (data) {
+
+            }).done(function (data) {
+                barChartData4.datasets = [];
+                $.each(data, function (index, value) {
+                    var colorName = colorNames[barChartData4.datasets.length % colorNames.length];
+                    var dsColor = window.chartColors[colorName];
+                    barChartData4.datasets.push({
+                        label: index,
+                        yAxisID: 'A',
+                        backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                        borderColor: dsColor,
+                        borderWidth: 1,
+                        data: value
+                    });
+                });
+                window.myBar4.update();
+                // Find the scale in the chart instance
+                var axis = myBar4.scales.A;
+                var max = axis.max;
+                var min = axis.min;
+                myBar4.options.scales.yAxes[1].ticks.min = min;
+                myBar4.options.scales.yAxes[1].ticks.max = max;
+                window.myBar4.update();
+                document.getElementById('legend4').innerHTML = myBar4.generateLegend();
+            });
+        }
     }
+    var chartID = '';
     window.showChart = function (element) {
-        var chartID = $(element).data('id');
+        chartID = $(element).data('id');
         var x = document.getElementById(chartID);
         $('.toogling').hide();
         if (x.style.display === "none") {
