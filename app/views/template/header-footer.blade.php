@@ -109,7 +109,11 @@
         </section>
 
         <section class="nav-primary container-fluid">
-            <div id="logo" class="hoverpointer text-capitalize"><span class="glyphicon glyphicon-menu-hamburger"></span> @yield('title-view')</div>
+            <div style="color: #ffffff;
+                 font-weight: 400;
+                 display: inline-block;
+                 font-size: 18px;
+                 padding: 5px 0;" class="hoverpointer text-capitalize"><span id="logo" class="glyphicon glyphicon-menu-hamburger"></span> @yield('title-view')</div>
         </section>
 
         <section class="main-section container-fluid">
