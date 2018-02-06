@@ -1,7 +1,7 @@
 @extends('template.header-footer')
 
 @section('title')
-<a href="{{Route('showDashboard')}}">Dashboard</a>
+{{$page}}
 @stop
 
 @section('title-view')
