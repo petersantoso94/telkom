@@ -952,14 +952,14 @@ class InventoryController extends BaseController {
 
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
                             $id =  $arr_voc[$i];
-                            $cases2[] = "WHEN `SerialNumber` = '{$id}' then '{$arr_return[$i]}'";
-                            $cases1[] = "WHEN `SerialNumber` = '{$id}' then '{$arr_msisdn[$i]}'";
-                            $ids[] = $id;
+                            $cases2[] = "WHEN '{$id}' then '{$arr_return[$i]}'";
+                            $cases1[] = "WHEN '{$id}' then '{$arr_msisdn[$i]}'";
+                            $ids[] = '\''.$id.'\'';
                         }
                         $ids = implode(',', $ids);
                         $cases1 = implode(' ', $cases1);
                         $cases2 = implode(' ', $cases2);
-                        DB::update("UPDATE `{$table}` SET `TopUpMSISDN` = CASE {$cases1} END, `TopUpDate` = CASE {$cases2} END");
+                        DB::update("UPDATE `{$table}` SET `TopUpMSISDN` = CASE `SerialNumber` {$cases1} END, `TopUpDate` = CASE `SerialNumber` {$cases2} END WHERE `SerialNumber` in ({$ids})");
 
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumbertop($counter);
                     }
