@@ -6,10 +6,10 @@
 
 @section('title-view')
 <a href="{{Route('showDashboard')}}" style="color: #ffffff;
-                 font-weight: 400;
-                 display: inline-block;
-                 font-size: 18px;
-                 padding: 5px 0;">Dashboard</a>
+   font-weight: 400;
+   display: inline-block;
+   font-size: 18px;
+   padding: 5px 0;">Dashboard</a>
 @stop
 
 @section('main-section')
@@ -30,7 +30,7 @@
                 <div class="col-md-24">
                     <div class="box">
                         <div class="box-header with-border">
-                            <h3 class="box-title">Monthly Recap Report</h3>
+                            <h3 class="box-title">Monthly Report</h3>
 
                             <div class="box-tools pull-right">
                                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -52,11 +52,16 @@
                         <div class="box-body">
                             <div class="nav-tabs-custom">
                                 <ul class="nav nav-tabs">
-                                    <li class="active"><a href="#voc" data-toggle="tab" aria-expanded="true">VOUCHER</a></li>
-                                    <li class=""><a href="#sim" data-toggle="tab" aria-expanded="false">SIM CARD</a></li>
+                                    <li class="active"><a href="#subs" data-toggle="tab" aria-expanded="true">Subsciber</a></li>
+                                    <li class=""><a href="#vocres" data-toggle="tab" aria-expanded="false">Voucher Recharge</a></li>
+                                    <li class=""><a href="#intus" data-toggle="tab" aria-expanded="false">Internet Usage</a></li>
+                                    <li class=""><a href="#shipout" data-toggle="tab" aria-expanded="false">Shipout Report</a></li>
+                                    <li class=""><a href="#weekly" data-toggle="tab" aria-expanded="false">Weekly Performance</a></li>
+                                    <li class=""><a href="#subagent1" data-toggle="tab" aria-expanded="false">Subagent #1</a></li>
+                                    <li class=""><a href="#subagent2" data-toggle="tab" aria-expanded="false">Subagent SIM #2</a></li>
                                 </ul>
                                 <div class="tab-content">
-                                    <div class="tab-pane active" id="voc">
+                                    <div class="tab-pane active" id="subs">
                                         <div class="row">
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
@@ -180,7 +185,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="tab-pane" id="sim">
+                                    <div class="tab-pane" id="vocres">
                                         <div class="row">
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
@@ -188,6 +193,91 @@
 
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">Monthly average shipout</span>
+                                                        <span class="info-box-number"><small> pcs</small></span>
+                                                        <a  class="small-box-footer" href="#info_sim_month" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" id="intus">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Monthly average shipout</span>
+                                                        <span class="info-box-number"><small> pcs</small></span>
+                                                        <a  class="small-box-footer" href="#info_sim_month" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" id="shipout">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Channel Reporting</span>
+                                                        <span class="info-box-number"><small> pcs</small></span>
+                                                        <a  class="small-box-footer" href="#info_sim_month" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" id="weekly">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Performance Report</span>
+                                                        <span class="info-box-number"><small> pcs</small></span>
+                                                        <a  class="small-box-footer" href="#info_sim_month" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" id="subagent1">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Shipout to</span>
+                                                        <span class="info-box-number"><small> pcs</small></span>
+                                                        <a  class="small-box-footer" href="#info_sim_month" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" id="subagent2">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">ASPROF ESTHER</span>
                                                         <span class="info-box-number"><small> pcs</small></span>
                                                         <a  class="small-box-footer" href="#info_sim_month" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
                                                     </div>
@@ -397,6 +487,7 @@
                     display: false
                 },
                 tooltips: {
+                    mode: 'index',
                     callbacks: {
                         label: function (tooltipItem, data) {
                             var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
@@ -453,6 +544,8 @@
                     display: false
                 },
                 tooltips: {
+                    position: 'average',
+                    mode: 'index',
                     callbacks: {
                         label: function (tooltipItem, data) {
                             var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
@@ -514,7 +607,15 @@
                     display: false
                 },
                 tooltips: {
+                    mode: 'index',
                     callbacks: {
+                        footer: function (tooltipItems, data) {
+                            var sum = 0;
+                            tooltipItems.forEach(function (tooltipItem) {
+                                sum += data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            });
+                            return 'Total: ' + sum;
+                        },
                         label: function (tooltipItem, data) {
                             var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
                             value = value.toString();
@@ -575,6 +676,7 @@
                     display: false
                 },
                 tooltips: {
+                    mode: 'index',
                     callbacks: {
                         label: function (tooltipItem, data) {
                             var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
