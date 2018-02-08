@@ -905,7 +905,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
-            }else if (Input::get('jenis') == 'topup') {
+            } else if (Input::get('jenis') == 'topup') {
                 $input = Input::file('sample_file');
                 if ($input != '') {
                     if (Input::hasFile('sample_file')) {
@@ -951,10 +951,10 @@ class InventoryController extends BaseController {
                         $counter = count($arr_msisdn);
 
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
-                            $id =  $arr_voc[$i];
+                            $id = $arr_voc[$i];
                             $cases2[] = "WHEN '{$id}' then '{$arr_return[$i]}'";
                             $cases1[] = "WHEN '{$id}' then '{$arr_msisdn[$i]}'";
-                            $ids[] = '\''.$id.'\'';
+                            $ids[] = '\'' . $id . '\'';
                         }
                         $ids = implode(',', $ids);
                         $cases1 = implode(' ', $cases1);
@@ -1081,12 +1081,16 @@ class InventoryController extends BaseController {
         $year = Input::get('year');
 //        $year = '2017';
         $data = [];
+        $counter_z = [];
+        $sum_bef = 0;
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Churn%\'')->get();
-        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
-//        if(!count($all_ivr)){
-//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-//        }
+        $act_year_before = Stats::where('Year', '<', $year)->whereRaw('Status LIKE \'%Act%\'')->orderBy('Month', 'ASC')->get();
+        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->orderBy('Month', 'ASC')->get();
+        if ($act_year_before != null) {
+            foreach ($act_year_before as $act) {
+                $sum_bef += $act->Counter;
+            }
+        }
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
                 if (!isset($data['churn'][$ivr->Status]))
@@ -1100,14 +1104,19 @@ class InventoryController extends BaseController {
         }
         if ($all_act != null) {
             foreach ($all_act as $ivr) {
-                if (!isset($data['act'][$ivr->Status]))
+                if (!isset($data['act'][$ivr->Status])) {
                     $data['act'][$ivr->Status] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                for ($i = 0; $i < 12; $i++) {
-                    if ($i == $ivr->Month - 1) {
-                        $data['act'][$ivr->Status][$i] = ($ivr->Counter);
-                    }
+                    $counter_z = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 }
+
+                $counter_z[($ivr->Month - 1)] = $ivr->Counter;
+                $data['act'][$ivr->Status][($ivr->Month - 1)] = $ivr->Counter;
             }
+        }
+        for ($i = 0; $i < 12; $i++) {
+            $sum_bef += $counter_z[$i];
+            if ($counter_z[$i] > 0)
+                $data['act']['Activation'][$i] = $sum_bef;
         }
         return $data;
     }
