@@ -53,6 +53,9 @@ Route::group(array('before' => 'auth'), function() {
     Route::any('getIVR', array('as' => 'getIVR', 'before' => '', 'uses' => 'InventoryController@getIVR'));
     Route::any('getProductive', array('as' => 'getProductive', 'before' => '', 'uses' => 'InventoryController@getProductive'));
     Route::any('getSumService', array('as' => 'getSumService', 'before' => '', 'uses' => 'InventoryController@getSumService'));
+    Route::any('getPayload', array('as' => 'getPayload', 'before' => '', 'uses' => 'InventoryController@getPayload'));
+    Route::any('getInternetVsNon', array('as' => 'getInternetVsNon', 'before' => '', 'uses' => 'InventoryController@getInternetVsNon'));
+    Route::any('getPayloadPerUser', array('as' => 'getPayloadPerUser', 'before' => '', 'uses' => 'InventoryController@getPayloadPerUser'));
     Route::any('getCHURN', array('as' => 'getCHURN', 'before' => '', 'uses' => 'InventoryController@getCHURN'));
     Route::post('postFS', array('as' => 'postFS', 'before' => '', 'uses' => 'InventoryController@postFS'));
     Route::any('getPDFShipout', array('as' => 'getPDFShipout', 'before' => '', 'uses' => 'InventoryController@getPDFShipout'));
