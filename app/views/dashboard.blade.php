@@ -63,19 +63,7 @@
                                 <div class="tab-content">
                                     <div class="tab-pane active" id="subs">
                                         <div class="row">
-                                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                                <div class="info-box">
-                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
-
-                                                    <div class="info-box-content">
-                                                        <span class="info-box-text">Monthly Internet Subscriber</span>
-
-                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_ivr_month">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
-                                                    </div>
-                                                    <!-- /.info-box-content -->
-                                                </div>
-                                                <!-- /.info-box -->
-                                            </div>
+                                            
                                             <!-- /.col -->
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
@@ -209,9 +197,9 @@
                                                     <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
 
                                                     <div class="info-box-content">
-                                                        <span class="info-box-text">Monthly average shipout</span>
-                                                        <span class="info-box-number"><small> pcs</small></span>
-                                                        <a  class="small-box-footer" href="#info_sim_month" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
+                                                        <span class="info-box-text">IVR Purchased Internet</span>
+
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_ivr_month">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
                                                     </div>
                                                     <!-- /.info-box-content -->
                                                 </div>
@@ -478,7 +466,7 @@
     window.onload = function () {
         var ctx = document.getElementById("barChart_ivr").getContext("2d");
         window.myBar = new Chart(ctx, {
-            type: 'bar',
+            type: 'line',
             data: barChartData,
             options: {
                 responsive: true,
@@ -489,6 +477,13 @@
                 tooltips: {
                     mode: 'index',
                     callbacks: {
+                        footer: function (tooltipItems, data) {
+                            var sum = 0;
+                            tooltipItems.forEach(function (tooltipItem) {
+                                sum += data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            });
+                            return 'Total: ' + sum;
+                        },
                         label: function (tooltipItem, data) {
                             var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
                             value = value.toString();
@@ -500,7 +495,7 @@
                 },
                 title: {
                     display: true,
-                    text: 'Monthly internet subscriber'
+                    text: 'IVR Purchased Internet'
                 }, scales: {
                     yAxes: [{
                             id: 'A',
