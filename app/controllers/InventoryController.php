@@ -1046,7 +1046,6 @@ class InventoryController extends BaseController {
     //============================ajax===============================
 
 
-
     static function getIVR() {
 //        $year = '2018';
         $year = Input::get('year');
@@ -1084,8 +1083,8 @@ class InventoryController extends BaseController {
         $counter_z = [];
         $sum_bef = 0;
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Churn%\'')->get();
-        $act_year_before = Stats::where('Year', '<', $year)->whereRaw('Status LIKE \'%Act%\'')->orderBy('Month', 'ASC')->get();
-        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->orderBy('Month', 'ASC')->get();
+        $act_year_before = Stats::where('Year', '<', $year)->whereRaw('Status LIKE \'%Activation%\'')->orderBy('Month', 'ASC')->get();
+        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Activation%\'')->orderBy('Month', 'ASC')->get();
         if ($act_year_before != null) {
             foreach ($act_year_before as $act) {
                 $sum_bef += $act->Counter;
@@ -1193,6 +1192,136 @@ class InventoryController extends BaseController {
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $ivr->Month - 1) {
                         $data[$stats][$i] = $temp_counter;
+                    }
+                }
+            }
+        }
+        return $data;
+    }
+
+    static function getPayload() {
+        $year = Input::get('year');
+//        $year = '2017';
+        $data = [];
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%internet_sum%\'')->get();
+//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $stats = 'Internet (TB)';
+                $temp_counter = $ivr->Counter / 1000;
+                if (!isset($data[$stats]))
+                    $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data[$stats][$i] = round($temp_counter, 2);
+                    }
+                }
+            }
+        }
+        return $data;
+    }
+
+    static function getPayloadPerUser() {
+        $year = Input::get('year');
+        $year = '2017';
+        $data = [];
+        $sum_internet = [];
+        $count_internet = [];
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%internet_sum%\'')->get();
+//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $stats = 'Internet (TB)';
+                $temp_counter = $ivr->Counter;
+                if (!isset($sum_internet[$stats]))
+                    $sum_internet[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $sum_internet[$stats][$i] = round($temp_counter, 2);
+                    }
+                }
+            }
+        }
+
+        $internet_user = Stats::where('Year', $year)->whereRaw('Status LIKE \'%services%\'')->get();
+//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+        if ($internet_user != null) {
+            foreach ($internet_user as $ivr) {
+                $stats = 'non';
+                $temp_stat = $ivr->Status;
+                if (substr($temp_stat, 0, 1) == '2') {
+                    $stats = 'Internet';
+                } else if (substr($temp_stat, 0, 1) == '3') {
+                    $stats = 'Internet';
+                } else if (substr($temp_stat, 0, 1) == '7') {
+                    $stats = 'Internet';
+                } else if (substr($temp_stat, 0, 1) == '8') {
+                    $stats = 'Internet';
+                }
+                if ($stats != 'non') {
+                    if (!isset($count_internet[$stats]))
+                        $count_internet[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    for ($i = 0; $i < 12; $i++) {
+                        if ($i == $ivr->Month - 1) {
+                            $count_internet[$stats][$i] += $ivr->Counter;
+                        }
+                    }
+                }
+            }
+        }
+        $data['PayLoad Per User'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        for ($i = 0; $i < 12; $i++) {
+                $data['PayLoad Per User'][$i] = round($sum_internet['Internet (TB)'][$i]/$count_internet['Internet'][$i], 2);
+        }
+        return $data;
+    }
+
+    static function getInternetVsNon() {
+        $year = Input::get('year');
+//        $year = '2017';
+        $data = [];
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%services%\'')->get();
+//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $stats = 'Non-Internet';
+                $temp_stat = $ivr->Status;
+                if (substr($temp_stat, 0, 1) == '1') {
+                    $stats = 'Non-Internet';
+                } else if (substr($temp_stat, 0, 1) == '2') {
+                    $stats = 'Internet';
+                } else if (substr($temp_stat, 0, 1) == '3') {
+                    $stats = 'Internet';
+                } else if (substr($temp_stat, 0, 1) == '5') {
+                    $stats = 'Non-Internet';
+                } else if (substr($temp_stat, 0, 1) == '6') {
+                    $stats = 'Non-Internet';
+                } else if (substr($temp_stat, 0, 1) == '7') {
+                    $stats = 'Internet';
+                } else if (substr($temp_stat, 0, 1) == '8') {
+                    $stats = 'Internet';
+                }
+                if (!isset($data[$stats]))
+                    $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data[$stats][$i] += $ivr->Counter;
                     }
                 }
             }
