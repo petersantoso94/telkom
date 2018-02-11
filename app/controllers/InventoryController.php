@@ -1328,6 +1328,30 @@ class InventoryController extends BaseController {
         }
         return $data;
     }
+    
+    static function getVouchersTopUp() {
+        $year = Input::get('year');
+        $year = '2017';
+        $data = [];
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
+//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                if (!isset($data['Voucher']))
+                    $data['Voucher'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data['Voucher'][$i] += $ivr->Counter;
+                    }
+                }
+            }
+        }
+        return $data;
+    }
 
     static function postMissing() {
         $sn = Input::get('sn');
