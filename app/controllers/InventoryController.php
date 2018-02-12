@@ -1283,7 +1283,7 @@ class InventoryController extends BaseController {
         }
         $data['PayLoad Per User'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         for ($i = 0; $i < 12; $i++) {
-                $data['PayLoad Per User'][$i] = round($sum_internet['Internet (TB)'][$i]/$count_internet['Internet'][$i], 2);
+            $data['PayLoad Per User'][$i] = round($sum_internet['Internet (TB)'][$i] / $count_internet['Internet'][$i], 2);
         }
         return $data;
     }
@@ -1328,12 +1328,13 @@ class InventoryController extends BaseController {
         }
         return $data;
     }
-    
+
     static function getVouchersTopUp() {
         $year = Input::get('year');
         $year = '2017';
         $data = [];
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
+        //1 -> evoucher; 2 -> phvoucher
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%1topup%\'')->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -1346,6 +1347,27 @@ class InventoryController extends BaseController {
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $ivr->Month - 1) {
                         $data['Voucher'][$i] += $ivr->Counter;
+                    }
+                }
+            }
+        }
+        return $data;
+    }
+
+    static function getMSISDNTopUp() {
+        $year = Input::get('year');
+        $year = '2017';
+        $data = [];
+        //1 -> evoucher; 2 -> phvoucher
+        $counts = Inventory::select(DB::raw('count(DISTINCT `TopUpMSISDN`) as "Counter",MONTH(`TopUpDate`) as "Month"'))->
+                        whereRaw('`TopUpDate` LIKE "%2017%" GROUP BY CONCAT(MONTH(`TopUpDate`),YEAR(`TopUpDate`))')->get();
+        if ($counts != null) {
+            foreach ($counts as $count) {
+                if (!isset($data['Top Up MSISDN']))
+                    $data['Top Up MSISDN'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $count->Month - 1) {
+                        $data['Top Up MSISDN'][$i] += $count->Counter;
                     }
                 }
             }
