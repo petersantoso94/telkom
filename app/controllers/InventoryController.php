@@ -1360,7 +1360,7 @@ class InventoryController extends BaseController {
         $data = [];
         //1 -> evoucher; 2 -> phvoucher
         $counts = Inventory::select(DB::raw('count(DISTINCT `TopUpMSISDN`) as "Counter",MONTH(`TopUpDate`) as "Month"'))->
-                        whereRaw('`TopUpDate` LIKE "%2017%" GROUP BY CONCAT(MONTH(`TopUpDate`),YEAR(`TopUpDate`))')->get();
+                        whereRaw('`TopUpDate` LIKE "%'.$year.'%" GROUP BY CONCAT(MONTH(`TopUpDate`),YEAR(`TopUpDate`))')->get();
         if ($counts != null) {
             foreach ($counts as $count) {
                 if (!isset($data['Top Up MSISDN']))
