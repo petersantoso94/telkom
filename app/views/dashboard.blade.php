@@ -63,7 +63,7 @@
                                 <div class="tab-content">
                                     <div class="tab-pane active" id="subs">
                                         <div class="row">
-                                            
+
                                             <!-- /.col -->
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
@@ -463,6 +463,38 @@
         datasets: []
     };
 
+    // Define a plugin to provide data labels
+    Chart.plugins.register({
+        afterDatasetsDraw: function (chart, easing) {
+            // To only draw at the end of animation, check for easing === 1
+            var ctx = chart.ctx;
+            chart.data.datasets.forEach(function (dataset, i) {
+                var meta = chart.getDatasetMeta(i);
+                if (!meta.hidden) {
+                    meta.data.forEach(function (element, index) {
+                        // Draw the text in black, with the specified font
+                        ctx.fillStyle = 'rgb(0, 0, 0)';
+                        var fontSize = 16;
+                        var fontStyle = 'normal';
+                        var fontFamily = 'Helvetica Neue';
+                        ctx.font = Chart.helpers.fontString(fontSize, fontStyle, fontFamily);
+                        // Just naively convert to string for now
+                        var dataString = dataset.data[index].toString();
+                        // Make sure alignment settings are correct
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        var padding = 5;
+                        var position = element.tooltipPosition();
+                        ctx.fillText(dataString, position.x, position.y + (fontSize / 2) + padding);
+                    });
+                }
+            });
+        }
+    });
+    
+    Chart.defaults.global.responsive = true;
+    Chart.defaults.global.maintainAspectRatio = true;
+
     window.onload = function () {
         var ctx = document.getElementById("barChart_ivr").getContext("2d");
         window.myBar = new Chart(ctx, {
@@ -470,7 +502,7 @@
             data: barChartData,
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+//                maintainAspectRatio: true,
                 legend: {
                     display: false
                 },
@@ -534,7 +566,7 @@
             data: barChartData2,
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+//                maintainAspectRatio: true,
                 legend: {
                     display: false
                 },
@@ -597,7 +629,7 @@
             data: barChartData3,
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+//                maintainAspectRatio: true,
                 legend: {
                     display: false
                 },
@@ -666,7 +698,7 @@
             data: barChartData4,
             options: {
                 responsive: true,
-                maintainAspectRatio: true,
+//                maintainAspectRatio: true,
                 legend: {
                     display: false
                 },
