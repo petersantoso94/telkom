@@ -112,21 +112,7 @@
                                             </div>
                                             <!-- /.col -->
                                         </div>
-                                        <div class="row toogling" id="info_ivr_month" style="display: none;">
-                                            <div class="form-group col-md-2">
-                                                <select class="form-control" id="ivr_year">
-                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                            <div class="chart">
-                                                <div id="legend" class="legend"></div>
-                                                <canvas id="barChart_ivr" ></canvas>
-                                            </div>
-                                        </div>
+
                                         <div class="row toogling" id="info_churn_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="churn_year">
@@ -177,16 +163,84 @@
                                         <div class="row">
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
-                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+                                                    <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
 
                                                     <div class="info-box-content">
-                                                        <span class="info-box-text">Monthly average shipout</span>
-                                                        <span class="info-box-number"><small> pcs</small></span>
-                                                        <a  class="small-box-footer" href="#info_sim_month" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
+                                                        <span class="info-box-text">Voucher Topup</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_voc_topup">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
                                                     </div>
                                                     <!-- /.info-box-content -->
                                                 </div>
                                                 <!-- /.info-box -->
+                                            </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">eVoucher Topup</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_evoc_topup">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Subsriber Topup</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_subs_topup">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_voc_topup" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="voc_topup_year">
+                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend8" class="legend"></div>
+                                                <canvas id="barChart_voc_topup"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_evoc_topup" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="evoc_topup_year">
+                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend9" class="legend"></div>
+                                                <canvas id="barChart_evoc_topup"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_subs_topup" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="subs_year">
+                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend10" class="legend"></div>
+                                                <canvas id="barChart_subs_topup"></canvas>
                                             </div>
                                         </div>
                                     </div>
@@ -204,6 +258,108 @@
                                                     <!-- /.info-box-content -->
                                                 </div>
                                                 <!-- /.info-box -->
+                                            </div>
+
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Internet Users and Usage</span>
+
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_internet_payloads">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Payload per User</span>
+
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_internet_payloads_peruser">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                            
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Internet User vs Non-Internet User</span>
+
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_internet_vs">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_ivr_month" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="ivr_year">
+                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend" class="legend"></div>
+                                                <canvas id="barChart_ivr" ></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_internet_payloads" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="payload_year">
+                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend5" class="legend"></div>
+                                                <canvas id="barChart_internet_payload" ></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_internet_payloads_peruser" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="payload_peruser_year">
+                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend6" class="legend"></div>
+                                                <canvas id="barChart_internet_payload_peruser" ></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_internet_vs" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="vs_year">
+                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend7" class="legend"></div>
+                                                <canvas id="barChart_internet_vs" ></canvas>
                                             </div>
                                         </div>
                                     </div>
@@ -419,10 +575,21 @@
     var getCHURN = '<?php echo Route('getCHURN') ?>';
     var getProductive = '<?php echo Route('getProductive') ?>';
     var getSumService = '<?php echo Route('getSumService') ?>';
+    var getPayload = '<?php echo Route('getPayload') ?>';
+    var getPayloadPeruser = '<?php echo Route('getPayloadPerUser') ?>';
+    var getInternetVsNon = '<?php echo Route('getInternetVsNon') ?>';
+    var getVouchersTopUp = '<?php echo Route('getVouchersTopUp') ?>';
+    var getMSISDNTopUp = '<?php echo Route('getMSISDNTopUp') ?>';
     var l_year = document.getElementById('ivr_year').value;
     var c_year = document.getElementById('churn_year').value;
     var p_year = document.getElementById('prod_year').value;
     var s_year = document.getElementById('sum_year').value;
+    var internet_payload_year = document.getElementById('payload_year').value;
+    var internet_payload_peruser_year = document.getElementById('payload_peruser_year').value;
+    var internet_vs_year = document.getElementById('vs_year').value;
+    var voc_topup_year = document.getElementById('voc_topup_year').value;
+    var evoc_topup_year = document.getElementById('evoc_topup_year').value;
+    var subs_year = document.getElementById('subs_year').value;
     var colorNames = Object.keys(window.chartColors);
     $('#ivr_year').on('change', function (e) {
         l_year = document.getElementById('ivr_year').value;
@@ -443,6 +610,30 @@
         s_year = document.getElementById('sum_year').value;
         refreshBarChart();
     });
+    $('#payload_year').on('change', function (e) {
+        internet_payload_year = document.getElementById('payload_year').value;
+        refreshBarChart();
+    });
+    $('#payload_peruser_year').on('change', function (e) {
+        internet_payload_peruser_year = document.getElementById('payload_peruser_year').value;
+        refreshBarChart();
+    });
+    $('#vs_year').on('change', function (e) {
+        internet_vs_year = document.getElementById('vs_year').value;
+        refreshBarChart();
+    });
+    $('#voc_topup_year').on('change', function (e) {
+        voc_topup_year = document.getElementById('voc_topup_year').value;
+        refreshBarChart();
+    });
+    $('#evoc_topup_year').on('change', function (e) {
+        evoc_topup_year = document.getElementById('evoc_topup_year').value;
+        refreshBarChart();
+    });
+    $('#subs_year').on('change', function (e) {
+        subs_year = document.getElementById('subs_year').value;
+        refreshBarChart();
+    });
 
     var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     var color = Chart.helpers.color;
@@ -459,6 +650,30 @@
         datasets: []
     };
     var barChartData4 = {
+        labels: MONTHS,
+        datasets: []
+    };
+    var barChartData5 = {
+        labels: MONTHS,
+        datasets: []
+    };
+    var barChartData6 = {
+        labels: MONTHS,
+        datasets: []
+    };
+    var barChartData7 = {
+        labels: MONTHS,
+        datasets: []
+    };
+    var barChartData8 = {
+        labels: MONTHS,
+        datasets: []
+    };
+    var barChartData9 = {
+        labels: MONTHS,
+        datasets: []
+    };
+    var barChartData10 = {
         labels: MONTHS,
         datasets: []
     };
@@ -491,7 +706,7 @@
             });
         }
     });
-    
+
     Chart.defaults.global.responsive = true;
     Chart.defaults.global.maintainAspectRatio = true;
 
@@ -749,6 +964,353 @@
             }
         });
 
+        var ctx5 = document.getElementById("barChart_internet_payload").getContext("2d");
+        window.myBar5 = new Chart(ctx5, {
+            type: 'bar',
+            data: barChartData5,
+            options: {
+                responsive: true,
+//                maintainAspectRatio: true,
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    mode: 'index',
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    } // end callbacks:
+                },
+                title: {
+                    display: true,
+                    text: 'Monthly Internet Usage'
+                }, scales: {
+                    yAxes: [{
+                            id: 'A',
+                            type: 'linear',
+                            position: 'left',
+                            ticks: {
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            }
+                        }, {
+                            id: 'B',
+                            type: 'linear',
+                            position: 'right',
+                            ticks: {
+                                max: 1,
+                                min: 0,
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            },
+                        }]
+                }
+            }
+        });
+        var ctx6 = document.getElementById("barChart_internet_payload_peruser").getContext("2d");
+        window.myBar6 = new Chart(ctx6, {
+            type: 'bar',
+            data: barChartData6,
+            options: {
+                responsive: true,
+//                maintainAspectRatio: true,
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    mode: 'index',
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    } // end callbacks:
+                },
+                title: {
+                    display: true,
+                    text: 'Monthly Payload Per User'
+                }, scales: {
+                    yAxes: [{
+                            id: 'A',
+                            type: 'linear',
+                            position: 'left',
+                            ticks: {
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            }
+                        }, {
+                            id: 'B',
+                            type: 'linear',
+                            position: 'right',
+                            ticks: {
+                                max: 1,
+                                min: 0,
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            },
+                        }]
+                }
+            }
+        });
+        
+        var ctx7 = document.getElementById("barChart_internet_vs").getContext("2d");
+        window.myBar7 = new Chart(ctx7, {
+            type: 'bar',
+            data: barChartData7,
+            options: {
+                responsive: true,
+//                maintainAspectRatio: true,
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    position: 'average',
+                    mode: 'index',
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    } // end callbacks:
+                },
+                title: {
+                    display: true,
+                    text: 'Internet vs Non-Internet User'
+                }, scales: {
+                    xAxes: [{
+                            stacked: true,
+                        }],
+                    yAxes: [{
+                            id: 'A',
+                            type: 'linear',
+                            position: 'left',
+                            stacked: true,
+                            ticks: {
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            }
+                        }, {
+                            id: 'B',
+                            type: 'linear',
+                            position: 'right',
+                            ticks: {
+                                max: 1,
+                                min: 0,
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            },
+                            stacked: true
+                        }]
+                }
+            }
+        });
+        
+        var ctx8 = document.getElementById("barChart_voc_topup").getContext("2d");
+        window.myBar8 = new Chart(ctx8, {
+            type: 'bar',
+            data: barChartData8,
+            options: {
+                responsive: true,
+//                maintainAspectRatio: true,
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    mode: 'index',
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    } // end callbacks:
+                },
+                title: {
+                    display: true,
+                    text: 'Monthly Voucher Topup'
+                }, scales: {
+                    yAxes: [{
+                            id: 'A',
+                            type: 'linear',
+                            position: 'left',
+                            ticks: {
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            }
+                        }, {
+                            id: 'B',
+                            type: 'linear',
+                            position: 'right',
+                            ticks: {
+                                max: 1,
+                                min: 0,
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            },
+                        }]
+                }
+            }
+        });
+        
+        var ctx9 = document.getElementById("barChart_evoc_topup").getContext("2d");
+        window.myBar9 = new Chart(ctx9, {
+            type: 'bar',
+            data: barChartData9,
+            options: {
+                responsive: true,
+//                maintainAspectRatio: true,
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    mode: 'index',
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    } // end callbacks:
+                },
+                title: {
+                    display: true,
+                    text: 'Monthly eVoucher Topup'
+                }, scales: {
+                    yAxes: [{
+                            id: 'A',
+                            type: 'linear',
+                            position: 'left',
+                            ticks: {
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            }
+                        }, {
+                            id: 'B',
+                            type: 'linear',
+                            position: 'right',
+                            ticks: {
+                                max: 1,
+                                min: 0,
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            },
+                        }]
+                }
+            }
+        });
+        
+        var ctx10 = document.getElementById("barChart_subs_topup").getContext("2d");
+        window.myBar10 = new Chart(ctx10, {
+            type: 'bar',
+            data: barChartData10,
+            options: {
+                responsive: true,
+//                maintainAspectRatio: true,
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    mode: 'index',
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    } // end callbacks:
+                },
+                title: {
+                    display: true,
+                    text: 'Monthly Subscriber Topup'
+                }, scales: {
+                    yAxes: [{
+                            id: 'A',
+                            type: 'linear',
+                            position: 'left',
+                            ticks: {
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            }
+                        }, {
+                            id: 'B',
+                            type: 'linear',
+                            position: 'right',
+                            ticks: {
+                                max: 1,
+                                min: 0,
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            },
+                        }]
+                }
+            }
+        });
+        
         refreshBarChart();
     };
 
@@ -868,6 +1430,168 @@
                 myBar4.options.scales.yAxes[1].ticks.max = max;
                 window.myBar4.update();
                 document.getElementById('legend4').innerHTML = myBar4.generateLegend();
+            });
+        } else if (chartID == 'info_internet_payloads') {
+            $.post(getPayload, {year: internet_payload_year}, function (data) {
+
+            }).done(function (data) {
+                barChartData5.datasets = [];
+                $.each(data, function (index, value) {
+                    var colorName = colorNames[barChartData5.datasets.length % colorNames.length];
+                    var dsColor = window.chartColors[colorName];
+                    barChartData5.datasets.push({
+                        label: index,
+                        yAxisID: 'A',
+                        backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                        borderColor: dsColor,
+                        borderWidth: 1,
+                        data: value
+                    });
+                });
+                window.myBar5.update();
+                // Find the scale in the chart instance
+                var axis = myBar5.scales.A;
+                var max = axis.max;
+                var min = axis.min;
+                myBar5.options.scales.yAxes[1].ticks.min = min;
+                myBar5.options.scales.yAxes[1].ticks.max = max;
+                window.myBar5.update();
+                document.getElementById('legend5').innerHTML = myBar5.generateLegend();
+            });
+        } else if (chartID == 'info_internet_payloads_peruser') {
+            $.post(getPayloadPeruser, {year: internet_payload_peruser_year}, function (data) {
+
+            }).done(function (data) {
+                barChartData6.datasets = [];
+                $.each(data, function (index, value) {
+                    var colorName = colorNames[barChartData6.datasets.length % colorNames.length];
+                    var dsColor = window.chartColors[colorName];
+                    barChartData6.datasets.push({
+                        label: index,
+                        yAxisID: 'A',
+                        backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                        borderColor: dsColor,
+                        borderWidth: 1,
+                        data: value
+                    });
+                });
+                window.myBar6.update();
+                // Find the scale in the chart instance
+                var axis = myBar6.scales.A;
+                var max = axis.max;
+                var min = axis.min;
+                myBar6.options.scales.yAxes[1].ticks.min = min;
+                myBar6.options.scales.yAxes[1].ticks.max = max;
+                window.myBar6.update();
+                document.getElementById('legend6').innerHTML = myBar6.generateLegend();
+            });
+        }else if (chartID == 'info_internet_vs') {
+            $.post(getInternetVsNon, {year: internet_vs_year}, function (data) {
+
+            }).done(function (data) {
+                barChartData7.datasets = [];
+                $.each(data, function (index, value) {
+                    var colorName = colorNames[barChartData7.datasets.length % colorNames.length];
+                    var dsColor = window.chartColors[colorName];
+                    barChartData7.datasets.push({
+                        label: index,
+                        yAxisID: 'A',
+                        backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                        borderColor: dsColor,
+                        borderWidth: 1,
+                        data: value
+                    });
+                });
+                window.myBar7.update();
+                // Find the scale in the chart instance
+                var axis = myBar7.scales.A;
+                var max = axis.max;
+                var min = axis.min;
+                myBar7.options.scales.yAxes[1].ticks.min = min;
+                myBar7.options.scales.yAxes[1].ticks.max = max;
+                window.myBar7.update();
+                document.getElementById('legend7').innerHTML = myBar7.generateLegend();
+            });
+        }else if (chartID == 'info_voc_topup') {
+            $.post(getVouchersTopUp, {year: voc_topup_year}, function (data) {
+
+            }).done(function (data) {
+                barChartData8.datasets = [];
+                $.each(data, function (index, value) {
+                    var colorName = colorNames[barChartData8.datasets.length % colorNames.length];
+                    var dsColor = window.chartColors[colorName];
+                    barChartData8.datasets.push({
+                        label: index,
+                        yAxisID: 'A',
+                        backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                        borderColor: dsColor,
+                        borderWidth: 1,
+                        data: value
+                    });
+                });
+                window.myBar8.update();
+                // Find the scale in the chart instance
+                var axis = myBar8.scales.A;
+                var max = axis.max;
+                var min = axis.min;
+                myBar8.options.scales.yAxes[1].ticks.min = min;
+                myBar8.options.scales.yAxes[1].ticks.max = max;
+                window.myBar8.update();
+                document.getElementById('legend8').innerHTML = myBar8.generateLegend();
+            });
+        }else if (chartID == 'info_evoc_topup') {
+            $.post(getVouchersTopUp, {year: evoc_topup_year, type:1}, function (data) {
+
+            }).done(function (data) {
+                barChartData9.datasets = [];
+                $.each(data, function (index, value) {
+                    var colorName = colorNames[barChartData9.datasets.length % colorNames.length];
+                    var dsColor = window.chartColors[colorName];
+                    barChartData9.datasets.push({
+                        label: index,
+                        yAxisID: 'A',
+                        backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                        borderColor: dsColor,
+                        borderWidth: 1,
+                        data: value
+                    });
+                });
+                window.myBar9.update();
+                // Find the scale in the chart instance
+                var axis = myBar9.scales.A;
+                var max = axis.max;
+                var min = axis.min;
+                myBar9.options.scales.yAxes[1].ticks.min = min;
+                myBar9.options.scales.yAxes[1].ticks.max = max;
+                window.myBar9.update();
+                document.getElementById('legend9').innerHTML = myBar9.generateLegend();
+            });
+        }else if (chartID == 'info_subs_topup') {
+            $.post(getMSISDNTopUp, {year: subs_year}, function (data) {
+
+            }).done(function (data) {
+                barChartData10.datasets = [];
+                $.each(data, function (index, value) {
+                    var colorName = colorNames[barChartData10.datasets.length % colorNames.length];
+                    var dsColor = window.chartColors[colorName];
+                    barChartData10.datasets.push({
+                        label: index,
+                        yAxisID: 'A',
+                        backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                        borderColor: dsColor,
+                        borderWidth: 1,
+                        data: value
+                    });
+                });
+                window.myBar10.update();
+                // Find the scale in the chart instance
+                var axis = myBar10.scales.A;
+                var max = axis.max;
+                var min = axis.min;
+                myBar10.options.scales.yAxes[1].ticks.min = min;
+                myBar10.options.scales.yAxes[1].ticks.max = max;
+                window.myBar10.update();
+                document.getElementById('legend10').innerHTML = myBar10.generateLegend();
             });
         }
     }
