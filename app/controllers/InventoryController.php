@@ -1178,10 +1178,10 @@ class InventoryController extends BaseController {
                 $temp_counter = $ivr->Counter;
                 if (explode('_', $temp_stat)[0] == 'mt') {
                     $stats = 'MT (hours)';
-                    $temp_counter = $temp_counter / 3600;
+                    $temp_counter = round($temp_counter / 3600, 2);
                 } else if (explode('_', $temp_stat)[0] == 'mo') {
                     $stats = 'MO (hours)';
-                    $temp_counter = $temp_counter / 3600;
+                    $temp_counter = round($temp_counter / 3600, 2);
                 } else if (explode('_', $temp_stat)[0] == 'internet') {
                     $stats = 'Internet (GB)';
                 } else if (explode('_', $temp_stat)[0] == 'sms') {
@@ -1227,7 +1227,7 @@ class InventoryController extends BaseController {
 
     static function getPayloadPerUser() {
         $year = Input::get('year');
-        $year = '2017';
+//        $year = '2017';
         $data = [];
         $sum_internet = [];
         $count_internet = [];
@@ -1257,6 +1257,7 @@ class InventoryController extends BaseController {
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 //            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 //        }
+        $count_internet['Internet'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         if ($internet_user != null) {
             foreach ($internet_user as $ivr) {
                 $stats = 'non';
@@ -1283,7 +1284,11 @@ class InventoryController extends BaseController {
         }
         $data['PayLoad Per User'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         for ($i = 0; $i < 12; $i++) {
-            $data['PayLoad Per User'][$i] = round($sum_internet['Internet (TB)'][$i] / $count_internet['Internet'][$i], 2);
+            if ($count_internet['Internet'][$i] == 0) {
+                $data['PayLoad Per User'][$i] = 0;
+            } else {
+                $data['PayLoad Per User'][$i] = round($sum_internet['Internet (TB)'][$i] / $count_internet['Internet'][$i], 2);
+            }
         }
         return $data;
     }
@@ -1331,10 +1336,13 @@ class InventoryController extends BaseController {
 
     static function getVouchersTopUp() {
         $year = Input::get('year');
-        $year = '2017';
+//        $year = '2017';
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
         $data = [];
         //1 -> evoucher; 2 -> phvoucher
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%1topup%\'')->get();
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%' . $type . 'topup%\'')->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -1356,11 +1364,11 @@ class InventoryController extends BaseController {
 
     static function getMSISDNTopUp() {
         $year = Input::get('year');
-        $year = '2017';
+//        $year = '2017';
         $data = [];
         //1 -> evoucher; 2 -> phvoucher
         $counts = Inventory::select(DB::raw('count(DISTINCT `TopUpMSISDN`) as "Counter",MONTH(`TopUpDate`) as "Month"'))->
-                        whereRaw('`TopUpDate` LIKE "%'.$year.'%" GROUP BY CONCAT(MONTH(`TopUpDate`),YEAR(`TopUpDate`))')->get();
+                        whereRaw('`TopUpDate` LIKE "%' . $year . '%" GROUP BY CONCAT(MONTH(`TopUpDate`),YEAR(`TopUpDate`))')->get();
         if ($counts != null) {
             foreach ($counts as $count) {
                 if (!isset($data['Top Up MSISDN']))
