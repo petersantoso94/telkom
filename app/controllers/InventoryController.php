@@ -1040,6 +1040,7 @@ class InventoryController extends BaseController {
     public function showInventory() {
         Session::forget('FormSeriesInv');
         Session::forget('WarehouseInv');
+        Session::forget('ShipouttoInv');
         return View::make('inventory')->withPage('inventory');
     }
 
@@ -1443,6 +1444,14 @@ class InventoryController extends BaseController {
         Session::put('WarehouseInv', Input::get('wh'));
     }
 
+    static function postST() {
+        Session::put('ShipouttoInv', Input::get('st'));
+    }
+
+    static function delST() {
+        Session::forget('ShipouttoInv');
+    }
+
     static function exportExcel($filter) {
         $invs = '';
         $filter = explode(',,,', $filter);
@@ -1453,6 +1462,7 @@ class InventoryController extends BaseController {
         $status = '0';
         $fs = '';
         $wh = '';
+        $st = '';
         if ($filter[0] != 'all') {
             $typesym = '=';
             $type = $filter[0];
@@ -1469,6 +1479,10 @@ class InventoryController extends BaseController {
         if (Session::has('WarehouseInv')) {
             $wh = Session::get('WarehouseInv');
             $filenames .= '_' . $wh;
+        }
+        if (Session::has('ShipouttoInv')) {
+            $st = Session::get('ShipouttoInv');
+            $filenames .= '_' . $st;
         }
         if (Session::has('FormSeriesInv')) {
             $fs = Session::get('FormSeriesInv');
@@ -1507,6 +1521,21 @@ class InventoryController extends BaseController {
                                 ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                                 ->where('m_inventory.Type', $typesym, $type)->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                 ->where('m_historymovement.Status', $statussym, $status)->get();
+                if ($st != '') {
+                    $invs = DB::table('m_inventory')
+                                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                                    ->where('m_inventory.Type', $typesym, $type)->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%')
+                                    ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
+                                    ->where('m_historymovement.Status', $statussym, $status)->get();
+                }
+            } else {
+                if ($st != '') {
+                    $invs = DB::table('m_inventory')
+                                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                                    ->where('m_inventory.Type', $typesym, $type)
+                                    ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
+                                    ->where('m_historymovement.Status', $statussym, $status)->get();
+                }
             }
         } else if ($fs != '') {
             $invs = DB::table('m_inventory')
@@ -1520,6 +1549,23 @@ class InventoryController extends BaseController {
                                 ->where('m_inventory.Type', $typesym, $type)
                                 ->where('m_historymovement.Status', $statussym, $status)->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                 ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->get();
+                if ($st != '') {
+                    $invs = DB::table('m_inventory')
+                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                    ->where('m_inventory.Type', $typesym, $type)
+                                    ->where('m_historymovement.Status', $statussym, $status)->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%')
+                                    ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
+                                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->get();
+                }
+            } else {
+                if ($st != '') {
+                    $invs = DB::table('m_inventory')
+                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                    ->where('m_inventory.Type', $typesym, $type)
+                                    ->where('m_historymovement.Status', $statussym, $status)
+                                    ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
+                                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->get();
+                }
             }
         }
         foreach ($invs as $inv) {
@@ -1588,8 +1634,11 @@ class InventoryController extends BaseController {
         $status = '0';
         $fs = '';
         $wh = '';
+        $st = '';
         if (Session::has('WarehouseInv'))
             $wh = Session::get('WarehouseInv');
+        if (Session::has('ShipouttoInv'))
+            $st = Session::get('ShipouttoInv');
         if (Session::has('FormSeriesInv'))
             $fs = Session::get('FormSeriesInv');
         if ($filter[0] != 'all') {
@@ -1608,6 +1657,9 @@ class InventoryController extends BaseController {
             if ($wh != '') {
                 $invs->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%');
             }
+            if ($st != '') {
+                $invs->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%');
+            }
             $invs = $invs->get();
         } else if ($fs != '') {
             $invs = DB::table('m_inventory')
@@ -1617,6 +1669,9 @@ class InventoryController extends BaseController {
                     ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%');
             if ($wh != '') {
                 $invs->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%');
+            }
+            if ($st != '') {
+                $invs->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%');
             }
             $invs = $invs->get();
         }
@@ -2811,6 +2866,7 @@ class InventoryController extends BaseController {
         $lasthist['WH'] = DB::table('m_historymovement')->select('Warehouse')->distinct()->get();
         Session::forget('FormSeriesInv');
         Session::forget('WarehouseInv');
+        Session::forget('ShipouttoInv');
         return $lasthist;
     }
 
@@ -2820,6 +2876,7 @@ class InventoryController extends BaseController {
         $lasthist['WH'] = DB::table('m_historymovement')->select('Warehouse')->distinct()->get();
         Session::forget('FormSeriesInv');
         Session::forget('WarehouseInv');
+        Session::forget('ShipouttoInv');
         return $lasthist;
     }
 
@@ -2854,10 +2911,13 @@ class InventoryController extends BaseController {
         $status = '>= 0';
         $fs = '';
         $wh = '';
+        $st = '';
         if (Session::has('FormSeriesInv'))
             $fs = Session::get('FormSeriesInv');
         if (Session::has('WarehouseInv'))
             $wh = Session::get('WarehouseInv');
+        if (Session::has('ShipouttoInv'))
+            $st = Session::get('ShipouttoInv');
         if ($filter[0] != 'all') {
             $type = '= ' . $filter[0];
         }
@@ -2916,6 +2976,8 @@ class InventoryController extends BaseController {
             $extraCondition .= " && m_historymovement.LastStatus " . $status;
             if ($wh != '')
                 $extraCondition .= " && m_inventory.LastWarehouse LIKE '%" . $wh . "%'";
+            if ($st != '')
+                $extraCondition .= " && m_historymovement.SubAgent LIKE '%" . $st . "%'";
 
             $extraCondition .= " && m_historymovement.ShipoutNumber LIKE '%" . $fs . "%'";
             $join = ' INNER JOIN m_historymovement on m_historymovement.SN = m_inventory.SerialNumber';
@@ -2972,6 +3034,8 @@ class InventoryController extends BaseController {
             $extraCondition .= " && m_historymovement.Status " . $status;
             if ($wh != '')
                 $extraCondition .= " && m_inventory.LastWarehouse LIKE '%" . $wh . "%'";
+            if ($st != '')
+                $extraCondition .= " && m_historymovement.SubAgent LIKE '%" . $st . "%'";
             $join = ' INNER JOIN m_historymovement on m_historymovement.ID = m_inventory.LastStatusID';
             echo json_encode(
                     SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
