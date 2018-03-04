@@ -22,15 +22,30 @@
             </select>
         </div>
         <div class="col-xs-4">
-            Status: 
-            <select data-placeholder="Choose a form series number..." class="form-group-lg form-control" style="width: 100%" id="invstatus">
-                <option selected="" value="all">All</option>
-                <option value="in">AVAILABLE</option>
-                <option value="out">SHIPOUT</option>
-                <option value="ret">RETURN</option>
-                <option value="wh">WAREHOUSE</option>
-                <option value="con">CONSIGNMENT</option>
-            </select>
+            <div class="row">
+                Status: 
+                <select data-placeholder="Choose a form series number..." class="form-group-lg form-control" style="width: 100%" id="invstatus">
+                    <option selected="" value="all">All</option>
+                    <option value="in">AVAILABLE</option>
+                    <option value="out">SHIPOUT</option>
+                    <option value="ret">RETURN</option>
+                    <option value="wh">WAREHOUSE</option>
+                    <option value="con">CONSIGNMENT</option>
+                </select>
+            </div>
+            <div class="row" id="shipoutto-container"  style="display: none;">
+                Shipout to: 
+                <select data-placeholder="Choose a destination..."  style="width: 100%" name="shipout" id="shipoutto">
+                    <option></option>
+                    <option value="TOKO">TOKO</option>
+                    <option value="ASPROF">ASPROF</option>
+                    <option value="ASPROT">ASPROT</option>
+                    <option value="DIRECT">DIRECT</option>
+                    <option value="INDEX">INDEX</option>
+                    <option value="PRE-EMPTIVE">PRE-EMPTIVE</option>
+                    <option value="COLUMBIA">COLUMBIA</option>
+                </select>
+            </div>
         </div>
         <div class="col-xs-4">
             <div class="row">
@@ -122,6 +137,8 @@
                     var ajax2 = '<?php echo Route('postFS') ?>';
                     var postFS = '<?php echo Route('postFormSeries') ?>';
                     var postWH = '<?php echo Route('postWarehouse') ?>';
+                    var postST = '<?php echo Route('postST') ?>';
+                    var delST = '<?php echo Route('delST') ?>';
                     var getPDF = '<?php echo Route('getPDFInv') ?>';
                     var changeFB = '<?php echo Route('changeFB') ?>';
 
@@ -166,11 +183,11 @@
                     $('#btn_setfb').on('click', function () {
                         var fb = document.getElementById('fabiao').value;
                         if (fb != '') {
-                            if (confirm("Do you want to change fabiao number into "+fb+" ?") == true) {
+                            if (confirm("Do you want to change fabiao number into " + fb + " ?") == true) {
                                 $.post(changeFB, {fab: fb}, function (data) {
 
                                 }).done(function (data) {
-                                    alert('Successfully update '+data+' data!');
+                                    alert('Successfully update ' + data + ' data!');
                                     drawTable();
                                 });
                             }
@@ -228,6 +245,16 @@
                         if (!temp3)
                             temp3 = '';
                         $.post(postWH, {wh: temp3}, function (data) {
+
+                        }).done(function () {
+                            drawTable();
+                        });
+                    });
+                    $('#shipoutto').on('change', function (e) {
+                        var temp3 = document.getElementById('shipoutto').value;
+                        if (!temp3)
+                            temp3 = '';
+                        $.post(postST, {st: temp3}, function (data) {
 
                         }).done(function () {
                             drawTable();
@@ -307,30 +334,38 @@
                     });
                     $('#invstatus').on('change', function (e) {
                         var temp_type = $(this).val();
-                        if (temp_type == 'all') {
-                            concat = concat.split(',,,')[0];
-                            drawTable();
-                        } else if (temp_type == 'in') {
-                            concat = concat.split(',,,')[0];
-                            concat += ',,,0';
-                            drawTable();
-                        } else if (temp_type == 'out') {
-                            concat = concat.split(',,,')[0];
-                            concat += ',,,2';
-                            drawTable();
-                        } else if (temp_type == 'ret') {
-                            concat = concat.split(',,,')[0];
-                            concat += ',,,1';
-                            drawTable();
-                        } else if (temp_type == 'wh') {
-                            concat = concat.split(',,,')[0];
-                            concat += ',,,3';
-                            drawTable();
-                        } else if (temp_type == 'con') {
-                            concat = concat.split(',,,')[0];
-                            concat += ',,,4';
-                            drawTable();
-                        }
+                        var x = document.getElementById('shipoutto-container');
+                        x.style.display = "none";
+                        $.post(delST, function (data) {
+
+                        }).done(function () {
+                            if (temp_type == 'all') {
+                                concat = concat.split(',,,')[0];
+                                drawTable();
+                            } else if (temp_type == 'in') {
+                                concat = concat.split(',,,')[0];
+                                concat += ',,,0';
+                                drawTable();
+                            } else if (temp_type == 'out') {
+                                var x = document.getElementById('shipoutto-container');
+                                x.style.display = "block";
+                                concat = concat.split(',,,')[0];
+                                concat += ',,,2';
+                                drawTable();
+                            } else if (temp_type == 'ret') {
+                                concat = concat.split(',,,')[0];
+                                concat += ',,,1';
+                                drawTable();
+                            } else if (temp_type == 'wh') {
+                                concat = concat.split(',,,')[0];
+                                concat += ',,,3';
+                                drawTable();
+                            } else if (temp_type == 'con') {
+                                concat = concat.split(',,,')[0];
+                                concat += ',,,4';
+                                drawTable();
+                            }
+                        });
                     });
                     $(document).ready(function () {
                         $(".chosen-select").chosen();
