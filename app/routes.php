@@ -49,6 +49,8 @@ Route::group(array('before' => 'auth'), function() {
     Route::post('postNewAgent', array('as' => 'postNewAgent', 'before' => '', 'uses' => 'InventoryController@postNewAgent'));
     Route::post('postFormSeries', array('as' => 'postFormSeries', 'before' => '', 'uses' => 'InventoryController@postFormSeries'));
     Route::post('postWarehouse', array('as' => 'postWarehouse', 'before' => '', 'uses' => 'InventoryController@postWarehouse'));
+    Route::post('postST', array('as' => 'postST', 'before' => '', 'uses' => 'InventoryController@postST'));
+    Route::post('delST', array('as' => 'delST', 'before' => '', 'uses' => 'InventoryController@delST'));
     Route::get('getFS', array('as' => 'getFS', 'before' => '', 'uses' => 'InventoryController@getFS'));
     Route::any('getIVR', array('as' => 'getIVR', 'before' => '', 'uses' => 'InventoryController@getIVR'));
     Route::any('getProductive', array('as' => 'getProductive', 'before' => '', 'uses' => 'InventoryController@getProductive'));
