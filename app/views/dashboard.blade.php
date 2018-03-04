@@ -287,7 +287,7 @@
                                                 </div>
                                                 <!-- /.info-box -->
                                             </div>
-                                            
+
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
                                                     <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
@@ -683,8 +683,14 @@
         afterDatasetsDraw: function (chart, easing) {
             // To only draw at the end of animation, check for easing === 1
             var ctx = chart.ctx;
+            var total = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            var grandtotal = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            var x_axis = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            var y_axis = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            var write = false;
             chart.data.datasets.forEach(function (dataset, i) {
                 var meta = chart.getDatasetMeta(i);
+                var idx = i;
                 if (!meta.hidden) {
                     meta.data.forEach(function (element, index) {
                         // Draw the text in black, with the specified font
@@ -694,16 +700,36 @@
                         var fontFamily = 'Helvetica Neue';
                         ctx.font = Chart.helpers.fontString(fontSize, fontStyle, fontFamily);
                         // Just naively convert to string for now
+
+                        total[index] += dataset.data[index];
+                        x_axis[index] = element._model.x;
+                        y_axis[index] = element._model.y - 7;
+
                         var dataString = dataset.data[index].toString();
+                        dataString = dataString.split(/(?=(?:...)*$)/);
+                        dataString = dataString.join(',');
                         // Make sure alignment settings are correct
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
-                        var padding = 5;
+                        var canvas_height = ctx.canvas.clientHeight;
+                        var padding = ((element._model.base - element._model.y) / 2);
                         var position = element.tooltipPosition();
-                        ctx.fillText(dataString, position.x, position.y + (fontSize / 2) + padding);
+                        var y_height = element._yScale.height;
+                        if (dataString.includes('-')) {
+                            padding = padding * -1;
+                        }
+//                        ctx.fillText(dataString, position.x, position.y +((canvas_height -position.y )/2)+ (fontSize / 2) + padding - (canvas_height - y_height));
+                        ctx.fillText(dataString, element._model.x, element._model.y + padding);
                     });
                 }
+                if (meta.controller.chart.canvas.id == 'barChart_prod')
+                    write = true;
             });
+            if (write) {
+                for (var i = 0; i < 12; i++) {
+                    ctx.fillText('Total: '+total[i].toString(), x_axis[i], y_axis[i]);
+                }
+            }
         }
     });
 
@@ -1076,7 +1102,7 @@
                 }
             }
         });
-        
+
         var ctx7 = document.getElementById("barChart_internet_vs").getContext("2d");
         window.myBar7 = new Chart(ctx7, {
             type: 'bar',
@@ -1139,7 +1165,7 @@
                 }
             }
         });
-        
+
         var ctx8 = document.getElementById("barChart_voc_topup").getContext("2d");
         window.myBar8 = new Chart(ctx8, {
             type: 'bar',
@@ -1196,7 +1222,7 @@
                 }
             }
         });
-        
+
         var ctx9 = document.getElementById("barChart_evoc_topup").getContext("2d");
         window.myBar9 = new Chart(ctx9, {
             type: 'bar',
@@ -1253,7 +1279,7 @@
                 }
             }
         });
-        
+
         var ctx10 = document.getElementById("barChart_subs_topup").getContext("2d");
         window.myBar10 = new Chart(ctx10, {
             type: 'bar',
@@ -1310,7 +1336,7 @@
                 }
             }
         });
-        
+
         refreshBarChart();
     };
 
@@ -1485,7 +1511,7 @@
                 window.myBar6.update();
                 document.getElementById('legend6').innerHTML = myBar6.generateLegend();
             });
-        }else if (chartID == 'info_internet_vs') {
+        } else if (chartID == 'info_internet_vs') {
             $.post(getInternetVsNon, {year: internet_vs_year}, function (data) {
 
             }).done(function (data) {
@@ -1512,7 +1538,7 @@
                 window.myBar7.update();
                 document.getElementById('legend7').innerHTML = myBar7.generateLegend();
             });
-        }else if (chartID == 'info_voc_topup') {
+        } else if (chartID == 'info_voc_topup') {
             $.post(getVouchersTopUp, {year: voc_topup_year}, function (data) {
 
             }).done(function (data) {
@@ -1539,8 +1565,8 @@
                 window.myBar8.update();
                 document.getElementById('legend8').innerHTML = myBar8.generateLegend();
             });
-        }else if (chartID == 'info_evoc_topup') {
-            $.post(getVouchersTopUp, {year: evoc_topup_year, type:1}, function (data) {
+        } else if (chartID == 'info_evoc_topup') {
+            $.post(getVouchersTopUp, {year: evoc_topup_year, type: 1}, function (data) {
 
             }).done(function (data) {
                 barChartData9.datasets = [];
@@ -1566,7 +1592,7 @@
                 window.myBar9.update();
                 document.getElementById('legend9').innerHTML = myBar9.generateLegend();
             });
-        }else if (chartID == 'info_subs_topup') {
+        } else if (chartID == 'info_subs_topup') {
             $.post(getMSISDNTopUp, {year: subs_year}, function (data) {
 
             }).done(function (data) {
