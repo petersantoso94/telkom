@@ -104,6 +104,13 @@
                             </div>
                         <?php } ?>
                     <?php } ?>
+                    
+                    <?php if (isset($notfound)) { ?>
+                            <div class="alert alert-danger alert-dismissible" role="alert" style="width: 98%; margin: 1%">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                MSISDN NOT FOUND : {{$notfound}}
+                            </div>
+                    <?php } ?>
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
