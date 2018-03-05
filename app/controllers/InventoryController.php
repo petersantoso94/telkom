@@ -800,51 +800,98 @@ class InventoryController extends BaseController {
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
-                        $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
-                        $reader->setShouldFormatDates(true);
-                        $counter = 0;
-                        $reader->open($filePath);
-                        $arr_msisdn = [];
-                        $arr_return = [];
-                        foreach ($reader->getSheetIterator() as $sheet) {
-                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                if ($rowNumber > 1) {
-                                    // do stuff with the row
-                                    $msisdn = (string) $value[2];
-                                    if ($msisdn != '' && $msisdn != null) {
-                                        $msisdn = str_replace('\'', '', $msisdn);
-                                        if (substr($msisdn, 0, 1) === '0') {
-                                            $msisdn = substr($msisdn, 1);
+                        if ($extention == 'csv') {
+                            $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::CSV);
+                            $reader->setShouldFormatDates(true);
+                            $counter = 0;
+                            $reader->open($filePath);
+                            $arr_msisdn = [];
+                            foreach ($reader->getSheetIterator() as $sheet) {
+                                foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                    if ($rowNumber > 1) {
+                                        // do stuff with the row
+                                        $msisdn = (string) $value[14];
+                                        if ($msisdn != '' && $msisdn != null) {
+                                            $msisdn = str_replace(' ', '', $msisdn);
+                                            if (substr($msisdn, 0, 1) === '0') {
+                                                $msisdn = substr($msisdn, 1);
+                                            }
+                                            array_push($arr_msisdn, $msisdn);
                                         }
-                                        array_push($arr_msisdn, $msisdn);
-                                        $date_return = $value[1];
-//                                        $date_return = explode('/', $date_return);
-//                                        $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
-                                        $date_return = strtotime($date_return);
-                                        $date_return = date('Y-m-d', $date_return);
-                                        array_push($arr_return, $date_return);
                                     }
                                 }
                             }
-                        }
-                        $reader->close();
-                        $table = Inventory::getModel()->getTable();
-                        $cases = [];
-                        $ids = [];
-                        $params = [];
-                        $counter = count($arr_msisdn);
+                            $reader->close();
+                            $ids = $arr_msisdn;
+                            $ids = implode("','", $ids);
+                            $check_msisdn = [];
+                            $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE `MSISDN` in ('{$ids}') AND `ActivationDate` IS NOT NULL");
+                            foreach ($right_msisdn as $msisdn) {
+                                $check_msisdn[] = $msisdn->MSISDN;
+                            }
+                            $not_found = array_diff($arr_msisdn, $check_msisdn);
+                            $not_found_str = '';
+                            $counter = 0;
+                            foreach ($not_found as $str) {
+                                if ($counter == 0)
+                                    $not_found_str .= $str;
+                                else {
+                                    if ($counter % 7 == 0)
+                                        $not_found_str .= ',' . $str.'<br>';
+                                    else
+                                        $not_found_str .= ',' . $str;
+                                }
+                                $counter++;
+                            }
 
-                        for ($i = 0; $i < count($arr_msisdn); $i++) {
-                            $id = (int) $arr_msisdn[$i];
-                            $cases[] = "WHEN {$id} then ?";
-                            $params[] = $arr_return[$i];
-                            $ids[] = $id;
-                        }
-                        $ids = implode(',', $ids);
-                        $cases = implode(' ', $cases);
-                        DB::update("UPDATE `{$table}` SET `ActivationDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
+                            return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNotfound($not_found_str);
+                        } else {
+                            $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
+                            $reader->setShouldFormatDates(true);
+                            $counter = 0;
+                            $reader->open($filePath);
+                            $arr_msisdn = [];
+                            $arr_return = [];
+                            foreach ($reader->getSheetIterator() as $sheet) {
+                                foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                    if ($rowNumber > 1) {
+                                        // do stuff with the row
+                                        $msisdn = (string) $value[2];
+                                        if ($msisdn != '' && $msisdn != null) {
+                                            $msisdn = str_replace('\'', '', $msisdn);
+                                            if (substr($msisdn, 0, 1) === '0') {
+                                                $msisdn = substr($msisdn, 1);
+                                            }
+                                            array_push($arr_msisdn, $msisdn);
+                                            $date_return = $value[1];
+//                                        $date_return = explode('/', $date_return);
+//                                        $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                            $date_return = strtotime($date_return);
+                                            $date_return = date('Y-m-d', $date_return);
+                                            array_push($arr_return, $date_return);
+                                        }
+                                    }
+                                }
+                            }
+                            $reader->close();
+                            $table = Inventory::getModel()->getTable();
+                            $cases = [];
+                            $ids = [];
+                            $params = [];
+                            $counter = count($arr_msisdn);
 
-                        return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberac($counter);
+                            for ($i = 0; $i < count($arr_msisdn); $i++) {
+                                $id = (int) $arr_msisdn[$i];
+                                $cases[] = "WHEN {$id} then ?";
+                                $params[] = $arr_return[$i];
+                                $ids[] = $id;
+                            }
+                            $ids = implode(',', $ids);
+                            $cases = implode(' ', $cases);
+                            DB::update("UPDATE `{$table}` SET `ActivationDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
+
+                            return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberac($counter);
+                        }
                     }
                 }
                 return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
