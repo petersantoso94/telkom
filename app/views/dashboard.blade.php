@@ -715,9 +715,9 @@
                         var padding = ((element._model.base - element._model.y) / 2);
                         var position = element.tooltipPosition();
                         var y_height = element._yScale.height;
-                        if (dataString.includes('-')) {
-                            padding = padding * -1;
-                        }
+//                        if (dataString.includes('-')) {
+//                            padding = padding * -1;
+//                        }
 //                        ctx.fillText(dataString, position.x, position.y +((canvas_height -position.y )/2)+ (fontSize / 2) + padding - (canvas_height - y_height));
                         ctx.fillText(dataString, element._model.x, element._model.y + padding);
                     });
