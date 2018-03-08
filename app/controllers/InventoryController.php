@@ -837,7 +837,7 @@ class InventoryController extends BaseController {
                                     $not_found_str .= $str;
                                 else {
                                     if ($counter % 7 == 0)
-                                        $not_found_str .= ',' . $str.'<br>';
+                                        $not_found_str .= ',' . $str . '<br>';
                                     else
                                         $not_found_str .= ',' . $str;
                                 }
@@ -1129,8 +1129,11 @@ class InventoryController extends BaseController {
 //        $year = '2017';
         $data = [];
         $counter_z = [];
+        $counter_c = [];
         $sum_bef = 0;
+        $sum_churn_bef = 0;
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Churn%\'')->get();
+        $churn_year_before = Stats::where('Year', '<', $year)->whereRaw('Status LIKE \'%Churn%\'')->orderBy('Month', 'ASC')->get();
         $act_year_before = Stats::where('Year', '<', $year)->whereRaw('Status LIKE \'%Activation%\'')->orderBy('Month', 'ASC')->get();
         $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Activation%\'')->orderBy('Month', 'ASC')->get();
         if ($act_year_before != null) {
@@ -1138,15 +1141,18 @@ class InventoryController extends BaseController {
                 $sum_bef += $act->Counter;
             }
         }
+        if ($churn_year_before != null) {
+            foreach ($churn_year_before as $act) {
+                $sum_churn_bef += $act->Counter;
+            }
+        }
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
-                if (!isset($data['churn'][$ivr->Status]))
+                if (!isset($data['churn'][$ivr->Status])){
                     $data['churn'][$ivr->Status] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                for ($i = 0; $i < 12; $i++) {
-                    if ($i == $ivr->Month - 1) {
-                        $data['churn'][$ivr->Status][$i] = -($ivr->Counter);
-                    }
+                    $counter_c = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 }
+                $counter_c[($ivr->Month - 1)] = $ivr->Counter;
             }
         }
         if ($all_act != null) {
@@ -1155,15 +1161,16 @@ class InventoryController extends BaseController {
                     $data['act'][$ivr->Status] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     $counter_z = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 }
-
                 $counter_z[($ivr->Month - 1)] = $ivr->Counter;
-                $data['act'][$ivr->Status][($ivr->Month - 1)] = $ivr->Counter;
             }
         }
         for ($i = 0; $i < 12; $i++) {
             $sum_bef += $counter_z[$i];
+            $sum_churn_bef += $counter_c[$i];
             if ($counter_z[$i] > 0)
-                $data['act']['Activation'][$i] = $sum_bef;
+                $data['act']['Activation'][$i] = $sum_bef - $sum_churn_bef;
+            if ($counter_c[$i] > 0)
+                $data['churn']['Churn'][$i] = -($sum_churn_bef);
         }
         return $data;
     }
