@@ -577,9 +577,12 @@ class InventoryController extends BaseController {
             $nodata = '';
             $successins = '';
 //                    $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Asia/Taipei'));
-            $date = Input::get('eventDate');
-            $fn = Input::get('formSN');
-            $remark = Input::get('remark');
+            $date = Input::get('eventDate',false);
+            $fn = Input::get('formSN',false);
+            $remark = NULL;
+			if(Input::get('remark')){
+				$remark = Input::get('remark',false);
+			}
             $destination = base_path() . '/uploaded_file/';
             $extention = Input::file('sample_file')->getClientOriginalExtension();
             $filename = 'tempreturn.' . $extention;
@@ -608,12 +611,22 @@ class InventoryController extends BaseController {
                                 }
 
                                 //can return, update
-                                $insertHistory = ['SN' => $inv->SerialNumber, 'Date' => $date, 'Remark' => $remark, 'Status' => 1, 'ShipoutNumber' => $fn];
-                                if (!empty($insertHistory)) {
-                                    $lasthistoryID = DB::table('m_historymovement')->insertGetId($insertHistory);
-                                }
+                                
+								$hist2 = new History();
+								$hist2->SN = $inv->SerialNumber;
+								$hist2->Price = 0;
+								$hist2->ShipoutNumber = $fn;
+								$hist2->Status = 1;
+								$hist2->SubAgent = $hist->SubAgent;
+								$hist2->Warehouse = $inv->LastWarehouse;
+								$hist2->LastStatus = 1;
+								$hist2->Remark = Input::get('remark',false);
+								$hist2->Date = Input::get('eventDate',false);
+								$hist2->userRecord = Auth::user()->ID;
+								$hist2->userUpdate = Auth::user()->ID;
+								$hist2->save();
 
-                                $inv->LastStatusID = $lasthistoryID;
+                                $inv->LastStatusID = $hist2->ID;
                                 $inv->save();
 
                                 $allhist = History::where('SN', $inv->SerialNumber)->get();
@@ -644,7 +657,7 @@ class InventoryController extends BaseController {
                             ->withNumber($counter)->withNumberf($counterfail)->withFail($nodata)->withSucc($successins)->withNoav($notavail);
         }
         return View::make('returninventory')->withPage('inventory return');
-    }
+    
 
     public function showChange() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
