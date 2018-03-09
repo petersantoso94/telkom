@@ -9,7 +9,7 @@
 @stop
 
 @section('main-section')
-<form method="POST" action="{{route('showInventoryShipout')}}" accept-charset="UTF-8" enctype="multipart/form-data" id="form-cons">
+<form method="POST" action="{{route('showConsignment')}}" accept-charset="UTF-8" enctype="multipart/form-data" id="form-cons">
     <div class="white-pane__bordered margbot20">
         <div class="row">
             <div class="col-xs-12">
