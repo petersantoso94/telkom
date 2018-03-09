@@ -350,47 +350,93 @@ class InventoryController extends BaseController {
                     $extention = Input::file('sample_file')->getClientOriginalExtension();
                     $filename = 'temp.' . $extention;
                     Input::file('sample_file')->move($destination, $filename);
-                    $data = Excel::load(base_path() . '/uploaded_file/' . 'temp.' . $extention, function($reader) {
-                                
-                            })->get();
-                    $SerialNumber = "";
+                    $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                    $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+//$reader = ReaderFactory::create(Type::CSV); // for CSV files
+//$reader = ReaderFactory::create(Type::ODS); // for ODS files
+
+                    $reader->open($filePath);
                     $counter = 0;
-                    $counterfail = 0;
-//                    $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Asia/Taipei'));
-                    $date = Input::get('eventDate');
-                    $wh = Input::get('warehouse');
-                    $formSN = Input::get('formSN');
-                    $remark = Input::get('remark');
-                    if (!empty($data) && $data->count()) {
-                        foreach ($data as $key => $value) {
-                            if ($value->serial_number != null) {
-                                $inv = Inventory::where('SerialNumber', $value->serial_number)->first();
-                                if ($inv == null) {
-                                    $type = $value->type;
-                                    $insertInventory = ['SerialNumber' => $value->serial_number, 'MSISDN' => $value->msisdn, 'LastWarehouse' => $wh,
-                                        'Type' => $type, 'Remark' => $remark, 'userRecord' => Auth::user()->ID];
-                                    $counter++;
-                                    if (!empty($insertInventory)) {
-                                        $SerialNumber = DB::table('m_inventory')->insertGetId($insertInventory);
-                                    }
+                    $arr_sn = [];
+                    $arr_msisdn = [];
+                    $arr_sn = [];
+                    $arr_shipinprice = [];
+                    $arr_type = [];
+                    $arr_lastwarehouse = [];
+                    $arr_remark = [];
+                    $arr_laststatusid = [];
 
-                                    $inv = Inventory::where('SerialNumber', $value->serial_number)->first();
+                    //for history
+                    $arr_sn_hist = [];
+                    $arr_id_hist = [];
+                    $arr_price_hist = [];
+                    $arr_hist_date = [];
+                    $arr_remark_hist = [];
+                    $arr_subagent_hist = [];
+                    $arr_shipoutnumber_hist = [];
+                    $arr_status_hist = [];
+                    $arr_laststatus_hist = [];
+                    $arr_wh_hist = [];
+                    $check_counter = History::select('ID')->orderBy('ID', 'DESC')->first();
+                    if ($check_counter == null)
+                        $id_counter = 1;
+                    else
+                        $id_counter = $check_counter->ID + 1;
+                    foreach ($reader->getSheetIterator() as $sheet) {
+                        foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                            if ($rowNumber > 1) {
+                                if ($value[0] != null && $value[0] != '') {
+                                    // do stuff with the row
+                                    $type = $value[2];
+                                    $wh = Input::get('warehouse',false);
+                                    $sn = (string) $value[0];
+                                    array_push($arr_sn, $sn);
+                                    array_push($arr_msisdn, $value[1]);
+                                    array_push($arr_type, $type);
+                                    array_push($arr_lastwarehouse, $wh);
+                                    array_push($arr_remark, Input::get('remark',false));
 
-                                    //insert history
-                                    $insertHistory = ['SN' => $value->serial_number, 'Warehouse' => $wh, 'Date' => $date, 'Remark' => $remark, 'ShipoutNumber' => $formSN];
-                                    if (!empty($insertHistory)) {
-                                        $lasthistoryID = DB::table('m_historymovement')->insertGetId($insertHistory);
-                                    }
+                                    //shipin
+                                    $status = 0;
+                                    array_push($arr_sn_hist, $sn);
+                                    array_push($arr_id_hist, $id_counter);
+                                    $date_shipin = Input::get('eventDate',false);
+                                    array_push($arr_hist_date, $date_shipin);
+                                    array_push($arr_remark_hist, Input::get('remark',false));
+                                    $shipinNumber = Input::get('formSN',false);
+                                    array_push($arr_shipoutnumber_hist, $shipinNumber);
+                                    array_push($arr_status_hist, $status);
+                                    array_push($arr_subagent_hist, '-');
+                                    array_push($arr_wh_hist, $wh);
 
-                                    $inv->LastStatusID = $lasthistoryID;
-                                    $inv->save();
-                                } else {
-                                    $counterfail++;
+                                    array_push($arr_laststatus_hist, $status);
+                                    array_push($arr_laststatusid, $id_counter);
+                                    $id_counter++;
                                 }
                             }
                         }
                     }
-                    return View::make('insertinventory')->withResponse('Success')->withPage('insert inventory')->withNumber($counter)->withNumberf($counterfail);
+                    $reader->close();
+                    $for_raw = '';
+                    for ($i = 0; $i < count($arr_sn); $i++) {
+                        if ($i == 0)
+                            $for_raw .= "('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                        else
+                            $for_raw .= ",('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                    }
+                    DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
+
+                    $for_raw = '';
+                    for ($i = 0; $i < count($arr_id_hist); $i++) {
+                        if ($i == 0)
+                            $for_raw .= "('" . $arr_id_hist[$i] . "','" . $arr_sn_hist[$i] . "','" . $arr_subagent_hist[$i] . "','" . $arr_wh_hist[$i] . "',0,'" . $arr_shipoutnumber_hist[$i] . "',NULL,'" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                        else
+                            $for_raw .= ",('" . $arr_id_hist[$i] . "','" . $arr_sn_hist[$i] . "','" . $arr_subagent_hist[$i] . "','" . $arr_wh_hist[$i] . "',0,'" . $arr_shipoutnumber_hist[$i] . "',NULL,'" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                    }
+                    DB::insert("INSERT INTO m_historymovement VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE ID=ID;");
+
+
+                    return View::make('insertinventory')->withResponse('Success')->withPage('insert inventory')->withNumber(count($arr_sn));
                 }
             }
             return View::make('insertinventory')->withResponse('Failed')->withPage('insert inventory');
