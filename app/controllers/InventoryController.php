@@ -703,7 +703,7 @@ class InventoryController extends BaseController {
                             ->withNumber($counter)->withNumberf($counterfail)->withFail($nodata)->withSucc($successins)->withNoav($notavail);
         }
         return View::make('returninventory')->withPage('inventory return');
-    
+    }
 
     public function showChange() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
