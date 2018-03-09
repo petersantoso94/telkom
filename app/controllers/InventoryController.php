@@ -518,20 +518,25 @@ class InventoryController extends BaseController {
     }
 
     public function showConsignment() {
-        Session::forget('snCons');
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $firstsn = Input::get('shipoutstart');
             $lastsn = Input::get('shipoutend');
             $price = Input::get('price');
             $series = Input::get('formSN');
             $subagent = Input::get('subagent');
+			$shipoutNumber = '';
             if (Input::get('newagent') != '') {
                 $subagent = Input::get('newagent');
             }
+			if (Session::has('snCons'))
+				$shipoutNumber = Session::get('snCons');
             $counter = 0;
-            $allInvAvail = Inventory::whereBetween('SerialNumber', [$firstsn, $lastsn])->where('Missing', 0)->get();
+            //$allInvAvail = Inventory::whereBetween('SerialNumber', [$firstsn, $lastsn])->where('Missing', 0)->get();
+			$allInvAvail = Inventory::join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                            ->where('m_inventory.Missing', 0)
+                            ->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.$shipoutNumber.'%')->get();
             foreach ($allInvAvail as $inv) {
-                $history = History::where('ID', $inv['LastStatusID'])->first();
+                $history = History::where('ID', $inv->LastStatusID)->first();
                 if ($history->Status != 2) { //available
                     $hist = new History();
                     $hist->SN = $inv->SerialNumber;
@@ -556,8 +561,10 @@ class InventoryController extends BaseController {
                     $counter++;
                 }
             }
+			Session::forget('snCons');
             return View::make('consignment')->withResponse('Success')->withPage('shipout consignment')->withNumber($counter);
         }
+        Session::forget('snCons');
         return View::make('consignment')->withPage('shipout consignment');
     }
 
