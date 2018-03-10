@@ -82,8 +82,8 @@
                 <div class="col-sm-2">
                     <label class="fw300" style="margin-top: 7px;">Move to: </label>
                 </div>
-                <div class="col-sm-5" style="margin-top: 5px;">
-                    <select class="chosen-select" style="" name="moveto">
+                <div class="col-sm-2" style="margin-top: 5px;">
+                    <select class="chosen-select" style="" name="moveto" id="warehouse-id">
                         @foreach(DB::table('m_historymovement')->select('Warehouse')->distinct()->get() as $agent)
                         @if($agent->Warehouse != '')
                         <option value="{{$agent->Warehouse}}">
@@ -93,15 +93,8 @@
                         @endforeach
                     </select>
                 </div>
-            </div>
-        </div>
-        <div class="row margtop20">
-            <div class="form-group">
-                <div class="col-sm-2">
-                    <label class="fw300" style="margin-top: 7px;">New Warehouse Name: </label>
-                </div>
-                <div class="col-sm-5">
-                    <input type="text" class="input-stretch" name="newwh" placeholder="leave blank if you chose warehouse above">
+                <div class="col-sm-1" style="margin-top: 5px;">
+                    <button type="button" onclick="newSubagent(this)"><span class="glyphicon glyphicon-plus"></span></button>
                 </div>
             </div>
         </div>
@@ -128,40 +121,63 @@
 <script src="{{Asset('jquery-validation/form-validator/jquery.form-validator.js')}}"></script>
 <script type="text/javascript" src="{{Asset('js/chosen.jquery.min.js')}}"></script>
 <script>
-Date.prototype.toDateInputValue = (function () {
-    var local = new Date(this);
-    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
-    return local.toJSON().slice(0, 10);
-});
-var table = '';
-var table2 = '';
-var inventoryDataBackup = '';
-var inventoryDataBackup2 = '';
-$('#btn_ceksn').on('click', function (e) {
-    if ($.fn.dataTable.isDataTable('#example')) {
-        table.fnDestroy();
-        table2.fnDestroy();
-    }
-    inventoryDataBackup = '<?php echo Route('inventoryDataBackupWare') ?>' + '/' + document.getElementById('shipoutstart').value + ',,,' + document.getElementById('shipoutend').value + ',,,1';
-    inventoryDataBackup2 = '<?php echo Route('inventoryDataBackupWare') ?>' + '/' + document.getElementById('shipoutstart').value + ',,,' + document.getElementById('shipoutend').value + ',,,0';
-    table = $('#example').dataTable({
-        "draw": 10,
-        "bDestroy": true,
-        "processing": true,
-        "serverSide": true,
-        "ajax": inventoryDataBackup
-    });
-    table2 = $('#example2').dataTable({
-        "draw": 10,
-        "bDestroy": true,
-        "processing": true,
-        "serverSide": true,
-        "ajax": inventoryDataBackup2
-    });
-});
-$(document).ready(function () {
-    $('#shipindate').val(new Date().toDateInputValue());
-    $(".chosen-select").chosen()
-});
+                        Date.prototype.toDateInputValue = (function () {
+                            var local = new Date(this);
+                            local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+                            return local.toJSON().slice(0, 10);
+                        });
+                        var table = '';
+                        var table2 = '';
+                        var newWhName = '';
+                        var inventoryDataBackup = '';
+                        var inventoryDataBackup2 = '';
+                        var postNewWh = '<?php echo Route('postNewWh') ?>';
+                        $('#btn_ceksn').on('click', function (e) {
+                            if ($.fn.dataTable.isDataTable('#example')) {
+                                table.fnDestroy();
+                                table2.fnDestroy();
+                            }
+                            inventoryDataBackup = '<?php echo Route('inventoryDataBackupWare') ?>' + '/' + document.getElementById('shipoutstart').value + ',,,' + document.getElementById('shipoutend').value + ',,,1';
+                            inventoryDataBackup2 = '<?php echo Route('inventoryDataBackupWare') ?>' + '/' + document.getElementById('shipoutstart').value + ',,,' + document.getElementById('shipoutend').value + ',,,0';
+                            table = $('#example').dataTable({
+                                "draw": 10,
+                                "bDestroy": true,
+                                "processing": true,
+                                "serverSide": true,
+                                "ajax": inventoryDataBackup
+                            });
+                            table2 = $('#example2').dataTable({
+                                "draw": 10,
+                                "bDestroy": true,
+                                "processing": true,
+                                "serverSide": true,
+                                "ajax": inventoryDataBackup2
+                            });
+                        });
+                        $(document).ready(function () {
+                            $('#shipindate').val(new Date().toDateInputValue());
+                            $(".chosen-select").chosen()
+                        });
+                        window.newSubagent = function (element) {
+                            var person = prompt("Please enter New Warehouse name:", "please insert warehouse name");
+                            if (person == null || person == "") {
+                                txt = "User cancelled the prompt.";
+                            } else {
+                                newWhName = person;
+                                confirmNewAgent();
+                            }
+                        };
+                        var confirmNewAgent = function () {
+                            if (confirm("Do you want to safe this New Warehouse: '" + newWhName + "' ?") == true) {
+                                $.post(postNewWh, {wh: newWhName}, function (data) {
+
+                                }).done(function () {
+                                    $(".chosen-select").chosen("destroy");
+                                    $("#warehouse-id").append('<option value="' + newWhName + '">' + newWhName + '</option>');
+                                    $(".chosen-select").chosen()
+                                    $(this).trigger("chosen:updated");
+                                });
+                            }
+                        };
 </script>
 @stop
