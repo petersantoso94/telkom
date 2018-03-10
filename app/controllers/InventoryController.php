@@ -454,7 +454,10 @@ class InventoryController extends BaseController {
             $firstsn = Input::get('shipoutstart');
             $lastsn = Input::get('shipoutend');
             $moveto = Input::get('moveto');
-            $newwh = Input::get('newwh');
+            $newwh = '';
+            if (Input::get('NewWarehouse') != '') {
+                $newwh = Input::get('NewWarehouse');
+            }
             if ($newwh != '') {
                 $moveto = $newwh;
             }
@@ -471,6 +474,7 @@ class InventoryController extends BaseController {
                     $hist->SN = $inv->SerialNumber;
                     $hist->Warehouse = $moveto;
                     $hist->Status = 3;
+                    $hist->SubAgent = '';
                     $hist->Remark = Input::get('remark');
                     $hist->userRecord = Auth::user()->ID;
                     $hist->save();
@@ -1555,6 +1559,9 @@ class InventoryController extends BaseController {
         Session::put('NewAgent', Input::get('agent'));
     }
 
+    static function postNewWh() {
+        Session::put('NewWarehouse', Input::get('wh'));
+    }
     static function postFormSeries() {
         Session::put('FormSeries', Input::get('fs'));
         Session::put('FormSeriesInv', Input::get('fs'));
