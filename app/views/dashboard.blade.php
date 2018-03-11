@@ -125,7 +125,7 @@
                                             </div>
                                             <div class="chart">
                                                 <div id="legend2" class="legend"></div>
-                                                <canvas id="barChart_churn"></canvas>
+                                                <canvas id="barChart_churn" height="100"></canvas>
                                             </div>
                                         </div>
                                         <div class="row toogling" id="info_prod_month" style="display: none;">
@@ -140,7 +140,7 @@
                                             </div>
                                             <div class="chart">
                                                 <div id="legend3" class="legend"></div>
-                                                <canvas id="barChart_prod"></canvas>
+                                                <canvas id="barChart_prod" height="100"></canvas>
                                             </div>
                                         </div>
                                         <div class="row toogling" id="info_sum_month" style="display: none;">
@@ -155,7 +155,7 @@
                                             </div>
                                             <div class="chart">
                                                 <div id="legend4" class="legend"></div>
-                                                <canvas id="barChart_sum"></canvas>
+                                                <canvas id="barChart_sum" height="100"></canvas>
                                             </div>
                                         </div>
                                     </div>
@@ -210,7 +210,7 @@
                                             </div>
                                             <div class="chart">
                                                 <div id="legend8" class="legend"></div>
-                                                <canvas id="barChart_voc_topup"></canvas>
+                                                <canvas id="barChart_voc_topup" height="100"></canvas>
                                             </div>
                                         </div>
                                         <div class="row toogling" id="info_evoc_topup" style="display: none;">
@@ -225,7 +225,7 @@
                                             </div>
                                             <div class="chart">
                                                 <div id="legend9" class="legend"></div>
-                                                <canvas id="barChart_evoc_topup"></canvas>
+                                                <canvas id="barChart_evoc_topup" height="100"></canvas>
                                             </div>
                                         </div>
                                         <div class="row toogling" id="info_subs_topup" style="display: none;">
@@ -240,7 +240,7 @@
                                             </div>
                                             <div class="chart">
                                                 <div id="legend10" class="legend"></div>
-                                                <canvas id="barChart_subs_topup"></canvas>
+                                                <canvas id="barChart_subs_topup" height="100"></canvas>
                                             </div>
                                         </div>
                                     </div>
@@ -314,7 +314,7 @@
                                             </div>
                                             <div class="chart">
                                                 <div id="legend" class="legend"></div>
-                                                <canvas id="barChart_ivr" ></canvas>
+                                                <canvas id="barChart_ivr" height="100"></canvas>
                                             </div>
                                         </div>
                                         <div class="row toogling" id="info_internet_payloads" style="display: none;">
@@ -329,7 +329,7 @@
                                             </div>
                                             <div class="chart">
                                                 <div id="legend5" class="legend"></div>
-                                                <canvas id="barChart_internet_payload" ></canvas>
+                                                <canvas id="barChart_internet_payload" height="100"></canvas>
                                             </div>
                                         </div>
                                         <div class="row toogling" id="info_internet_payloads_peruser" style="display: none;">
@@ -344,7 +344,7 @@
                                             </div>
                                             <div class="chart">
                                                 <div id="legend6" class="legend"></div>
-                                                <canvas id="barChart_internet_payload_peruser" ></canvas>
+                                                <canvas id="barChart_internet_payload_peruser" height="100"></canvas>
                                             </div>
                                         </div>
                                         <div class="row toogling" id="info_internet_vs" style="display: none;">
@@ -359,7 +359,7 @@
                                             </div>
                                             <div class="chart">
                                                 <div id="legend7" class="legend"></div>
-                                                <canvas id="barChart_internet_vs" ></canvas>
+                                                <canvas id="barChart_internet_vs" height="100"></canvas>
                                             </div>
                                         </div>
                                     </div>
@@ -438,124 +438,6 @@
                 </div>
             </div>
             <!-- /.row -->
-
-            <div class="row">
-                <div class="col-md-24">
-                    <div class="box">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Weekly Recap Report</h3>
-
-                            <div class="box-tools pull-right">
-                                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-                                </button>
-                                <div class="btn-group">
-                                    <button type="button" class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown">
-                                        <i class="fa fa-wrench"></i></button>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li><a href="#">Action</a></li>
-                                        <li><a href="#">Another action</a></li>
-                                        <li><a href="#">Something else here</a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="#">Separated link</a></li>
-                                    </ul>
-                                </div>
-                                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-                            </div>
-                        </div>
-                        <div class="box-body">
-                            <div class="nav-tabs-custom">
-                                <ul class="nav nav-tabs">
-                                    <li class="active"><a href="#voc_w" data-toggle="tab" aria-expanded="true">VOUCHER</a></li>
-                                    <li class=""><a href="#sim_w" data-toggle="tab" aria-expanded="false">SIM CARD</a></li>
-                                </ul>
-                                <div class="tab-content">
-                                    <div class="tab-pane active" id="voc_w">
-                                        <div class="row">
-                                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                                <div class="info-box">
-                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
-
-                                                    <div class="info-box-content">
-                                                        <span class="info-box-text">Weekly average shipout</span>
-                                                        <span class="info-box-number"><small> pcs</small></span>
-                                                        <a  class="small-box-footer" href="#info_voc_week" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
-                                                    </div>
-                                                    <!-- /.info-box-content -->
-                                                </div>
-                                                <!-- /.info-box -->
-                                            </div>
-                                            <!-- /.col -->
-                                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                                <div class="info-box">
-                                                    <span class="info-box-icon bg-red"><i class="fa fa-google-plus"></i></span>
-
-                                                    <div class="info-box-content">
-                                                        <span class="info-box-text">Likes</span>
-                                                        <span class="info-box-number">41,410</span>
-                                                    </div>
-                                                    <!-- /.info-box-content -->
-                                                </div>
-                                                <!-- /.info-box -->
-                                            </div>
-
-
-
-                                            <!-- /.col -->
-
-                                            <!-- fix for small devices only -->
-                                            <div class="clearfix visible-sm-block"></div>
-
-                                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                                <div class="info-box">
-                                                    <span class="info-box-icon bg-green"><i class="ion ion-ios-cart-outline"></i></span>
-
-                                                    <div class="info-box-content">
-                                                        <span class="info-box-text">Sales</span>
-                                                        <span class="info-box-number">760</span>
-                                                    </div>
-                                                    <!-- /.info-box-content -->
-                                                </div>
-                                                <!-- /.info-box -->
-                                            </div>
-                                            <!-- /.col -->
-                                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                                <div class="info-box">
-                                                    <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
-
-                                                    <div class="info-box-content">
-                                                        <span class="info-box-text">New Members</span>
-                                                        <span class="info-box-number">2,000</span>
-                                                    </div>
-                                                    <!-- /.info-box-content -->
-                                                </div>
-                                                <!-- /.info-box -->
-                                            </div>
-                                            <!-- /.col -->
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane" id="sim_w">
-                                        <div class="row">
-                                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                                <div class="info-box">
-                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
-
-                                                    <div class="info-box-content">
-                                                        <span class="info-box-text">Weekly average shipout</span>
-                                                        <span class="info-box-number"><small> pcs</small></span>
-                                                        <a  class="small-box-footer" href="#info_sim_week" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
-                                                    </div>
-                                                    <!-- /.info-box-content -->
-                                                </div>
-                                                <!-- /.info-box -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </section>
         <!-- /.content -->
     </div>
@@ -727,7 +609,7 @@
             });
             if (write) {
                 for (var i = 0; i < 12; i++) {
-                    ctx.fillText('Total: '+total[i].toString(), x_axis[i], y_axis[i]);
+                    ctx.fillText('Total: ' + total[i].toString(), x_axis[i], y_axis[i]);
                 }
             }
         }
@@ -1402,6 +1284,7 @@
                 myBar2.options.scales.yAxes[1].ticks.max = max;
                 window.myBar2.update();
                 document.getElementById('legend2').innerHTML = myBar2.generateLegend();
+                window.scrollBy(0, 200);
             });
         } else if (chartID == 'info_prod_month') {
             $.post(getProductive, {year: p_year}, function (data) {
@@ -1429,6 +1312,7 @@
                 myBar3.options.scales.yAxes[1].ticks.max = max;
                 window.myBar3.update();
                 document.getElementById('legend3').innerHTML = myBar3.generateLegend();
+                window.scrollBy(0, 200);
             });
         } else if (chartID == 'info_sum_month') {
             $.post(getSumService, {year: s_year}, function (data) {
@@ -1456,6 +1340,7 @@
                 myBar4.options.scales.yAxes[1].ticks.max = max;
                 window.myBar4.update();
                 document.getElementById('legend4').innerHTML = myBar4.generateLegend();
+                window.scrollBy(0, 200);
             });
         } else if (chartID == 'info_internet_payloads') {
             $.post(getPayload, {year: internet_payload_year}, function (data) {
@@ -1483,6 +1368,7 @@
                 myBar5.options.scales.yAxes[1].ticks.max = max;
                 window.myBar5.update();
                 document.getElementById('legend5').innerHTML = myBar5.generateLegend();
+                window.scrollBy(0, 200);
             });
         } else if (chartID == 'info_internet_payloads_peruser') {
             $.post(getPayloadPeruser, {year: internet_payload_peruser_year}, function (data) {
@@ -1510,6 +1396,7 @@
                 myBar6.options.scales.yAxes[1].ticks.max = max;
                 window.myBar6.update();
                 document.getElementById('legend6').innerHTML = myBar6.generateLegend();
+                window.scrollBy(0, 200);
             });
         } else if (chartID == 'info_internet_vs') {
             $.post(getInternetVsNon, {year: internet_vs_year}, function (data) {
@@ -1537,6 +1424,7 @@
                 myBar7.options.scales.yAxes[1].ticks.max = max;
                 window.myBar7.update();
                 document.getElementById('legend7').innerHTML = myBar7.generateLegend();
+                window.scrollBy(0, 200);
             });
         } else if (chartID == 'info_voc_topup') {
             $.post(getVouchersTopUp, {year: voc_topup_year}, function (data) {
@@ -1564,6 +1452,7 @@
                 myBar8.options.scales.yAxes[1].ticks.max = max;
                 window.myBar8.update();
                 document.getElementById('legend8').innerHTML = myBar8.generateLegend();
+                window.scrollBy(0, 200);
             });
         } else if (chartID == 'info_evoc_topup') {
             $.post(getVouchersTopUp, {year: evoc_topup_year, type: 1}, function (data) {
@@ -1591,6 +1480,7 @@
                 myBar9.options.scales.yAxes[1].ticks.max = max;
                 window.myBar9.update();
                 document.getElementById('legend9').innerHTML = myBar9.generateLegend();
+                window.scrollBy(0, 200);
             });
         } else if (chartID == 'info_subs_topup') {
             $.post(getMSISDNTopUp, {year: subs_year}, function (data) {
@@ -1618,6 +1508,7 @@
                 myBar10.options.scales.yAxes[1].ticks.max = max;
                 window.myBar10.update();
                 document.getElementById('legend10').innerHTML = myBar10.generateLegend();
+                window.scrollBy(0, 200);
             });
         }
     }
