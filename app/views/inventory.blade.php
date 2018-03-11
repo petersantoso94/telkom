@@ -34,16 +34,16 @@
                 </select>
             </div>
             <div class="row" id="shipoutto-container"  style="display: none;">
-                Shipout to: 
+                Sub Agent: 
                 <select data-placeholder="Choose a destination..."  style="width: 100%" name="shipout" id="shipoutto">
                     <option></option>
-                    <option value="TOKO">TOKO</option>
-                    <option value="ASPROF">ASPROF</option>
-                    <option value="ASPROT">ASPROT</option>
-                    <option value="DIRECT">DIRECT</option>
-                    <option value="INDEX">INDEX</option>
-                    <option value="PRE-EMPTIVE">PRE-EMPTIVE</option>
-                    <option value="COLUMBIA">COLUMBIA</option>
+                        @foreach(DB::table('m_historymovement')->select('SubAgent')->distinct()->get() as $agent)
+                        @if($agent->SubAgent != '')
+                        <option value="{{$agent->SubAgent}}">
+                            {{$agent->SubAgent}}
+                        </option>
+                        @endif
+                        @endforeach
                 </select>
             </div>
         </div>
