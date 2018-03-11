@@ -52,7 +52,7 @@
                         <div class="box-body">
                             <div class="nav-tabs-custom">
                                 <ul class="nav nav-tabs">
-                                    <li class="active"><a href="#subs" data-toggle="tab" aria-expanded="true">Subsciber</a></li>
+                                    <li class="active"><a href="#subs" data-toggle="tab" aria-expanded="true">Subscriber</a></li>
                                     <li class=""><a href="#vocres" data-toggle="tab" aria-expanded="false">Voucher Recharge</a></li>
                                     <li class=""><a href="#intus" data-toggle="tab" aria-expanded="false">Internet Usage</a></li>
                                     <li class=""><a href="#shipout" data-toggle="tab" aria-expanded="false">Shipout Report</a></li>
@@ -110,6 +110,19 @@
                                                 </div>
                                                 <!-- /.info-box -->
                                             </div>
+                                            
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Detail Churn</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_detail_churn_month">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
                                             <!-- /.col -->
                                         </div>
 
@@ -156,6 +169,21 @@
                                             <div class="chart">
                                                 <div id="legend4" class="legend"></div>
                                                 <canvas id="barChart_sum" height="100"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_detail_churn_month" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="detail_churn_year">
+                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend11" class="legend"></div>
+                                                <canvas id="barChart_detail_churn" height="100"></canvas>
                                             </div>
                                         </div>
                                     </div>
@@ -462,6 +490,7 @@
     var getInternetVsNon = '<?php echo Route('getInternetVsNon') ?>';
     var getVouchersTopUp = '<?php echo Route('getVouchersTopUp') ?>';
     var getMSISDNTopUp = '<?php echo Route('getMSISDNTopUp') ?>';
+    var getChurnDetail = '<?php echo Route('getChurnDetail') ?>';
     var l_year = document.getElementById('ivr_year').value;
     var c_year = document.getElementById('churn_year').value;
     var p_year = document.getElementById('prod_year').value;
@@ -472,6 +501,7 @@
     var voc_topup_year = document.getElementById('voc_topup_year').value;
     var evoc_topup_year = document.getElementById('evoc_topup_year').value;
     var subs_year = document.getElementById('subs_year').value;
+    var detail_churn_year = document.getElementById('detail_churn_year').value;
     var colorNames = Object.keys(window.chartColors);
     $('#ivr_year').on('change', function (e) {
         l_year = document.getElementById('ivr_year').value;
@@ -480,6 +510,11 @@
 
     $('#churn_year').on('change', function (e) {
         c_year = document.getElementById('churn_year').value;
+        refreshBarChart();
+    });
+    
+    $('#detail_churn_year').on('change', function (e) {
+        detail_churn_year = document.getElementById('detail_churn_year').value;
         refreshBarChart();
     });
 
@@ -559,6 +594,10 @@
         labels: MONTHS,
         datasets: []
     };
+    var barChartData11 = {
+        labels: MONTHS,
+        datasets: []
+    };
 
     // Define a plugin to provide data labels
     Chart.plugins.register({
@@ -570,6 +609,7 @@
             var x_axis = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             var y_axis = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             var write = false;
+            var str_write = 'Total';
             chart.data.datasets.forEach(function (dataset, i) {
                 var meta = chart.getDatasetMeta(i);
                 var idx = i;
@@ -604,12 +644,14 @@
                         ctx.fillText(dataString, element._model.x, element._model.y + padding);
                     });
                 }
-                if (meta.controller.chart.canvas.id == 'barChart_prod')
+                if (meta.controller.chart.canvas.id == 'barChart_prod' || meta.controller.chart.canvas.id == 'barChart_detail_churn'){
                     write = true;
+                    str_write = 'Net';
+                }
             });
             if (write) {
                 for (var i = 0; i < 12; i++) {
-                    ctx.fillText('Total: ' + total[i].toString(), x_axis[i], y_axis[i]);
+                    ctx.fillText(str_write+': ' + total[i].toString(), x_axis[i], y_axis[i]);
                 }
             }
         }
@@ -1218,6 +1260,69 @@
                 }
             }
         });
+        
+        var ctx11 = document.getElementById("barChart_detail_churn").getContext("2d");
+        window.myBar11 = new Chart(ctx11, {
+            type: 'bar',
+            data: barChartData11,
+            options: {
+                responsive: true,
+//                maintainAspectRatio: true,
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    position: 'average',
+                    mode: 'index',
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
+                            value = value.toString();
+                            value = value.split(/(?=(?:...)*$)/);
+                            value = value.join(',');
+                            return value;
+                        }
+                    } // end callbacks:
+                },
+                title: {
+                    display: true,
+                    text: 'DetailChurn'
+                }, scales: {
+                    xAxes: [{
+                            stacked: true,
+                        }],
+                    yAxes: [{
+                            id: 'A',
+                            type: 'linear',
+                            position: 'left',
+                            stacked: true,
+                            ticks: {
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            }
+                        }, {
+                            id: 'B',
+                            type: 'linear',
+                            position: 'right',
+                            ticks: {
+                                max: 1,
+                                min: 0,
+                                userCallback: function (value, index, values) {
+                                    value = value.toString();
+                                    value = value.split(/(?=(?:...)*$)/);
+                                    value = value.join(',');
+                                    return value;
+                                }
+                            },
+                            stacked: true
+                        }]
+                }
+            }
+        });
 
         refreshBarChart();
     };
@@ -1508,6 +1613,34 @@
                 myBar10.options.scales.yAxes[1].ticks.max = max;
                 window.myBar10.update();
                 document.getElementById('legend10').innerHTML = myBar10.generateLegend();
+                window.scrollBy(0, 200);
+            });
+        }else if (chartID == 'info_detail_churn_month') {
+            $.post(getChurnDetail, {year: detail_churn_year}, function (data) {
+
+            }).done(function (data) {
+                barChartData11.datasets = [];
+                $.each(data, function (index, value) {
+                    var colorName = colorNames[barChartData11.datasets.length % colorNames.length];
+                    var dsColor = window.chartColors[colorName];
+                    barChartData11.datasets.push({
+                        label: index,
+                        yAxisID: 'A',
+                        backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                        borderColor: dsColor,
+                        borderWidth: 1,
+                        data: value
+                    });
+                });
+                window.myBar11.update();
+                // Find the scale in the chart instance
+                var axis = myBar11.scales.A;
+                var max = axis.max;
+                var min = axis.min;
+                myBar11.options.scales.yAxes[1].ticks.min = min;
+                myBar11.options.scales.yAxes[1].ticks.max = max;
+                window.myBar11.update();
+                document.getElementById('legend11').innerHTML = myBar11.generateLegend();
                 window.scrollBy(0, 200);
             });
         }
