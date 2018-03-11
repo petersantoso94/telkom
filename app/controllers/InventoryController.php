@@ -55,6 +55,11 @@ class InventoryController extends BaseController {
                                     $type = 1;
                                     $wh = 'TELIN TAIWAN';
                                     $sn = (string) $value[1];
+                                    $remark_obj = $value[9];
+
+                                    if (is_object($remark_obj)) {
+                                        $remark_obj = $remark_obj->format('Y-m-d');
+                                    }
                                     array_push($arr_sn, $sn);
                                     array_push($arr_msisdn, $value[2]);
                                     array_push($arr_shipinprice, $value[12]);
@@ -66,7 +71,7 @@ class InventoryController extends BaseController {
                                         $wh = $value[4];
                                     }
                                     array_push($arr_lastwarehouse, $wh);
-                                    array_push($arr_remark, $value[9]);
+                                    array_push($arr_remark, $remark_obj);
 
                                     //shipin
                                     $status = 0;
@@ -81,7 +86,7 @@ class InventoryController extends BaseController {
                                     }
                                     array_push($arr_hist_date, $date_shipin);
                                     array_push($arr_price_hist, $value[12]);
-                                    array_push($arr_remark_hist, $value[9]);
+                                    array_push($arr_remark_hist, $remark_obj);
                                     $shipinNumber = $date_shipin . '/SI/TST001';
                                     array_push($arr_shipoutnumber_hist, $shipinNumber);
                                     array_push($arr_status_hist, $status);
@@ -136,7 +141,7 @@ class InventoryController extends BaseController {
                                         $statusnum .= '001';
                                         array_push($arr_shipoutnumber_hist, $statusnum);
                                         array_push($arr_hist_date, $date_shipout);
-                                        array_push($arr_remark_hist, $value[9]);
+                                        array_push($arr_remark_hist, $remark_obj);
                                         array_push($arr_subagent_hist, $subagent);
                                         array_push($arr_wh_hist, $wh);
                                     }
@@ -222,6 +227,12 @@ class InventoryController extends BaseController {
                                     $type = 2;
                                     $wh = 'TELIN TAIWAN';
                                     $sn = (string) $value[0];
+                                    
+                                    $remark_obj = $value[9];
+
+                                    if (is_object($remark_obj)) {
+                                        $remark_obj = $remark_obj->format('Y-m-d');
+                                    }
                                     array_push($arr_sn, $sn);
                                     array_push($arr_shipinprice, $value[13]);
                                     if (substr($value[0], 0, 6) == 'KR0350' || substr($value[0], 0, 6) == 'KR1850') {
@@ -232,7 +243,7 @@ class InventoryController extends BaseController {
                                         $wh = $value[4];
                                     }
                                     array_push($arr_lastwarehouse, $wh);
-                                    array_push($arr_remark, $value[9]);
+                                    array_push($arr_remark, $remark_obj);
 
                                     //shipin
                                     $status = 0;
@@ -247,7 +258,7 @@ class InventoryController extends BaseController {
                                     }
                                     array_push($arr_hist_date, $date_shipin);
                                     array_push($arr_price_hist, $value[13]);
-                                    array_push($arr_remark_hist, $value[9]);
+                                    array_push($arr_remark_hist, $remark_obj);
                                     $shipinNumber = $date_shipin . '/SI/TST001';
                                     array_push($arr_shipoutnumber_hist, $shipinNumber);
                                     array_push($arr_status_hist, $status);
@@ -302,7 +313,7 @@ class InventoryController extends BaseController {
                                         $statusnum .= '001';
                                         array_push($arr_shipoutnumber_hist, $statusnum);
                                         array_push($arr_hist_date, $date_shipout);
-                                        array_push($arr_remark_hist, $value[9]);
+                                        array_push($arr_remark_hist, $remark_obj);
                                         array_push($arr_subagent_hist, $subagent);
                                         array_push($arr_wh_hist, $wh);
                                     }
@@ -388,22 +399,22 @@ class InventoryController extends BaseController {
                                 if ($value[0] != null && $value[0] != '') {
                                     // do stuff with the row
                                     $type = $value[2];
-                                    $wh = Input::get('warehouse',false);
+                                    $wh = Input::get('warehouse', false);
                                     $sn = (string) $value[0];
                                     array_push($arr_sn, $sn);
                                     array_push($arr_msisdn, $value[1]);
                                     array_push($arr_type, $type);
                                     array_push($arr_lastwarehouse, $wh);
-                                    array_push($arr_remark, Input::get('remark',false));
+                                    array_push($arr_remark, Input::get('remark', false));
 
                                     //shipin
                                     $status = 0;
                                     array_push($arr_sn_hist, $sn);
                                     array_push($arr_id_hist, $id_counter);
-                                    $date_shipin = Input::get('eventDate',false);
+                                    $date_shipin = Input::get('eventDate', false);
                                     array_push($arr_hist_date, $date_shipin);
-                                    array_push($arr_remark_hist, Input::get('remark',false));
-                                    $shipinNumber = Input::get('formSN',false);
+                                    array_push($arr_remark_hist, Input::get('remark', false));
+                                    $shipinNumber = Input::get('formSN', false);
                                     array_push($arr_shipoutnumber_hist, $shipinNumber);
                                     array_push($arr_status_hist, $status);
                                     array_push($arr_subagent_hist, '-');
@@ -574,17 +585,17 @@ class InventoryController extends BaseController {
             $price = Input::get('price');
             $series = Input::get('formSN');
             $subagent = Input::get('subagent');
-			$shipoutNumber = '';
+            $shipoutNumber = '';
             if (Input::get('newagent') != '') {
                 $subagent = Input::get('newagent');
             }
-			if (Session::has('snCons'))
-				$shipoutNumber = Session::get('snCons');
+            if (Session::has('snCons'))
+                $shipoutNumber = Session::get('snCons');
             $counter = 0;
             //$allInvAvail = Inventory::whereBetween('SerialNumber', [$firstsn, $lastsn])->where('Missing', 0)->get();
-			$allInvAvail = Inventory::join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+            $allInvAvail = Inventory::join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                             ->where('m_inventory.Missing', 0)
-                            ->where('m_historymovement.ShipoutNumber', 'LIKE', '%'.$shipoutNumber.'%')->get();
+                            ->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . $shipoutNumber . '%')->get();
             foreach ($allInvAvail as $inv) {
                 $history = History::where('ID', $inv->LastStatusID)->first();
                 if ($history->Status != 2) { //available
@@ -611,7 +622,7 @@ class InventoryController extends BaseController {
                     $counter++;
                 }
             }
-			Session::forget('snCons');
+            Session::forget('snCons');
             return View::make('consignment')->withResponse('Success')->withPage('shipout consignment')->withNumber($counter);
         }
         Session::forget('snCons');
@@ -627,12 +638,12 @@ class InventoryController extends BaseController {
             $nodata = '';
             $successins = '';
 //                    $date = new DateTime(date('Y-m-d H:i:s'), new DateTimeZone('Asia/Taipei'));
-            $date = Input::get('eventDate',false);
-            $fn = Input::get('formSN',false);
+            $date = Input::get('eventDate', false);
+            $fn = Input::get('formSN', false);
             $remark = NULL;
-			if(Input::get('remark')){
-				$remark = Input::get('remark',false);
-			}
+            if (Input::get('remark')) {
+                $remark = Input::get('remark', false);
+            }
             $destination = base_path() . '/uploaded_file/';
             $extention = Input::file('sample_file')->getClientOriginalExtension();
             $filename = 'tempreturn.' . $extention;
@@ -661,20 +672,20 @@ class InventoryController extends BaseController {
                                 }
 
                                 //can return, update
-                                
-								$hist2 = new History();
-								$hist2->SN = $inv->SerialNumber;
-								$hist2->Price = 0;
-								$hist2->ShipoutNumber = $fn;
-								$hist2->Status = 1;
-								$hist2->SubAgent = $hist->SubAgent;
-								$hist2->Warehouse = $inv->LastWarehouse;
-								$hist2->LastStatus = 1;
-								$hist2->Remark = Input::get('remark',false);
-								$hist2->Date = Input::get('eventDate',false);
-								$hist2->userRecord = Auth::user()->ID;
-								$hist2->userUpdate = Auth::user()->ID;
-								$hist2->save();
+
+                                $hist2 = new History();
+                                $hist2->SN = $inv->SerialNumber;
+                                $hist2->Price = 0;
+                                $hist2->ShipoutNumber = $fn;
+                                $hist2->Status = 1;
+                                $hist2->SubAgent = $hist->SubAgent;
+                                $hist2->Warehouse = $inv->LastWarehouse;
+                                $hist2->LastStatus = 1;
+                                $hist2->Remark = Input::get('remark', false);
+                                $hist2->Date = Input::get('eventDate', false);
+                                $hist2->userRecord = Auth::user()->ID;
+                                $hist2->userUpdate = Auth::user()->ID;
+                                $hist2->save();
 
                                 $inv->LastStatusID = $hist2->ID;
                                 $inv->save();
@@ -1218,7 +1229,7 @@ class InventoryController extends BaseController {
         }
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
-                if (!isset($data['churn'][$ivr->Status])){
+                if (!isset($data['churn'][$ivr->Status])) {
                     $data['churn'][$ivr->Status] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     $counter_c = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 }
@@ -1507,7 +1518,7 @@ class InventoryController extends BaseController {
         }
         return $data;
     }
-    
+
     static function getChurnDetail() {
         $year = Input::get('year');
 //        $year = '2017';
@@ -1600,6 +1611,7 @@ class InventoryController extends BaseController {
     static function postNewWh() {
         Session::put('NewWarehouse', Input::get('wh'));
     }
+
     static function postFormSeries() {
         Session::put('FormSeries', Input::get('fs'));
         Session::put('FormSeriesInv', Input::get('fs'));
