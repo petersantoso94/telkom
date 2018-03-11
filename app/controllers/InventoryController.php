@@ -1507,6 +1507,44 @@ class InventoryController extends BaseController {
         }
         return $data;
     }
+    
+    static function getChurnDetail() {
+        $year = Input::get('year');
+//        $year = '2017';
+        $type = '';
+        $data = [];
+        //1 -> evoucher; 2 -> phvoucher
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Chact%\'')->get();
+        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Activation%\'')->get();
+//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                if (!isset($data['churn']))
+                    $data['churn'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data['churn'][$i] = -($ivr->Counter);
+                    }
+                }
+            }
+        }
+        if ($all_act != null) {
+            foreach ($all_act as $ivr) {
+                if (!isset($data['act']))
+                    $data['act'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data['act'][$i] = $ivr->Counter;
+                    }
+                }
+            }
+        }
+        return $data;
+    }
 
     static function postMissing() {
         $sn = Input::get('sn');
