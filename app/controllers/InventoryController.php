@@ -881,7 +881,7 @@ class InventoryController extends BaseController {
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
-                        if ($extention == 'csv') {
+                        if ($extention == 'csv') 
                             $destination = base_path() . '/uploaded_file/';
                         $extention = Input::file('sample_file')->getClientOriginalExtension();
                         $filename = 'temp.' . $extention;
