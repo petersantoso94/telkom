@@ -110,7 +110,7 @@
                                                 </div>
                                                 <!-- /.info-box -->
                                             </div>
-                                            
+
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
                                                     <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
@@ -512,7 +512,7 @@
         c_year = document.getElementById('churn_year').value;
         refreshBarChart();
     });
-    
+
     $('#detail_churn_year').on('change', function (e) {
         detail_churn_year = document.getElementById('detail_churn_year').value;
         refreshBarChart();
@@ -628,20 +628,23 @@
                         y_axis[index] = element._model.y - 7;
 
                         var dataString = dataset.data[index].toString();
-						var temp_arr = dataString.split('.');
-						if(temp_arr.length == 2){
-							dataString = temp_arr[0].split(/(?=(?:...)*$)/);
-							dataString = dataString.join(',');
-							dataString += '.'+temp_arr[1];
-						}else{
-							dataString = dataString.split(/(?=(?:...)*$)/);
-							dataString = dataString.join(',');
-						}
+                        var temp_arr = dataString.split('.');
+                        if (temp_arr.length == 2) {
+                            dataString = temp_arr[0].split(/(?=(?:...)*$)/);
+                            dataString = dataString.join(',');
+                            dataString += '.' + temp_arr[1];
+                        } else {
+                            dataString = dataString.split(/(?=(?:...)*$)/);
+                            dataString = dataString.join(',');
+                        }
                         // Make sure alignment settings are correct
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
                         var canvas_height = ctx.canvas.clientHeight;
-                        var padding = ((element._model.base - element._model.y) / 2);
+                        var temp_base = element._model.base;
+                        if(element._model.base > 584)
+                            temp_base = 584;
+                        var padding = ((temp_base - element._model.y) / 2);
                         var position = element.tooltipPosition();
                         var y_height = element._yScale.height;
 //                        if (dataString.includes('-')) {
@@ -651,14 +654,14 @@
                         ctx.fillText(dataString, element._model.x, element._model.y + padding);
                     });
                 }
-                if (meta.controller.chart.canvas.id == 'barChart_prod' || meta.controller.chart.canvas.id == 'barChart_detail_churn'){
+                if (meta.controller.chart.canvas.id == 'barChart_prod' || meta.controller.chart.canvas.id == 'barChart_detail_churn') {
                     write = true;
                     str_write = 'Net';
                 }
             });
             if (write) {
                 for (var i = 0; i < 12; i++) {
-                    ctx.fillText(str_write+': ' + total[i].toString(), x_axis[i], y_axis[i]);
+                    ctx.fillText(str_write + ': ' + total[i].toString(), x_axis[i], y_axis[i]);
                 }
             }
         }
@@ -690,17 +693,17 @@
                         },
                         label: function (tooltipItem, data) {
                             var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
-							var temp_arr = value.split('.');
-							if(temp_arr.length == 2){
-								value = temp_arr[0].split(/(?=(?:...)*$)/);
-								value = value.join(',');
-								value += '.'+temp_arr[1];
-							}else{
-								value = value.toString();
-								value = value.split(/(?=(?:...)*$)/);
-								value = value.join(',');
-							}
-							return value;
+                            var temp_arr = value.split('.');
+                            if (temp_arr.length == 2) {
+                                value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                                value += '.' + temp_arr[1];
+                            } else {
+                                value = value.toString();
+                                value = value.split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                            }
+                            return value;
                         }
                     } // end callbacks:
                 },
@@ -708,18 +711,18 @@
                     display: true,
                     text: 'IVR Purchased Internet'
                 }, scales: {
-					yAxes: [{
-						gridLines: {
-							display:false
-						},ticks: {
-							display: false
-						}
-                    }],
-					xAxes: [{
-						gridLines: {
-							display:false
-						}
-                    }]
+                    yAxes: [{
+                            gridLines: {
+                                display: false
+                            }, ticks: {
+                                display: false
+                            }
+                        }],
+                    xAxes: [{
+                            gridLines: {
+                                display: false
+                            }
+                        }]
                 }
             }
         });
@@ -740,17 +743,17 @@
                     callbacks: {
                         label: function (tooltipItem, data) {
                             var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
-							var temp_arr = value.split('.');
-							if(temp_arr.length == 2){
-								value = temp_arr[0].split(/(?=(?:...)*$)/);
-								value = value.join(',');
-								value += '.'+temp_arr[1];
-							}else{
-								value = value.toString();
-								value = value.split(/(?=(?:...)*$)/);
-								value = value.join(',');
-							}
-							return value;
+                            var temp_arr = value.split('.');
+                            if (temp_arr.length == 2) {
+                                value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                                value += '.' + temp_arr[1];
+                            } else {
+                                value = value.toString();
+                                value = value.split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                            }
+                            return value;
                         }
                     } // end callbacks:
                 },
@@ -759,17 +762,17 @@
                     text: 'Subscriber and Churn'
                 }, scales: {
                     xAxes: [{
-						gridLines: {
-							display:false
-						},
-                        stacked: true
+                            gridLines: {
+                                display: false
+                            },
+                            stacked: true
                         }],
                     yAxes: [{
                             gridLines: {
-								display:false
-							},ticks: {
-								display: false
-							},
+                                display: false
+                            }, ticks: {
+                                display: false
+                            },
                             stacked: true,
                         }]
                 }
@@ -798,17 +801,17 @@
                         },
                         label: function (tooltipItem, data) {
                             var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
-							var temp_arr = value.split('.');
-							if(temp_arr.length == 2){
-								value = temp_arr[0].split(/(?=(?:...)*$)/);
-								value = value.join(',');
-								value += '.'+temp_arr[1];
-							}else{
-								value = value.toString();
-								value = value.split(/(?=(?:...)*$)/);
-								value = value.join(',');
-							}
-							return value;
+                            var temp_arr = value.split('.');
+                            if (temp_arr.length == 2) {
+                                value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                                value += '.' + temp_arr[1];
+                            } else {
+                                value = value.toString();
+                                value = value.split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                            }
+                            return value;
                         }
                     } // end callbacks:
                 },
@@ -818,16 +821,16 @@
                 }, scales: {
                     xAxes: [{
                             stacked: true,
-							gridLines: {
-								display:false
-							}
+                            gridLines: {
+                                display: false
+                            }
                         }],
                     yAxes: [{
                             gridLines: {
-								display:false
-							},ticks: {
-								display: false
-							},
+                                display: false
+                            }, ticks: {
+                                display: false
+                            },
                             stacked: true,
                         }]
                 }
@@ -849,17 +852,17 @@
                     callbacks: {
                         label: function (tooltipItem, data) {
                             var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
-							var temp_arr = value.split('.');
-							if(temp_arr.length == 2){
-								value = temp_arr[0].split(/(?=(?:...)*$)/);
-								value = value.join(',');
-								value += '.'+temp_arr[1];
-							}else{
-								value = value.toString();
-								value = value.split(/(?=(?:...)*$)/);
-								value = value.join(',');
-							}
-							return value;
+                            var temp_arr = value.split('.');
+                            if (temp_arr.length == 2) {
+                                value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                                value += '.' + temp_arr[1];
+                            } else {
+                                value = value.toString();
+                                value = value.split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                            }
+                            return value;
                         }
                     } // end callbacks:
                 },
@@ -867,17 +870,17 @@
                     display: true,
                     text: 'Monthly Total Service Usage'
                 }, scales: {
-					xAxes: [{
-							gridLines: {
-								display:false
-							}
+                    xAxes: [{
+                            gridLines: {
+                                display: false
+                            }
                         }],
                     yAxes: [{
                             gridLines: {
-								display:false
-							},ticks: {
-								display: false
-							}
+                                display: false
+                            }, ticks: {
+                                display: false
+                            }
                         }]
                 }
             }
@@ -898,17 +901,17 @@
                     callbacks: {
                         label: function (tooltipItem, data) {
                             var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
-							var temp_arr = value.split('.');
-							if(temp_arr.length == 2){
-								value = temp_arr[0].split(/(?=(?:...)*$)/);
-								value = value.join(',');
-								value += '.'+temp_arr[1];
-							}else{
-								value = value.toString();
-								value = value.split(/(?=(?:...)*$)/);
-								value = value.join(',');
-							}
-							return value;
+                            var temp_arr = value.split('.');
+                            if (temp_arr.length == 2) {
+                                value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                                value += '.' + temp_arr[1];
+                            } else {
+                                value = value.toString();
+                                value = value.split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                            }
+                            return value;
                         }
                     } // end callbacks:
                 },
@@ -916,17 +919,17 @@
                     display: true,
                     text: 'Monthly Internet Usage'
                 }, scales: {
-					xAxes: [{
-							gridLines: {
-								display:false
-							}
+                    xAxes: [{
+                            gridLines: {
+                                display: false
+                            }
                         }],
                     yAxes: [{
                             gridLines: {
-								display:false
-							},ticks: {
-								display: false
-							}
+                                display: false
+                            }, ticks: {
+                                display: false
+                            }
                         }]
                 }
             }
@@ -946,17 +949,17 @@
                     callbacks: {
                         label: function (tooltipItem, data) {
                             var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
-							var temp_arr = value.split('.');
-							if(temp_arr.length == 2){
-								value = temp_arr[0].split(/(?=(?:...)*$)/);
-								value = value.join(',');
-								value += '.'+temp_arr[1];
-							}else{
-								value = value.toString();
-								value = value.split(/(?=(?:...)*$)/);
-								value = value.join(',');
-							}
-							return value;
+                            var temp_arr = value.split('.');
+                            if (temp_arr.length == 2) {
+                                value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                                value += '.' + temp_arr[1];
+                            } else {
+                                value = value.toString();
+                                value = value.split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                            }
+                            return value;
                         }
                     } // end callbacks:
                 },
@@ -964,17 +967,18 @@
                     display: true,
                     text: 'Monthly Payload Per User'
                 }, scales: {
-					xAxes: [{
-							gridLines: {
-								display:false
-							}
+                    xAxes: [{
+                            gridLines: {
+                                display: false
+                            }
                         }],
                     yAxes: [{
                             gridLines: {
-								display:false
-							},ticks: {
-								display: false
-							}
+                                display: false
+                            }, ticks: {
+                                display: false,
+                                stepSize: 1
+                            }
                         }]
                 }
             }
@@ -995,18 +999,18 @@
                     mode: 'index',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                           var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
-							var temp_arr = value.split('.');
-							if(temp_arr.length == 2){
-								value = temp_arr[0].split(/(?=(?:...)*$)/);
-								value = value.join(',');
-								value += '.'+temp_arr[1];
-							}else{
-								value = value.toString();
-								value = value.split(/(?=(?:...)*$)/);
-								value = value.join(',');
-							}
-							return value;
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+                            var temp_arr = value.split('.');
+                            if (temp_arr.length == 2) {
+                                value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                                value += '.' + temp_arr[1];
+                            } else {
+                                value = value.toString();
+                                value = value.split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                            }
+                            return value;
                         }
                     } // end callbacks:
                 },
@@ -1016,16 +1020,16 @@
                 }, scales: {
                     xAxes: [{
                             stacked: true,
-							gridLines: {
-								display:false
-							}
+                            gridLines: {
+                                display: false
+                            }
                         }],
                     yAxes: [{
                             gridLines: {
-								display:false
-							},ticks: {
-								display: false
-							},
+                                display: false
+                            }, ticks: {
+                                display: false
+                            },
                             stacked: true,
                         }]
                 }
@@ -1047,17 +1051,17 @@
                     callbacks: {
                         label: function (tooltipItem, data) {
                             var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
-							var temp_arr = value.split('.');
-							if(temp_arr.length == 2){
-								value = temp_arr[0].split(/(?=(?:...)*$)/);
-								value = value.join(',');
-								value += '.'+temp_arr[1];
-							}else{
-								value = value.toString();
-								value = value.split(/(?=(?:...)*$)/);
-								value = value.join(',');
-							}
-							return value;
+                            var temp_arr = value.split('.');
+                            if (temp_arr.length == 2) {
+                                value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                                value += '.' + temp_arr[1];
+                            } else {
+                                value = value.toString();
+                                value = value.split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                            }
+                            return value;
                         }
                     } // end callbacks:
                 },
@@ -1065,16 +1069,16 @@
                     display: true,
                     text: 'Monthly Voucher Topup'
                 }, scales: {xAxes: [{
-							gridLines: {
-								display:false
-							}
+                            gridLines: {
+                                display: false
+                            }
                         }],
                     yAxes: [{
                             gridLines: {
-								display:false
-							},ticks: {
-								display: false
-							}
+                                display: false
+                            }, ticks: {
+                                display: false
+                            }
                         }]
                 }
             }
@@ -1095,17 +1099,17 @@
                     callbacks: {
                         label: function (tooltipItem, data) {
                             var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
-							var temp_arr = value.split('.');
-							if(temp_arr.length == 2){
-								value = temp_arr[0].split(/(?=(?:...)*$)/);
-								value = value.join(',');
-								value += '.'+temp_arr[1];
-							}else{
-								value = value.toString();
-								value = value.split(/(?=(?:...)*$)/);
-								value = value.join(',');
-							}
-							return value;
+                            var temp_arr = value.split('.');
+                            if (temp_arr.length == 2) {
+                                value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                                value += '.' + temp_arr[1];
+                            } else {
+                                value = value.toString();
+                                value = value.split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                            }
+                            return value;
                         }
                     } // end callbacks:
                 },
@@ -1113,17 +1117,17 @@
                     display: true,
                     text: 'Monthly eVoucher Topup'
                 }, scales: {
-					xAxes: [{
-							gridLines: {
-								display:false
-							}
+                    xAxes: [{
+                            gridLines: {
+                                display: false
+                            }
                         }],
                     yAxes: [{
                             gridLines: {
-								display:false
-							},ticks: {
-								display: false
-							}
+                                display: false
+                            }, ticks: {
+                                display: false
+                            }
                         }]
                 }
             }
@@ -1144,17 +1148,17 @@
                     callbacks: {
                         label: function (tooltipItem, data) {
                             var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
-							var temp_arr = value.split('.');
-							if(temp_arr.length == 2){
-								value = temp_arr[0].split(/(?=(?:...)*$)/);
-								value = value.join(',');
-								value += '.'+temp_arr[1];
-							}else{
-								value = value.toString();
-								value = value.split(/(?=(?:...)*$)/);
-								value = value.join(',');
-							}
-							return value;
+                            var temp_arr = value.split('.');
+                            if (temp_arr.length == 2) {
+                                value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                                value += '.' + temp_arr[1];
+                            } else {
+                                value = value.toString();
+                                value = value.split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                            }
+                            return value;
                         }
                     } // end callbacks:
                 },
@@ -1163,21 +1167,21 @@
                     text: 'Monthly Subscriber Topup'
                 }, scales: {
                     xAxes: [{
-							gridLines: {
-								display:false
-							}
+                            gridLines: {
+                                display: false
+                            }
                         }],
                     yAxes: [{
                             gridLines: {
-								display:false
-							},ticks: {
-								display: false
-							}
+                                display: false
+                            }, ticks: {
+                                display: false
+                            }
                         }]
                 }
             }
         });
-        
+
         var ctx11 = document.getElementById("barChart_detail_churn").getContext("2d");
         window.myBar11 = new Chart(ctx11, {
             type: 'bar',
@@ -1194,17 +1198,17 @@
                     callbacks: {
                         label: function (tooltipItem, data) {
                             var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
-							var temp_arr = value.split('.');
-							if(temp_arr.length == 2){
-								value = temp_arr[0].split(/(?=(?:...)*$)/);
-								value = value.join(',');
-								value += '.'+temp_arr[1];
-							}else{
-								value = value.toString();
-								value = value.split(/(?=(?:...)*$)/);
-								value = value.join(',');
-							}
-							return value;
+                            var temp_arr = value.split('.');
+                            if (temp_arr.length == 2) {
+                                value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                                value += '.' + temp_arr[1];
+                            } else {
+                                value = value.toString();
+                                value = value.split(/(?=(?:...)*$)/);
+                                value = value.join(',');
+                            }
+                            return value;
                         }
                     } // end callbacks:
                 },
@@ -1213,18 +1217,18 @@
                     text: 'DetailChurn'
                 }, scales: {
                     xAxes: [{
-							gridLines: {
-								display:false
-							},
-							stacked : true
+                            gridLines: {
+                                display: false
+                            },
+                            stacked: true
                         }],
                     yAxes: [{
                             gridLines: {
-								display:false
-							},ticks: {
-								display: false
-							},
-							stacked : true
+                                display: false
+                            }, ticks: {
+                                display: false
+                            },
+                            stacked: true
                         }]
                 }
             }
@@ -1449,7 +1453,7 @@
                 document.getElementById('legend10').innerHTML = myBar10.generateLegend();
                 window.scrollBy(0, 200);
             });
-        }else if (chartID == 'info_detail_churn_month') {
+        } else if (chartID == 'info_detail_churn_month') {
             $.post(getChurnDetail, {year: detail_churn_year}, function (data) {
 
             }).done(function (data) {
