@@ -894,6 +894,7 @@ class InventoryController extends BaseController {
                                         $msisdn = (string) $value[14];
                                         if ($msisdn != '' && $msisdn != null) {
                                             $msisdn = str_replace(' ', '', $msisdn);
+                                            $msisdn = str_replace('\'', '', $msisdn);
                                             if (substr($msisdn, 0, 1) === '0') {
                                                 $msisdn = substr($msisdn, 1);
                                             }
