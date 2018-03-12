@@ -946,8 +946,8 @@ class InventoryController extends BaseController {
                                             }
                                             array_push($arr_msisdn, $msisdn);
                                             $date_return = $value[1];
-//                                        $date_return = explode('/', $date_return);
-//                                        $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+											//$date_return = explode('/', $date_return);
+											//$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                             $date_return = strtotime($date_return);
                                             $date_return = date('Y-m-d', $date_return);
                                             array_push($arr_return, $date_return);
@@ -956,23 +956,50 @@ class InventoryController extends BaseController {
                                 }
                             }
                             $reader->close();
-                            $table = Inventory::getModel()->getTable();
-                            $cases = [];
-                            $ids = [];
-                            $params = [];
-                            $counter = count($arr_msisdn);
-
-                            for ($i = 0; $i < count($arr_msisdn); $i++) {
-                                $id = (int) $arr_msisdn[$i];
-                                $cases[] = "WHEN {$id} then ?";
-                                $params[] = $arr_return[$i];
-                                $ids[] = $id;
+							$ids = $arr_msisdn;
+                            $ids = implode("','", $ids);
+                            $check_msisdn = [];
+                            $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE `MSISDN` in ('{$ids}')");
+                            foreach ($right_msisdn as $msisdn) {
+                                $check_msisdn[] = $msisdn->MSISDN;
                             }
-                            $ids = implode(',', $ids);
-                            $cases = implode(' ', $cases);
-                            DB::update("UPDATE `{$table}` SET `ActivationDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
-
-                            return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberac($counter);
+                            $not_found = array_diff($arr_msisdn, $check_msisdn);
+                            $not_found_str = '';
+                            $counter = 0;
+                            foreach ($not_found as $str) {
+                                if ($counter == 0)
+                                    $not_found_str .= $str;
+                                else {
+                                    if ($counter % 7 == 0)
+                                        $not_found_str .= ',' . $str . '<br>';
+                                    else
+                                        $not_found_str .= ',' . $str;
+                                }
+                                $counter++;
+                            }
+                            $table = Inventory::getModel()->getTable();
+                            
+                            $counter = count($arr_msisdn);
+							$block = 40000;
+							for($j = 1 ; $j<= ceil($counter/$block) ;$j++ ){
+								$cases = [];
+								$ids = [];
+								$params = [];
+								for ($i = 0+(($j-1)*$block); $i < $j*$block; $i++) {
+									if($i<$counter){
+										$id = (int) $arr_msisdn[$i];
+										$cases[] = "WHEN {$id} then ?";
+										$params[] = $arr_return[$i];
+										$ids[] = $id;
+									}else{
+										break;
+									}
+								}
+								$ids = implode(',', $ids);
+								$cases = implode(' ', $cases);
+								DB::update("UPDATE `{$table}` SET `ActivationDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
+							}
+                            return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberac($counter)->withNotfound($not_found_str);
                         }
                     }
                 }
