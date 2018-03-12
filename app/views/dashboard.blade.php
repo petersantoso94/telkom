@@ -617,7 +617,7 @@
                     meta.data.forEach(function (element, index) {
                         // Draw the text in black, with the specified font
                         ctx.fillStyle = 'rgb(0, 0, 0)';
-                        var fontSize = 16;
+                        var fontSize = 12;
                         var fontStyle = 'normal';
                         var fontFamily = 'Helvetica Neue';
                         ctx.font = Chart.helpers.fontString(fontSize, fontStyle, fontFamily);
@@ -628,15 +628,15 @@
                         y_axis[index] = element._model.y - 7;
 
                         var dataString = dataset.data[index].toString();
-                        var temp_arr = dataString.split('.');
-                        if(temp_arr.length == 2){
-                           dataString = temp_arr[0].split(/(?=(?:...)*$)/);
-                           dataString = dataString.join(',');
-                           dataString += '.'+temp_arr[1];
-                        }else{
-                           dataString = dataString.split(/(?=(?:...)*$)/);
-                           dataString = dataString.join(',');
-                        }
+						var temp_arr = dataString.split('.');
+						if(temp_arr.length == 2){
+							dataString = temp_arr[0].split(/(?=(?:...)*$)/);
+							dataString = dataString.join(',');
+							dataString += '.'+temp_arr[1];
+						}else{
+							dataString = dataString.split(/(?=(?:...)*$)/);
+							dataString = dataString.join(',');
+						}
                         // Make sure alignment settings are correct
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
@@ -689,11 +689,18 @@
                             return 'Total: ' + sum;
                         },
                         label: function (tooltipItem, data) {
-                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                            value = value.toString();
-                            value = value.split(/(?=(?:...)*$)/);
-                            value = value.join(',');
-                            return value;
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+							var temp_arr = value.split('.');
+							if(temp_arr.length == 2){
+								value = temp_arr[0].split(/(?=(?:...)*$)/);
+								value = value.join(',');
+								value += '.'+temp_arr[1];
+							}else{
+								value = value.toString();
+								value = value.split(/(?=(?:...)*$)/);
+								value = value.join(',');
+							}
+							return value;
                         }
                     } // end callbacks:
                 },
@@ -701,33 +708,18 @@
                     display: true,
                     text: 'IVR Purchased Internet'
                 }, scales: {
-                    yAxes: [{
-                            id: 'A',
-                            type: 'linear',
-                            position: 'left',
-                            ticks: {
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            }
-                        }, {
-                            id: 'B',
-                            type: 'linear',
-                            position: 'right',
-                            ticks: {
-                                max: 1,
-                                min: 0,
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            }
-                        }]
+					yAxes: [{
+						gridLines: {
+							display:false
+						},ticks: {
+							display: false
+						}
+                    }],
+					xAxes: [{
+						gridLines: {
+							display:false
+						}
+                    }]
                 }
             }
         });
@@ -747,11 +739,18 @@
                     mode: 'index',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                            value = value.toString();
-                            value = value.split(/(?=(?:...)*$)/);
-                            value = value.join(',');
-                            return value;
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+							var temp_arr = value.split('.');
+							if(temp_arr.length == 2){
+								value = temp_arr[0].split(/(?=(?:...)*$)/);
+								value = value.join(',');
+								value += '.'+temp_arr[1];
+							}else{
+								value = value.toString();
+								value = value.split(/(?=(?:...)*$)/);
+								value = value.join(',');
+							}
+							return value;
                         }
                     } // end callbacks:
                 },
@@ -760,36 +759,18 @@
                     text: 'Subscriber and Churn'
                 }, scales: {
                     xAxes: [{
-                            stacked: true,
+						gridLines: {
+							display:false
+						},
+                        stacked: true
                         }],
                     yAxes: [{
-                            id: 'A',
-                            type: 'linear',
-                            position: 'left',
+                            gridLines: {
+								display:false
+							},ticks: {
+								display: false
+							},
                             stacked: true,
-                            ticks: {
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            }
-                        }, {
-                            id: 'B',
-                            type: 'linear',
-                            position: 'right',
-                            ticks: {
-                                max: 1,
-                                min: 0,
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            },
-                            stacked: true
                         }]
                 }
             }
@@ -816,11 +797,18 @@
                             return 'Total: ' + sum;
                         },
                         label: function (tooltipItem, data) {
-                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                            value = value.toString();
-                            value = value.split(/(?=(?:...)*$)/);
-                            value = value.join(',');
-                            return value;
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+							var temp_arr = value.split('.');
+							if(temp_arr.length == 2){
+								value = temp_arr[0].split(/(?=(?:...)*$)/);
+								value = value.join(',');
+								value += '.'+temp_arr[1];
+							}else{
+								value = value.toString();
+								value = value.split(/(?=(?:...)*$)/);
+								value = value.join(',');
+							}
+							return value;
                         }
                     } // end callbacks:
                 },
@@ -830,35 +818,17 @@
                 }, scales: {
                     xAxes: [{
                             stacked: true,
+							gridLines: {
+								display:false
+							}
                         }],
                     yAxes: [{
-                            id: 'A',
-                            type: 'linear',
-                            position: 'left',
+                            gridLines: {
+								display:false
+							},ticks: {
+								display: false
+							},
                             stacked: true,
-                            ticks: {
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            }
-                        }, {
-                            id: 'B',
-                            type: 'linear',
-                            position: 'right',
-                            ticks: {
-                                max: 1,
-                                min: 0,
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            },
-                            stacked: true
                         }]
                 }
             }
@@ -878,11 +848,18 @@
                     mode: 'index',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                            value = value.toString();
-                            value = value.split(/(?=(?:...)*$)/);
-                            value = value.join(',');
-                            return value;
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+							var temp_arr = value.split('.');
+							if(temp_arr.length == 2){
+								value = temp_arr[0].split(/(?=(?:...)*$)/);
+								value = value.join(',');
+								value += '.'+temp_arr[1];
+							}else{
+								value = value.toString();
+								value = value.split(/(?=(?:...)*$)/);
+								value = value.join(',');
+							}
+							return value;
                         }
                     } // end callbacks:
                 },
@@ -890,32 +867,17 @@
                     display: true,
                     text: 'Monthly Total Service Usage'
                 }, scales: {
+					xAxes: [{
+							gridLines: {
+								display:false
+							}
+                        }],
                     yAxes: [{
-                            id: 'A',
-                            type: 'linear',
-                            position: 'left',
-                            ticks: {
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            }
-                        }, {
-                            id: 'B',
-                            type: 'linear',
-                            position: 'right',
-                            ticks: {
-                                max: 1,
-                                min: 0,
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            },
+                            gridLines: {
+								display:false
+							},ticks: {
+								display: false
+							}
                         }]
                 }
             }
@@ -935,11 +897,18 @@
                     mode: 'index',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                            value = value.toString();
-                            value = value.split(/(?=(?:...)*$)/);
-                            value = value.join(',');
-                            return value;
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+							var temp_arr = value.split('.');
+							if(temp_arr.length == 2){
+								value = temp_arr[0].split(/(?=(?:...)*$)/);
+								value = value.join(',');
+								value += '.'+temp_arr[1];
+							}else{
+								value = value.toString();
+								value = value.split(/(?=(?:...)*$)/);
+								value = value.join(',');
+							}
+							return value;
                         }
                     } // end callbacks:
                 },
@@ -947,32 +916,17 @@
                     display: true,
                     text: 'Monthly Internet Usage'
                 }, scales: {
+					xAxes: [{
+							gridLines: {
+								display:false
+							}
+                        }],
                     yAxes: [{
-                            id: 'A',
-                            type: 'linear',
-                            position: 'left',
-                            ticks: {
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            }
-                        }, {
-                            id: 'B',
-                            type: 'linear',
-                            position: 'right',
-                            ticks: {
-                                max: 1,
-                                min: 0,
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            },
+                            gridLines: {
+								display:false
+							},ticks: {
+								display: false
+							}
                         }]
                 }
             }
@@ -991,11 +945,18 @@
                     mode: 'index',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                            value = value.toString();
-                            value = value.split(/(?=(?:...)*$)/);
-                            value = value.join(',');
-                            return value;
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+							var temp_arr = value.split('.');
+							if(temp_arr.length == 2){
+								value = temp_arr[0].split(/(?=(?:...)*$)/);
+								value = value.join(',');
+								value += '.'+temp_arr[1];
+							}else{
+								value = value.toString();
+								value = value.split(/(?=(?:...)*$)/);
+								value = value.join(',');
+							}
+							return value;
                         }
                     } // end callbacks:
                 },
@@ -1003,32 +964,17 @@
                     display: true,
                     text: 'Monthly Payload Per User'
                 }, scales: {
+					xAxes: [{
+							gridLines: {
+								display:false
+							}
+                        }],
                     yAxes: [{
-                            id: 'A',
-                            type: 'linear',
-                            position: 'left',
-                            ticks: {
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            }
-                        }, {
-                            id: 'B',
-                            type: 'linear',
-                            position: 'right',
-                            ticks: {
-                                max: 1,
-                                min: 0,
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            },
+                            gridLines: {
+								display:false
+							},ticks: {
+								display: false
+							}
                         }]
                 }
             }
@@ -1049,11 +995,18 @@
                     mode: 'index',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                            value = value.toString();
-                            value = value.split(/(?=(?:...)*$)/);
-                            value = value.join(',');
-                            return value;
+                           var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+							var temp_arr = value.split('.');
+							if(temp_arr.length == 2){
+								value = temp_arr[0].split(/(?=(?:...)*$)/);
+								value = value.join(',');
+								value += '.'+temp_arr[1];
+							}else{
+								value = value.toString();
+								value = value.split(/(?=(?:...)*$)/);
+								value = value.join(',');
+							}
+							return value;
                         }
                     } // end callbacks:
                 },
@@ -1063,35 +1016,17 @@
                 }, scales: {
                     xAxes: [{
                             stacked: true,
+							gridLines: {
+								display:false
+							}
                         }],
                     yAxes: [{
-                            id: 'A',
-                            type: 'linear',
-                            position: 'left',
+                            gridLines: {
+								display:false
+							},ticks: {
+								display: false
+							},
                             stacked: true,
-                            ticks: {
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            }
-                        }, {
-                            id: 'B',
-                            type: 'linear',
-                            position: 'right',
-                            ticks: {
-                                max: 1,
-                                min: 0,
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            },
-                            stacked: true
                         }]
                 }
             }
@@ -1111,44 +1046,35 @@
                     mode: 'index',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                            value = value.toString();
-                            value = value.split(/(?=(?:...)*$)/);
-                            value = value.join(',');
-                            return value;
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+							var temp_arr = value.split('.');
+							if(temp_arr.length == 2){
+								value = temp_arr[0].split(/(?=(?:...)*$)/);
+								value = value.join(',');
+								value += '.'+temp_arr[1];
+							}else{
+								value = value.toString();
+								value = value.split(/(?=(?:...)*$)/);
+								value = value.join(',');
+							}
+							return value;
                         }
                     } // end callbacks:
                 },
                 title: {
                     display: true,
                     text: 'Monthly Voucher Topup'
-                }, scales: {
+                }, scales: {xAxes: [{
+							gridLines: {
+								display:false
+							}
+                        }],
                     yAxes: [{
-                            id: 'A',
-                            type: 'linear',
-                            position: 'left',
-                            ticks: {
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            }
-                        }, {
-                            id: 'B',
-                            type: 'linear',
-                            position: 'right',
-                            ticks: {
-                                max: 1,
-                                min: 0,
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            },
+                            gridLines: {
+								display:false
+							},ticks: {
+								display: false
+							}
                         }]
                 }
             }
@@ -1168,11 +1094,18 @@
                     mode: 'index',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                            value = value.toString();
-                            value = value.split(/(?=(?:...)*$)/);
-                            value = value.join(',');
-                            return value;
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+							var temp_arr = value.split('.');
+							if(temp_arr.length == 2){
+								value = temp_arr[0].split(/(?=(?:...)*$)/);
+								value = value.join(',');
+								value += '.'+temp_arr[1];
+							}else{
+								value = value.toString();
+								value = value.split(/(?=(?:...)*$)/);
+								value = value.join(',');
+							}
+							return value;
                         }
                     } // end callbacks:
                 },
@@ -1180,32 +1113,17 @@
                     display: true,
                     text: 'Monthly eVoucher Topup'
                 }, scales: {
+					xAxes: [{
+							gridLines: {
+								display:false
+							}
+                        }],
                     yAxes: [{
-                            id: 'A',
-                            type: 'linear',
-                            position: 'left',
-                            ticks: {
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            }
-                        }, {
-                            id: 'B',
-                            type: 'linear',
-                            position: 'right',
-                            ticks: {
-                                max: 1,
-                                min: 0,
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            },
+                            gridLines: {
+								display:false
+							},ticks: {
+								display: false
+							}
                         }]
                 }
             }
@@ -1225,11 +1143,18 @@
                     mode: 'index',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                            value = value.toString();
-                            value = value.split(/(?=(?:...)*$)/);
-                            value = value.join(',');
-                            return value;
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+							var temp_arr = value.split('.');
+							if(temp_arr.length == 2){
+								value = temp_arr[0].split(/(?=(?:...)*$)/);
+								value = value.join(',');
+								value += '.'+temp_arr[1];
+							}else{
+								value = value.toString();
+								value = value.split(/(?=(?:...)*$)/);
+								value = value.join(',');
+							}
+							return value;
                         }
                     } // end callbacks:
                 },
@@ -1237,32 +1162,17 @@
                     display: true,
                     text: 'Monthly Subscriber Topup'
                 }, scales: {
+                    xAxes: [{
+							gridLines: {
+								display:false
+							}
+                        }],
                     yAxes: [{
-                            id: 'A',
-                            type: 'linear',
-                            position: 'left',
-                            ticks: {
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            }
-                        }, {
-                            id: 'B',
-                            type: 'linear',
-                            position: 'right',
-                            ticks: {
-                                max: 1,
-                                min: 0,
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            },
+                            gridLines: {
+								display:false
+							},ticks: {
+								display: false
+							}
                         }]
                 }
             }
@@ -1283,11 +1193,18 @@
                     mode: 'index',
                     callbacks: {
                         label: function (tooltipItem, data) {
-                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index];
-                            value = value.toString();
-                            value = value.split(/(?=(?:...)*$)/);
-                            value = value.join(',');
-                            return value;
+                            var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+							var temp_arr = value.split('.');
+							if(temp_arr.length == 2){
+								value = temp_arr[0].split(/(?=(?:...)*$)/);
+								value = value.join(',');
+								value += '.'+temp_arr[1];
+							}else{
+								value = value.toString();
+								value = value.split(/(?=(?:...)*$)/);
+								value = value.join(',');
+							}
+							return value;
                         }
                     } // end callbacks:
                 },
@@ -1296,36 +1213,18 @@
                     text: 'DetailChurn'
                 }, scales: {
                     xAxes: [{
-                            stacked: true,
+							gridLines: {
+								display:false
+							},
+							stacked : true
                         }],
                     yAxes: [{
-                            id: 'A',
-                            type: 'linear',
-                            position: 'left',
-                            stacked: true,
-                            ticks: {
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            }
-                        }, {
-                            id: 'B',
-                            type: 'linear',
-                            position: 'right',
-                            ticks: {
-                                max: 1,
-                                min: 0,
-                                userCallback: function (value, index, values) {
-                                    value = value.toString();
-                                    value = value.split(/(?=(?:...)*$)/);
-                                    value = value.join(',');
-                                    return value;
-                                }
-                            },
-                            stacked: true
+                            gridLines: {
+								display:false
+							},ticks: {
+								display: false
+							},
+							stacked : true
                         }]
                 }
             }
@@ -1350,20 +1249,12 @@
                     var dsColor = window.chartColors[colorName];
                     barChartData.datasets.push({
                         label: index,
-                        yAxisID: 'A',
                         backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                         borderColor: dsColor,
                         borderWidth: 1,
                         data: value
                     });
                 });
-                window.myBar.update();
-                // Find the scale in the chart instance
-                var axis = myBar.scales.A;
-                var max = axis.max;
-                var min = axis.min;
-                myBar.options.scales.yAxes[1].ticks.min = min;
-                myBar.options.scales.yAxes[1].ticks.max = max;
                 window.myBar.update();
                 document.getElementById('legend').innerHTML = myBar.generateLegend();
             });
@@ -1379,7 +1270,6 @@
                         var dsColor = window.chartColors[colorName];
                         barChartData2.datasets.push({
                             label: index2,
-                            yAxisID: 'A',
                             backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                             borderColor: dsColor,
                             borderWidth: 1,
@@ -1387,13 +1277,6 @@
                         });
                     });
                 });
-                window.myBar2.update();
-                // Find the scale in the chart instance
-                var axis = myBar2.scales.A;
-                var max = axis.max;
-                var min = axis.min;
-                myBar2.options.scales.yAxes[1].ticks.min = min;
-                myBar2.options.scales.yAxes[1].ticks.max = max;
                 window.myBar2.update();
                 document.getElementById('legend2').innerHTML = myBar2.generateLegend();
                 window.scrollBy(0, 200);
@@ -1408,20 +1291,12 @@
                     var dsColor = window.chartColors[colorName];
                     barChartData3.datasets.push({
                         label: index,
-                        yAxisID: 'A',
                         backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                         borderColor: dsColor,
                         borderWidth: 1,
                         data: value
                     });
                 });
-                window.myBar3.update();
-                // Find the scale in the chart instance
-                var axis = myBar3.scales.A;
-                var max = axis.max;
-                var min = axis.min;
-                myBar3.options.scales.yAxes[1].ticks.min = min;
-                myBar3.options.scales.yAxes[1].ticks.max = max;
                 window.myBar3.update();
                 document.getElementById('legend3').innerHTML = myBar3.generateLegend();
                 window.scrollBy(0, 200);
@@ -1436,7 +1311,6 @@
                     var dsColor = window.chartColors[colorName];
                     barChartData4.datasets.push({
                         label: index,
-                        yAxisID: 'A',
                         backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                         borderColor: dsColor,
                         borderWidth: 1,
@@ -1445,12 +1319,12 @@
                 });
                 window.myBar4.update();
                 // Find the scale in the chart instance
-                var axis = myBar4.scales.A;
-                var max = axis.max;
-                var min = axis.min;
-                myBar4.options.scales.yAxes[1].ticks.min = min;
-                myBar4.options.scales.yAxes[1].ticks.max = max;
-                window.myBar4.update();
+                //var axis = myBar4.scales.A;
+                //var max = axis.max;
+                //var min = axis.min;
+                //myBar4.options.scales.yAxes[1].ticks.min = min;
+                //myBar4.options.scales.yAxes[1].ticks.max = max;
+                //window.myBar4.update();
                 document.getElementById('legend4').innerHTML = myBar4.generateLegend();
                 window.scrollBy(0, 200);
             });
@@ -1464,20 +1338,13 @@
                     var dsColor = window.chartColors[colorName];
                     barChartData5.datasets.push({
                         label: index,
-                        yAxisID: 'A',
+                        //yAxisID: 'A',
                         backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                         borderColor: dsColor,
                         borderWidth: 1,
                         data: value
                     });
                 });
-                window.myBar5.update();
-                // Find the scale in the chart instance
-                var axis = myBar5.scales.A;
-                var max = axis.max;
-                var min = axis.min;
-                myBar5.options.scales.yAxes[1].ticks.min = min;
-                myBar5.options.scales.yAxes[1].ticks.max = max;
                 window.myBar5.update();
                 document.getElementById('legend5').innerHTML = myBar5.generateLegend();
                 window.scrollBy(0, 200);
@@ -1492,20 +1359,12 @@
                     var dsColor = window.chartColors[colorName];
                     barChartData6.datasets.push({
                         label: index,
-                        yAxisID: 'A',
                         backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                         borderColor: dsColor,
                         borderWidth: 1,
                         data: value
                     });
                 });
-                window.myBar6.update();
-                // Find the scale in the chart instance
-                var axis = myBar6.scales.A;
-                var max = axis.max;
-                var min = axis.min;
-                myBar6.options.scales.yAxes[1].ticks.min = min;
-                myBar6.options.scales.yAxes[1].ticks.max = max;
                 window.myBar6.update();
                 document.getElementById('legend6').innerHTML = myBar6.generateLegend();
                 window.scrollBy(0, 200);
@@ -1520,20 +1379,12 @@
                     var dsColor = window.chartColors[colorName];
                     barChartData7.datasets.push({
                         label: index,
-                        yAxisID: 'A',
                         backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                         borderColor: dsColor,
                         borderWidth: 1,
                         data: value
                     });
                 });
-                window.myBar7.update();
-                // Find the scale in the chart instance
-                var axis = myBar7.scales.A;
-                var max = axis.max;
-                var min = axis.min;
-                myBar7.options.scales.yAxes[1].ticks.min = min;
-                myBar7.options.scales.yAxes[1].ticks.max = max;
                 window.myBar7.update();
                 document.getElementById('legend7').innerHTML = myBar7.generateLegend();
                 window.scrollBy(0, 200);
@@ -1548,20 +1399,12 @@
                     var dsColor = window.chartColors[colorName];
                     barChartData8.datasets.push({
                         label: index,
-                        yAxisID: 'A',
                         backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                         borderColor: dsColor,
                         borderWidth: 1,
                         data: value
                     });
                 });
-                window.myBar8.update();
-                // Find the scale in the chart instance
-                var axis = myBar8.scales.A;
-                var max = axis.max;
-                var min = axis.min;
-                myBar8.options.scales.yAxes[1].ticks.min = min;
-                myBar8.options.scales.yAxes[1].ticks.max = max;
                 window.myBar8.update();
                 document.getElementById('legend8').innerHTML = myBar8.generateLegend();
                 window.scrollBy(0, 200);
@@ -1576,20 +1419,12 @@
                     var dsColor = window.chartColors[colorName];
                     barChartData9.datasets.push({
                         label: index,
-                        yAxisID: 'A',
                         backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                         borderColor: dsColor,
                         borderWidth: 1,
                         data: value
                     });
                 });
-                window.myBar9.update();
-                // Find the scale in the chart instance
-                var axis = myBar9.scales.A;
-                var max = axis.max;
-                var min = axis.min;
-                myBar9.options.scales.yAxes[1].ticks.min = min;
-                myBar9.options.scales.yAxes[1].ticks.max = max;
                 window.myBar9.update();
                 document.getElementById('legend9').innerHTML = myBar9.generateLegend();
                 window.scrollBy(0, 200);
@@ -1604,20 +1439,12 @@
                     var dsColor = window.chartColors[colorName];
                     barChartData10.datasets.push({
                         label: index,
-                        yAxisID: 'A',
                         backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                         borderColor: dsColor,
                         borderWidth: 1,
                         data: value
                     });
                 });
-                window.myBar10.update();
-                // Find the scale in the chart instance
-                var axis = myBar10.scales.A;
-                var max = axis.max;
-                var min = axis.min;
-                myBar10.options.scales.yAxes[1].ticks.min = min;
-                myBar10.options.scales.yAxes[1].ticks.max = max;
                 window.myBar10.update();
                 document.getElementById('legend10').innerHTML = myBar10.generateLegend();
                 window.scrollBy(0, 200);
@@ -1632,20 +1459,12 @@
                     var dsColor = window.chartColors[colorName];
                     barChartData11.datasets.push({
                         label: index,
-                        yAxisID: 'A',
                         backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                         borderColor: dsColor,
                         borderWidth: 1,
                         data: value
                     });
                 });
-                window.myBar11.update();
-                // Find the scale in the chart instance
-                var axis = myBar11.scales.A;
-                var max = axis.max;
-                var min = axis.min;
-                myBar11.options.scales.yAxes[1].ticks.min = min;
-                myBar11.options.scales.yAxes[1].ticks.max = max;
                 window.myBar11.update();
                 document.getElementById('legend11').innerHTML = myBar11.generateLegend();
                 window.scrollBy(0, 200);
