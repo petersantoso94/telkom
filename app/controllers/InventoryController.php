@@ -1371,15 +1371,17 @@ class InventoryController extends BaseController {
                 $temp_stat = $ivr->Status;
                 $temp_counter = $ivr->Counter;
                 if (explode('_', $temp_stat)[0] == 'mt') {
-                    $stats = 'MT (hours)';
-                    $temp_counter = round($temp_counter / 3600, 2);
+                    $stats = 'MT (/1000 mins)';
+                    $temp_counter = round(ceil($temp_counter / 60)/1000,1);
                 } else if (explode('_', $temp_stat)[0] == 'mo') {
-                    $stats = 'MO (hours)';
-                    $temp_counter = round($temp_counter / 3600, 2);
+                    $stats = 'MO (/1000 mins)';
+                    $temp_counter = round(ceil($temp_counter / 60)/1000,1);
                 } else if (explode('_', $temp_stat)[0] == 'internet') {
-                    $stats = 'Internet (GB)';
+                    $stats = 'Internet (TB)';
+					$temp_counter = round($temp_counter/1000,1);
                 } else if (explode('_', $temp_stat)[0] == 'sms') {
-                    $stats = 'SMS';
+                    $stats = 'SMS (/1000 sms)';
+					$temp_counter = round($temp_counter/1000,1);
                 }
                 if (!isset($data[$stats]))
                     $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
