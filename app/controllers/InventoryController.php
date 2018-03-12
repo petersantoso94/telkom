@@ -882,11 +882,18 @@ class InventoryController extends BaseController {
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
                         if ($extention == 'csv') {
+                            $destination = base_path() . '/uploaded_file/';
+                        $extention = Input::file('sample_file')->getClientOriginalExtension();
+                        $filename = 'temp.' . $extention;
+                        Input::file('sample_file')->move($destination, $filename);
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                        if ($extention == 'csv') {
                             $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::CSV);
                             $reader->setShouldFormatDates(true);
                             $counter = 0;
                             $reader->open($filePath);
                             $arr_msisdn = [];
+							$arr_act_store = [];
                             foreach ($reader->getSheetIterator() as $sheet) {
                                 foreach ($sheet->getRowIterator() as $rowNumber => $value) {
                                     if ($rowNumber > 1) {
@@ -894,12 +901,13 @@ class InventoryController extends BaseController {
                                         $msisdn = (string) $value[14];
                                         if ($msisdn != '' && $msisdn != null) {
                                             $msisdn = str_replace(' ', '', $msisdn);
-                                            $msisdn = str_replace('\'', '', $msisdn);
+											$msisdn = str_replace('\'', '', $msisdn);
                                             if (substr($msisdn, 0, 1) === '0') {
                                                 $msisdn = substr($msisdn, 1);
                                             }
                                             array_push($arr_msisdn, $msisdn);
-                                        }
+											array_push($arr_act_store, $value[6]);
+										}
                                     }
                                 }
                             }
@@ -907,7 +915,7 @@ class InventoryController extends BaseController {
                             $ids = $arr_msisdn;
                             $ids = implode("','", $ids);
                             $check_msisdn = [];
-                            $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE `MSISDN` in ('{$ids}') AND `ActivationDate` IS NOT NULL");
+                            $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE `MSISDN` in ('{$ids}')");
                             foreach ($right_msisdn as $msisdn) {
                                 $check_msisdn[] = $msisdn->MSISDN;
                             }
@@ -925,6 +933,28 @@ class InventoryController extends BaseController {
                                 }
                                 $counter++;
                             }
+							$table = Inventory::getModel()->getTable();
+                            
+                            $counter = count($arr_msisdn);
+							$block = 40000;
+							for($j = 1 ; $j<= ceil($counter/$block) ;$j++ ){
+								$cases = [];
+								$ids = [];
+								$params = [];
+								for ($i = 0+(($j-1)*$block); $i < $j*$block; $i++) {
+									if($i<$counter){
+										$id = (int) $arr_msisdn[$i];
+										$cases[] = "WHEN {$id} then ?";
+										$params[] = $arr_act_store[$i];
+										$ids[] = $id;
+									}else{
+										break;
+									}
+								}
+								$ids = implode(',', $ids);
+								$cases = implode(' ', $cases);
+								DB::update("UPDATE `{$table}` SET `ActivationStore` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
+							}
 
                             return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNotfound($not_found_str);
                         } else {
