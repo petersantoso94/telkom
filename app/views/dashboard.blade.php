@@ -628,8 +628,15 @@
                         y_axis[index] = element._model.y - 7;
 
                         var dataString = dataset.data[index].toString();
-                        dataString = dataString.split(/(?=(?:...)*$)/);
-                        dataString = dataString.join(',');
+                        var temp_arr = dataString.split('.');
+                        if(temp_arr.length == 2){
+                           dataString = temp_arr[0].split(/(?=(?:...)*$)/);
+                           dataString = dataString.join(',');
+                           dataString += '.'+temp_arr[1];
+                        }else{
+                           dataString = dataString.split(/(?=(?:...)*$)/);
+                           dataString = dataString.join(',');
+                        }
                         // Make sure alignment settings are correct
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
