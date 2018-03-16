@@ -623,7 +623,7 @@
                         ctx.font = Chart.helpers.fontString(fontSize, fontStyle, fontFamily);
                         // Just naively convert to string for now
 						                        
-						if (meta.controller.chart.canvas.id == 'barChart_churn' && dataset.data[index] < 0) {
+						if ((meta.controller.chart.canvas.id == 'barChart_churn' || meta.controller.chart.canvas.id == 'barChart_detail_churn') && dataset.data[index] < 0) {
 							total[index] -= dataset.data[index];
 						}else{
 							total[index] += dataset.data[index];
@@ -668,7 +668,7 @@
 				if (meta.controller.chart.canvas.id == 'barChart_prod') {
                     write = true;
                     str_write = 'Total';
-                }if (meta.controller.chart.canvas.id == 'barChart_churn') {
+                }if (meta.controller.chart.canvas.id == 'barChart_churn' || meta.controller.chart.canvas.id == 'barChart_detail_churn') {
                     write = true;
                     str_write = 'Activation';
                 }
