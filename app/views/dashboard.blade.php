@@ -657,8 +657,15 @@
 //                            padding = padding * -1;
 //                        }
 //                        ctx.fillText(dataString, position.x, position.y +((canvas_height -position.y )/2)+ (fontSize / 2) + padding - (canvas_height - y_height));
-						if(dataString != '0')
-                        ctx.fillText(dataString, element._model.x, (element._model.y+padding));
+						if(dataString != '0'){
+							if (meta.controller.chart.canvas.id == 'barChart_voc_topup' || meta.controller.chart.canvas.id == 'barChart_evoc_topup') {
+								if(dataset.data[index] > 300){
+									ctx.fillText(dataString, element._model.x, (element._model.y+padding));
+								}
+							}else{
+								ctx.fillText(dataString, element._model.x, (element._model.y+padding));
+							}
+						}
                     });
                 }
                 if (meta.controller.chart.canvas.id == 'barChart_detail_churn') {
@@ -671,7 +678,10 @@
                 }if (meta.controller.chart.canvas.id == 'barChart_churn' || meta.controller.chart.canvas.id == 'barChart_detail_churn') {
                     write = true;
                     str_write = 'Activation';
-                }
+                }if (meta.controller.chart.canvas.id == 'barChart_voc_topup' || meta.controller.chart.canvas.id == 'barChart_evoc_topup') {
+					write = true;
+                    str_write = 'Total';
+				}
             });
             if (write) {
                 for (var i = 0; i < 12; i++) {
