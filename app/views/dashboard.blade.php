@@ -1098,14 +1098,16 @@
                 }, scales: {xAxes: [{
                             gridLines: {
                                 display: false
-                            }
+                            },
+                            stacked: true
                         }],
                     yAxes: [{
                             gridLines: {
                                 display: false
                             }, ticks: {
                                 display: false
-                            }
+                            },
+                            stacked: true
                         }]
                 }
             }
@@ -1147,14 +1149,16 @@
                     xAxes: [{
                             gridLines: {
                                 display: false
-                            }
+                            },
+                            stacked: true
                         }],
                     yAxes: [{
                             gridLines: {
                                 display: false
                             }, ticks: {
                                 display: false
-                            }
+                            },
+                            stacked: true
                         }]
                 }
             }
