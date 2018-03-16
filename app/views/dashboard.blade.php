@@ -1430,15 +1430,24 @@
             }).done(function (data) {
                 barChartData8.datasets = [];
                 $.each(data, function (index, value) {
-                    var colorName = colorNames[barChartData8.datasets.length % colorNames.length];
+                    var index_temp = 0;
+					if(index == 'E-VOUCHER 100')
+						index_temp = 1
+					else if(index == 'PH-VOUCHER 100')
+						index_temp = 2
+					else if(index == 'E-VOUCHER 300')
+						index_temp = 3
+					else if(index == 'PH-VOUCHER 300')
+						index_temp = 4
+                    var colorName = colorNames[index_temp];
                     var dsColor = window.chartColors[colorName];
-                    barChartData8.datasets.push({
+                    barChartData8.datasets[index_temp]={
                         label: index,
                         backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                         borderColor: dsColor,
                         borderWidth: 1,
                         data: value
-                    });
+                    };
                 });
                 window.myBar8.update();
                 document.getElementById('legend8').innerHTML = myBar8.generateLegend();
