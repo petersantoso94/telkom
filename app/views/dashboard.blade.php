@@ -622,8 +622,12 @@
                         var fontFamily = 'Helvetica Neue';
                         ctx.font = Chart.helpers.fontString(fontSize, fontStyle, fontFamily);
                         // Just naively convert to string for now
-
-                        total[index] += dataset.data[index];
+						                        
+						if (meta.controller.chart.canvas.id == 'barChart_churn' && dataset.data[index] < 0) {
+							total[index] -= dataset.data[index];
+						}else{
+							total[index] += dataset.data[index];
+						}
                         x_axis[index] = element._model.x;
                         y_axis[index] = element._model.y - 7;
 
@@ -637,6 +641,7 @@
                             dataString = dataString.split(/(?=(?:...)*$)/);
                             dataString = dataString.join(',');
                         }
+						
                         // Make sure alignment settings are correct
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
@@ -645,27 +650,45 @@
                         if(element._model.base > 394)
                             temp_base = 394;
                         var padding = ((temp_base - element._model.y) / 2);
+						console.log(temp_base);
                         var position = element.tooltipPosition();
                         var y_height = element._yScale.height;
 //                        if (dataString.includes('-')) {
 //                            padding = padding * -1;
 //                        }
 //                        ctx.fillText(dataString, position.x, position.y +((canvas_height -position.y )/2)+ (fontSize / 2) + padding - (canvas_height - y_height));
-                        ctx.fillText(dataString, element._model.x, element._model.y + padding);
+						if(dataString != '0')
+                        ctx.fillText(dataString, element._model.x, (element._model.y+padding));
                     });
                 }
                 if (meta.controller.chart.canvas.id == 'barChart_detail_churn') {
                     write = true;
                     str_write = 'Net';
                 }
-				   if (meta.controller.chart.canvas.id == 'barChart_prod') {
+				if (meta.controller.chart.canvas.id == 'barChart_prod') {
                     write = true;
                     str_write = 'Total';
+                }if (meta.controller.chart.canvas.id == 'barChart_churn') {
+                    write = true;
+                    str_write = 'Activation';
                 }
             });
             if (write) {
                 for (var i = 0; i < 12; i++) {
-                    ctx.fillText(str_write + ': ' + total[i].toString(), x_axis[i], y_axis[i]);
+					if(total[i].toString() != '0'){
+						var dataString = total[i].toString();
+                        var temp_arr = dataString.split('.');
+                        if (temp_arr.length == 2) {
+                            dataString = temp_arr[0].split(/(?=(?:...)*$)/);
+                            dataString = dataString.join(',');
+                            dataString += '.' + temp_arr[1];
+                        } else {
+                            dataString = dataString.split(/(?=(?:...)*$)/);
+                            dataString = dataString.join(',');
+                        }
+						ctx.fillText(str_write + ': ' + dataString, x_axis[i], y_axis[i]);
+					}
+                    
                 }
             }
         }
