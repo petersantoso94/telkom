@@ -1532,29 +1532,81 @@ class InventoryController extends BaseController {
 
     static function getVouchersTopUp() {
         $year = Input::get('year');
-//        $year = '2017';
+        //$year = '2017';
         $type = '';
+		//$type = '3';
         if (Input::get('type'))
             $type = Input::get('type');
         $data = [];
         //1 -> evoucher; 2 -> phvoucher
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%' . $type . 'topup%\'')->get();
-//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
-//        if(!count($all_ivr)){
-//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-//        }
-        if ($all_ivr != null) {
-            foreach ($all_ivr as $ivr) {
-                if (!isset($data['Voucher']))
-                    $data['Voucher'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                for ($i = 0; $i < 12; $i++) {
-                    if ($i == $ivr->Month - 1) {
-                        $data['Voucher'][$i] += $ivr->Counter;
-                    }
-                }
-            }
-        }
+		$all_ivr = [];
+		if($type == 2){
+			// 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+			$all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%1topup%\'')->get();
+			$all_ivr2 = Stats::where('Year', $year)->whereRaw('Status LIKE \'%2topup%\'')->get();
+			if ($all_ivr != null) {
+				foreach ($all_ivr as $ivr) {
+					if (!isset($data['Voucher']['Ph100']))
+						$data['Voucher']['Ph100'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+					for ($i = 0; $i < 12; $i++) {
+						if ($i == $ivr->Month - 1) {
+							$data['Voucher']['Ph100'][$i] += $ivr->Counter;
+						}
+					}
+				}
+			}
+			if ($all_ivr2 != null) {
+				foreach ($all_ivr2 as $ivr) {
+					if (!isset($data['Voucher']['Ph300']))
+						$data['Voucher']['Ph300'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+					for ($i = 0; $i < 12; $i++) {
+						if ($i == $ivr->Month - 1) {
+							$data['Voucher']['Ph300'][$i] += $ivr->Counter;
+						}
+					}
+				}
+			}
+			return $data;
+		}else{
+			// 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+			$all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%3topup%\'')->get();
+			$all_ivr2 = Stats::where('Year', $year)->whereRaw('Status LIKE \'%4topup%\'')->get();
+			$all_ivr3 = Stats::where('Year', $year)->whereRaw('Status LIKE \'%5topup%\'')->get();
+			if ($all_ivr != null) {
+				foreach ($all_ivr as $ivr) {
+					if (!isset($data['Voucher']['eV50']))
+						$data['Voucher']['eV50'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+					for ($i = 0; $i < 12; $i++) {
+						if ($i == $ivr->Month - 1) {
+							$data['Voucher']['eV50'][$i] += $ivr->Counter;
+						}
+					}
+				}
+			}
+			if ($all_ivr2 != null) {
+				foreach ($all_ivr2 as $ivr) {
+					if (!isset($data['Voucher']['eV100']))
+						$data['Voucher']['eV100'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+					for ($i = 0; $i < 12; $i++) {
+						if ($i == $ivr->Month - 1) {
+							$data['Voucher']['eV100'][$i] += $ivr->Counter;
+						}
+					}
+				}
+			}
+			if ($all_ivr3 != null) {
+				foreach ($all_ivr3 as $ivr) {
+					if (!isset($data['Voucher']['eV300']))
+						$data['Voucher']['eV300'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+					for ($i = 0; $i < 12; $i++) {
+						if ($i == $ivr->Month - 1) {
+							$data['Voucher']['eV300'][$i] += $ivr->Counter;
+						}
+					}
+				}
+			}
+			return $data;
+		}
         return $data;
     }
 
