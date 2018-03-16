@@ -1061,8 +1061,8 @@ class InventoryController extends BaseController {
                                         }
                                         array_push($arr_msisdn, $msisdn);
                                         $date_return = $value[1];
-                                        $date_return = explode('/', $date_return);
-                                        $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                        //$date_return = explode('/', $date_return);
+                                        //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                         $date_return = strtotime($date_return);
                                         $date_return = date('Y-m-d', $date_return);
                                         array_push($arr_return, $date_return);
@@ -1296,8 +1296,8 @@ class InventoryController extends BaseController {
         }
         if ($all_act != null) {
             foreach ($all_act as $ivr) {
-                if (!isset($data['act'][$ivr->Status])) {
-                    $data['act'][$ivr->Status] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if (!isset($data['act']['Active MSISDN'])) {
+                    $data['act']['Active MSISDN'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     $counter_z = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 }
                 $counter_z[($ivr->Month - 1)] = $ivr->Counter;
@@ -1307,7 +1307,7 @@ class InventoryController extends BaseController {
             $sum_bef += $counter_z[$i];
             $sum_churn_bef += $counter_c[$i];
             if ($counter_z[$i] > 0)
-                $data['act']['Activation'][$i] = $sum_bef - $sum_churn_bef;
+                $data['act']['Active MSISDN'][$i] = $sum_bef - $sum_churn_bef;
             if ($counter_c[$i] > 0)
                 $data['churn']['Churn'][$i] = -($sum_churn_bef);
         }
