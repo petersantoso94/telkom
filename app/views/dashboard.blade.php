@@ -642,8 +642,8 @@
                         ctx.textBaseline = 'middle';
                         var canvas_height = ctx.canvas.clientHeight;
                         var temp_base = element._model.base;
-                        if(element._model.base > 584)
-                            temp_base = 584;
+                        if(element._model.base > 394)
+                            temp_base = 394;
                         var padding = ((temp_base - element._model.y) / 2);
                         var position = element.tooltipPosition();
                         var y_height = element._yScale.height;
@@ -654,9 +654,13 @@
                         ctx.fillText(dataString, element._model.x, element._model.y + padding);
                     });
                 }
-                if (meta.controller.chart.canvas.id == 'barChart_prod' || meta.controller.chart.canvas.id == 'barChart_detail_churn') {
+                if (meta.controller.chart.canvas.id == 'barChart_detail_churn') {
                     write = true;
                     str_write = 'Net';
+                }
+				   if (meta.controller.chart.canvas.id == 'barChart_prod') {
+                    write = true;
+                    str_write = 'Total';
                 }
             });
             if (write) {
