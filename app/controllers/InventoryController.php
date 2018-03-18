@@ -227,7 +227,7 @@ class InventoryController extends BaseController {
                                     $type = 2;
                                     $wh = 'TELIN TAIWAN';
                                     $sn = (string) $value[0];
-                                    
+
                                     $remark_obj = $value[9];
 
                                     if (is_object($remark_obj)) {
@@ -881,7 +881,7 @@ class InventoryController extends BaseController {
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
-                        if ($extention == 'csv') 
+                        if ($extention == 'csv')
                             $destination = base_path() . '/uploaded_file/';
                         $extention = Input::file('sample_file')->getClientOriginalExtension();
                         $filename = 'temp.' . $extention;
@@ -893,7 +893,7 @@ class InventoryController extends BaseController {
                             $counter = 0;
                             $reader->open($filePath);
                             $arr_msisdn = [];
-							$arr_act_store = [];
+                            $arr_act_store = [];
                             foreach ($reader->getSheetIterator() as $sheet) {
                                 foreach ($sheet->getRowIterator() as $rowNumber => $value) {
                                     if ($rowNumber > 1) {
@@ -901,13 +901,13 @@ class InventoryController extends BaseController {
                                         $msisdn = (string) $value[14];
                                         if ($msisdn != '' && $msisdn != null) {
                                             $msisdn = str_replace(' ', '', $msisdn);
-											$msisdn = str_replace('\'', '', $msisdn);
+                                            $msisdn = str_replace('\'', '', $msisdn);
                                             if (substr($msisdn, 0, 1) === '0') {
                                                 $msisdn = substr($msisdn, 1);
                                             }
                                             array_push($arr_msisdn, $msisdn);
-											array_push($arr_act_store, $value[6]);
-										}
+                                            array_push($arr_act_store, $value[6]);
+                                        }
                                     }
                                 }
                             }
@@ -933,28 +933,28 @@ class InventoryController extends BaseController {
                                 }
                                 $counter++;
                             }
-							$table = Inventory::getModel()->getTable();
-                            
+                            $table = Inventory::getModel()->getTable();
+
                             $counter = count($arr_msisdn);
-							$block = 40000;
-							for($j = 1 ; $j<= ceil($counter/$block) ;$j++ ){
-								$cases = [];
-								$ids = [];
-								$params = [];
-								for ($i = 0+(($j-1)*$block); $i < $j*$block; $i++) {
-									if($i<$counter){
-										$id = (int) $arr_msisdn[$i];
-										$cases[] = "WHEN {$id} then ?";
-										$params[] = $arr_act_store[$i];
-										$ids[] = $id;
-									}else{
-										break;
-									}
-								}
-								$ids = implode(',', $ids);
-								$cases = implode(' ', $cases);
-								DB::update("UPDATE `{$table}` SET `ActivationStore` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
-							}
+                            $block = 40000;
+                            for ($j = 1; $j <= ceil($counter / $block); $j++) {
+                                $cases = [];
+                                $ids = [];
+                                $params = [];
+                                for ($i = 0 + (($j - 1) * $block); $i < $j * $block; $i++) {
+                                    if ($i < $counter) {
+                                        $id = (int) $arr_msisdn[$i];
+                                        $cases[] = "WHEN {$id} then ?";
+                                        $params[] = $arr_act_store[$i];
+                                        $ids[] = $id;
+                                    } else {
+                                        break;
+                                    }
+                                }
+                                $ids = implode(',', $ids);
+                                $cases = implode(' ', $cases);
+                                DB::update("UPDATE `{$table}` SET `ActivationStore` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
+                            }
 
                             return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNotfound($not_found_str);
                         } else {
@@ -976,8 +976,8 @@ class InventoryController extends BaseController {
                                             }
                                             array_push($arr_msisdn, $msisdn);
                                             $date_return = $value[1];
-											//$date_return = explode('/', $date_return);
-											//$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                            //$date_return = explode('/', $date_return);
+                                            //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                             $date_return = strtotime($date_return);
                                             $date_return = date('Y-m-d', $date_return);
                                             array_push($arr_return, $date_return);
@@ -986,7 +986,7 @@ class InventoryController extends BaseController {
                                 }
                             }
                             $reader->close();
-							$ids = $arr_msisdn;
+                            $ids = $arr_msisdn;
                             $ids = implode("','", $ids);
                             $check_msisdn = [];
                             $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE `MSISDN` in ('{$ids}')");
@@ -1008,27 +1008,27 @@ class InventoryController extends BaseController {
                                 $counter++;
                             }
                             $table = Inventory::getModel()->getTable();
-                            
+
                             $counter = count($arr_msisdn);
-							$block = 40000;
-							for($j = 1 ; $j<= ceil($counter/$block) ;$j++ ){
-								$cases = [];
-								$ids = [];
-								$params = [];
-								for ($i = 0+(($j-1)*$block); $i < $j*$block; $i++) {
-									if($i<$counter){
-										$id = (int) $arr_msisdn[$i];
-										$cases[] = "WHEN {$id} then ?";
-										$params[] = $arr_return[$i];
-										$ids[] = $id;
-									}else{
-										break;
-									}
-								}
-								$ids = implode(',', $ids);
-								$cases = implode(' ', $cases);
-								DB::update("UPDATE `{$table}` SET `ActivationDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
-							}
+                            $block = 40000;
+                            for ($j = 1; $j <= ceil($counter / $block); $j++) {
+                                $cases = [];
+                                $ids = [];
+                                $params = [];
+                                for ($i = 0 + (($j - 1) * $block); $i < $j * $block; $i++) {
+                                    if ($i < $counter) {
+                                        $id = (int) $arr_msisdn[$i];
+                                        $cases[] = "WHEN {$id} then ?";
+                                        $params[] = $arr_return[$i];
+                                        $ids[] = $id;
+                                    } else {
+                                        break;
+                                    }
+                                }
+                                $ids = implode(',', $ids);
+                                $cases = implode(' ', $cases);
+                                DB::update("UPDATE `{$table}` SET `ActivationDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
+                            }
                             return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberac($counter)->withNotfound($not_found_str);
                         }
                     }
@@ -1218,6 +1218,65 @@ class InventoryController extends BaseController {
                     }
                 }
                 return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
+            }else if (Input::get('jenis') == 'act_sip') {
+                $input = Input::file('sample_file');
+                if ($input != '') {
+                    if (Input::hasFile('sample_file')) {
+                        $destination = base_path() . '/uploaded_file/';
+                        $extention = Input::file('sample_file')->getClientOriginalExtension();
+                        $filename = 'temp.' . $extention;
+                        Input::file('sample_file')->move($destination, $filename);
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                        $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
+                        $reader->setShouldFormatDates(true);
+                        $counter = 0;
+                        $reader->open($filePath);
+                        $arr_msisdn = [];
+                        $arr_return = [];
+                        foreach ($reader->getSheetIterator() as $sheet) {
+                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                if ($rowNumber > 1) {
+                                    // do stuff with the row
+                                    $msisdn = (string) $value[14];
+                                    if ($msisdn != '' && $msisdn != null) {
+                                        $msisdn = str_replace('\'', '', $msisdn);
+                                        if (substr($msisdn, 0, 1) === '0') {
+                                            $msisdn = substr($msisdn, 1);
+                                        }
+                                        array_push($arr_msisdn, $msisdn);
+                                        $date_return = $value[6];
+                                        array_push($arr_return, $date_return);
+                                    }
+                                }
+                            }
+                        }
+                        $reader->close();
+
+                        $table = Inventory::getModel()->getTable();
+                        $counter = count($arr_msisdn);
+                        $block = 40000;
+                        for ($j = 1; $j <= ceil($counter / $block); $j++) {
+                            $cases = [];
+                            $ids = [];
+                            $params = [];
+                            for ($i = 0 + (($j - 1) * $block); $i < $j * $block; $i++) {
+                                if ($i < $counter) {
+                                    $id = (int) $arr_msisdn[$i];
+                                    $cases[] = "WHEN {$id} then ?";
+                                    $params[] = $arr_return[$i];
+                                    $ids[] = $id;
+                                } else {
+                                    break;
+                                }
+                            }
+                            $ids = implode(',', $ids);
+                            $cases = implode(' ', $cases);
+                            DB::update("UPDATE `{$table}` SET `ActivationStore` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
+                        }
+                        return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumbersip($counter);
+                    }
+                }
+                return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
             }
         }
         return View::make('insertreporting')->withPage('insert reporting');
@@ -1372,16 +1431,16 @@ class InventoryController extends BaseController {
                 $temp_counter = $ivr->Counter;
                 if (explode('_', $temp_stat)[0] == 'mt') {
                     $stats = 'MT (/1000 mins)';
-                    $temp_counter = round(ceil($temp_counter / 60)/1000,1);
+                    $temp_counter = round(ceil($temp_counter / 60) / 1000, 1);
                 } else if (explode('_', $temp_stat)[0] == 'mo') {
                     $stats = 'MO (/1000 mins)';
-                    $temp_counter = round(ceil($temp_counter / 60)/1000,1);
+                    $temp_counter = round(ceil($temp_counter / 60) / 1000, 1);
                 } else if (explode('_', $temp_stat)[0] == 'internet') {
                     $stats = 'Internet (TB)';
-					$temp_counter = round($temp_counter/1000,1);
+                    $temp_counter = round($temp_counter / 1000, 1);
                 } else if (explode('_', $temp_stat)[0] == 'sms') {
                     $stats = 'SMS (/1000 sms)';
-					$temp_counter = round($temp_counter/1000,1);
+                    $temp_counter = round($temp_counter / 1000, 1);
                 }
                 if (!isset($data[$stats]))
                     $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -1538,64 +1597,64 @@ class InventoryController extends BaseController {
             $type = Input::get('type');
         $data = [];
         //1 -> evoucher; 2 -> phvoucher
-		$all_ivr = [];
-		if($type == ''){
-			// 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
-			$all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
-			if ($all_ivr != null) {
-				foreach ($all_ivr as $ivr) {
-					$stats = '';
-					$temp_stat = $ivr->Status;
-					if (substr($temp_stat, 0, 1) == '1') {
-						$stats = 'PH-VOUCHER 100';
-					} else if (substr($temp_stat, 0, 1) == '2') {
-						$stats = 'PH-VOUCHER 300';
-					} else if (substr($temp_stat, 0, 1) == '3') {
-						$stats = 'E-VOUCHER 50';
-					} else if (substr($temp_stat, 0, 1) == '4') {
-						$stats = 'E-VOUCHER 100';
-					} else if (substr($temp_stat, 0, 1) == '5') {
-						$stats = 'E-VOUCHER 300';
-					}
-					if($stats != ''){
-						if (!isset($data[$stats]))
-							$data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-						for ($i = 0; $i < 12; $i++) {
-							if ($i == $ivr->Month - 1) {
-								$data[$stats][$i] += $ivr->Counter;
-							}
-						}
-					}
-				}
-			}
-			return $data;
-		}else if($type == '1'){
-					// 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
-			$all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
-			if ($all_ivr != null) {
-				foreach ($all_ivr as $ivr) {
-					$stats = '';
-					$temp_stat = $ivr->Status;
-					if (substr($temp_stat, 0, 1) == '3') {
-						$stats = 'E-VOUCHER 50';
-					} else if (substr($temp_stat, 0, 1) == '4') {
-						$stats = 'E-VOUCHER 100';
-					} else if (substr($temp_stat, 0, 1) == '5') {
-						$stats = 'E-VOUCHER 300';
-					}
-					if($stats != ''){
-						if (!isset($data[$stats]))
-							$data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-						for ($i = 0; $i < 12; $i++) {
-							if ($i == $ivr->Month - 1) {
-								$data[$stats][$i] += $ivr->Counter;
-							}
-						}
-					}
-				}
-			}
-			return $data;
-		}
+        $all_ivr = [];
+        if ($type == '') {
+            // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+            $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
+            if ($all_ivr != null) {
+                foreach ($all_ivr as $ivr) {
+                    $stats = '';
+                    $temp_stat = $ivr->Status;
+                    if (substr($temp_stat, 0, 1) == '1') {
+                        $stats = 'PH-VOUCHER 100';
+                    } else if (substr($temp_stat, 0, 1) == '2') {
+                        $stats = 'PH-VOUCHER 300';
+                    } else if (substr($temp_stat, 0, 1) == '3') {
+                        $stats = 'E-VOUCHER 50';
+                    } else if (substr($temp_stat, 0, 1) == '4') {
+                        $stats = 'E-VOUCHER 100';
+                    } else if (substr($temp_stat, 0, 1) == '5') {
+                        $stats = 'E-VOUCHER 300';
+                    }
+                    if ($stats != '') {
+                        if (!isset($data[$stats]))
+                            $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $data[$stats][$i] += $ivr->Counter;
+                            }
+                        }
+                    }
+                }
+            }
+            return $data;
+        } else if ($type == '1') {
+            // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+            $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
+            if ($all_ivr != null) {
+                foreach ($all_ivr as $ivr) {
+                    $stats = '';
+                    $temp_stat = $ivr->Status;
+                    if (substr($temp_stat, 0, 1) == '3') {
+                        $stats = 'E-VOUCHER 50';
+                    } else if (substr($temp_stat, 0, 1) == '4') {
+                        $stats = 'E-VOUCHER 100';
+                    } else if (substr($temp_stat, 0, 1) == '5') {
+                        $stats = 'E-VOUCHER 300';
+                    }
+                    if ($stats != '') {
+                        if (!isset($data[$stats]))
+                            $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $data[$stats][$i] += $ivr->Counter;
+                            }
+                        }
+                    }
+                }
+            }
+            return $data;
+        }
         return $data;
     }
 
