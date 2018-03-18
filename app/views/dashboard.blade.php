@@ -622,12 +622,12 @@
                         var fontFamily = 'Helvetica Neue';
                         ctx.font = Chart.helpers.fontString(fontSize, fontStyle, fontFamily);
                         // Just naively convert to string for now
-						                        
-						if ((meta.controller.chart.canvas.id == 'barChart_churn' || meta.controller.chart.canvas.id == 'barChart_detail_churn') && dataset.data[index] < 0) {
-							total[index] -= dataset.data[index];
-						}else{
-							total[index] += dataset.data[index];
-						}
+
+                        if ((meta.controller.chart.canvas.id == 'barChart_churn' || meta.controller.chart.canvas.id == 'barChart_detail_churn') && dataset.data[index] < 0) {
+                            total[index] -= dataset.data[index];
+                        } else {
+                            total[index] += dataset.data[index];
+                        }
                         x_axis[index] = element._model.x;
                         y_axis[index] = element._model.y - 7;
 
@@ -641,52 +641,54 @@
                             dataString = dataString.split(/(?=(?:...)*$)/);
                             dataString = dataString.join(',');
                         }
-						
+
                         // Make sure alignment settings are correct
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
                         var canvas_height = ctx.canvas.clientHeight;
                         var temp_base = element._model.base;
-                        if(element._model.base > 394)
+                        if (element._model.base > 394)
                             temp_base = 394;
                         var padding = ((temp_base - element._model.y) / 2);
-						console.log(temp_base);
+                        console.log(temp_base);
                         var position = element.tooltipPosition();
                         var y_height = element._yScale.height;
 //                        if (dataString.includes('-')) {
 //                            padding = padding * -1;
 //                        }
 //                        ctx.fillText(dataString, position.x, position.y +((canvas_height -position.y )/2)+ (fontSize / 2) + padding - (canvas_height - y_height));
-						if(dataString != '0'){
-							if (meta.controller.chart.canvas.id == 'barChart_voc_topup' || meta.controller.chart.canvas.id == 'barChart_evoc_topup') {
-								if(dataset.data[index] > 300){
-									ctx.fillText(dataString, element._model.x, (element._model.y+padding));
-								}
-							}else{
-								ctx.fillText(dataString, element._model.x, (element._model.y+padding));
-							}
-						}
+                        if (dataString != '0') {
+                            if (meta.controller.chart.canvas.id == 'barChart_voc_topup' || meta.controller.chart.canvas.id == 'barChart_evoc_topup') {
+                                if (dataset.data[index] > 300) {
+                                    ctx.fillText(dataString, element._model.x, (element._model.y + padding));
+                                }
+                            } else {
+                                ctx.fillText(dataString, element._model.x, (element._model.y + padding));
+                            }
+                        }
                     });
                 }
                 if (meta.controller.chart.canvas.id == 'barChart_detail_churn') {
                     write = true;
                     str_write = 'Net';
                 }
-				if (meta.controller.chart.canvas.id == 'barChart_prod') {
+                if (meta.controller.chart.canvas.id == 'barChart_prod') {
                     write = true;
                     str_write = 'Total';
-                }if (meta.controller.chart.canvas.id == 'barChart_churn' || meta.controller.chart.canvas.id == 'barChart_detail_churn') {
+                }
+                if (meta.controller.chart.canvas.id == 'barChart_churn' || meta.controller.chart.canvas.id == 'barChart_detail_churn') {
                     write = true;
                     str_write = 'Activation';
-                }if (meta.controller.chart.canvas.id == 'barChart_voc_topup' || meta.controller.chart.canvas.id == 'barChart_evoc_topup') {
-					write = true;
+                }
+                if (meta.controller.chart.canvas.id == 'barChart_voc_topup' || meta.controller.chart.canvas.id == 'barChart_evoc_topup') {
+                    write = true;
                     str_write = 'Total';
-				}
+                }
             });
             if (write) {
                 for (var i = 0; i < 12; i++) {
-					if(total[i].toString() != '0'){
-						var dataString = total[i].toString();
+                    if (total[i].toString() != '0') {
+                        var dataString = total[i].toString();
                         var temp_arr = dataString.split('.');
                         if (temp_arr.length == 2) {
                             dataString = temp_arr[0].split(/(?=(?:...)*$)/);
@@ -696,9 +698,9 @@
                             dataString = dataString.split(/(?=(?:...)*$)/);
                             dataString = dataString.join(',');
                         }
-						ctx.fillText(str_write + ': ' + dataString, x_axis[i], y_axis[i]);
-					}
-                    
+                        ctx.fillText(str_write + ': ' + dataString, x_axis[i], y_axis[i]);
+                    }
+
                 }
             }
         }
@@ -1441,17 +1443,17 @@
                 barChartData8.datasets = [];
                 $.each(data, function (index, value) {
                     var index_temp = 0;
-					if(index == 'E-VOUCHER 100')
-						index_temp = 1
-					else if(index == 'PH-VOUCHER 100')
-						index_temp = 2
-					else if(index == 'E-VOUCHER 300')
-						index_temp = 3
-					else if(index == 'PH-VOUCHER 300')
-						index_temp = 4
+                    if (index == 'E-VOUCHER 100')
+                        index_temp = 1
+                    else if (index == 'PH-VOUCHER 100')
+                        index_temp = 2
+                    else if (index == 'E-VOUCHER 300')
+                        index_temp = 3
+                    else if (index == 'PH-VOUCHER 300')
+                        index_temp = 4
                     var colorName = colorNames[index_temp];
                     var dsColor = window.chartColors[colorName];
-                    barChartData8.datasets[index_temp]={
+                    barChartData8.datasets[index_temp] = {
                         label: index,
                         backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                         borderColor: dsColor,
