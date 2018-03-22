@@ -1957,6 +1957,125 @@ class InventoryController extends BaseController {
         return "/inventory_" . $filenames . ".xlsx";
     }
 
+    static function exportExcelDashboard() {
+        $year = Input::get("argyear");
+//        $year = "2017";
+        $wh = Input::get("argwh");
+        $subagent = Input::get("argsubagent");
+//        $subagent = "ASPROF ESTHER";
+        $month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        $total = [0, 0, 0, 0, 0, 0];
+        $filenames = $year . '_' . $wh . '_' . $subagent;
+
+        $simshipout = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                        ->whereRaw('m_inventory.Type IN ("4","1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                        ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+                        ->where('m_historymovement.SubAgent', 'LIKE', '%' . $subagent . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                        ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+
+        $simactive = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                        ->whereRaw('m_inventory.Type IN ("4","1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)->whereRaw('m_inventory.ActivationDate IS NOT NULL')
+                        ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+                        ->where('m_historymovement.SubAgent', 'LIKE', '%' . $subagent . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                        ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+
+        $simnotactive = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                        ->whereRaw('m_inventory.Type IN ("4","1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)->whereRaw('m_inventory.ActivationDate IS NULL')
+                        ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+                        ->where('m_historymovement.SubAgent', 'LIKE', '%' . $subagent . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                        ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+
+        $simapfret = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                        ->whereRaw('m_inventory.Type IN ("4","1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)->whereRaw('m_inventory.ApfDate IS NOT NULL')
+                        ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+                        ->where('m_historymovement.SubAgent', 'LIKE', '%' . $subagent . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                        ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+
+        $simapfretnotact = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                        ->whereRaw('m_inventory.Type IN ("4","1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)->whereRaw('m_inventory.ApfDate IS NOT NULL')->whereRaw('m_inventory.ActivationDate IS NULL')
+                        ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+                        ->where('m_historymovement.SubAgent', 'LIKE', '%' . $subagent . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                        ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+
+        $simapfnotret = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                        ->whereRaw('m_inventory.Type IN ("4","1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)->whereRaw('m_inventory.ApfDate IS NULL')
+                        ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+                        ->where('m_historymovement.SubAgent', 'LIKE', '%' . $subagent . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                        ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+
+
+        $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+        $filePath = public_path() . "/subagent_SIMreport_" . $filenames . ".xlsx";
+        $writer->openToFile($filePath);
+        $myArr = array("Sub Agent:", $subagent);
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("Product:", "SIM CARD");
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("MONTH SHIPOUT", "SIM SHIPOUT", "SIM ACTIVE", "SIM NOT ACTIVE", "APF RETURN", "APF NOT RETURN", "APF RETURN NOT ACTIVE");
+        $writer->addRow($myArr); // add a row at a time
+        for ($i = 0; $i < 12; $i++) {
+            $idx1 = 0;
+            $idx2 = 0;
+            $idx3 = 0;
+            $idx4 = 0;
+            $idx5 = 0;
+            $idx6 = 0;
+            for ($j = 0; $j < 12; $j++) {
+                if(isset($simshipout))
+                if(isset($simshipout[$j]))
+                if ($simshipout[$j]->month-1 == $i) {
+                    $idx1 = $simshipout[$j]->counter;
+                }
+                if(isset($simactive))
+                if(isset($simactive[$j]))
+                if ($simactive[$j]->month-1 == $i) {
+                    $idx2 = $simactive[$j]->counter;
+                }
+                if(isset($simnotactive))
+                if(isset($simnotactive[$j]))
+                if ($simnotactive[$j]->month-1 == $i) {
+                    $idx3 = $simnotactive[$j]->counter;
+                }
+                if(isset($simapfret))
+                if(isset($simapfret[$j]))
+                if ($simapfret[$j]->month-1 == $i) {
+                    $idx4 = $simapfret[$j]->counter;
+                }
+                if(isset($simapfnotret))
+                if(isset($simapfnotret[$j]))
+                if ($simapfnotret[$j]->month-1 == $i) {
+                    $idx5 = $simapfnotret[$j]->counter;
+                }
+                if(isset($simapfretnotact))
+                if(isset($simapfretnotact[$j]))
+                if ($simapfretnotact[$j]->month-1 == $i) {
+                    $idx6 = $simapfretnotact[$j]->counter;
+                }
+            }
+            
+            
+            
+            $total[0] += $idx1;
+            $total[1] += $idx2;
+            $total[2] += $idx3;
+            $total[3] += $idx4;
+            $total[4] += $idx5;
+            $total[5] += $idx6;
+            $myArr = array($month[$i], $idx1, $idx2, $idx3, $idx4, $idx5, $idx6);
+            $writer->addRow($myArr); // add a row at a time
+        }
+        $myArr = array("TOTAL", $total[0], $total[1], $total[2], $total[3], $total[4], $total[5]);
+        $writer->addRow($myArr); // add a row at a time
+        $writer->close();
+        return "/subagent_SIMreport_" . $filenames . ".xlsx";
+    }
+
     static function exportExcel2($filter) {
         $excel = new ExcelWriter("telkom_inventory.xls");
         if ($excel == false)

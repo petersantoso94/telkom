@@ -39,6 +39,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('getSN/{msi}', array('as' => 'getSN', 'before' => '', 'uses' => 'InventoryController@getSN'));
     Route::get('exportExcel/{start}', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
     Route::post('exportExcel', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
+    Route::any('exportExcelDashboard', array('as' => 'exportExcelDashboard', 'before' => '', 'uses' => 'InventoryController@exportExcelDashboard'));
     Route::post('addInv', array('as' => 'addInv', 'before' => '', 'uses' => 'InventoryController@addInv'));
     Route::any('delInv', array('as' => 'delInv', 'before' => '', 'uses' => 'InventoryController@delInv'));
     Route::post('getSN', array('as' => 'getSN', 'before' => '', 'uses' => 'InventoryController@getSN'));
