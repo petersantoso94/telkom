@@ -491,7 +491,7 @@
                             <div class="box-body">
                                 <div class="nav-tabs-custom">
                                     <ul class="nav nav-tabs">
-                                        <li class="active"><a href="#excel_sim2_container" data-toggle="tab" aria-expanded="true">Subscriber</a></li>
+                                        <li class="active"><a href="#excel_sim2_container" data-toggle="tab" aria-expanded="true">Sub Agent SIM card #2</a></li>
                                     </ul>
                                     <div class="tab-content">
                                         <div class="tab-pane active" id="excel_sim2_container">
@@ -500,9 +500,6 @@
                                                 <!-- /.col -->
                                                 <div class="col-md-6 col-sm-6 col-xs-12">
                                                     <div class="info-box">
-                                                        <div class="row">
-                                                            <span class="info-box-text">Sub Agent SIM card #2</span>
-                                                        </div>
                                                         <div class="row margtop20">
                                                             Warehouse: 
                                                             <select data-placeholder="Choose a warehouse..." class="chosen-select" style="width: 100%" id="sim2_wh">
