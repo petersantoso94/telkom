@@ -729,7 +729,7 @@ class InventoryController extends BaseController {
                 $olddata = History::where('SubAgent', $oldname)->get();
                 $counter = 0;
                 foreach ($olddata as $data) {
-                    $data->SubAgent = $shipto . " " . $newname;
+                    $data->SubAgent = $newname;
                     $data->save();
                     $counter++;
                 }
@@ -2079,7 +2079,7 @@ class InventoryController extends BaseController {
         $filenames = $year;
 
         $allchan = DB::table('m_historymovement')
-                        ->select(DB::raw(" DISTINCT SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'channel'"))->get();
+                        ->select(DB::raw(" DISTINCT SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'channel'"))->where('Status',2)->get();
 
         $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
         $filePath = public_path() . "/shippout_report_" . $filenames . ".xlsx";
@@ -2094,7 +2094,7 @@ class InventoryController extends BaseController {
 
         foreach ($allchan as $channel) {
             $idx1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            if ($channel != '-' || $channel != ' ') {
+            if ($channel->channel != '-' || $channel->channel != ' ') {
                 $simshipout = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                 ->whereRaw('m_inventory.Type IN ("4","1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
