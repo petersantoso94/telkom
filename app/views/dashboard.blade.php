@@ -55,10 +55,6 @@
                                     <li class="active"><a href="#subs" data-toggle="tab" aria-expanded="true">Subscriber</a></li>
                                     <li class=""><a href="#vocres" data-toggle="tab" aria-expanded="false">Voucher Recharge</a></li>
                                     <li class=""><a href="#intus" data-toggle="tab" aria-expanded="false">Internet Usage</a></li>
-                                    <li class=""><a href="#shipout" data-toggle="tab" aria-expanded="false">Shipout Report</a></li>
-                                    <li class=""><a href="#weekly" data-toggle="tab" aria-expanded="false">Weekly Performance</a></li>
-                                    <li class=""><a href="#subagent1" data-toggle="tab" aria-expanded="false">Subagent #1</a></li>
-                                    <li class=""><a href="#subagent2" data-toggle="tab" aria-expanded="false">Subagent SIM #2</a></li>
                                 </ul>
                                 <div class="tab-content">
                                     <div class="tab-pane active" id="subs">
@@ -390,75 +386,7 @@
                                                 <canvas id="barChart_internet_vs" height="100"></canvas>
                                             </div>
                                         </div>
-                                    </div>
-                                    <div class="tab-pane" id="shipout">
-                                        <div class="row">
-                                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                                <div class="info-box">
-                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
-
-                                                    <div class="info-box-content">
-                                                        <span class="info-box-text">Channel Reporting</span>
-                                                        <span class="info-box-number"><small> pcs</small></span>
-                                                        <a  class="small-box-footer" href="#info_sim_month" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
-                                                    </div>
-                                                    <!-- /.info-box-content -->
-                                                </div>
-                                                <!-- /.info-box -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane" id="weekly">
-                                        <div class="row">
-                                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                                <div class="info-box">
-                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
-
-                                                    <div class="info-box-content">
-                                                        <span class="info-box-text">Performance Report</span>
-                                                        <span class="info-box-number"><small> pcs</small></span>
-                                                        <a  class="small-box-footer" href="#info_sim_month" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
-                                                    </div>
-                                                    <!-- /.info-box-content -->
-                                                </div>
-                                                <!-- /.info-box -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane" id="subagent1">
-                                        <div class="row">
-                                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                                <div class="info-box">
-                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
-
-                                                    <div class="info-box-content">
-                                                        <span class="info-box-text">Shipout to</span>
-                                                        <span class="info-box-number"><small> pcs</small></span>
-                                                        <a  class="small-box-footer" href="#info_sim_month" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
-                                                    </div>
-                                                    <!-- /.info-box-content -->
-                                                </div>
-                                                <!-- /.info-box -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane" id="subagent2">
-                                        <div class="row">
-                                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                                <div class="info-box">
-                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
-
-                                                    <div class="info-box-content">
-                                                        <span class="info-box-text">ASPROF ESTHER</span>
-                                                        <span class="info-box-number"><small> pcs</small></span>
-                                                        <a  class="small-box-footer" href="#info_sim_month" data-toggle="tab">More info <i class="fa fa-arrow-circle-right"></i></a>
-                                                    </div>
-                                                    <!-- /.info-box-content -->
-                                                </div>
-                                                <!-- /.info-box -->
-                                            </div>
-                                        </div>
-                                    </div>
+                                    </div>                                    
                                 </div>
                             </div>
                         </div>
@@ -491,10 +419,11 @@
                             <div class="box-body">
                                 <div class="nav-tabs-custom">
                                     <ul class="nav nav-tabs">
-                                        <li class="active"><a href="#excel_sim2_container" data-toggle="tab" aria-expanded="true">Sub Agent SIM card #2</a></li>
+                                        <li class="active"><a href="#excel_shipout_container" data-toggle="tab" aria-expanded="true">Shipout Reporting</a></li>
+                                        <li><a href="#excel_sim2_container" data-toggle="tab" aria-expanded="true">Sub Agent SIM card #2</a></li>
                                     </ul>
                                     <div class="tab-content">
-                                        <div class="tab-pane active" id="excel_sim2_container">
+                                        <div class="tab-pane" id="excel_sim2_container">
                                             <div class="row">
 
                                                 <!-- /.col -->
@@ -529,7 +458,11 @@
                                                                 <?php $counter = 0; ?>
                                                                 @foreach(DB::table('m_historymovement')->select('SubAgent')->distinct()->get() as $agent)
                                                                 @if($agent->SubAgent != '')
-                                                                <option value="{{$agent->SubAgent}}" <?php if($counter == 1) {echo 'selected=""';} $counter++;?>>
+                                                                <option value="{{$agent->SubAgent}}" <?php
+                                                                if ($counter == 1) {
+                                                                    echo 'selected=""';
+                                                                } $counter++;
+                                                                ?>>
                                                                     {{$agent->SubAgent}}
                                                                 </option>
                                                                 @endif
@@ -539,6 +472,32 @@
                                                         <div class="row margtop20">
                                                             <button type="button" onclick="exportExcel(this)" data-id='1' data-nama='sim2'><span class="glyphicon glyphicon-export"></span></button> Export excel
                                                             <div class="loader" id="loading-animation1" style="display:none;"></div>
+                                                        </div>
+                                                        <!-- /.info-box-content -->
+                                                    </div>
+                                                    <!-- /.info-box -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane active" id="excel_shipout_container">
+                                            <div class="row">
+
+                                                <!-- /.col -->
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    <div class="info-box">
+                                                        <div class='row'>
+                                                            Year
+                                                            <select style="width: 100%" id="shipout_year" class="chosen-select">
+                                                                @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                                @if($year->Year >0)
+                                                                <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                                @endif
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="row margtop20">
+                                                            <button type="button" onclick="exportExcel(this)" data-id='2' data-nama='shipout'><span class="glyphicon glyphicon-export"></span></button> Export excel
+                                                            <div class="loader" id="loading-animation2" style="display:none;"></div>
                                                         </div>
                                                         <!-- /.info-box-content -->
                                                     </div>
@@ -1638,19 +1597,32 @@
                 var exportExcel = function (elem) {
                     var loading_number = elem.dataset.id;
                     var id_concate = elem.dataset.nama;
+                    var wh = "";
+                    var subagent = "";
                     var year = $("#" + id_concate + "_year").val();
-                    var subagent = $("#" + id_concate + "_subagent").val();
-                    var wh = $("#" + id_concate + "_wh").val();
-                    
-                    document.getElementById("loading-animation" + loading_number).style.display = "block";
-                    exportExcelLink = '<?php echo Route('exportExcelDashboard') ?>';
+                    if ($("#" + id_concate + "_subagent"))
+                        subagent = $("#" + id_concate + "_subagent").val();
+                    if ($("#" + id_concate + "_wh"))
+                        wh = $("#" + id_concate + "_wh").val();
 
-                    $.get(exportExcelLink, {argyear: year, argsubagent: subagent, argwh: wh}, function (data) {
+                    document.getElementById("loading-animation" + loading_number).style.display = "block";
+                    if (id_concate == 'sim2')
+                        exportExcelLink = '<?php echo Route('exportExcelDashboard') ?>';
+                    else if (id_concate == 'shipout')
+                        exportExcelLink = '<?php echo Route('exportExcelShipoutDashboard') ?>';
+
+                    $.post(exportExcelLink, {argyear: year, argsubagent: subagent, argwh: wh}, function (data) {
 
                     }).done(function (data) {
                         document.getElementById("loading-animation" + loading_number).style.display = "none";
                         window.location.href = "<?php echo url() ?>" + '/public' + data;
                     });
+                };
+                var toogle_activate_chosen = function () {
+                alert('masuk');
+                    $(".chosen-select").chosen("destroy");
+                    $(".chosen-select").chosen({width: '100%'});
+                    $(this).trigger("chosen:updated");
                 };
                 $(document).ready(function () {
                     $(".chosen-select").chosen();
