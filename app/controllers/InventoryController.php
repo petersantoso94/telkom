@@ -1694,7 +1694,7 @@ class InventoryController extends BaseController {
 //        }
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
-                if (!isset($data['churn']))
+                if (!isset($data['Churn']))
                     $data['Churn'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $ivr->Month - 1) {
@@ -1705,7 +1705,7 @@ class InventoryController extends BaseController {
         }
         if ($all_act != null) {
             foreach ($all_act as $ivr) {
-                if (!isset($data['act']))
+                if (!isset($data['Active MSISDN']))
                     $data['Active MSISDN'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $ivr->Month - 1) {
