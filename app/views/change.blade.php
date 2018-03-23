@@ -121,7 +121,7 @@ $('#btn-submit').on('click', function (e) {
     var oldname = document.getElementById("old-name").value;
     var shipto = oldname.split(' ')[0];
     var newname = document.getElementById("new-name").value;
-    if (confirm("Do you want to rename this '" + oldname + "' into '" + shipto+" "+ newname + "'") == true) {
+    if (confirm("Do you want to rename this '" + oldname + "' into '"+ newname + "'") == true) {
         document.getElementById("form-change").submit();
     }
 });
