@@ -418,7 +418,7 @@
                             </div>
                             <div class="box-body">
                                 <div class="nav-tabs-custom">
-                                    <ul class="nav nav-tabs">
+                                    <ul class="nav nav-tabs excel-report">
                                         <li class="active"><a href="#excel_shipout_container" data-toggle="tab" aria-expanded="true">Shipout Reporting</a></li>
                                         <li><a href="#excel_sim2_container" data-toggle="tab" aria-expanded="true">Sub Agent SIM card #2</a></li>
                                     </ul>
@@ -1618,13 +1618,12 @@
                         window.location.href = "<?php echo url() ?>" + '/public' + data;
                     });
                 };
-                var toogle_activate_chosen = function () {
-                alert('masuk');
-                    $(".chosen-select").chosen("destroy");
-                    $(".chosen-select").chosen({width: '100%'});
-                    $(this).trigger("chosen:updated");
-                };
                 $(document).ready(function () {
+                    $('ul.excel-report li').click(function (e) {
+                        $(".chosen-select").chosen("destroy");
+                        $(".chosen-select").chosen({width: '100%'});
+                        $(this).trigger("chosen:updated");
+                    });
                     $(".chosen-select").chosen();
                 });
             </script>
