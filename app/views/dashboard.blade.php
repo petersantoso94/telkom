@@ -518,23 +518,66 @@
                                                 <!-- /.col -->
                                                 <div class="col-md-6 col-sm-6 col-xs-12">
                                                     <div class="info-box">
-                                                        <div class='row'>
-                                                            Year
+                                                        <div class='row margbot20'>
+                                                            Year:
                                                             <select style="width: 100%" id="shipout_year" class="chosen-select">
-                                                                @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
-                                                                @if($year->Year >0)
-                                                                <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                                @foreach(DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year)
+                                                                @if($year->year >0)
+                                                                <option value="{{$year->year}}">{{$year->year}}</option>
                                                                 @endif
                                                                 @endforeach
                                                             </select>
                                                         </div>
+                                                        <div class='row margbot20'>
+                                                            Type:
+                                                            <select style="width: 100%" id="shipout_type" class="chosen-select">
+                                                                <option value='SIM Card'>SIM Card</option>
+                                                                <option value='Voucher'>Voucher</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class='row'>
+                                                            Channel:
+                                                            <select style="width: 100%" id="shipout_channel" class="chosen-select">
+                                                                @foreach(DB::table('m_historymovement')->select(DB::raw(" DISTINCT SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'channel'"))->where('Status', 2)->get() as $channel)
+                                                                <option value="{{$channel->channel}}">{{$channel->channel}}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
                                                         <div class="row margtop20 margbot20">
+                                                            <div class="col-sm-12"><button type="button" class="button btn-wide wide-h" id="btn_set_table" style="background-color: #424242; color: white;">Set</button></div>
                                                             <button type="button" onclick="exportExcel(this)" data-id='2' data-nama='shipout'><span class="glyphicon glyphicon-export"></span></button> Export list detail excel
                                                             <div class="loader" id="loading-animation2" style="display:none;"></div>
                                                         </div>
                                                         <!-- /.info-box-content -->
                                                     </div>
                                                     <!-- /.info-box -->
+                                                </div>
+                                            </div>
+                                            <div class="row margbot20">
+                                                <div class="white-pane__bordered margbot20">
+                                                    <div id="h4container"></div>
+                                                    <div id="h5container"></div>
+                                                    <table id="example" class="display table-rwd table-inventory table text-center" cellspacing="0" width="100%">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>January</th>
+                                                                <th>February</th>
+                                                                <th>March</th>
+                                                                <th>April</th>
+                                                                <th>May</th>
+                                                                <th>June</th>
+                                                                <th>July</th>
+                                                                <th>August</th>
+                                                                <th>September</th>
+                                                                <th>October</th>
+                                                                <th>November</th>
+                                                                <th>December</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="shipout_table_container">
+
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
@@ -1630,8 +1673,20 @@
                 var inventoryDataBackup = '';
                 var table = '';
                 var postDashboard = '<?php echo Route('postDashboard') ?>';
+                var postShipoutDashboard = '<?php echo Route('postShipoutDashboard') ?>';
 
+                $('#shipout_year').on('change', function (e) {
+                    var argyear = document.getElementById('shipout_year').value;
+                    var table_container = document.getElementById('h4container');
+                    table_container.innerHTML = '<h4>Shipout Reporting ' + argyear + '</h4>';
+                });
 
+                $('#shipout_type').on('change', function (e) {
+                    var argtype = document.getElementById('shipout_type').value;
+                    var table_container = document.getElementById('h5container');
+                    table_container.innerHTML = '<h5>' + argtype + '</h5>';
+                });
+                
                 $('#btn_ceksn').on('click', function (e) {
                     var str = document.getElementById('sim2_quartal').value;
                     var argyear = document.getElementById('sim2_year').value;
@@ -1659,12 +1714,29 @@
                         table_container.innerHTML = text_html;
                         document.getElementById("loading-animation1").style.display = "block";
                         $.post(postDashboard, {qt: str, year: argyear, wh: argwh}, function (data) {
-                            
+
                         }).done(function () {
                             refreshTable();
                             document.getElementById("loading-animation1").style.display = "none";
                         });
                     }
+                });
+                $('#btn_set_table').on('click', function (e) {
+                    var argyear = document.getElementById('shipout_year').value;
+                    var argchannel = document.getElementById('shipout_channel').value;
+                    var argtype = document.getElementById('shipout_type').value;
+                    var text_html = '';
+                    var table_container = document.getElementById('shipout_table_container');
+                    $.post(postShipoutDashboard, {type: argtype, year: argyear, channel: argchannel}, function (data) {
+                        
+                    }).done(function (data) {
+                        text_html += "<tr>";
+                        data.forEach(function setPerData(item){
+                            text_html += "<td>"+item+"</td>";
+                        });
+                        text_html += "</tr>";
+                        table_container.innerHTML = text_html;
+                    });
                 });
                 var refreshTable = function () {
                     if ($.fn.dataTable.isDataTable('#example')) {
@@ -1704,6 +1776,13 @@
                     });
                 };
                 $(document).ready(function () {
+                    var argyear = document.getElementById('shipout_year').value;
+                    var table_container = document.getElementById('h4container');
+                    table_container.innerHTML = '<h4>Shipout Reporting ' + argyear + '</h4>';
+                    
+                    var argtype = document.getElementById('shipout_type').value;
+                    var table_container2 = document.getElementById('h5container');
+                    table_container2.innerHTML = '<h5>' + argtype + '</h5>';
                     $('ul.excel-report li').click(function (e) {
                         $(".chosen-select").chosen("destroy");
                         $(".chosen-select").chosen({width: '100%'});
