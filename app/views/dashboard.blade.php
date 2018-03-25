@@ -63,7 +63,7 @@
                                             <!-- /.col -->
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
-                                                    <span class="info-box-icon bg-red"><i class="fa fa-google-plus"></i></span>
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">Subsriber and Churn</span>
@@ -83,7 +83,7 @@
 
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
-                                                    <span class="info-box-icon bg-green"><i class="ion ion-ios-cart-outline"></i></span>
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">Productive User</span>
@@ -96,7 +96,7 @@
                                             <!-- /.col -->
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
-                                                    <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">Service Usage</span>
@@ -109,7 +109,7 @@
 
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
-                                                    <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">Detail Churn</span>
@@ -187,7 +187,7 @@
                                         <div class="row">
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
-                                                    <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+                                                    <span class="info-box-icon bg-yellow"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">Voucher Topup</span>
@@ -199,7 +199,7 @@
                                             </div>
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
-                                                    <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+                                                    <span class="info-box-icon bg-yellow"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">eVoucher Topup</span>
@@ -211,7 +211,7 @@
                                             </div>
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
-                                                    <span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+                                                    <span class="info-box-icon bg-yellow"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">Subsriber Topup</span>
@@ -272,7 +272,7 @@
                                         <div class="row">
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
-                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-area-chart"></i></span>
 
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">IVR Purchased Internet</span>
@@ -286,7 +286,7 @@
 
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
-                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">Internet Users and Usage</span>
@@ -300,7 +300,7 @@
 
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
-                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">Payload per User</span>
@@ -314,7 +314,7 @@
 
                                             <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
-                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-sellsy"></i></span>
+                                                    <span class="info-box-icon bg-aqua"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">Internet User vs Non-Internet User</span>
@@ -478,7 +478,7 @@
                                                                 <option value="4">4</option>
                                                             </select>
                                                         </div>
-                                                        <div class="row margtop20">
+                                                        <div class="row margtop20 margbot20">
                                                             <div class="col-sm-12"><button type="button" class="button btn-wide wide-h" id="btn_ceksn" style="background-color: #424242; color: white;">Put on Table</button></div>
                                                             <button type="button" onclick="exportExcel(this)" data-id='1' data-nama='sim2'><span class="glyphicon glyphicon-export"></span></button> Export excel
                                                             <div class="loader" id="loading-animation1" style="display:none;"></div>
@@ -528,8 +528,8 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
-                                                        <div class="row margtop20">
-                                                            <button type="button" onclick="exportExcel(this)" data-id='2' data-nama='shipout'><span class="glyphicon glyphicon-export"></span></button> Export excel
+                                                        <div class="row margtop20 margbot20">
+                                                            <button type="button" onclick="exportExcel(this)" data-id='2' data-nama='shipout'><span class="glyphicon glyphicon-export"></span></button> Export list detail excel
                                                             <div class="loader" id="loading-animation2" style="display:none;"></div>
                                                         </div>
                                                         <!-- /.info-box-content -->
