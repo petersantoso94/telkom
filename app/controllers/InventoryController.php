@@ -1952,11 +1952,11 @@ class InventoryController extends BaseController {
     }
 
     static function postDashboard() {
-        $year = Input::get("argyear");
-        $year = "2017";
-        $wh = Input::get("argwh");
+        $year = Input::get("year");
+        //$year = "2017";
+        $wh = Input::get("wh");
         $quartal = Input::get("qt");
-        $quartal = 1;
+        //$quartal = 1;
         $start_month = 1;
         $end_month = 3;
         $arr_subagent = [];
@@ -2104,7 +2104,7 @@ class InventoryController extends BaseController {
                 $for_raw .= ",('" . $arr_subagent[$i] . "','" . $arr_1shipout[$i] . "','" . $arr_2shipout[$i] . "','" . $arr_3shipout[$i] . "','" . $arr_1active[$i] . "','" . $arr_2active[$i] . "','" . $arr_3active[$i] . "','" . $arr_1apf[$i]. "','" . $arr_2apf[$i]. "','" . $arr_3apf[$i]. "')";
         }
         DB::insert("INSERT INTO r_shipout_subagent VALUES " . $for_raw);
-        return true;
+        return 'true';
     }
 
     static function exportExcelDashboard() {
