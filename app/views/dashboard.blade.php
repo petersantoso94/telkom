@@ -479,7 +479,7 @@
                                                             </select>
                                                         </div>
                                                         <div class="row margtop20">
-                                                            <div class="col-sm-6"><button type="button" class="button btn-wide wide-h" id="btn_ceksn" style="background-color: #424242; color: white;">Put on Table</button></div>
+                                                            <div class="col-sm-12"><button type="button" class="button btn-wide wide-h" id="btn_ceksn" style="background-color: #424242; color: white;">Put on Table</button></div>
                                                             <button type="button" onclick="exportExcel(this)" data-id='1' data-nama='sim2'><span class="glyphicon glyphicon-export"></span></button> Export excel
                                                             <div class="loader" id="loading-animation1" style="display:none;"></div>
                                                         </div>
