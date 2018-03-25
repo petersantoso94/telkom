@@ -469,13 +469,46 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
+                                                        <div class="row">
+                                                            Quartal: 
+                                                            <select data-placeholder="Choose a destination..." class="chosen-select"  style="width: 100%" id="sim2_quartal">
+                                                                <option value="1" selected="">1</option>
+                                                                <option value="2">2</option>
+                                                                <option value="3">3</option>
+                                                                <option value="4">4</option>
+                                                            </select>
+                                                        </div>
                                                         <div class="row margtop20">
+                                                            <div class="col-sm-6"><button type="button" class="button btn-wide wide-h" id="btn_ceksn" style="background-color: #424242; color: white;">Put on Table</button></div>
                                                             <button type="button" onclick="exportExcel(this)" data-id='1' data-nama='sim2'><span class="glyphicon glyphicon-export"></span></button> Export excel
                                                             <div class="loader" id="loading-animation1" style="display:none;"></div>
                                                         </div>
+
                                                         <!-- /.info-box-content -->
                                                     </div>
                                                     <!-- /.info-box -->
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="white-pane__bordered margbot20">
+                                                    <h4>SubAgent SIM card Reporting</h4>
+                                                    <table id="example" class="display table-rwd table-inventory" cellspacing="0" width="100%">
+                                                        <thead>
+                                                            <tr id="sim2_table_container">
+                                                                <th>SubAgent</th>
+                                                                <th>January Shipout</th>
+                                                                <th>January Active</th>
+                                                                <th>January APF Return</th>
+                                                                <th>February Shipout</th>
+                                                                <th>February Active</th>
+                                                                <th>February APF Return</th>
+                                                                <th>March Shipout</th>
+                                                                <th>March Active</th>
+                                                                <th>March APF Return</th>
+                                                                <!--<th>Actions</th>-->
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
@@ -1594,6 +1627,58 @@
             <script type="text/javascript" src="{{Asset('js/chosen.jquery.min.js')}}"></script>
             <script>
                 var exportExcelLink = '';
+                var inventoryDataBackup = '';
+                var table = '';
+                var postDashboard = '<?php echo Route('postDashboard') ?>';
+
+
+                $('#btn_ceksn').on('click', function (e) {
+                    var str = document.getElementById('sim2_quartal').value;
+                    var argyear = document.getElementById('sim2_year').value;
+                    var argwh = document.getElementById('sim2_wh').value;
+                    var table_container = document.getElementById('sim2_table_container');
+                    var month = ['', '', ''];
+                    if (str == '') {
+                        alert("Please enter valid quartal!")
+                    } else {
+                        if (str == '1') {
+                            month = ['January', 'February', 'March'];
+                        } else if (str == '2') {
+                            month = ['April', 'May', 'June'];
+                        } else if (str == '3') {
+                            month = ['July', 'August', 'September'];
+                        } else if (str == '4') {
+                            month = ['October', 'November', 'December'];
+                        }
+                        var text_html = '<th>SubAgent</th>';
+                        month.forEach(function myFunction(item) {
+                            text_html += '<th>' + item + ' Shipout</th><th>';
+                            text_html += item + ' Active</th><th>';
+                            text_html += item + ' APF Return</th>';
+                        });
+                        table_container.innerHTML = text_html;
+                        document.getElementById("loading-animation1").style.display = "block";
+                        $.post(postDashboard, {qt: str, year: argyear, wh: argwh}, function (data) {
+                            
+                        }).done(function () {
+                            refreshTable();
+                            document.getElementById("loading-animation1").style.display = "none";
+                        });
+                    }
+                });
+                var refreshTable = function () {
+                    if ($.fn.dataTable.isDataTable('#example')) {
+                        table.fnDestroy();
+                    }
+                    inventoryDataBackup = '<?php echo Route('inventoryDataBackupDashboard') ?>';
+                    table = $('#example').dataTable({
+                        "draw": 10,
+                        "bDestroy": true,
+                        "processing": true,
+                        "serverSide": true,
+                        "ajax": inventoryDataBackup
+                    });
+                };
                 var exportExcel = function (elem) {
                     var loading_number = elem.dataset.id;
                     var id_concate = elem.dataset.nama;
