@@ -54,6 +54,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::post('postFormSeries', array('as' => 'postFormSeries', 'before' => '', 'uses' => 'InventoryController@postFormSeries'));
     Route::post('postWarehouse', array('as' => 'postWarehouse', 'before' => '', 'uses' => 'InventoryController@postWarehouse'));
     Route::any('postDashboard', array('as' => 'postDashboard', 'before' => '', 'uses' => 'InventoryController@postDashboard'));
+    Route::any('postShipoutDashboard', array('as' => 'postShipoutDashboard', 'before' => '', 'uses' => 'InventoryController@postShipoutDashboard'));
     Route::post('postST', array('as' => 'postST', 'before' => '', 'uses' => 'InventoryController@postST'));
     Route::post('delST', array('as' => 'delST', 'before' => '', 'uses' => 'InventoryController@delST'));
     Route::get('getFS', array('as' => 'getFS', 'before' => '', 'uses' => 'InventoryController@getFS'));
