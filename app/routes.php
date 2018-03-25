@@ -36,6 +36,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::post('inventoryDataBackupReturn', array('as' => 'inventoryDataBackupReturn', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackupReturn'));
     Route::get('inventoryDataBackupCons/{start}', array('as' => 'inventoryDataBackupCons', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackupCons'));
     Route::post('inventoryDataBackupCons', array('as' => 'inventoryDataBackupCons', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackupCons'));
+    Route::any('inventoryDataBackupDashboard', array('as' => 'inventoryDataBackupDashboard', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackupDashboard'));
     Route::get('getSN/{msi}', array('as' => 'getSN', 'before' => '', 'uses' => 'InventoryController@getSN'));
     Route::get('exportExcel/{start}', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
     Route::post('exportExcel', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
@@ -52,6 +53,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::post('postNewWh', array('as' => 'postNewWh', 'before' => '', 'uses' => 'InventoryController@postNewWh'));
     Route::post('postFormSeries', array('as' => 'postFormSeries', 'before' => '', 'uses' => 'InventoryController@postFormSeries'));
     Route::post('postWarehouse', array('as' => 'postWarehouse', 'before' => '', 'uses' => 'InventoryController@postWarehouse'));
+    Route::any('postDashboard', array('as' => 'postDashboard', 'before' => '', 'uses' => 'InventoryController@postDashboard'));
     Route::post('postST', array('as' => 'postST', 'before' => '', 'uses' => 'InventoryController@postST'));
     Route::post('delST', array('as' => 'delST', 'before' => '', 'uses' => 'InventoryController@delST'));
     Route::get('getFS', array('as' => 'getFS', 'before' => '', 'uses' => 'InventoryController@getFS'));
