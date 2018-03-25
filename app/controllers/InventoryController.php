@@ -2226,6 +2226,33 @@ class InventoryController extends BaseController {
         return "/subagent_SIMreport_" . $filenames . ".xlsx";
     }
 
+    static function postShipoutDashboard() {
+        $year = Input::get("year");
+        $type = Input::get("type");
+        $channel = Input::get("channel");
+        $arr_type = "'2','3'";
+        $data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        if ($type === 'SIM Card') {
+            $arr_type = "'1','4'";
+        }
+        $simshipout = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                        ->whereRaw('m_inventory.Type IN (' . $arr_type . ')')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                        ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel . '%')->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+                        ->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                        ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+        for ($i = 0; $i < 12; $i++) {
+            for ($j = 0; $j < 12; $j++) {
+                if (isset($simshipout))
+                    if (isset($simshipout[$j]))
+                        if ($simshipout[$j]->month - 1 == $i) {
+                            $data[$i] = $simshipout[$j]->counter;
+                        }
+            }
+        }
+        return $data;
+    }
+
     static function exportExcelShipoutDashboard() {
 //        $year = Input::get("argyear");
 //        $year = "2017";
@@ -2235,7 +2262,7 @@ class InventoryController extends BaseController {
 
         $myArr = array("All Channel Reporting");
         $writer->addRow($myArr); // add a row at a time
-        
+
         foreach (DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year) {
             $year = $year->year;
             $month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -2244,7 +2271,7 @@ class InventoryController extends BaseController {
 
             $allchan = DB::table('m_historymovement')
                             ->select(DB::raw(" DISTINCT SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'channel'"))->where('Status', 2)->get();
-            $myArr = array("SIM CARD SHIPOUT ".$year);
+            $myArr = array("SIM CARD SHIPOUT " . $year);
             $writer->addRow($myArr); // add a row at a time
             $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
             $writer->addRow($myArr); // add a row at a time
@@ -2259,7 +2286,6 @@ class InventoryController extends BaseController {
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
                     for ($i = 0; $i < 12; $i++) {
-
                         for ($j = 0; $j < 12; $j++) {
                             if (isset($simshipout))
                                 if (isset($simshipout[$j]))
@@ -2276,7 +2302,7 @@ class InventoryController extends BaseController {
             $myArr = array("TOTAL", $totalsim[0], $totalsim[1], $totalsim[2], $totalsim[3], $totalsim[4], $totalsim[5], $totalsim[6], $totalsim[7], $totalsim[8], $totalsim[9], $totalsim[10], $totalsim[11]);
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
-            $myArr = array("VOUCHERS SHIPOUT ".$year);
+            $myArr = array("VOUCHERS SHIPOUT " . $year);
             $writer->addRow($myArr); // add a row at a time
             $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
             $writer->addRow($myArr); // add a row at a time
