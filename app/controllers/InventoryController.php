@@ -1951,6 +1951,162 @@ class InventoryController extends BaseController {
         return "/inventory_" . $filenames . ".xlsx";
     }
 
+    static function postDashboard() {
+        $year = Input::get("argyear");
+        $year = "2017";
+        $wh = Input::get("argwh");
+        $quartal = Input::get("qt");
+        $quartal = 1;
+        $start_month = 1;
+        $end_month = 3;
+        $arr_subagent = [];
+        $arr_1shipout = [];
+        $arr_1active = [];
+        $arr_1apf = [];
+        $arr_2shipout = [];
+        $arr_2active = [];
+        $arr_2apf = [];
+        $arr_3shipout = [];
+        $arr_3active = [];
+        $arr_3apf = [];
+        DB::table('r_shipout_subagent')->delete();
+        if ($quartal == '2') {
+            $start_month = 4;
+            $end_month = 6;
+        } else if ($quartal == '3') {
+            $start_month = 7;
+            $end_month = 9;
+        } else if ($quartal == '4') {
+            $start_month = 10;
+            $end_month = 12;
+        }
+
+        $allchan = DB::table('m_historymovement')
+                        ->select(DB::raw(" DISTINCT `SubAgent`"))->where('Status', 2)->get();
+
+        foreach ($allchan as $subagent) {
+            array_push($arr_subagent,  $subagent->SubAgent);
+
+            $simshipout = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                            ->whereRaw('m_inventory.Type IN ("4","1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                            ->whereRaw('MONTH(m_historymovement.Date) >= ' . $start_month)->whereRaw('MONTH(m_historymovement.Date) <= ' . $end_month)
+                            ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+                            ->where('m_historymovement.SubAgent', 'LIKE', '%' . $subagent->SubAgent . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                            ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+
+            $simactive = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                            ->whereRaw('m_inventory.Type IN ("4","1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)->whereRaw('m_inventory.ActivationDate IS NOT NULL')
+                            ->whereRaw('MONTH(m_historymovement.Date) >= ' . $start_month)->whereRaw('MONTH(m_historymovement.Date) <= ' . $end_month)
+                            ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+                            ->where('m_historymovement.SubAgent', 'LIKE', '%' . $subagent->SubAgent . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                            ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+
+            $simapfret = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                            ->whereRaw('m_inventory.Type IN ("4","1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)->whereRaw('m_inventory.ApfDate IS NOT NULL')
+                            ->whereRaw('MONTH(m_historymovement.Date) >= ' . $start_month)->whereRaw('MONTH(m_historymovement.Date) <= ' . $end_month)
+                            ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+                            ->where('m_historymovement.SubAgent', 'LIKE', '%' . $subagent->SubAgent . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                            ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+
+            if (isset($simshipout)) {
+                $counter1 = 0;
+                $counter2 = 0;
+                $counter3 = 0;
+                foreach ($simshipout as $eachship) {
+                    if ($eachship->month == 1) {
+                        array_push($arr_1shipout, $eachship->counter);
+                        $counter1++;
+                    } else if ($eachship->month == 2) {
+                        array_push($arr_2shipout, $eachship->counter);
+                        $counter2++;
+                    } else if ($eachship->month == 3) {
+                        array_push($arr_3shipout, $eachship->counter);
+                        $counter3++;
+                    }
+                }
+                if ($counter1 == 0)
+                    array_push($arr_1shipout, 0);
+                if ($counter2 == 0)
+                    array_push($arr_2shipout, 0);
+                if ($counter3 == 0)
+                    array_push($arr_3shipout, 0);
+            } else {
+                array_push($arr_1shipout, 0);
+                array_push($arr_2shipout, 0);
+                array_push($arr_3shipout, 0);
+            }
+
+            if (isset($simapfret)) {
+                $counter1 = 0;
+                $counter2 = 0;
+                $counter3 = 0;
+                foreach ($simapfret as $eachship) {
+                    if ($eachship->month == 1) {
+                        array_push($arr_1apf, $eachship->counter);
+                        $counter1++;
+                    } else if ($eachship->month == 2) {
+                        array_push($arr_2apf, $eachship->counter);
+                        $counter2++;
+                    } else if ($eachship->month == 3) {
+                        array_push($arr_3apf, $eachship->counter);
+                        $counter3++;
+                    }
+                }
+                if ($counter1 == 0)
+                    array_push($arr_1apf, 0);
+                if ($counter2 == 0)
+                    array_push($arr_2apf, 0);
+                if ($counter3 == 0)
+                    array_push($arr_3apf, 0);
+            } else {
+                array_push($arr_1apf, 0);
+                array_push($arr_2apf, 0);
+                array_push($arr_3apf, 0);
+            }
+            if (isset($simactive)) {
+                $counter1 = 0;
+                $counter2 = 0;
+                $counter3 = 0;
+                foreach ($simactive as $eachship) {
+                    if ($eachship->month == 1) {
+                        array_push($arr_1active, $eachship->counter);
+                        $counter1++;
+                    } else if ($eachship->month == 2) {
+                        array_push($arr_2active, $eachship->counter);
+                        $counter2++;
+                    } else if ($eachship->month == 3) {
+                        array_push($arr_3active, $eachship->counter);
+                        $counter3++;
+                    }
+                }
+                if ($counter1 == 0)
+                    array_push($arr_1active, 0);
+                if ($counter2 == 0)
+                    array_push($arr_2active, 0);
+                if ($counter3 == 0)
+                    array_push($arr_3active, 0);
+            } else {
+                array_push($arr_1active, 0);
+                array_push($arr_2active, 0);
+                array_push($arr_3active, 0);
+            }
+        }
+//        dd('subagent:'.count($arr_subagent).'so1:'.count($arr_1shipout).'so2:'.count($arr_2shipout).'so3:'.count($arr_3shipout).'act1:'.count($arr_1active).'act2:'.count($arr_2active).'act3:'.count($arr_3active).'apf1:'.count($arr_1apf).'apf2:'.count($arr_2apf).'apf3:'.count($arr_3apf));
+
+        $for_raw = '';
+        for ($i = 0; $i < count($arr_subagent); $i++) {
+            if ($i == 0)
+                $for_raw .= "('" . $arr_subagent[$i] . "','" . $arr_1shipout[$i] . "','" . $arr_2shipout[$i] . "','" . $arr_3shipout[$i] . "','" . $arr_1active[$i] . "','" . $arr_2active[$i] . "','" . $arr_3active[$i] . "','" . $arr_1apf[$i]. "','" . $arr_2apf[$i]. "','" . $arr_3apf[$i]. "')";
+            else
+                $for_raw .= ",('" . $arr_subagent[$i] . "','" . $arr_1shipout[$i] . "','" . $arr_2shipout[$i] . "','" . $arr_3shipout[$i] . "','" . $arr_1active[$i] . "','" . $arr_2active[$i] . "','" . $arr_3active[$i] . "','" . $arr_1apf[$i]. "','" . $arr_2apf[$i]. "','" . $arr_3apf[$i]. "')";
+        }
+        DB::insert("INSERT INTO r_shipout_subagent VALUES " . $for_raw);
+        return true;
+    }
+
     static function exportExcelDashboard() {
         $year = Input::get("argyear");
 //        $year = "2017";
@@ -2079,7 +2235,7 @@ class InventoryController extends BaseController {
         $filenames = $year;
 
         $allchan = DB::table('m_historymovement')
-                        ->select(DB::raw(" DISTINCT SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'channel'"))->where('Status',2)->get();
+                        ->select(DB::raw(" DISTINCT SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'channel'"))->where('Status', 2)->get();
 
         $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
         $filePath = public_path() . "/shippout_report_" . $filenames . ".xlsx";
@@ -3793,6 +3949,33 @@ class InventoryController extends BaseController {
         $extraCondition .= " && m_historymovement.Status " . $string_temp;
         $extraCondition .= " && m_inventory.Missing " . $string_miss;
         $join = ' INNER JOIN m_historymovement on m_historymovement.ID = m_inventory.LastStatusID';
+
+        echo json_encode(
+                SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
+    }
+
+    static function inventoryDataBackupDashboard() {
+        $table = 'r_shipout_subagent';
+        $primaryKey = 'r_shipout_subagent`.`SubAgent';
+        $columns = array(
+            array('db' => 'SubAgent', 'dt' => 0),
+            array('db' => '1Shipout', 'dt' => 1),
+            array('db' => '1Active', 'dt' => 2),
+            array('db' => '1ApfReturn', 'dt' => 3),
+            array('db' => '2Shipout', 'dt' => 4),
+            array('db' => '2Active', 'dt' => 5),
+            array('db' => '2ApfReturn', 'dt' => 6),
+            array('db' => '3Shipout', 'dt' => 7),
+            array('db' => '3Active', 'dt' => 8),
+            array('db' => '3ApfReturn', 'dt' => 9)
+        );
+
+        $sql_details = getConnection();
+
+        require('ssp.class.php');
+//        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
+        $extraCondition = "";
+        $join = '';
 
         echo json_encode(
                 SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
