@@ -792,6 +792,11 @@ class InventoryController extends BaseController {
                                         if (is_object($date_return)) {
                                             $date_return = $date_return->format('Y-m-d');
                                         } else {
+                                            $date_return = strtotime($date_return);
+                                            $date_return = date('Y-m-d', $date_return);
+                                        }
+                                        if (substr($date_return, 0, 4) === '1970') {
+                                            $date_return = $value[1];
                                             $date_return = explode('/', $date_return);
                                             $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                             $date_return = strtotime($date_return);
@@ -838,15 +843,25 @@ class InventoryController extends BaseController {
                                     // do stuff with the row
                                     $msisdn = (string) $value[0];
                                     if ($msisdn != '' && $msisdn != null) {
-                                        $msisdn = str_replace('\'', '', $msisdn);
-                                        if (substr($msisdn, 0, 1) === '0') {
-                                            $msisdn = substr($msisdn, 1);
-                                        }
-                                        array_push($arr_msisdn, $msisdn);
                                         $date_return = $value[1];
-                                        $date_return = strtotime($date_return);
-                                        $date_return = date('Y-m-d', $date_return);
-                                        array_push($arr_date, $date_return);
+                                        if ($date_return != '' && $date_return != null) {
+                                            $date_return = strtotime($date_return);
+                                            $date_return = date('Y-m-d', $date_return);
+                                            if (substr($date_return, 0, 4) === '1970') {
+                                                $date_return = $value[1];
+                                                $date_return = explode('/', $date_return);
+                                                $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                                $date_return = strtotime($date_return);
+                                                $date_return = date('Y-m-d', $date_return);
+                                            }
+                                            array_push($arr_date, $date_return);
+
+                                            $msisdn = str_replace('\'', '', $msisdn);
+                                            if (substr($msisdn, 0, 1) === '0') {
+                                                $msisdn = substr($msisdn, 1);
+                                            }
+                                            array_push($arr_msisdn, $msisdn);
+                                        }
                                     }
                                 }
                             }
@@ -974,6 +989,13 @@ class InventoryController extends BaseController {
                                             //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                             $date_return = strtotime($date_return);
                                             $date_return = date('Y-m-d', $date_return);
+                                            if (substr($date_return, 0, 4) === '1970') {
+                                                $date_return = $value[1];
+                                                $date_return = explode('/', $date_return);
+                                                $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                                $date_return = strtotime($date_return);
+                                                $date_return = date('Y-m-d', $date_return);
+                                            }
                                             array_push($arr_return, $date_return);
                                         }
                                     }
@@ -1059,6 +1081,13 @@ class InventoryController extends BaseController {
                                         //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                         $date_return = strtotime($date_return);
                                         $date_return = date('Y-m-d', $date_return);
+                                        if (substr($date_return, 0, 4) === '1970') {
+                                            $date_return = $value[1];
+                                            $date_return = explode('/', $date_return);
+                                            $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                            $date_return = strtotime($date_return);
+                                            $date_return = date('Y-m-d', $date_return);
+                                        }
                                         array_push($arr_return, $date_return);
                                     }
                                 }
@@ -1117,6 +1146,13 @@ class InventoryController extends BaseController {
                                         $date_return = $value[1];
                                         $date_return = strtotime($date_return);
                                         $date_return = date('Y-m-d', $date_return);
+                                        if (substr($date_return, 0, 4) === '1970') {
+                                            $date_return = $value[1];
+                                            $date_return = explode('/', $date_return);
+                                            $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                            $date_return = strtotime($date_return);
+                                            $date_return = date('Y-m-d', $date_return);
+                                        }
                                         array_push($arr_return, $date_return);
                                     }
                                 }
