@@ -2143,6 +2143,465 @@ class InventoryController extends BaseController {
         return 'true';
     }
 
+    static function exportExcelSIM1Dashboard() {
+        $from_year = Input::get("from_year");
+//        $from_year = "2017-11-13";
+        $to_year = Input::get("to_year");
+//        $to_year = "2017-11-19";
+        $filenames = $from_year . '_to_' . $to_year;
+        $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+        $filePath = public_path() . "/SIMreport_" . $filenames . ".xlsx";
+        $writer->openToFile($filePath);
+        $myArr = array("Date: ", $from_year, ' to ', $to_year);
+        $writer->addRow($myArr); // add a row at a time
+        $writer->addRow(['']);
+        $myArr = array("", "", "", "COLUMBIA", "COLUMBIA", "COLUMBIA", "COLUMBIA", "TELIN TAIWAN", "TELIN TAIWAN", "TELIN TAIWAN", "TELIN TAIWAN");
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("SHIPOUT TO", "SUBAGENT", "DATE", "SIM 3G", "SIM 4G", "PH-VOUCHER", "E-VOUCHER", "SIM 3G", "SIM 4G", "PH-VOUCHER", "E-VOUCHER");
+        $writer->addRow($myArr); // add a row at a time
+        $columbia = [0, 0, 0, 0];
+        $telin = [0, 0, 0, 0];
+        //price, status
+
+        $myArr = array("SHIPOUT SELL OUT");
+        $writer->addRow($myArr); // add a row at a time
+        $all_subagent = DB::table('m_historymovement')->whereRaw('Date >= "' . $from_year . '"')->whereRaw('Date <= "' . $to_year . '"')
+                        ->where('Status', '2')->where('Deleted', '0')->where('Price', '>', '0')
+                        ->select(DB::raw("DISTINCT `SubAgent`"))->get();
+        foreach ($all_subagent as $subagent) {
+            $shipout_to = $subagent->SubAgent;
+            $temp_to = $shipout_to;
+            $shipout_to = explode(' ', $shipout_to);
+            $tempship = '';
+            $tempsub = '';
+            if (count($shipout_to) == 1) {
+                $tempship = $shipout_to[0];
+                $tempsub = $shipout_to[0];
+            } else {
+                $tempship = $shipout_to[0];
+                $tempsub = $shipout_to[1];
+            }
+            $all_date = DB::table('m_historymovement')->whereRaw('Date >= "' . $from_year . '"')->whereRaw('Date <= "' . $to_year . '"')
+                            ->where('Status', '2')->where('Deleted', '0')->where('Price', '>', '0')
+                            ->select(DB::raw("DISTINCT `Date`"))->get();
+            foreach ($all_date as $date) {
+                $data_3g_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "1")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '>', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_3g_col[0] != null) {
+                    $data_3g_col = $data_3g_col[0]->counter;
+                } else {
+                    $data_3g_col = 0;
+                }
+                $data_4g_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "4")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '>', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_4g_col[0] != null) {
+                    $data_4g_col = $data_4g_col[0]->counter;
+                } else {
+                    $data_4g_col = 0;
+                }
+                $data_evoc_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "2")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '>', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_evoc_col[0] != null) {
+                    $data_evoc_col = $data_evoc_col[0]->counter;
+                } else {
+                    $data_evoc_col = 0;
+                }
+                $data_phvoc_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "3")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '>', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_phvoc_col[0] != null) {
+                    $data_phvoc_col = $data_phvoc_col[0]->counter;
+                } else {
+                    $data_phvoc_col = 0;
+                }
+                $data_3g_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "1")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '>', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_3g_tel[0] != null) {
+                    $data_3g_tel = $data_3g_tel[0]->counter;
+                } else {
+                    $data_3g_tel = 0;
+                }
+                $data_4g_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "4")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '>', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_4g_tel[0] != null) {
+                    $data_4g_tel = $data_4g_tel[0]->counter;
+                } else {
+                    $data_4g_tel = 0;
+                }
+                $data_evoc_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "2")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '>', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_evoc_tel[0] != null) {
+                    $data_evoc_tel = $data_evoc_tel[0]->counter;
+                } else {
+                    $data_evoc_tel = 0;
+                }
+                $data_phvoc_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "3")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '>', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_phvoc_tel[0] != null) {
+                    $data_phvoc_tel = $data_phvoc_tel[0]->counter;
+                } else {
+                    $data_phvoc_tel = 0;
+                }
+
+                $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
+                $writer->addRow($myArr); // add a row at a time
+            }
+        }
+        
+        $writer->addRow(['']);
+        $myArr = array("SHIPOUT FREE");
+        $writer->addRow($myArr); // add a row at a time
+        $all_subagent = DB::table('m_historymovement')->whereRaw('Date >= "' . $from_year . '"')->whereRaw('Date <= "' . $to_year . '"')
+                        ->where('Status', '2')->where('Deleted', '0')->where('Price', '=', '0')
+                        ->select(DB::raw("DISTINCT `SubAgent`"))->get();
+        foreach ($all_subagent as $subagent) {
+            $shipout_to = $subagent->SubAgent;
+            $temp_to = $shipout_to;
+            $shipout_to = explode(' ', $shipout_to);
+            $tempship = '';
+            $tempsub = '';
+            if (count($shipout_to) == 1) {
+                $tempship = $shipout_to[0];
+                $tempsub = $shipout_to[0];
+            } else {
+                $tempship = $shipout_to[0];
+                $tempsub = $shipout_to[1];
+            }
+            $all_date = DB::table('m_historymovement')->whereRaw('Date >= "' . $from_year . '"')->whereRaw('Date <= "' . $to_year . '"')
+                            ->where('Status', '2')->where('Deleted', '0')->where('Price', '=', '0')
+                            ->select(DB::raw("DISTINCT `Date`"))->get();
+            foreach ($all_date as $date) {
+                $data_3g_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "1")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '=', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_3g_col[0] != null) {
+                    $data_3g_col = $data_3g_col[0]->counter;
+                } else {
+                    $data_3g_col = 0;
+                }
+                $data_4g_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "4")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '=', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_4g_col[0] != null) {
+                    $data_4g_col = $data_4g_col[0]->counter;
+                } else {
+                    $data_4g_col = 0;
+                }
+                $data_evoc_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "2")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '=', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_evoc_col[0] != null) {
+                    $data_evoc_col = $data_evoc_col[0]->counter;
+                } else {
+                    $data_evoc_col = 0;
+                }
+                $data_phvoc_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "3")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '=', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_phvoc_col[0] != null) {
+                    $data_phvoc_col = $data_phvoc_col[0]->counter;
+                } else {
+                    $data_phvoc_col = 0;
+                }
+                $data_3g_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "1")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '=', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_3g_tel[0] != null) {
+                    $data_3g_tel = $data_3g_tel[0]->counter;
+                } else {
+                    $data_3g_tel = 0;
+                }
+                $data_4g_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "4")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '=', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_4g_tel[0] != null) {
+                    $data_4g_tel = $data_4g_tel[0]->counter;
+                } else {
+                    $data_4g_tel = 0;
+                }
+                $data_evoc_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "2")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '=', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_evoc_tel[0] != null) {
+                    $data_evoc_tel = $data_evoc_tel[0]->counter;
+                } else {
+                    $data_evoc_tel = 0;
+                }
+                $data_phvoc_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "3")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_historymovement.Price', '=', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_phvoc_tel[0] != null) {
+                    $data_phvoc_tel = $data_phvoc_tel[0]->counter;
+                } else {
+                    $data_phvoc_tel = 0;
+                }
+
+                $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
+                $writer->addRow($myArr); // add a row at a time
+            }
+        }
+        
+        $writer->addRow(['']);
+        $myArr = array("SHIPOUT CONSIGNMENT");
+        $writer->addRow($myArr); // add a row at a time
+        $all_subagent = DB::table('m_historymovement')->whereRaw('Date >= "' . $from_year . '"')->whereRaw('Date <= "' . $to_year . '"')
+                        ->where('Status', '4')->where('Deleted', '0')
+                        ->select(DB::raw("DISTINCT `SubAgent`"))->get();
+        foreach ($all_subagent as $subagent) {
+            $shipout_to = $subagent->SubAgent;
+            $temp_to = $shipout_to;
+            $shipout_to = explode(' ', $shipout_to);
+            $tempship = '';
+            $tempsub = '';
+            if (count($shipout_to) == 1) {
+                $tempship = $shipout_to[0];
+                $tempsub = $shipout_to[0];
+            } else {
+                $tempship = $shipout_to[0];
+                $tempsub = $shipout_to[1];
+            }
+            $all_date = DB::table('m_historymovement')->whereRaw('Date >= "' . $from_year . '"')->whereRaw('Date <= "' . $to_year . '"')
+                            ->where('Status', '4')->where('Deleted', '0')
+                            ->select(DB::raw("DISTINCT `Date`"))->get();
+            foreach ($all_date as $date) {
+                $data_3g_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "1")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '4')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_3g_col[0] != null) {
+                    $data_3g_col = $data_3g_col[0]->counter;
+                } else {
+                    $data_3g_col = 0;
+                }
+                $data_4g_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "4")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '4')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_4g_col[0] != null) {
+                    $data_4g_col = $data_4g_col[0]->counter;
+                } else {
+                    $data_4g_col = 0;
+                }
+                $data_evoc_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "2")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '4')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_evoc_col[0] != null) {
+                    $data_evoc_col = $data_evoc_col[0]->counter;
+                } else {
+                    $data_evoc_col = 0;
+                }
+                $data_phvoc_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "3")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '4')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_phvoc_col[0] != null) {
+                    $data_phvoc_col = $data_phvoc_col[0]->counter;
+                } else {
+                    $data_phvoc_col = 0;
+                }
+                $data_3g_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "1")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '4')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_3g_tel[0] != null) {
+                    $data_3g_tel = $data_3g_tel[0]->counter;
+                } else {
+                    $data_3g_tel = 0;
+                }
+                $data_4g_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "4")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '4')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_4g_tel[0] != null) {
+                    $data_4g_tel = $data_4g_tel[0]->counter;
+                } else {
+                    $data_4g_tel = 0;
+                }
+                $data_evoc_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "2")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '4')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_evoc_tel[0] != null) {
+                    $data_evoc_tel = $data_evoc_tel[0]->counter;
+                } else {
+                    $data_evoc_tel = 0;
+                }
+                $data_phvoc_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "3")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '4')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_phvoc_tel[0] != null) {
+                    $data_phvoc_tel = $data_phvoc_tel[0]->counter;
+                } else {
+                    $data_phvoc_tel = 0;
+                }
+
+                $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
+                $writer->addRow($myArr); // add a row at a time
+            }
+        }
+        
+        $writer->addRow(['']);
+        $myArr = array("SHIPOUT RETURN");
+        $writer->addRow($myArr); // add a row at a time
+        $all_subagent = DB::table('m_historymovement')->whereRaw('Date >= "' . $from_year . '"')->whereRaw('Date <= "' . $to_year . '"')
+                        ->where('Status', '1')->where('Deleted', '0')
+                        ->select(DB::raw("DISTINCT `SubAgent`"))->get();
+        foreach ($all_subagent as $subagent) {
+            $shipout_to = $subagent->SubAgent;
+            $temp_to = $shipout_to;
+            $shipout_to = explode(' ', $shipout_to);
+            $tempship = '';
+            $tempsub = '';
+            if (count($shipout_to) == 1) {
+                $tempship = $shipout_to[0];
+                $tempsub = $shipout_to[0];
+            } else {
+                $tempship = $shipout_to[0];
+                $tempsub = $shipout_to[1];
+            }
+            $all_date = DB::table('m_historymovement')->whereRaw('Date >= "' . $from_year . '"')->whereRaw('Date <= "' . $to_year . '"')
+                            ->where('Status', '1')->where('Deleted', '0')
+                            ->select(DB::raw("DISTINCT `Date`"))->get();
+            foreach ($all_date as $date) {
+                $data_3g_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "1")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '1')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_3g_col[0] != null) {
+                    $data_3g_col = $data_3g_col[0]->counter;
+                } else {
+                    $data_3g_col = 0;
+                }
+                $data_4g_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "4")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '1')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_4g_col[0] != null) {
+                    $data_4g_col = $data_4g_col[0]->counter;
+                } else {
+                    $data_4g_col = 0;
+                }
+                $data_evoc_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "2")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '1')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_evoc_col[0] != null) {
+                    $data_evoc_col = $data_evoc_col[0]->counter;
+                } else {
+                    $data_evoc_col = 0;
+                }
+                $data_phvoc_col = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "3")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
+                                ->where('m_historymovement.Status', '1')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_phvoc_col[0] != null) {
+                    $data_phvoc_col = $data_phvoc_col[0]->counter;
+                } else {
+                    $data_phvoc_col = 0;
+                }
+                $data_3g_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "1")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '1')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_3g_tel[0] != null) {
+                    $data_3g_tel = $data_3g_tel[0]->counter;
+                } else {
+                    $data_3g_tel = 0;
+                }
+                $data_4g_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "4")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '1')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_4g_tel[0] != null) {
+                    $data_4g_tel = $data_4g_tel[0]->counter;
+                } else {
+                    $data_4g_tel = 0;
+                }
+                $data_evoc_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "2")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '1')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_evoc_tel[0] != null) {
+                    $data_evoc_tel = $data_evoc_tel[0]->counter;
+                } else {
+                    $data_evoc_tel = 0;
+                }
+                $data_phvoc_tel = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('m_inventory.Type', "3")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "TELIN TAIWAN")
+                                ->where('m_historymovement.Status', '1')->where('m_historymovement.Deleted', '0')
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter'))->get();
+                if ($data_phvoc_tel[0] != null) {
+                    $data_phvoc_tel = $data_phvoc_tel[0]->counter;
+                } else {
+                    $data_phvoc_tel = 0;
+                }
+
+                $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
+                $writer->addRow($myArr); // add a row at a time
+            }
+        }
+
+        $writer->close();
+        return "/SIMreport_" . $filenames . ".xlsx";
+    }
+
     static function exportExcelDashboard() {
         $year = Input::get("argyear");
 //        $year = "2017";
