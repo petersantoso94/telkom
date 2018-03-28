@@ -420,6 +420,8 @@
                                 <div class="nav-tabs-custom">
                                     <ul class="nav nav-tabs excel-report">
                                         <li class="active"><a href="#excel_shipout_container" data-toggle="tab" aria-expanded="true">Shipout Reporting</a></li>
+                                        <li><a href="#excel_weekly_container" data-toggle="tab" aria-expanded="true">Weekly Performance</a></li>
+                                        <li><a href="#excel_sim1_container" data-toggle="tab" aria-expanded="true">Sub Agent #1</a></li>
                                         <li><a href="#excel_sim2_container" data-toggle="tab" aria-expanded="true">Sub Agent SIM card #2</a></li>
                                     </ul>
                                     <div class="tab-content">
@@ -578,6 +580,50 @@
 
                                                         </tbody>
                                                     </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane" id="excel_weekly_container">
+                                            <div class="row">
+
+                                                <!-- /.col -->
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    <div class="info-box">
+                                                        <div class='row margbot20'>
+                                                            Date:
+                                                            <input type="date" class="input-stretch" id='weekly_year' name="eventDate" data-validation="required" required>
+                                                        </div>
+                                                        <div class="row margtop20 margbot20">
+                                                            <button type="button" onclick="exportExcel(this)" data-id='3' data-nama='weekly'><span class="glyphicon glyphicon-export"></span></button> Export list detail excel
+                                                            <div class="loader" id="loading-animation3" style="display:none;"></div>
+                                                        </div>
+                                                        <!-- /.info-box-content -->
+                                                    </div>
+                                                    <!-- /.info-box -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane" id="excel_sim1_container">
+                                            <div class="row">
+
+                                                <!-- /.col -->
+                                                <div class="col-md-6 col-sm-6 col-xs-12">
+                                                    <div class="info-box">
+                                                        <div class='row margbot20'>
+                                                            From:
+                                                            <input type="date" class="input-stretch" id='sim1_from_year' name="eventDate" data-validation="required" required>
+                                                        </div>
+                                                        <div class='row margbot20'>
+                                                            To:
+                                                            <input type="date" class="input-stretch" id='sim1_to_year' name="eventDate" data-validation="required" required>
+                                                        </div>
+                                                        <div class="row margtop20 margbot20">
+                                                            <button type="button" onclick="exportExcel2(this)" data-id='4' data-nama='sim1'><span class="glyphicon glyphicon-export"></span></button> Export list detail excel
+                                                            <div class="loader" id="loading-animation4" style="display:none;"></div>
+                                                        </div>
+                                                        <!-- /.info-box-content -->
+                                                    </div>
+                                                    <!-- /.info-box -->
                                                 </div>
                                             </div>
                                         </div>
@@ -1669,6 +1715,11 @@
             <script src="{{Asset('jquery-validation/form-validator/jquery.form-validator.js')}}"></script>
             <script type="text/javascript" src="{{Asset('js/chosen.jquery.min.js')}}"></script>
             <script>
+                Date.prototype.toDateInputValue = (function () {
+                    var local = new Date(this);
+                    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+                    return local.toJSON().slice(0, 10);
+                });
                 var exportExcelLink = '';
                 var inventoryDataBackup = '';
                 var table = '';
@@ -1686,7 +1737,7 @@
                     var table_container = document.getElementById('h5container');
                     table_container.innerHTML = '<h5>' + argtype + '</h5>';
                 });
-                
+
                 $('#btn_ceksn').on('click', function (e) {
                     var str = document.getElementById('sim2_quartal').value;
                     var argyear = document.getElementById('sim2_year').value;
@@ -1728,11 +1779,11 @@
                     var text_html = '';
                     var table_container = document.getElementById('shipout_table_container');
                     $.post(postShipoutDashboard, {type: argtype, year: argyear, channel: argchannel}, function (data) {
-                        
+
                     }).done(function (data) {
                         text_html += "<tr>";
-                        data.forEach(function setPerData(item){
-                            text_html += "<td>"+item+"</td>";
+                        data.forEach(function setPerData(item) {
+                            text_html += "<td>" + item + "</td>";
                         });
                         text_html += "</tr>";
                         table_container.innerHTML = text_html;
@@ -1756,19 +1807,45 @@
                     var id_concate = elem.dataset.nama;
                     var wh = "";
                     var subagent = "";
+                    var from_year = "";
+                    var to_year = "";
                     var year = $("#" + id_concate + "_year").val();
                     if ($("#" + id_concate + "_subagent"))
                         subagent = $("#" + id_concate + "_subagent").val();
                     if ($("#" + id_concate + "_wh"))
                         wh = $("#" + id_concate + "_wh").val();
+                    if (id_concate == 'sim1') {
+                        from_year = $('#sim1_from_year').val();
+                        to_year = $('#sim1_to_year').val();
+                    }
 
                     document.getElementById("loading-animation" + loading_number).style.display = "block";
                     if (id_concate == 'sim2')
                         exportExcelLink = '<?php echo Route('exportExcelDashboard') ?>';
                     else if (id_concate == 'shipout')
                         exportExcelLink = '<?php echo Route('exportExcelShipoutDashboard') ?>';
+                    else if (id_concate == 'weekly')
+                        exportExcelLink = '<?php echo Route('exportExcelWeeklyDashboard') ?>';
+                    else if (id_concate == 'sim1')
+                        exportExcelLink = '<?php echo Route('exportExcelSIM1Dashboard') ?>';
 
                     $.post(exportExcelLink, {argyear: year, argsubagent: subagent, argwh: wh}, function (data) {
+
+                    }).done(function (data) {
+                        document.getElementById("loading-animation" + loading_number).style.display = "none";
+                        window.location.href = "<?php echo url() ?>" + '/public' + data;
+                    });
+                };
+                var exportExcel2 = function (elem) {
+                    var loading_number = elem.dataset.id;
+                    var id_concate = elem.dataset.nama;
+                    var argfrom_year = $('#sim1_from_year').val();
+                    var argto_year = $('#sim1_to_year').val();
+
+                    document.getElementById("loading-animation" + loading_number).style.display = "block";
+                    exportExcelLink = '<?php echo Route('exportExcelSIM1Dashboard') ?>';
+
+                    $.post(exportExcelLink, {from_year: argfrom_year, to_year: argto_year}, function (data) {
 
                     }).done(function (data) {
                         document.getElementById("loading-animation" + loading_number).style.display = "none";
@@ -1779,7 +1856,7 @@
                     var argyear = document.getElementById('shipout_year').value;
                     var table_container = document.getElementById('h4container');
                     table_container.innerHTML = '<h4>Shipout Reporting ' + argyear + '</h4>';
-                    
+
                     var argtype = document.getElementById('shipout_type').value;
                     var table_container2 = document.getElementById('h5container');
                     table_container2.innerHTML = '<h5>' + argtype + '</h5>';
@@ -1789,6 +1866,9 @@
                         $(this).trigger("chosen:updated");
                     });
                     $(".chosen-select").chosen();
+                    $('#weekly_year').val(new Date().toDateInputValue());
+                    $('#sim1_from_year').val(new Date().toDateInputValue());
+                    $('#sim1_to_year').val(new Date().toDateInputValue());
                 });
             </script>
             @stop
