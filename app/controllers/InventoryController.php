@@ -1361,9 +1361,9 @@ class InventoryController extends BaseController {
         $sum_bef = 0;
         $sum_churn_bef = 0;
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Churn%\'')->get();
+        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Activation%\'')->orderBy('Month', 'ASC')->get();
         $churn_year_before = Stats::where('Year', '<', $year)->whereRaw('Status LIKE \'%Churn%\'')->orderBy('Month', 'ASC')->get();
         $act_year_before = Stats::where('Year', '<', $year)->whereRaw('Status LIKE \'%Activation%\'')->orderBy('Month', 'ASC')->get();
-        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Activation%\'')->orderBy('Month', 'ASC')->get();
         if ($act_year_before != null) {
             foreach ($act_year_before as $act) {
                 $sum_bef += $act->Counter;
@@ -2143,6 +2143,221 @@ class InventoryController extends BaseController {
         return 'true';
     }
 
+    static function exportExcelWeeklyDashboard() {
+        $date = Input::get("argyear");
+        $date = "2018-01-21";
+        $year = explode("-", $date)[0];
+        $month = explode("-", $date)[1];
+        $day = explode("-", $date)[2];
+        
+        if(substr($month,0,1) === "0"){
+            $month =substr($month,1,1);
+        }
+        $last_year = $year;
+        $last_month = $month - 1;
+        if ($month === "01" || $month === "1") {
+            $last_year = $year - 1;
+            $last_month = 12;
+        }
+        $filenames = $month . "-" . $year . ' vs ' . $last_month . "-" . $last_year;
+        $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+        $filePath = public_path() . "/Weekly_Performance_" . $filenames . ".xlsx";
+        $writer->openToFile($filePath);
+        $myArr = array($month . "-" . $year . ' vs ' . $last_month . "-" . $last_year);
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("Peformance Report Per Week (Best on Current Date Transaction Month Over Month)");
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("ITEMS", "UNIT", "CM", "BM", 'GROWTH');
+        $writer->addRow($myArr); // add a row at a time
+
+        $data = array();
+        $all_ivr = Stats::where('Year', $year)->where('Month', $month)->whereRaw('Status LIKE \'%Churn%\'')->get();
+        $data['churn'][0] = $all_ivr[0]->Counter;
+        $all_ivr = Stats::where('Year', $last_year)->where('Month', $last_month)->whereRaw('Status LIKE \'%Churn%\'')->get();
+        $data['churn'][1] = $all_ivr[0]->Counter;
+        $all_ivr = Stats::where('Year', $year)->where('Month', $month)->whereRaw('Status LIKE \'%Activation%\'')->get();
+        $data['act'][0] = $all_ivr[0]->Counter;
+        $all_ivr = Stats::where('Year', $last_year)->where('Month', $last_month)->whereRaw('Status LIKE \'%Activation%\'')->get();
+        $data['act'][1] = $all_ivr[0]->Counter;
+
+        //total process
+        $data['churn'][2] = round((($data['churn'][0] - $data['churn'][1]) / $data['churn'][0]) * 100, 2);
+        $data['act'][2] = round((($data['act'][0] - $data['act'][1]) / $data['act'][0]) * 100, 2);
+
+        $data["net"][0] = $data['act'][0] - $data['churn'][0];
+        $data["net"][1] = $data['act'][1] - $data['churn'][1];
+        $data['net'][2] = round((($data['net'][0] - $data['net'][1]) / $data['net'][0]) * 100, 2);
+
+        $myArr = array("NET ADDITIONAL", "SUBS", $data["net"][0], $data["net"][1], $data["net"][2] . '%');
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("ACQUITITION", "SUBS", $data["act"][0], $data["act"][1], $data["act"][2] . '%');
+        $writer->addRow($myArr);
+        $myArr = array("CHURN", "SUBS", $data["churn"][0], $data["churn"][1], $data["churn"][2] . '%');
+        $writer->addRow($myArr);
+        $writer->addRow(['']);
+
+        $data = array();
+        $all_ivr = Stats::where('Year', $year)->where('Month', $month)->whereRaw('Status LIKE \'%topup%\'')->get();
+        // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $stats = '';
+                $temp_stat = $ivr->Status;
+                if (substr($temp_stat, 0, 1) == '2') {
+                    $data['PH300'][0] = $ivr->Counter;
+                } else if (substr($temp_stat, 0, 1) == '5') {
+                    $data['E300'][0] = $ivr->Counter;
+                }
+            }
+        }
+        $all_ivr = Stats::where('Year', $last_year)->where('Month', $last_month)->whereRaw('Status LIKE \'%topup%\'')->get();
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $stats = '';
+                $temp_stat = $ivr->Status;
+                if (substr($temp_stat, 0, 1) == '2') {
+                    $data['PH300'][1] = $ivr->Counter;
+                } else if (substr($temp_stat, 0, 1) == '5') {
+                    $data['E300'][1] = $ivr->Counter;
+                }
+            }
+        }
+        //total process
+        $data['PH300'][2] = round((($data['PH300'][0] - $data['PH300'][1]) / $data['PH300'][0]) * 100, 2);
+        $data['E300'][2] = round((($data['E300'][0] - $data['E300'][1]) / $data['E300'][0]) * 100, 2);
+
+        $data["300NT"][0] = $data['PH300'][0] + $data['E300'][0];
+        $data["300NT"][1] = $data['PH300'][1] + $data['E300'][1];
+        $data['300NT'][2] = round((($data['300NT'][0] - $data['300NT'][1]) / $data['300NT'][0]) * 100, 2);
+
+        $myArr = array("VOUCHERS 300NT", "CARDS", $data["300NT"][0], $data["300NT"][1], $data["300NT"][2] . '%');
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("VOUCHERS PHYSICAL 300NT", "CARDS", $data["PH300"][0], $data["PH300"][1], $data["PH300"][2] . '%');
+        $writer->addRow($myArr);
+        $myArr = array("VOUCHERS ELECTRIC 300NT", "CARDS", $data["E300"][0], $data["E300"][1], $data["E300"][2] . '%');
+        $writer->addRow($myArr);
+        $writer->addRow(['']);
+
+        $data = array();
+        $all_ivr = Stats::where('Year', $year)->where('Month', $month)->whereRaw('Status > 10')->get();
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                if ($ivr->Status == '180') {
+                    $data['1GB'][0] = $ivr->Counter;
+                } else if ($ivr->Status == '300') {
+                    $data['2GB'][0] = $ivr->Counter;
+                } else  {
+                    $data['30DAY'][0] = $ivr->Counter;
+                }
+            }
+        }
+        $all_ivr = Stats::where('Year', $last_year)->where('Month', $last_month)->whereRaw('Status > 10')->get();
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                if ($ivr->Status == '180') {
+                    $data['1GB'][1]= $ivr->Counter;
+                } else if ($ivr->Status == '300') {
+                    $data['2GB'][1] = $ivr->Counter;
+                } else  {
+                    $data['30DAY'][1] = $ivr->Counter;
+                }
+            }
+        }
+        //total process
+        $data['1GB'][2] = round((($data['1GB'][0] - $data['1GB'][1]) / $data['1GB'][0]) * 100, 2);
+        $data['2GB'][2] = round((($data['2GB'][0] - $data['2GB'][1]) / $data['2GB'][0]) * 100, 2);
+        $data['30DAY'][2] = round((($data['30DAY'][0] - $data['30DAY'][1]) / $data['30DAY'][0]) * 100, 2);
+
+        $data["INTERNET"][0] = $data['1GB'][0] + $data['2GB'][0]+ $data['30DAY'][0];
+        $data["INTERNET"][1] = $data['1GB'][1] + $data['2GB'][1]+ $data['30DAY'][1];
+        $data['INTERNET'][2] = round((($data['INTERNET'][0] - $data['INTERNET'][1]) / $data['INTERNET'][0]) * 100, 2);
+
+        $myArr = array("INTERNET", "SUBS", $data["INTERNET"][0], $data["INTERNET"][1], $data["INTERNET"][2] . '%');
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("1GB", "SUBS", $data["1GB"][0], $data["1GB"][1], $data["1GB"][2] . '%');
+        $writer->addRow($myArr);
+        $myArr = array("2GB", "SUBS", $data["2GB"][0], $data["2GB"][1], $data["2GB"][2] . '%');
+        $writer->addRow($myArr);
+        $myArr = array("30 DAYS", "SUBS", $data["30DAY"][0], $data["30DAY"][1], $data["30DAY"][2] . '%');
+        $writer->addRow($myArr);
+        $writer->addRow(['']);
+
+        $tempmonth = $month;
+        if(strlen($month) === 1){
+            $tempmonth = "0".$month;
+        }
+        $all_ivr = Stats::where('Year', $year)->where('Month', $tempmonth)->whereRaw('Status LIKE \'%_sum%\'')->get();
+        $data = array();
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $temp_stat = $ivr->Status;
+                $temp_counter = $ivr->Counter;
+                if (explode('_', $temp_stat)[0] == 'mt') {
+                    $temp_counter = round(ceil($temp_counter / 60), 1);
+                    $data['MT'][0] = $temp_counter;
+                } else if (explode('_', $temp_stat)[0] == 'mo') {
+                    $temp_counter = round(ceil($temp_counter / 60), 1);
+                    $data['MO'][0] = $temp_counter;
+                } else if (explode('_', $temp_stat)[0] == 'internet') {
+                    $temp_counter = round($temp_counter, 1);
+                    $data['IT'][0] = $temp_counter;
+                } else if (explode('_', $temp_stat)[0] == 'sms') {
+                    $temp_counter = round($temp_counter, 1);
+                    $data['SMS'][0] = $temp_counter;
+                }
+            }
+        }
+        $tempmonth = $last_month;
+        if(strlen($last_month) === 1){
+            $tempmonth = "0".$last_month;
+        }
+        $all_ivr = Stats::where('Year', $last_year)->where('Month', $tempmonth)->whereRaw('Status LIKE \'%_sum%\'')->get();
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $temp_stat = $ivr->Status;
+                $temp_counter = $ivr->Counter;
+                if (explode('_', $temp_stat)[0] == 'mt') {
+                    $temp_counter = round(ceil($temp_counter / 60), 1);
+                    $data['MT'][1] = $temp_counter;
+                } else if (explode('_', $temp_stat)[0] == 'mo') {
+                    $temp_counter = round(ceil($temp_counter / 60), 1);
+                    $data['MO'][1] = $temp_counter;
+                } else if (explode('_', $temp_stat)[0] == 'internet') {
+                    $temp_counter = round($temp_counter, 1);
+                    $data['IT'][1] = $temp_counter;
+                } else if (explode('_', $temp_stat)[0] == 'sms') {
+                    $temp_counter = round($temp_counter, 1);
+                    $data['SMS'][1] = $temp_counter;
+                }
+            }
+        }
+        //total process
+        $data['MT'][2] = round((($data['MT'][0] - $data['MT'][1]) / $data['MT'][0]) * 100, 2);
+        $data['MO'][2] = round((($data['MO'][0] - $data['MO'][1]) / $data['MO'][0]) * 100, 2);
+        $data['IT'][2] = round((($data['IT'][0] - $data['IT'][1]) / $data['IT'][0]) * 100, 2);
+        $data['SMS'][2] = round((($data['SMS'][0] - $data['SMS'][1]) / $data['SMS'][0]) * 100, 2);
+
+        $data["MVNO_CALL"][0] = $data['MT'][0] + $data['MO'][0];
+        $data["MVNO_CALL"][1] = $data['MT'][1] + $data['MO'][1];
+        $data['MVNO_CALL'][2] = round((($data['MVNO_CALL'][0] - $data['MVNO_CALL'][1]) / $data['MVNO_CALL'][0]) * 100, 2);
+
+        $myArr = array("MVNO CALL", "MINS", $data["MVNO_CALL"][0], $data["MVNO_CALL"][1], $data["MVNO_CALL"][2] . '%');
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("MO CALL", "MINS", $data["MO"][0], $data["MO"][1], $data["MO"][2] . '%');
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("MT CALL", "MINS", $data["MT"][0], $data["MT"][1], $data["MT"][2] . '%');
+        $writer->addRow($myArr); // add a row at a time
+        $writer->addRow(['']);
+        $myArr = array("SMS", "TEXT", $data["SMS"][0], $data["SMS"][1], $data["SMS"][2] . '%');
+        $writer->addRow($myArr); // add a row at a time
+        $writer->addRow(['']);
+        $myArr = array("INTERNET", "GB", $data["IT"][0], $data["IT"][1], $data["IT"][2] . '%');
+        $writer->addRow($myArr); // add a row at a time
+
+        $writer->close();
+        return "/Weekly_Performance_" . $filenames . ".xlsx";
+    }
+
     static function exportExcelSIM1Dashboard() {
         $from_year = Input::get("from_year");
 //        $from_year = "2017-11-13";
@@ -2184,6 +2399,7 @@ class InventoryController extends BaseController {
                             ->where('Status', '2')->where('Deleted', '0')->where('Price', '>', '0')
                             ->select(DB::raw("DISTINCT `Date`"))->get();
             foreach ($all_date as $date) {
+                $need_print = true;
                 $data_3g_col = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                 ->where('m_inventory.Type', "1")->where('m_historymovement.Date', $date->Date)->where('m_historymovement.SubAgent', $temp_to)->where('m_inventory.LastWarehouse', "COLUMBIA")
@@ -2273,8 +2489,12 @@ class InventoryController extends BaseController {
                 $total[5] += $data_4g_tel;
                 $total[6] += $data_phvoc_tel;
                 $total[7] += $data_evoc_tel;
-                $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
-                $writer->addRow($myArr); // add a row at a time
+                if ($data_3g_col === 0 && $data_4g_col === 0 && $data_phvoc_col === 0 && $data_evoc_col === 0 && $data_3g_tel === 0 && $data_4g_tel === 0 && $data_phvoc_tel === 0 && $data_evoc_tel === 0)
+                    $need_print = false;
+                if ($need_print) {
+                    $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
+                    $writer->addRow($myArr); // add a row at a time
+                }
             }
         }
 
@@ -2389,8 +2609,13 @@ class InventoryController extends BaseController {
                 $total[5] += $data_4g_tel;
                 $total[6] += $data_phvoc_tel;
                 $total[7] += $data_evoc_tel;
-                $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
-                $writer->addRow($myArr); // add a row at a time
+                $need_print = true;
+                if ($data_3g_col === 0 && $data_4g_col === 0 && $data_phvoc_col === 0 && $data_evoc_col === 0 && $data_3g_tel === 0 && $data_4g_tel === 0 && $data_phvoc_tel === 0 && $data_evoc_tel === 0)
+                    $need_print = false;
+                if ($need_print) {
+                    $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
+                    $writer->addRow($myArr); // add a row at a time
+                }
             }
         }
 
@@ -2505,8 +2730,13 @@ class InventoryController extends BaseController {
                 $total[5] += $data_4g_tel;
                 $total[6] += $data_phvoc_tel;
                 $total[7] += $data_evoc_tel;
-                $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
-                $writer->addRow($myArr); // add a row at a time
+                $need_print = true;
+                if ($data_3g_col === 0 && $data_4g_col === 0 && $data_phvoc_col === 0 && $data_evoc_col === 0 && $data_3g_tel === 0 && $data_4g_tel === 0 && $data_phvoc_tel === 0 && $data_evoc_tel === 0)
+                    $need_print = false;
+                if ($need_print) {
+                    $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
+                    $writer->addRow($myArr); // add a row at a time
+                }
             }
         }
 
@@ -2621,8 +2851,13 @@ class InventoryController extends BaseController {
                 $total[5] += $data_4g_tel;
                 $total[6] += $data_phvoc_tel;
                 $total[7] += $data_evoc_tel;
-                $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
-                $writer->addRow($myArr); // add a row at a time
+                $need_print = true;
+                if ($data_3g_col === 0 && $data_4g_col === 0 && $data_phvoc_col === 0 && $data_evoc_col === 0 && $data_3g_tel === 0 && $data_4g_tel === 0 && $data_phvoc_tel === 0 && $data_evoc_tel === 0)
+                    $need_print = false;
+                if ($need_print) {
+                    $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
+                    $writer->addRow($myArr); // add a row at a time
+                }
             }
         }
         $writer->addRow(['']);
