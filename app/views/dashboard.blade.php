@@ -1807,17 +1807,11 @@
                     var id_concate = elem.dataset.nama;
                     var wh = "";
                     var subagent = "";
-                    var from_year = "";
-                    var to_year = "";
                     var year = $("#" + id_concate + "_year").val();
                     if ($("#" + id_concate + "_subagent"))
                         subagent = $("#" + id_concate + "_subagent").val();
                     if ($("#" + id_concate + "_wh"))
                         wh = $("#" + id_concate + "_wh").val();
-                    if (id_concate == 'sim1') {
-                        from_year = $('#sim1_from_year').val();
-                        to_year = $('#sim1_to_year').val();
-                    }
 
                     document.getElementById("loading-animation" + loading_number).style.display = "block";
                     if (id_concate == 'sim2')
@@ -1826,8 +1820,6 @@
                         exportExcelLink = '<?php echo Route('exportExcelShipoutDashboard') ?>';
                     else if (id_concate == 'weekly')
                         exportExcelLink = '<?php echo Route('exportExcelWeeklyDashboard') ?>';
-                    else if (id_concate == 'sim1')
-                        exportExcelLink = '<?php echo Route('exportExcelSIM1Dashboard') ?>';
 
                     $.post(exportExcelLink, {argyear: year, argsubagent: subagent, argwh: wh}, function (data) {
 
