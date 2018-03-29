@@ -2159,8 +2159,7 @@ class InventoryController extends BaseController {
         $writer->addRow($myArr); // add a row at a time
         $myArr = array("SHIPOUT TO", "SUBAGENT", "DATE", "SIM 3G", "SIM 4G", "PH-VOUCHER", "E-VOUCHER", "SIM 3G", "SIM 4G", "PH-VOUCHER", "E-VOUCHER");
         $writer->addRow($myArr); // add a row at a time
-        $columbia = [0, 0, 0, 0];
-        $telin = [0, 0, 0, 0];
+        $total = [0, 0, 0, 0, 0, 0, 0, 0];
         //price, status
 
         $myArr = array("SHIPOUT SELL OUT");
@@ -2266,11 +2265,19 @@ class InventoryController extends BaseController {
                     $data_phvoc_tel = 0;
                 }
 
+                $total[0] += $data_3g_col;
+                $total[1] += $data_4g_col;
+                $total[2] += $data_phvoc_col;
+                $total[3] += $data_evoc_col;
+                $total[4] += $data_3g_tel;
+                $total[5] += $data_4g_tel;
+                $total[6] += $data_phvoc_tel;
+                $total[7] += $data_evoc_tel;
                 $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
                 $writer->addRow($myArr); // add a row at a time
             }
         }
-        
+
         $writer->addRow(['']);
         $myArr = array("SHIPOUT FREE");
         $writer->addRow($myArr); // add a row at a time
@@ -2374,12 +2381,19 @@ class InventoryController extends BaseController {
                 } else {
                     $data_phvoc_tel = 0;
                 }
-
+                $total[0] += $data_3g_col;
+                $total[1] += $data_4g_col;
+                $total[2] += $data_phvoc_col;
+                $total[3] += $data_evoc_col;
+                $total[4] += $data_3g_tel;
+                $total[5] += $data_4g_tel;
+                $total[6] += $data_phvoc_tel;
+                $total[7] += $data_evoc_tel;
                 $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
                 $writer->addRow($myArr); // add a row at a time
             }
         }
-        
+
         $writer->addRow(['']);
         $myArr = array("SHIPOUT CONSIGNMENT");
         $writer->addRow($myArr); // add a row at a time
@@ -2483,12 +2497,19 @@ class InventoryController extends BaseController {
                 } else {
                     $data_phvoc_tel = 0;
                 }
-
+                $total[0] += $data_3g_col;
+                $total[1] += $data_4g_col;
+                $total[2] += $data_phvoc_col;
+                $total[3] += $data_evoc_col;
+                $total[4] += $data_3g_tel;
+                $total[5] += $data_4g_tel;
+                $total[6] += $data_phvoc_tel;
+                $total[7] += $data_evoc_tel;
                 $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
                 $writer->addRow($myArr); // add a row at a time
             }
         }
-        
+
         $writer->addRow(['']);
         $myArr = array("SHIPOUT RETURN");
         $writer->addRow($myArr); // add a row at a time
@@ -2592,11 +2613,21 @@ class InventoryController extends BaseController {
                 } else {
                     $data_phvoc_tel = 0;
                 }
-
+                $total[0] += $data_3g_col;
+                $total[1] += $data_4g_col;
+                $total[2] += $data_phvoc_col;
+                $total[3] += $data_evoc_col;
+                $total[4] += $data_3g_tel;
+                $total[5] += $data_4g_tel;
+                $total[6] += $data_phvoc_tel;
+                $total[7] += $data_evoc_tel;
                 $myArr = array($tempship, $tempsub, $date->Date, $data_3g_col, $data_4g_col, $data_phvoc_col, $data_evoc_col, $data_3g_tel, $data_4g_tel, $data_phvoc_tel, $data_evoc_tel);
                 $writer->addRow($myArr); // add a row at a time
             }
         }
+        $writer->addRow(['']);
+        $myArr = array("", "", "TOTAL: ", $total[0], $total[1], $total[2], $total[3], $total[4], $total[5], $total[6], $total[7]);
+        $writer->addRow($myArr); // add a row at a time
 
         $writer->close();
         return "/SIMreport_" . $filenames . ".xlsx";
