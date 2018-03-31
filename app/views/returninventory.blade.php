@@ -22,7 +22,7 @@
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     Successfully inserting {{$number}} data.
                     <?php if (isset($succ)) { ?>
-                        These serial number are successfully inserted : <br>{{$succ}}
+                        These serial number are successfully returned : <br>{{$succ}}
                     <?php } ?>
                 </div>
             <?php } ?>
@@ -60,6 +60,7 @@
                 1. File format must be in <b> xlsx only!</b><br>
                 2. 1 column needed, with header 'id' before you start writing the <b>serial number</b> or <b>MSISDN</b><br>
                 3. Use SerialNumber or MSISDN on each row
+                4. If the serial number showing "E+11" or not string, add quotation mark before write the SerialNumber or MSISDN
             </div>
         </div>
 
