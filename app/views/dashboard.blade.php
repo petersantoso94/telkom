@@ -1459,10 +1459,13 @@
                         }).done(function (data) {
                             barChartData.datasets = [];
                             $.each(data, function (index, value) {
+                                var colors = ["#0000FF", "#FF0000", "#00FF00"];
                                 var colorName = colorNames[barChartData.datasets.length % colorNames.length];
-                                var dsColor = window.chartColors[colorName];
+//                                var dsColor = window.chartColors[colorName];
+                                var dsColor = colors[barChartData.datasets.length % colorNames.length];
                                 barChartData.datasets.push({
                                     label: index,
+                                    fill: false,
                                     backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                                     borderColor: dsColor,
                                     borderWidth: 1,
@@ -1480,12 +1483,13 @@
                             barChartData2.datasets = [];
                             $.each(data, function (index, value) {
                                 $.each(value, function (index2, value2) {
+                                    var colors = ["#f2b6b6", "#dff0d9"];
                                     var colorName = colorNames[barChartData2.datasets.length % colorNames.length];
                                     var dsColor = window.chartColors[colorName];
                                     barChartData2.datasets.push({
                                         label: index2,
-                                        backgroundColor: color(dsColor).alpha(0.5).rgbString(),
-                                        borderColor: dsColor,
+                                        backgroundColor: colors[barChartData2.datasets.length % colorNames.length],
+                                        borderColor: colors[barChartData2.datasets.length % colorNames.length],
                                         borderWidth: 1,
                                         data: value2
                                     });
@@ -1553,8 +1557,8 @@
                                 barChartData5.datasets.push({
                                     label: index,
                                     //yAxisID: 'A',
-                                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
-                                    borderColor: dsColor,
+                                    backgroundColor: "#dff0d8",
+                                    borderColor: "#dff0d9",
                                     borderWidth: 1,
                                     data: value
                                 });
@@ -1573,8 +1577,8 @@
                                 var dsColor = window.chartColors[colorName];
                                 barChartData6.datasets.push({
                                     label: index,
-                                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
-                                    borderColor: dsColor,
+                                    backgroundColor: "#dff0d8",
+                                    borderColor: "#dff0d9",
                                     borderWidth: 1,
                                     data: value
                                 });
@@ -1590,11 +1594,12 @@
                             barChartData7.datasets = [];
                             $.each(data, function (index, value) {
                                 var colorName = colorNames[barChartData7.datasets.length % colorNames.length];
+                                var colors = ["#f2b6b6", "#dff0d9"];
                                 var dsColor = window.chartColors[colorName];
                                 barChartData7.datasets.push({
                                     label: index,
-                                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
-                                    borderColor: dsColor,
+                                    backgroundColor: colors[barChartData7.datasets.length % colorNames.length],
+                                    borderColor: colors[barChartData7.datasets.length % colorNames.length],
                                     borderWidth: 1,
                                     data: value
                                 });
@@ -1662,8 +1667,8 @@
                                 var dsColor = window.chartColors[colorName];
                                 barChartData10.datasets.push({
                                     label: index,
-                                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
-                                    borderColor: dsColor,
+                                    backgroundColor: "#dff0d8",
+                                    borderColor: "#dff0d9",
                                     borderWidth: 1,
                                     data: value
                                 });
@@ -1680,10 +1685,11 @@
                             $.each(data, function (index, value) {
                                 var colorName = colorNames[barChartData11.datasets.length % colorNames.length];
                                 var dsColor = window.chartColors[colorName];
+                                var colors = ["#f2b6b6", "#dff0d9"];
                                 barChartData11.datasets.push({
                                     label: index,
-                                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
-                                    borderColor: dsColor,
+                                    backgroundColor: colors[barChartData11.datasets.length % colorNames.length],
+                                    borderColor: colors[barChartData11.datasets.length % colorNames.length],
                                     borderWidth: 1,
                                     data: value
                                 });
