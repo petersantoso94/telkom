@@ -1337,6 +1337,10 @@ class InventoryController extends BaseController {
                 $stats = '1 GB';
             } else if ($ivr->Status == '300') {
                 $stats = '2 GB';
+            } else if ($ivr->Status == '360') {
+                $stats = '1 GB';
+            }else if ($ivr->Status == '600') {
+                $stats = '2 GB';
             }
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
