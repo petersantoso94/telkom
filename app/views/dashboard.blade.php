@@ -814,8 +814,8 @@
                                     ctx.textBaseline = 'middle';
                                     var canvas_height = ctx.canvas.clientHeight;
                                     var temp_base = element._model.base;
-                                    if (element._model.base > 394)
-                                        temp_base = 394;
+                                    if (element._model.base > 584)
+                                        temp_base = 584;
                                     var padding = ((temp_base - element._model.y) / 2);
                                     console.log(temp_base);
                                     var position = element.tooltipPosition();
@@ -879,7 +879,7 @@
                 window.onload = function () {
                     var ctx = document.getElementById("barChart_ivr").getContext("2d");
                     window.myBar = new Chart(ctx, {
-                        type: 'line',
+                        type: 'bar',
                         data: barChartData,
                         options: {
                             responsive: true,
@@ -917,17 +917,19 @@
                                 display: true,
                                 text: 'IVR Purchased Internet'
                             }, scales: {
+                                xAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        },
+                                        stacked: true
+                                    }],
                                 yAxes: [{
                                         gridLines: {
                                             display: false
                                         }, ticks: {
                                             display: false
-                                        }
-                                    }],
-                                xAxes: [{
-                                        gridLines: {
-                                            display: false
-                                        }
+                                        },
+                                        stacked: true,
                                     }]
                             }
                         }
@@ -1474,6 +1476,7 @@
                             });
                             window.myBar.update();
                             document.getElementById('legend').innerHTML = myBar.generateLegend();
+                            window.scrollBy(0, 200);
                         });
                     } else if (chartID == 'info_churn_month') {
 
