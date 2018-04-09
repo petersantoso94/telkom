@@ -1228,7 +1228,7 @@ class InventoryController extends BaseController {
                                             array_push($arr_mt, $value[5]);
                                             array_push($arr_internet, $value[6]);
                                             array_push($arr_sms, $value[7]);
-                                            array_push($arr_services, $value[11]);
+//                                            array_push($arr_services, $value[11]);
                                         }
                                     }
                                 }
@@ -1239,9 +1239,9 @@ class InventoryController extends BaseController {
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
                             $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i];
                             if ($i == 0)
-                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "','" . $arr_services[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
+                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "','99','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
                             else
-                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "','" . $arr_services[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
+                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "','99','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
                         }
                         DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Unik=Unik;");
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberpr(count($arr_msisdn));
@@ -1621,7 +1621,7 @@ class InventoryController extends BaseController {
 
     static function getVouchersTopUp() {
         $year = Input::get('year');
-        $year = '2017';
+//        $year = '2017';
         $type = '';
         if (Input::get('type'))
             $type = Input::get('type');
