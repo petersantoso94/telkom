@@ -843,6 +843,10 @@
                                 write = true;
                                 str_write = 'Total';
                             }
+                            if (meta.controller.chart.canvas.id == 'barChart_ivr') {
+                                write = true;
+                                str_write = 'Total';
+                            }
                             if (meta.controller.chart.canvas.id == 'barChart_churn' || meta.controller.chart.canvas.id == 'barChart_detail_churn') {
                                 write = true;
                                 str_write = 'Activation';
