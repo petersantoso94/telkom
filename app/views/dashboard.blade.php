@@ -1510,6 +1510,8 @@
                             $.each(data, function (index, value) {
                                 var colorName = colorNames[barChartData3.datasets.length % colorNames.length];
                                 var dsColor = window.chartColors[colorName];
+                                if(index === 'no service')
+                                    dsColor = '#000000';
                                 barChartData3.datasets.push({
                                     label: index,
                                     backgroundColor: color(dsColor).alpha(0.5).rgbString(),
