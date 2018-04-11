@@ -9,7 +9,7 @@
         <meta name="keywords" content="Telkom Indonesia" />
         <meta name="author" content="Telkom Indonesia" />
 
-        <title>So mini - @yield('title')</title>
+        <title>Telkom - @yield('title')</title>
         <link href='https://fonts.googleapis.com/css?family=Roboto:100,400,300' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="{{Asset('lib/css/bootstrap.min.css')}}" />
         <link rel="stylesheet" href="{{Asset('lib/c3/c3.css')}}" />
