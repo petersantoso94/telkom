@@ -1065,6 +1065,7 @@ class InventoryController extends BaseController {
                         $reader->open($filePath);
                         $arr_msisdn = [];
                         $arr_return = [];
+                        $arr_act = [];
                         foreach ($reader->getSheetIterator() as $sheet) {
                             foreach ($sheet->getRowIterator() as $rowNumber => $value) {
                                 if ($rowNumber > 1) {
@@ -1089,26 +1090,42 @@ class InventoryController extends BaseController {
                                             $date_return = date('Y-m-d', $date_return);
                                         }
                                         array_push($arr_return, $date_return);
+
+                                        $date_act = $value[4];
+                                        //$date_return = explode('/', $date_return);
+                                        //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                        $date_act = strtotime($date_act);
+                                        $date_act = date('Y-m-d', $date_act);
+                                        if (substr($date_act, 0, 4) === '1970') {
+                                            $date_act = $value[4];
+                                            $date_act = explode('/', $date_act);
+                                            $date_act = $date_act[1] . '/' . $date_act[0] . '/' . $date_act[2];
+                                            $date_act = strtotime($date_act);
+                                            $date_act = date('Y-m-d', $date_act);
+                                        }
+                                        array_push($arr_act, $date_act);
                                     }
                                 }
                             }
                         }
                         $reader->close();
                         $table = Inventory::getModel()->getTable();
-                        $cases = [];
+                        $cases1 = [];
+                        $cases2 = [];
                         $ids = [];
                         $params = [];
                         $counter = count($arr_msisdn);
 
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
-                            $id = (int) $arr_msisdn[$i];
-                            $cases[] = "WHEN {$id} then ?";
-                            $params[] = $arr_return[$i];
-                            $ids[] = $id;
+                            $id = $arr_msisdn[$i];
+                            $cases2[] = "WHEN '{$id}' then '{$arr_return[$i]}'";
+                            $cases1[] = "WHEN '{$id}' then '{$arr_act[$i]}'";
+                            $ids[] = '\'' . $id . '\'';
                         }
                         $ids = implode(',', $ids);
-                        $cases = implode(' ', $cases);
-                        DB::update("UPDATE `{$table}` SET `ChurnDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
+                        $cases1 = implode(' ', $cases1);
+                        $cases2 = implode(' ', $cases2);
+                        DB::update("UPDATE `{$table}` SET `ChurnDate` = CASE `MSISDN` {$cases2} END, `ActivationDate` = CASE `MSISDN` {$cases1} END WHERE `MSISDN` in ({$ids})");
 
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberch($counter);
                     }
@@ -1358,10 +1375,12 @@ class InventoryController extends BaseController {
 
     static function getCHURN() {
         $year = Input::get('year');
-//        $year = '2017';
+//        $year = '2016';
         $data = [];
-        $counter_z = [];
-        $counter_c = [];
+        $counter_z = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $counter_c = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $data['churn']['Churn'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $data['act']['Active MSISDN'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         $sum_bef = 0;
         $sum_churn_bef = 0;
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Churn%\'')->get();
@@ -1380,19 +1399,11 @@ class InventoryController extends BaseController {
         }
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
-                if (!isset($data['churn'][$ivr->Status])) {
-                    $data['churn'][$ivr->Status] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                    $counter_c = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                }
                 $counter_c[($ivr->Month - 1)] = $ivr->Counter;
             }
         }
         if ($all_act != null) {
             foreach ($all_act as $ivr) {
-                if (!isset($data['act']['Active MSISDN'])) {
-                    $data['act']['Active MSISDN'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                    $counter_z = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                }
                 $counter_z[($ivr->Month - 1)] = $ivr->Counter;
             }
         }
@@ -1715,9 +1726,11 @@ class InventoryController extends BaseController {
 
     static function getChurnDetail() {
         $year = Input::get('year');
-//        $year = '2017';
+//        $year = '2018';
         $type = '';
         $data = [];
+        $data['Churn'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $data['Active MSISDN'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         //1 -> evoucher; 2 -> phvoucher
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Chact%\'')->get();
         $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Activation%\'')->get();
@@ -1728,8 +1741,6 @@ class InventoryController extends BaseController {
 //        }
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
-                if (!isset($data['Churn']))
-                    $data['Churn'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $ivr->Month - 1) {
                         $data['Churn'][$i] = -($ivr->Counter);
@@ -1739,8 +1750,6 @@ class InventoryController extends BaseController {
         }
         if ($all_act != null) {
             foreach ($all_act as $ivr) {
-                if (!isset($data['Active MSISDN']))
-                    $data['Active MSISDN'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $ivr->Month - 1) {
                         $data['Active MSISDN'][$i] = $ivr->Counter + $data['Churn'][$i];
