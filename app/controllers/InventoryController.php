@@ -1214,23 +1214,28 @@ class InventoryController extends BaseController {
                         }
                         $reader->close();
                         $table = Inventory::getModel()->getTable();
-                        $cases1 = [];
-                        $cases2 = [];
-                        $ids = [];
-                        $params = [];
                         $counter = count($arr_msisdn);
-
-                        for ($i = 0; $i < count($arr_msisdn); $i++) {
-                            $id = $arr_voc[$i];
-                            $cases2[] = "WHEN '{$id}' then '{$arr_return[$i]}'";
-                            $cases1[] = "WHEN '{$id}' then '{$arr_msisdn[$i]}'";
-                            $ids[] = '\'' . $id . '\'';
+                        $block = 40000;
+                        for ($j = 1; $j <= ceil($counter / $block); $j++) {
+                            $cases1 = [];
+                            $cases2 = [];
+                            $ids = [];
+                            $params = [];
+                            for ($i = 0 + (($j - 1) * $block); $i < $j * $block; $i++) {
+                                if ($i < $counter) {
+                                    $id = $arr_voc[$i];
+                                    $cases2[] = "WHEN '{$id}' then '{$arr_return[$i]}'";
+                                    $cases1[] = "WHEN '{$id}' then '{$arr_msisdn[$i]}'";
+                                    $ids[] = '\'' . $id . '\'';
+                                }else {
+                                    break;
+                                }
+                            }
+                            $ids = implode(',', $ids);
+                            $cases1 = implode(' ', $cases1);
+                            $cases2 = implode(' ', $cases2);
+                            DB::update("UPDATE `{$table}` SET `TopUpMSISDN` = CASE `SerialNumber` {$cases1} END, `TopUpDate` = CASE `SerialNumber` {$cases2} END WHERE `SerialNumber` in ({$ids})");
                         }
-                        $ids = implode(',', $ids);
-                        $cases1 = implode(' ', $cases1);
-                        $cases2 = implode(' ', $cases2);
-                        DB::update("UPDATE `{$table}` SET `TopUpMSISDN` = CASE `SerialNumber` {$cases1} END, `TopUpDate` = CASE `SerialNumber` {$cases2} END WHERE `SerialNumber` in ({$ids})");
-
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumbertop($counter);
                     }
                 }
@@ -1309,16 +1314,9 @@ class InventoryController extends BaseController {
                         $destination = base_path() . '/uploaded_file/';
                         $extention = Input::file('sample_file')->getClientOriginalExtension();
                         $filename = 'temp.' . $extention;
-                        Input::file('sample_file')->move($destination, $filename);
-                        $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
-                        $inputFileName = './uploaded_file/temp.' . $extention;
-                        /** Load $inputFileName to a Spreadsheet Object  * */
-                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
-                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-                        $writer->save('./uploaded_file/' . 'temp.xlsx');
-                        
-                        $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
-                        $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
+                        Input::file('sample_file')->move($destination, $filename);                        
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.csv';
+                        $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::CSV);
                         $reader->setShouldFormatDates(true);
                         $counter = 0;
                         $reader->open($filePath);
