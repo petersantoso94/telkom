@@ -1267,6 +1267,7 @@ class InventoryController extends BaseController {
                         $arr_services = [];
                         foreach ($reader->getSheetIterator() as $sheet) {
                             $date_temp = $sheet->getName();
+                            $date_temp = explode("_",$date_temp)[2];
                             $month_temp = substr($date_temp, 4, 2);
                             $year_temp = substr($date_temp, 0, 4);
                             if (substr($date_temp, 0, 1) === '2') {
