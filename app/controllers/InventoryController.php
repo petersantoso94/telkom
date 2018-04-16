@@ -1246,6 +1246,7 @@ class InventoryController extends BaseController {
                     if (Input::hasFile('sample_file')) {
                         $destination = base_path() . '/uploaded_file/';
                         $extention = Input::file('sample_file')->getClientOriginalExtension();
+                        $real_filename = $_FILES['sample_file']['name'];
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
@@ -1273,7 +1274,7 @@ class InventoryController extends BaseController {
                         $arr_sms = [];
                         $arr_services = [];
                         foreach ($reader->getSheetIterator() as $sheet) {
-                            $date_temp = $sheet->getName();
+                            $date_temp = $real_filename;
                             $date_temp = explode("_",$date_temp)[2];
                             $month_temp = substr($date_temp, 4, 2);
                             $year_temp = substr($date_temp, 0, 4);
