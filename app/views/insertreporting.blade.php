@@ -104,12 +104,12 @@
                             </div>
                         <?php } ?>
                     <?php } ?>
-                    
+
                     <?php if (isset($notfound)) { ?>
-                            <div class="alert alert-danger alert-dismissible" role="alert" style="width: 98%; margin: 1%">
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                MSISDN NOT FOUND : {{$notfound}}
-                            </div>
+                        <div class="alert alert-danger alert-dismissible" role="alert" style="width: 98%; margin: 1%">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            MSISDN NOT FOUND : {{$notfound}}
+                        </div>
                     <?php } ?>
                 </div>
                 <div class="row">
@@ -298,16 +298,19 @@
 <script src="{{Asset('jquery-validation/form-validator/jquery.form-validator.js')}}"></script>
 <script type="text/javascript" src="{{Asset('js/chosen.jquery.min.js')}}"></script>
 <script>
+var global_file_name = '';
 $('#btn-insert-image').on('click', function (e) {
     $('#input-pict').click();
 });
 $('#input-pict').on('change', function (e) {
+    global_file_name = ($('#input-pict').val().split('\\').pop()).split('.')[1];
     $('#pict-name').html($('#input-pict').val().split('\\').pop());
 });
 $('#btn-insert-image2').on('click', function (e) {
     $('#input-pict2').click();
 });
 $('#input-pict2').on('change', function (e) {
+    global_file_name = ($('#input-pict2').val().split('\\').pop()).split('.')[1];
     $('#pict-name2').html($('#input-pict2').val().split('\\').pop());
 });
 $('#btn-insert-image3').on('click', function (e) {
@@ -315,23 +318,27 @@ $('#btn-insert-image3').on('click', function (e) {
 });
 $('#input-pict3').on('change', function (e) {
     $('#pict-name3').html($('#input-pict3').val().split('\\').pop());
+    global_file_name = ($('#input-pict3').val().split('\\').pop()).split('.')[1];
 });
 $('#btn-insert-image4').on('click', function (e) {
     $('#input-pict4').click();
 });
 $('#input-pict4').on('change', function (e) {
+    global_file_name = ($('#input-pict4').val().split('\\').pop()).split('.')[1];
     $('#pict-name4').html($('#input-pict4').val().split('\\').pop());
 });
 $('#btn-insert-image5').on('click', function (e) {
     $('#input-pict5').click();
 });
 $('#input-pict5').on('change', function (e) {
+    global_file_name = ($('#input-pict5').val().split('\\').pop()).split('.')[1];
     $('#pict-name5').html($('#input-pict5').val().split('\\').pop());
 });
 $('#btn-insert-image6').on('click', function (e) {
     $('#input-pict6').click();
 });
 $('#input-pict6').on('change', function (e) {
+    global_file_name = ($('#input-pict6').val().split('\\').pop()).split('.')[1];
     $('#pict-name6').html($('#input-pict6').val().split('\\').pop());
 });
 
@@ -339,28 +346,50 @@ $('#btn-insert-image7').on('click', function (e) {
     $('#input-pict7').click();
 });
 $('#input-pict7').on('change', function (e) {
+    global_file_name = ($('#input-pict7').val().split('\\').pop()).split('.')[1];
     $('#pict-name7').html($('#input-pict7').val().split('\\').pop());
 });
 $('#btn-submit-apf').on('click', function (e) {
-    document.getElementById("form-apf").submit();
+    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv')
+        document.getElementById("form-apf").submit();
+    else
+        alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
 $('#btn-submit-ivr').on('click', function (e) {
-    document.getElementById("form-ivr-purchase").submit();
+    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv')
+        document.getElementById("form-ivr-purchase").submit();
+    else
+        alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
 $('#btn-submit-act').on('click', function (e) {
-    document.getElementById("form-activation").submit();
+    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv')
+        document.getElementById("form-activation").submit();
+    else
+        alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
 $('#btn-submit-churn').on('click', function (e) {
-    document.getElementById("form-churn").submit();
+    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv')
+        document.getElementById("form-churn").submit();
+    else
+        alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
 $('#btn-submit-productive').on('click', function (e) {
-    document.getElementById("form-productive").submit();
+    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv')
+        document.getElementById("form-productive").submit();
+    else
+        alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
 $('#btn-submit-topup').on('click', function (e) {
-    document.getElementById("form-topup").submit();
+    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv')
+        document.getElementById("form-topup").submit();
+    else
+        alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
 $('#btn-submit-sip').on('click', function (e) {
-    document.getElementById("form-sip").submit();
+    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv')
+        document.getElementById("form-sip").submit();
+    else
+        alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
 </script>
 @stop

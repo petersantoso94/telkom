@@ -766,7 +766,15 @@ class InventoryController extends BaseController {
                         $extention = Input::file('sample_file')->getClientOriginalExtension();
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
-                        $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                        $filePath = base_path() . '\\uploaded_file\\temp.' . $extention;
+
+                        $inputFileName = './uploaded_file/temp.' . $extention;
+                        /** Load $inputFileName to a Spreadsheet Object  * */
+                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                        $writer->save('./uploaded_file/' . 'temp.xlsx');
+
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
 //$reader = ReaderFactory::create(Type::CSV); // for CSV files
 //$reader = ReaderFactory::create(Type::ODS); // for ODS files
@@ -831,6 +839,14 @@ class InventoryController extends BaseController {
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+
+                        $inputFileName = './uploaded_file/temp.' . $extention;
+                        /** Load $inputFileName to a Spreadsheet Object  * */
+                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                        $writer->save('./uploaded_file/' . 'temp.xlsx');
+
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
                         $reader->setShouldFormatDates(true);
                         $counter = 0;
@@ -967,6 +983,13 @@ class InventoryController extends BaseController {
 
                             return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNotfound($not_found_str);
                         } else {
+                            $inputFileName = './uploaded_file/temp.' . $extention;
+                            /** Load $inputFileName to a Spreadsheet Object  * */
+                            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+                            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                            $writer->save('./uploaded_file/' . 'temp.xlsx');
+
+                            $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                             $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
                             $reader->setShouldFormatDates(true);
                             $counter = 0;
@@ -1059,6 +1082,13 @@ class InventoryController extends BaseController {
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                        $inputFileName = './uploaded_file/temp.' . $extention;
+                        /** Load $inputFileName to a Spreadsheet Object  * */
+                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                        $writer->save('./uploaded_file/' . 'temp.xlsx');
+                        
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
                         $reader->setShouldFormatDates(true);
                         $counter = 0;
@@ -1140,6 +1170,13 @@ class InventoryController extends BaseController {
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                        $inputFileName = './uploaded_file/temp.' . $extention;
+                        /** Load $inputFileName to a Spreadsheet Object  * */
+                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                        $writer->save('./uploaded_file/' . 'temp.xlsx');
+                        
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
                         $reader->setShouldFormatDates(true);
                         $counter = 0;
@@ -1274,6 +1311,13 @@ class InventoryController extends BaseController {
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                        $inputFileName = './uploaded_file/temp.' . $extention;
+                        /** Load $inputFileName to a Spreadsheet Object  * */
+                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                        $writer->save('./uploaded_file/' . 'temp.xlsx');
+                        
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
                         $reader->setShouldFormatDates(true);
                         $counter = 0;
