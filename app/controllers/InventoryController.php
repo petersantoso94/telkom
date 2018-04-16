@@ -1249,6 +1249,13 @@ class InventoryController extends BaseController {
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                        $inputFileName = './uploaded_file/temp.' . $extention;
+                        /** Load $inputFileName to a Spreadsheet Object  * */
+                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                        $writer->save('./uploaded_file/' . 'temp.xlsx');
+                        
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
 //$reader = ReaderFactory::create(Type::CSV); // for CSV files
 //$reader = ReaderFactory::create(Type::ODS); // for ODS files
