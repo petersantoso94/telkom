@@ -766,15 +766,7 @@ class InventoryController extends BaseController {
                         $extention = Input::file('sample_file')->getClientOriginalExtension();
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
-                        $filePath = base_path() . '\\uploaded_file\\temp.' . $extention;
-
-                        $inputFileName = './uploaded_file/temp.' . $extention;
-                        /** Load $inputFileName to a Spreadsheet Object  * */
-                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
-                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-                        $writer->save('./uploaded_file/' . 'temp.xlsx');
-
-                        $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
 //$reader = ReaderFactory::create(Type::CSV); // for CSV files
 //$reader = ReaderFactory::create(Type::ODS); // for ODS files
@@ -784,37 +776,38 @@ class InventoryController extends BaseController {
                         $arr_msisdn = [];
                         $arr_buydate = [];
                         $arr_buy = [];
-                        foreach ($reader->getSheetIterator() as $sheet) {
-                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                if ($rowNumber > 1) {
-                                    // do stuff with the row
-                                    $msisdn = (string) $value[2];
+                        foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
+                            if ($sheetIndex == 1)
+                                foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                    if ($rowNumber > 2) {
+                                        // do stuff with the row
+                                        $msisdn = (string) $value[3];
 
-                                    if ($msisdn != '' && $msisdn != null) {
-                                        $msisdn = str_replace('\'', '', $msisdn);
-                                        if (substr($msisdn, 0, 1) === '0') {
-                                            $msisdn = substr($msisdn, 1);
+                                        if ($msisdn != '' && $msisdn != null) {
+                                            $msisdn = str_replace('\'', '', $msisdn);
+                                            if (substr($msisdn, 0, 1) === '0') {
+                                                $msisdn = substr($msisdn, 1);
+                                            }
+                                            array_push($arr_msisdn, $msisdn);
+                                            $date_return = $value[2];
+                                            if (is_object($date_return)) {
+                                                $date_return = $date_return->format('Y-m-d');
+                                            } else {
+                                                $date_return = strtotime($date_return);
+                                                $date_return = date('Y-m-d', $date_return);
+                                            }
+                                            if (substr($date_return, 0, 4) === '1970') {
+                                                $date_return = $value[2];
+                                                $date_return = explode('/', $date_return);
+                                                $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                                $date_return = strtotime($date_return);
+                                                $date_return = date('Y-m-d', $date_return);
+                                            }
+                                            array_push($arr_buydate, $date_return);
+                                            array_push($arr_buy, $value[5]);
                                         }
-                                        array_push($arr_msisdn, $msisdn);
-                                        $date_return = $value[1];
-                                        if (is_object($date_return)) {
-                                            $date_return = $date_return->format('Y-m-d');
-                                        } else {
-                                            $date_return = strtotime($date_return);
-                                            $date_return = date('Y-m-d', $date_return);
-                                        }
-                                        if (substr($date_return, 0, 4) === '1970') {
-                                            $date_return = $value[1];
-                                            $date_return = explode('/', $date_return);
-                                            $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
-                                            $date_return = strtotime($date_return);
-                                            $date_return = date('Y-m-d', $date_return);
-                                        }
-                                        array_push($arr_buydate, $date_return);
-                                        array_push($arr_buy, $value[4]);
                                     }
                                 }
-                            }
                         }
                         $reader->close();
                         $for_raw = '';
@@ -843,6 +836,9 @@ class InventoryController extends BaseController {
                         $inputFileName = './uploaded_file/temp.' . $extention;
                         /** Load $inputFileName to a Spreadsheet Object  * */
                         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+                        $worksheet = $spreadsheet->getActiveSheet();
+                        $rows = $worksheet->toArray();
+                        dd($rows);
                         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
                         $writer->save('./uploaded_file/' . 'temp.xlsx');
 
@@ -1082,13 +1078,6 @@ class InventoryController extends BaseController {
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
-                        $inputFileName = './uploaded_file/temp.' . $extention;
-                        /** Load $inputFileName to a Spreadsheet Object  * */
-                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
-                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-                        $writer->save('./uploaded_file/' . 'temp.xlsx');
-                        
-                        $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
                         $reader->setShouldFormatDates(true);
                         $counter = 0;
@@ -1098,22 +1087,22 @@ class InventoryController extends BaseController {
                         $arr_act = [];
                         foreach ($reader->getSheetIterator() as $sheet) {
                             foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                if ($rowNumber > 1) {
+                                if ($rowNumber > 2) {
                                     // do stuff with the row
-                                    $msisdn = (string) $value[2];
+                                    $msisdn = (string) $value[3];
                                     if ($msisdn != '' && $msisdn != null) {
                                         $msisdn = str_replace('\'', '', $msisdn);
                                         if (substr($msisdn, 0, 1) === '0') {
                                             $msisdn = substr($msisdn, 1);
                                         }
                                         array_push($arr_msisdn, $msisdn);
-                                        $date_return = $value[1];
+                                        $date_return = $value[2];
                                         //$date_return = explode('/', $date_return);
                                         //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                         $date_return = strtotime($date_return);
                                         $date_return = date('Y-m-d', $date_return);
                                         if (substr($date_return, 0, 4) === '1970') {
-                                            $date_return = $value[1];
+                                            $date_return = $value[2];
                                             $date_return = explode('/', $date_return);
                                             $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                             $date_return = strtotime($date_return);
@@ -1121,13 +1110,13 @@ class InventoryController extends BaseController {
                                         }
                                         array_push($arr_return, $date_return);
 
-                                        $date_act = $value[4];
+                                        $date_act = $value[5];
                                         //$date_return = explode('/', $date_return);
                                         //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                         $date_act = strtotime($date_act);
                                         $date_act = date('Y-m-d', $date_act);
                                         if (substr($date_act, 0, 4) === '1970') {
-                                            $date_act = $value[4];
+                                            $date_act = $value[5];
                                             $date_act = explode('/', $date_act);
                                             $date_act = $date_act[1] . '/' . $date_act[0] . '/' . $date_act[2];
                                             $date_act = strtotime($date_act);
@@ -1170,13 +1159,13 @@ class InventoryController extends BaseController {
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
-                        $inputFileName = './uploaded_file/temp.' . $extention;
-                        /** Load $inputFileName to a Spreadsheet Object  * */
-                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
-                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-                        $writer->save('./uploaded_file/' . 'temp.xlsx');
-                        
-                        $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
+//                        $inputFileName = './uploaded_file/temp.' . $extention;
+//                        /** Load $inputFileName to a Spreadsheet Object  * */
+//                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+//                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+//                        $writer->save('./uploaded_file/' . 'temp.xlsx');
+//
+//                        $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
                         $reader->setShouldFormatDates(true);
                         $counter = 0;
@@ -1184,33 +1173,34 @@ class InventoryController extends BaseController {
                         $arr_msisdn = [];
                         $arr_voc = [];
                         $arr_return = [];
-                        foreach ($reader->getSheetIterator() as $sheet) {
-                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                if ($rowNumber > 1) {
-                                    // do stuff with the row
-                                    $msisdn = (string) $value[3];
-                                    $voc = (string) $value[11];
-                                    if ($msisdn != '' && $msisdn != null) {
-                                        $msisdn = str_replace('\'', '', $msisdn);
-                                        if (substr($msisdn, 0, 1) === '0') {
-                                            $msisdn = substr($msisdn, 1);
-                                        }
-                                        array_push($arr_voc, $voc);
-                                        array_push($arr_msisdn, $msisdn);
-                                        $date_return = $value[1];
-                                        $date_return = strtotime($date_return);
-                                        $date_return = date('Y-m-d', $date_return);
-                                        if (substr($date_return, 0, 4) === '1970') {
-                                            $date_return = $value[1];
-                                            $date_return = explode('/', $date_return);
-                                            $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                        foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
+                            if ($sheetIndex == 2)
+                                foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                    if ($rowNumber > 2) {
+                                        // do stuff with the row
+                                        $msisdn = (string) $value[4];
+                                        $voc = (string) $value[12];
+                                        if ($msisdn != '' && $msisdn != null) {
+                                            $msisdn = str_replace('\'', '', $msisdn);
+                                            if (substr($msisdn, 0, 1) === '0') {
+                                                $msisdn = substr($msisdn, 1);
+                                            }
+                                            array_push($arr_voc, $voc);
+                                            array_push($arr_msisdn, $msisdn);
+                                            $date_return = $value[2];
                                             $date_return = strtotime($date_return);
                                             $date_return = date('Y-m-d', $date_return);
+                                            if (substr($date_return, 0, 4) === '1970') {
+                                                $date_return = $value[2];
+                                                $date_return = explode('/', $date_return);
+                                                $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                                $date_return = strtotime($date_return);
+                                                $date_return = date('Y-m-d', $date_return);
+                                            }
+                                            array_push($arr_return, $date_return);
                                         }
-                                        array_push($arr_return, $date_return);
                                     }
                                 }
-                            }
                         }
                         $reader->close();
                         $table = Inventory::getModel()->getTable();
@@ -1227,7 +1217,7 @@ class InventoryController extends BaseController {
                                     $cases2[] = "WHEN '{$id}' then '{$arr_return[$i]}'";
                                     $cases1[] = "WHEN '{$id}' then '{$arr_msisdn[$i]}'";
                                     $ids[] = '\'' . $id . '\'';
-                                }else {
+                                } else {
                                     break;
                                 }
                             }
@@ -1255,7 +1245,7 @@ class InventoryController extends BaseController {
                         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
                         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
                         $writer->save('./uploaded_file/' . 'temp.xlsx');
-                        
+
                         $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
 //$reader = ReaderFactory::create(Type::CSV); // for CSV files
@@ -1275,7 +1265,7 @@ class InventoryController extends BaseController {
                         $arr_services = [];
                         foreach ($reader->getSheetIterator() as $sheet) {
                             $date_temp = $real_filename;
-                            $date_temp = explode("_",$date_temp)[2];
+                            $date_temp = explode("_", $date_temp)[2];
                             $month_temp = substr($date_temp, 4, 2);
                             $year_temp = substr($date_temp, 0, 4);
                             if (substr($date_temp, 0, 1) === '2') {
@@ -1323,7 +1313,7 @@ class InventoryController extends BaseController {
                         $destination = base_path() . '/uploaded_file/';
                         $extention = Input::file('sample_file')->getClientOriginalExtension();
                         $filename = 'temp.' . $extention;
-                        Input::file('sample_file')->move($destination, $filename);                        
+                        Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.csv';
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::CSV);
                         $reader->setShouldFormatDates(true);
