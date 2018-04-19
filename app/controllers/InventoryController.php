@@ -755,9 +755,9 @@ class InventoryController extends BaseController {
         }
         return View::make('change')->withPage('edit name');
     }
-    
-    public function showResetReporting(){
-        if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+
+    public function showResetReporting() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (Input::get('jenis') == 'ivr') {
                 DB::delete('DELETE FROM `r_stats` WHERE 1');
                 DB::delete('DELETE FROM `m_ivr` WHERE 1');
@@ -864,7 +864,12 @@ class InventoryController extends BaseController {
                                             if (substr($date_return, 0, 4) === '1970') {
                                                 $date_return = $value[1];
                                                 $date_return = explode('/', $date_return);
-                                                $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                                
+                                                try {
+                                                    $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                                } catch (Exception $e) {
+                                                    dd($date_return);
+                                                }
                                                 $date_return = strtotime($date_return);
                                                 $date_return = date('Y-m-d', $date_return);
                                             }
