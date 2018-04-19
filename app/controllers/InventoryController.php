@@ -845,17 +845,6 @@ class InventoryController extends BaseController {
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
-
-                        $inputFileName = './uploaded_file/temp.' . $extention;
-                        /** Load $inputFileName to a Spreadsheet Object  * */
-                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
-                        $worksheet = $spreadsheet->getActiveSheet();
-                        $rows = $worksheet->toArray();
-                        dd($rows);
-                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-                        $writer->save('./uploaded_file/' . 'temp.xlsx');
-
-                        $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
                         $reader->setShouldFormatDates(true);
                         $counter = 0;
@@ -1253,14 +1242,7 @@ class InventoryController extends BaseController {
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
-                        $inputFileName = './uploaded_file/temp.' . $extention;
-                        /** Load $inputFileName to a Spreadsheet Object  * */
-                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
-                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-                        $writer->save('./uploaded_file/' . 'temp.xlsx');
-
-                        $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
-                        $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+                        $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::CSV); // for XLSX files
 //$reader = ReaderFactory::create(Type::CSV); // for CSV files
 //$reader = ReaderFactory::create(Type::ODS); // for ODS files
 
@@ -1295,10 +1277,10 @@ class InventoryController extends BaseController {
                                             array_push($arr_msisdn, $msisdn);
                                             array_push($arr_month, $month_temp);
                                             array_push($arr_year, $year_temp);
-                                            array_push($arr_mo, $value[4]);
-                                            array_push($arr_mt, $value[5]);
-                                            array_push($arr_internet, $value[6]);
-                                            array_push($arr_sms, $value[7]);
+                                            array_push($arr_mo, $value[3]);
+                                            array_push($arr_mt, $value[6]);
+                                            array_push($arr_internet, 0);
+                                            array_push($arr_sms, $value[8]);
 //                                            array_push($arr_services, $value[11]);
                                         }
                                     }
