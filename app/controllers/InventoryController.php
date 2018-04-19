@@ -755,6 +755,19 @@ class InventoryController extends BaseController {
         }
         return View::make('change')->withPage('edit name');
     }
+    
+    public function showResetReporting(){
+        if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+            if (Input::get('jenis') == 'ivr') {
+                DB::delete('DELETE FROM `r_stats` WHERE 1');
+                DB::delete('DELETE FROM `m_ivr` WHERE 1');
+                DB::delete('DELETE FROM `m_productive` WHERE 1');
+                DB::update('UPDATE `m_inventory` SET `ChurnDate`=NULL,`ActivationDate`=NULL,`ActivationStore`=NULL,`Channel`=NULL,`ApfDate`=NULL,`Apf-Activation`=NULL,`TopUpMSISDN`=NULL,`TopUpDate`=NULL WHERE 1');
+                return View::make('resetreporting')->withPage('reset reporting')->withSuccess('ok');
+            }
+        }
+        return View::make('resetreporting')->withPage('reset reporting');
+    }
 
     public function showInsertReporting() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
