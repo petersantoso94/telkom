@@ -55,6 +55,7 @@ class InventoryController extends BaseController {
                                     $type = 1;
                                     $wh = 'TELIN TAIWAN';
                                     $sn = (string) $value[1];
+                                    $sn = strtoupper($sn);
                                     $remark_obj = $value[9];
 
                                     if (is_object($remark_obj)) {
@@ -227,6 +228,7 @@ class InventoryController extends BaseController {
                                     $type = 2;
                                     $wh = 'TELIN TAIWAN';
                                     $sn = (string) $value[0];
+                                    $sn = strtoupper($sn);
 
                                     $remark_obj = $value[9];
 
@@ -864,7 +866,7 @@ class InventoryController extends BaseController {
                                             if (substr($date_return, 0, 4) === '1970') {
                                                 $date_return = $value[1];
                                                 $date_return = explode('/', $date_return);
-                                                
+
                                                 try {
                                                     $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                                 } catch (Exception $e) {
@@ -1210,6 +1212,16 @@ class InventoryController extends BaseController {
                                 }
                         }
                         $reader->close();
+                        /* $check_msisdn = [];
+                          $ids = $arr_voc;
+                          $ids = implode("','", $ids);
+                          $right_msisdn = DB::select("SELECT `SerialNumber` FROM `m_inventory` WHERE `SerialNumber` in ('{$ids}')");
+                          foreach ($right_msisdn as $msisdn) {
+                          $check_msisdn[] = $msisdn->SerialNumber;
+                          }
+                          $not_found = array_diff($arr_voc, $check_msisdn);
+                          $not_found = implode("','", $not_found);
+                          dd($not_found); */
                         $table = Inventory::getModel()->getTable();
                         $counter = count($arr_msisdn);
                         $block = 40000;
