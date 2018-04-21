@@ -114,7 +114,7 @@
                 </div>
                 <div class="row">
                     <div class="col-xs-12">
-                        <h4>Activation Date</h4>
+                        <h4>Acquisition Report</h4>
                     </div>
                 </div>
                 <div class="row margtop20">
@@ -299,11 +299,13 @@
 <script type="text/javascript" src="{{Asset('js/chosen.jquery.min.js')}}"></script>
 <script>
 var global_file_name = '';
+var global_name = '';
 $('#btn-insert-image').on('click', function (e) {
     $('#input-pict').click();
 });
 $('#input-pict').on('change', function (e) {
     global_file_name = ($('#input-pict').val().split('\\').pop()).split('.')[1];
+    global_name = ($('#input-pict').val().split('\\').pop()).split('.')[0];
     $('#pict-name').html($('#input-pict').val().split('\\').pop());
 });
 $('#btn-insert-image2').on('click', function (e) {
@@ -350,45 +352,66 @@ $('#input-pict7').on('change', function (e) {
     $('#pict-name7').html($('#input-pict7').val().split('\\').pop());
 });
 $('#btn-submit-apf').on('click', function (e) {
-    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv')
-        document.getElementById("form-apf").submit();
-    else
+    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv') {
+        if (global_name.toLowerCase().includes('apf'))
+            document.getElementById("form-apf").submit();
+        else
+            alert('Please insert APF file, containing "APF" in its name');
+    } else
         alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
 $('#btn-submit-ivr').on('click', function (e) {
-    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv')
-        document.getElementById("form-ivr-purchase").submit();
-    else
+    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv') {
+        if (global_name.toLowerCase().includes('ivr'))
+            document.getElementById("form-ivr-purchase").submit();
+        else
+            alert('Please insert IVR file, containing "IVR" in its name');
+    } else
         alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
 $('#btn-submit-act').on('click', function (e) {
-    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv')
-        document.getElementById("form-activation").submit();
-    else
+    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv') {
+        if (global_name.toLowerCase().includes('aqcuisition'))
+            document.getElementById("form-activation").submit();
+        else
+            alert('Please insert aqcuisition file, containing "aqcuisition" in its name');
+    } else
         alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
 $('#btn-submit-churn').on('click', function (e) {
-    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv')
-        document.getElementById("form-churn").submit();
-    else
+    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv') {
+        if (global_name.toLowerCase().includes('churn'))
+            document.getElementById("form-churn").submit();
+        else
+            alert('Please insert Churn file, containing "Churn" in its name');
+    } else
         alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
 $('#btn-submit-productive').on('click', function (e) {
-    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv')
-        document.getElementById("form-productive").submit();
-    else
+    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv') {
+        if (global_name.toLowerCase().includes('productive'))
+            document.getElementById("form-productive").submit();
+        else
+            alert('Please insert Productive file, containing "Productive" in its name');
+    } else
         alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
 $('#btn-submit-topup').on('click', function (e) {
-    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv')
-        document.getElementById("form-topup").submit();
-    else
+    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv') {
+        if (global_name.toLowerCase().includes('recharge'))
+            document.getElementById("form-topup").submit();
+        else
+            alert('Please insert Recharge file, containing "Recharge" in its name');
+    } else
         alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
 $('#btn-submit-sip').on('click', function (e) {
-    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv')
-        document.getElementById("form-sip").submit();
-    else
+    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv') {
+        if (global_name.toLowerCase().includes('sip'))
+            document.getElementById("form-sip").submit();
+        else
+            alert('Please insert SIP file, containing "SIP" in its name');
+    } else
         alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
 </script>
