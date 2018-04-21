@@ -760,12 +760,30 @@ class InventoryController extends BaseController {
 
     public function showResetReporting() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (Input::get('jenis') == 'ivr') {
-                DB::delete('DELETE FROM `r_stats` WHERE 1');
-                DB::delete('DELETE FROM `m_ivr` WHERE 1');
-                DB::delete('DELETE FROM `m_productive` WHERE 1');
-                DB::update('UPDATE `m_inventory` SET `ChurnDate`=NULL,`ActivationDate`=NULL,`ActivationStore`=NULL,`Channel`=NULL,`ApfDate`=NULL,`Apf-Activation`=NULL,`TopUpMSISDN`=NULL,`TopUpDate`=NULL WHERE 1');
+            if (Input::get('jenis') == 'reset_churn') {
+                DB::delete('DELETE FROM `r_stats` WHERE Status LIKE "%churn%" OR Status LIKE "%chact%"');
+                DB::update('UPDATE `m_inventory` SET `ChurnDate`=NULL WHERE 1');
                 return View::make('resetreporting')->withPage('reset reporting')->withSuccess('ok');
+            }
+            else if (Input::get('jenis') == 'reset_prod') {
+                DB::delete('DELETE FROM `r_stats` WHERE Status LIKE "%_sum%" OR Status LIKE "%services%');
+                DB::delete('DELETE FROM `m_productive` WHERE 1');
+                return View::make('resetreporting')->withPage('reset reporting')->withSuccessp('ok');
+            }
+            else if (Input::get('jenis') == 'reset_ivr') {
+                DB::delete('DELETE FROM `r_stats` WHERE Status > 10');
+                DB::delete('DELETE FROM `m_ivr` WHERE 1');
+                return View::make('resetreporting')->withPage('reset reporting')->withSuccessi('ok');
+            }
+            else if (Input::get('jenis') == 'reset_act') {
+                DB::delete('DELETE FROM `r_stats` WHERE Status LIKE "%activation%"');
+                DB::update('UPDATE `m_inventory` SET `ActivationDate`=NULL WHERE 1');
+                return View::make('resetreporting')->withPage('reset reporting')->withSuccessa('ok');
+            }
+            else if (Input::get('jenis') == 'reset_top') {
+                DB::delete('DELETE FROM `r_stats` WHERE Status LIKE "%topup%"');
+                DB::update('UPDATE `m_inventory` SET `TopUpDate`=NULL, TopUpMSISDN=NULL WHERE 1');
+                return View::make('resetreporting')->withPage('reset reporting')->withSuccesst('ok');
             }
         }
         return View::make('resetreporting')->withPage('reset reporting');
