@@ -764,23 +764,19 @@ class InventoryController extends BaseController {
                 DB::delete('DELETE FROM `r_stats` WHERE Status LIKE "%churn%" OR Status LIKE "%chact%"');
                 DB::update('UPDATE `m_inventory` SET `ChurnDate`=NULL WHERE 1');
                 return View::make('resetreporting')->withPage('reset reporting')->withSuccess('ok');
-            }
-            else if (Input::get('jenis') == 'reset_prod') {
+            } else if (Input::get('jenis') == 'reset_prod') {
                 DB::delete('DELETE FROM `r_stats` WHERE Status LIKE "%_sum%" OR Status LIKE "%services%');
                 DB::delete('DELETE FROM `m_productive` WHERE 1');
                 return View::make('resetreporting')->withPage('reset reporting')->withSuccessp('ok');
-            }
-            else if (Input::get('jenis') == 'reset_ivr') {
+            } else if (Input::get('jenis') == 'reset_ivr') {
                 DB::delete('DELETE FROM `r_stats` WHERE Status > 10');
                 DB::delete('DELETE FROM `m_ivr` WHERE 1');
                 return View::make('resetreporting')->withPage('reset reporting')->withSuccessi('ok');
-            }
-            else if (Input::get('jenis') == 'reset_act') {
+            } else if (Input::get('jenis') == 'reset_act') {
                 DB::delete('DELETE FROM `r_stats` WHERE Status LIKE "%activation%"');
                 DB::update('UPDATE `m_inventory` SET `ActivationDate`=NULL WHERE 1');
                 return View::make('resetreporting')->withPage('reset reporting')->withSuccessa('ok');
-            }
-            else if (Input::get('jenis') == 'reset_top') {
+            } else if (Input::get('jenis') == 'reset_top') {
                 DB::delete('DELETE FROM `r_stats` WHERE Status LIKE "%topup%"');
                 DB::update('UPDATE `m_inventory` SET `TopUpDate`=NULL, TopUpMSISDN=NULL WHERE 1');
                 return View::make('resetreporting')->withPage('reset reporting')->withSuccesst('ok');
@@ -1351,6 +1347,7 @@ class InventoryController extends BaseController {
                         $reader->open($filePath);
                         $arr_msisdn = [];
                         $arr_return = [];
+                        $arr_names = [];
                         foreach ($reader->getSheetIterator() as $sheet) {
                             foreach ($sheet->getRowIterator() as $rowNumber => $value) {
                                 if ($rowNumber > 1) {
@@ -1363,7 +1360,10 @@ class InventoryController extends BaseController {
                                         }
                                         array_push($arr_msisdn, $msisdn);
                                         $date_return = $value[6];
+                                        $date_return = str_replace('\'', '',$date_return);
                                         array_push($arr_return, $date_return);
+                                        $name = str_replace('\'', '',$value[1]);
+                                        array_push($arr_names, $name);
                                     }
                                 }
                             }
@@ -1374,22 +1374,24 @@ class InventoryController extends BaseController {
                         $counter = count($arr_msisdn);
                         $block = 40000;
                         for ($j = 1; $j <= ceil($counter / $block); $j++) {
-                            $cases = [];
+                            $cases1 = [];
+                            $cases2 = [];
                             $ids = [];
                             $params = [];
                             for ($i = 0 + (($j - 1) * $block); $i < $j * $block; $i++) {
                                 if ($i < $counter) {
-                                    $id = (int) $arr_msisdn[$i];
-                                    $cases[] = "WHEN {$id} then ?";
-                                    $params[] = $arr_return[$i];
-                                    $ids[] = $id;
+                                    $id = $arr_msisdn[$i];
+                                    $cases1[] = "WHEN '{$id}' then '{$arr_return[$i]}'";
+                                    $cases2[] = "WHEN '{$id}' then '{$arr_names[$i]}'";
+                                    $ids[] = '\'' . $id . '\'';
                                 } else {
                                     break;
                                 }
                             }
                             $ids = implode(',', $ids);
-                            $cases = implode(' ', $cases);
-                            DB::update("UPDATE `{$table}` SET `ActivationStore` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
+                            $cases1 = implode(' ', $cases1);
+                            $cases2 = implode(' ', $cases2);
+                            DB::update("UPDATE `{$table}` SET `ActivationStore` = CASE `MSISDN` {$cases1} END, `ActivationName` = CASE `MSISDN` {$cases2} END WHERE `MSISDN` in ({$ids})");
                         }
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumbersip($counter);
                     }
@@ -2733,27 +2735,70 @@ class InventoryController extends BaseController {
 
     static function postShipoutDashboard() {
         $year = Input::get("year");
-        $type = Input::get("type");
+//        $type = Input::get("type");
         $channel = Input::get("channel");
-        $arr_type = "'2','3'";
-        $data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        if ($type === 'SIM Card') {
-            $arr_type = "'1','4'";
+//        $year = '2016';
+//        $type = 'SIM Card';
+//        $channel = 'DIRECT';
+//        $arr_type = "'2','3'";
+//        $is_SIM = false;
+//        $data = [];
+//        if ($type === 'SIM Card') {
+//            $arr_type = "'1','4'";
+//            $is_SIM = true;
+//        }
+//        if ($is_SIM) {
+//            $simshipout = DB::table('m_inventory')
+//                            ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+//                            ->whereRaw('m_inventory.Type IN (' . $arr_type . ')')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+//                            ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel . '%')->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+//                            ->groupBy(DB::raw('MONTH(m_historymovement.Date), m_inventory.Type'))
+//                            ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month, m_inventory.Type as type'))->get();
+//            foreach($simshipout as $datas){
+//                if(!isset($data[$datas->type])){
+//                    $data[$datas->type] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//                }
+//                $data[$datas->type][$datas->month-1] = $datas->counter;
+//            }
+//            return $data;
+//        } else {
+//            $simshipout = DB::table('m_inventory')
+//                            ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+//                            ->whereRaw('m_inventory.Type IN (' . $arr_type . ')')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+//                            ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel . '%')->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+//                            ->groupBy(DB::raw('MONTH(m_historymovement.Date), SUBSTRING(m_inventory.SerialNumber, 1, 6)'))
+//                            ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month , SUBSTRING(m_inventory.SerialNumber, 1, 6) as type'))->get();
+//            foreach($simshipout as $datas){
+//                if(!isset($data[$datas->type])){
+//                    $data[$datas->type] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//                }
+//                $data[$datas->type][$datas->month-1] = $datas->counter;
+//            }
+//            return $data;
+//        }
+        $simshipout = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                        ->whereRaw('m_inventory.Type IN (1,4)')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                        ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel . '%')->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+                        ->groupBy(DB::raw('MONTH(m_historymovement.Date), m_inventory.Type'))
+                        ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month, m_inventory.Type as type'))->get();
+        foreach ($simshipout as $datas) {
+            if (!isset($data[$datas->type])) {
+                $data[$datas->type] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            }
+            $data[$datas->type][$datas->month - 1] = $datas->counter;
         }
         $simshipout = DB::table('m_inventory')
-                        ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
-                        ->whereRaw('m_inventory.Type IN (' . $arr_type . ')')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                            ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                        ->whereRaw('m_inventory.Type IN (2,3)')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
                         ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel . '%')->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
-                        ->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
-                        ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
-        for ($i = 0; $i < 12; $i++) {
-            for ($j = 0; $j < 12; $j++) {
-                if (isset($simshipout))
-                    if (isset($simshipout[$j]))
-                        if ($simshipout[$j]->month - 1 == $i) {
-                            $data[$i] = $simshipout[$j]->counter;
-                        }
+                        ->groupBy(DB::raw('MONTH(m_historymovement.Date), SUBSTRING(m_inventory.SerialNumber, 1, 6)'))
+                        ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month , SUBSTRING(m_inventory.SerialNumber, 1, 6) as type'))->get();
+        foreach ($simshipout as $datas) {
+            if (!isset($data[$datas->type])) {
+                $data[$datas->type] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             }
+            $data[$datas->type][$datas->month - 1] = $datas->counter;
         }
         return $data;
     }
@@ -2776,7 +2821,7 @@ class InventoryController extends BaseController {
 
             $allchan = DB::table('m_historymovement')
                             ->select(DB::raw(" DISTINCT SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'channel'"))->where('Status', 2)->get();
-            $myArr = array("SIM CARD SHIPOUT " . $year);
+            $myArr = array("SIM 3G SHIPOUT " . $year);
             $writer->addRow($myArr); // add a row at a time
             $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
             $writer->addRow($myArr); // add a row at a time
@@ -2785,7 +2830,7 @@ class InventoryController extends BaseController {
                 if ($channel->channel != '-' || $channel->channel != ' ') {
                     $simshipout = DB::table('m_inventory')
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
-                                    ->whereRaw('m_inventory.Type IN ("4","1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                                    ->whereRaw('m_inventory.Type IN ("1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
                                     ->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
@@ -2807,7 +2852,39 @@ class InventoryController extends BaseController {
             $myArr = array("TOTAL", $totalsim[0], $totalsim[1], $totalsim[2], $totalsim[3], $totalsim[4], $totalsim[5], $totalsim[6], $totalsim[7], $totalsim[8], $totalsim[9], $totalsim[10], $totalsim[11]);
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
-            $myArr = array("VOUCHERS SHIPOUT " . $year);
+            $totalsim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $myArr = array("SIM 4G SHIPOUT " . $year);
+            $writer->addRow($myArr); // add a row at a time
+            $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
+            $writer->addRow($myArr); // add a row at a time
+            foreach ($allchan as $channel) {
+                $idx1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if ($channel->channel != '-' || $channel->channel != ' ') {
+                    $simshipout = DB::table('m_inventory')
+                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                    ->whereRaw('m_inventory.Type IN ("4")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                                    ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+                                    ->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                                    ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+
+                    for ($i = 0; $i < 12; $i++) {
+                        for ($j = 0; $j < 12; $j++) {
+                            if (isset($simshipout))
+                                if (isset($simshipout[$j]))
+                                    if ($simshipout[$j]->month - 1 == $i) {
+                                        $idx1[$i] = $simshipout[$j]->counter;
+                                        $totalsim[$i] += $simshipout[$j]->counter;
+                                    }
+                        }
+                    }
+                    $myArr = array($channel->channel, $idx1[0], $idx1[1], $idx1[2], $idx1[3], $idx1[4], $idx1[5], $idx1[6], $idx1[7], $idx1[8], $idx1[9], $idx1[10], $idx1[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $myArr = array("TOTAL", $totalsim[0], $totalsim[1], $totalsim[2], $totalsim[3], $totalsim[4], $totalsim[5], $totalsim[6], $totalsim[7], $totalsim[8], $totalsim[9], $totalsim[10], $totalsim[11]);
+            $writer->addRow($myArr); // add a row at a time
+            $writer->addRow(['']);
+            $myArr = array("EVOC 300 SHIPOUT " . $year);
             $writer->addRow($myArr); // add a row at a time
             $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
             $writer->addRow($myArr); // add a row at a time
@@ -2819,7 +2896,143 @@ class InventoryController extends BaseController {
                     $vocshipout = DB::table('m_inventory')
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                     ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber','LIKE',"%KR0250%")
+                                    ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                                    ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+
+                    for ($i = 0; $i < 12; $i++) {
+                        for ($j = 0; $j < 12; $j++) {
+                            if (isset($vocshipout))
+                                if (isset($vocshipout[$j]))
+                                    if ($vocshipout[$j]->month - 1 == $i) {
+                                        $idx2[$i] = $vocshipout[$j]->counter;
+                                        $totalvoc[$i] += $vocshipout[$j]->counter;
+                                    }
+                        }
+                    }
+                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+            $writer->addRow($myArr); // add a row at a time
+            $writer->addRow(['']);
+            $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $myArr = array("EVOC 100 SHIPOUT " . $year);
+            $writer->addRow($myArr); // add a row at a time
+            $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
+            $writer->addRow($myArr); // add a row at a time
+
+
+            foreach ($allchan as $channel) {
+                $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if ($channel != '-' || $channel != ' ') {
+                    $vocshipout = DB::table('m_inventory')
+                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                    ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber',"LIKE","%KR0150%")
+                                    ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                                    ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+
+                    for ($i = 0; $i < 12; $i++) {
+                        for ($j = 0; $j < 12; $j++) {
+                            if (isset($vocshipout))
+                                if (isset($vocshipout[$j]))
+                                    if ($vocshipout[$j]->month - 1 == $i) {
+                                        $idx2[$i] = $vocshipout[$j]->counter;
+                                        $totalvoc[$i] += $vocshipout[$j]->counter;
+                                    }
+                        }
+                    }
+                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+            $writer->addRow($myArr); // add a row at a time
+            $writer->addRow(['']);
+            $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $myArr = array("EVOC 50 SHIPOUT " . $year);
+            $writer->addRow($myArr); // add a row at a time
+            $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
+            $writer->addRow($myArr); // add a row at a time
+
+
+            foreach ($allchan as $channel) {
+                $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if ($channel != '-' || $channel != ' ') {
+                    $vocshipout = DB::table('m_inventory')
+                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                    ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber',"LIKE","%KR0450%")
+                                    ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                                    ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+
+                    for ($i = 0; $i < 12; $i++) {
+                        for ($j = 0; $j < 12; $j++) {
+                            if (isset($vocshipout))
+                                if (isset($vocshipout[$j]))
+                                    if ($vocshipout[$j]->month - 1 == $i) {
+                                        $idx2[$i] = $vocshipout[$j]->counter;
+                                        $totalvoc[$i] += $vocshipout[$j]->counter;
+                                    }
+                        }
+                    }
+                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+            $writer->addRow($myArr); // add a row at a time
+            $writer->addRow(['']);
+            $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $myArr = array("PHVOC 100 SHIPOUT " . $year);
+            $writer->addRow($myArr); // add a row at a time
+            $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
+            $writer->addRow($myArr); // add a row at a time
+
+
+            foreach ($allchan as $channel) {
+                $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if ($channel != '-' || $channel != ' ') {
+                    $vocshipout = DB::table('m_inventory')
+                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                    ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber',"LIKE","%KR0350%")
+                                    ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                                    ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+
+                    for ($i = 0; $i < 12; $i++) {
+                        for ($j = 0; $j < 12; $j++) {
+                            if (isset($vocshipout))
+                                if (isset($vocshipout[$j]))
+                                    if ($vocshipout[$j]->month - 1 == $i) {
+                                        $idx2[$i] = $vocshipout[$j]->counter;
+                                        $totalvoc[$i] += $vocshipout[$j]->counter;
+                                    }
+                        }
+                    }
+                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+            $writer->addRow($myArr); // add a row at a time
+            $writer->addRow(['']);
+            $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $myArr = array("PHVOC 300 SHIPOUT " . $year);
+            $writer->addRow($myArr); // add a row at a time
+            $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
+            $writer->addRow($myArr); // add a row at a time
+
+
+            foreach ($allchan as $channel) {
+                $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if ($channel != '-' || $channel != ' ') {
+                    $vocshipout = DB::table('m_inventory')
+                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                    ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber',"LIKE","%KR1850%")
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
