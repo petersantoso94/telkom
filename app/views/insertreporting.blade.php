@@ -313,6 +313,7 @@ $('#btn-insert-image2').on('click', function (e) {
 });
 $('#input-pict2').on('change', function (e) {
     global_file_name = ($('#input-pict2').val().split('\\').pop()).split('.')[1];
+    global_name = ($('#input-pict2').val().split('\\').pop()).split('.')[0];
     $('#pict-name2').html($('#input-pict2').val().split('\\').pop());
 });
 $('#btn-insert-image3').on('click', function (e) {
@@ -320,6 +321,7 @@ $('#btn-insert-image3').on('click', function (e) {
 });
 $('#input-pict3').on('change', function (e) {
     $('#pict-name3').html($('#input-pict3').val().split('\\').pop());
+    global_name = ($('#input-pict3').val().split('\\').pop()).split('.')[0];
     global_file_name = ($('#input-pict3').val().split('\\').pop()).split('.')[1];
 });
 $('#btn-insert-image4').on('click', function (e) {
@@ -327,6 +329,7 @@ $('#btn-insert-image4').on('click', function (e) {
 });
 $('#input-pict4').on('change', function (e) {
     global_file_name = ($('#input-pict4').val().split('\\').pop()).split('.')[1];
+    global_name = ($('#input-pict4').val().split('\\').pop()).split('.')[0];
     $('#pict-name4').html($('#input-pict4').val().split('\\').pop());
 });
 $('#btn-insert-image5').on('click', function (e) {
@@ -334,6 +337,7 @@ $('#btn-insert-image5').on('click', function (e) {
 });
 $('#input-pict5').on('change', function (e) {
     global_file_name = ($('#input-pict5').val().split('\\').pop()).split('.')[1];
+    global_name = ($('#input-pict5').val().split('\\').pop()).split('.')[0];
     $('#pict-name5').html($('#input-pict5').val().split('\\').pop());
 });
 $('#btn-insert-image6').on('click', function (e) {
@@ -341,6 +345,7 @@ $('#btn-insert-image6').on('click', function (e) {
 });
 $('#input-pict6').on('change', function (e) {
     global_file_name = ($('#input-pict6').val().split('\\').pop()).split('.')[1];
+    global_name = ($('#input-pict6').val().split('\\').pop()).split('.')[0];
     $('#pict-name6').html($('#input-pict6').val().split('\\').pop());
 });
 
@@ -349,6 +354,7 @@ $('#btn-insert-image7').on('click', function (e) {
 });
 $('#input-pict7').on('change', function (e) {
     global_file_name = ($('#input-pict7').val().split('\\').pop()).split('.')[1];
+    global_name = ($('#input-pict7').val().split('\\').pop()).split('.')[0];
     $('#pict-name7').html($('#input-pict7').val().split('\\').pop());
 });
 $('#btn-submit-apf').on('click', function (e) {
