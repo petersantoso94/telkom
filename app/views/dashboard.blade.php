@@ -429,9 +429,9 @@
                                             <div class="row">
 
                                                 <!-- /.col -->
-                                                <div class="col-md-6 col-sm-6 col-xs-12">
-                                                    <div class="info-box">
-                                                        <div class="row margtop20">
+                                                <div class="info-box">
+                                                    <div class="row margtop20">
+                                                        <div class="col-xs-10">
                                                             Warehouse: 
                                                             <select data-placeholder="Choose a warehouse..." class="chosen-select" style="width: 100%" id="sim2_wh">
                                                                 <option selected="" value="">All</option>
@@ -444,7 +444,7 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
-                                                        <div class='row'>
+                                                        <div class="col-xs-10">
                                                             Year
                                                             <select style="width: 100%" id="sim2_year" class="chosen-select">
                                                                 @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
@@ -454,7 +454,7 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
-                                                        <div class="row">
+                                                        <div class="col-xs-10">
                                                             Sub Agent: 
                                                             <select data-placeholder="Choose a destination..." class="chosen-select"  style="width: 100%" id="sim2_subagent">
                                                                 <?php $counter = 0; ?>
@@ -471,7 +471,7 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
-                                                        <div class="row">
+                                                        <div class="col-xs-10">
                                                             Quartal: 
                                                             <select data-placeholder="Choose a destination..." class="chosen-select"  style="width: 100%" id="sim2_quartal">
                                                                 <option value="1" selected="">1</option>
@@ -480,16 +480,16 @@
                                                                 <option value="4">4</option>
                                                             </select>
                                                         </div>
-                                                        <div class="row margtop20 margbot20">
-                                                            <div class="col-sm-12"><button type="button" class="button btn-wide wide-h" id="btn_ceksn" style="background-color: #424242; color: white;">Put on Table</button></div>
-                                                            <button type="button" onclick="exportExcel(this)" data-id='1' data-nama='sim2'><span class="glyphicon glyphicon-export"></span></button> Export excel
-                                                            <div class="loader" id="loading-animation1" style="display:none;"></div>
-                                                        </div>
-
-                                                        <!-- /.info-box-content -->
                                                     </div>
-                                                    <!-- /.info-box -->
+                                                    <div class="row margtop20 margbot20">
+                                                        <div class="col-sm-12"><button type="button" class="button btn-wide wide-h" id="btn_ceksn" style="background-color: #424242; color: white;">Put on Table</button></div>
+                                                        <button type="button" onclick="exportExcel(this)" data-id='1' data-nama='sim2'><span class="glyphicon glyphicon-export"></span></button> Export excel
+                                                        <div class="loader" id="loading-animation1" style="display:none;"></div>
+                                                    </div>
+
+                                                    <!-- /.info-box-content -->
                                                 </div>
+                                                <!-- /.info-box -->
                                             </div>
                                             <div class="row">
                                                 <div class="white-pane__bordered margbot20">
@@ -518,9 +518,9 @@
                                             <div class="row">
 
                                                 <!-- /.col -->
-                                                <div class="col-md-6 col-sm-6 col-xs-12">
-                                                    <div class="info-box">
-                                                        <div class='row margbot20'>
+                                                <div class="info-box">
+                                                    <div class='row margbot20'>
+                                                        <div class="col-md-6">
                                                             Year:
                                                             <select style="width: 100%" id="shipout_year" class="chosen-select">
                                                                 @foreach(DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year)
@@ -530,14 +530,14 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
-                                                        <div class='row margbot20'>
+<!--                                                        <div class="col-md-6">
                                                             Type:
                                                             <select style="width: 100%" id="shipout_type" class="chosen-select">
                                                                 <option value='SIM Card'>SIM Card</option>
                                                                 <option value='Voucher'>Voucher</option>
                                                             </select>
-                                                        </div>
-                                                        <div class='row'>
+                                                        </div>-->
+                                                        <div class="col-md-6">
                                                             Channel:
                                                             <select style="width: 100%" id="shipout_channel" class="chosen-select">
                                                                 @foreach(DB::table('m_historymovement')->select(DB::raw(" DISTINCT SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'channel'"))->where('Status', 2)->get() as $channel)
@@ -545,15 +545,15 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
-                                                        <div class="row margtop20 margbot20">
-                                                            <div class="col-sm-12"><button type="button" class="button btn-wide wide-h" id="btn_set_table" style="background-color: #424242; color: white;">Set</button></div>
-                                                            <button type="button" onclick="exportExcel(this)" data-id='2' data-nama='shipout'><span class="glyphicon glyphicon-export"></span></button> Export list detail excel
-                                                            <div class="loader" id="loading-animation2" style="display:none;"></div>
-                                                        </div>
-                                                        <!-- /.info-box-content -->
                                                     </div>
-                                                    <!-- /.info-box -->
+                                                    <div class="row margtop20 margbot20">
+                                                        <div class="col-sm-6"><button type="button" class="button btn-wide wide-h" id="btn_set_table" style="background-color: #424242; color: white;">Set</button></div>
+                                                        <button type="button" onclick="exportExcel(this)" data-id='2' data-nama='shipout'><span class="glyphicon glyphicon-export"></span></button> Export list detail excel
+                                                        <div class="loader" id="loading-animation2" style="display:none;"></div>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
                                                 </div>
+                                                <!-- /.info-box -->
                                             </div>
                                             <div class="row margbot20">
                                                 <div class="white-pane__bordered margbot20">
@@ -562,6 +562,7 @@
                                                     <table id="example" class="display table-rwd table-inventory table text-center" cellspacing="0" width="100%">
                                                         <thead>
                                                             <tr>
+                                                                <th>Type</th>
                                                                 <th>January</th>
                                                                 <th>February</th>
                                                                 <th>March</th>
@@ -574,6 +575,7 @@
                                                                 <th>October</th>
                                                                 <th>November</th>
                                                                 <th>December</th>
+                                                                <th>Total</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody id="shipout_table_container">
@@ -1514,7 +1516,7 @@
                             $.each(data, function (index, value) {
                                 var colorName = colorNames[barChartData3.datasets.length % colorNames.length];
                                 var dsColor = window.chartColors[colorName];
-                                if(index === 'no service')
+                                if (index === 'no service')
                                     dsColor = '#000000';
                                 barChartData3.datasets.push({
                                     label: index,
@@ -1747,8 +1749,8 @@
                     table_container.innerHTML = '<h4>Shipout Reporting ' + argyear + '</h4>';
                 });
 
-                $('#shipout_type').on('change', function (e) {
-                    var argtype = document.getElementById('shipout_type').value;
+                $('#shipout_channel').on('change', function (e) {
+                    var argtype = document.getElementById('shipout_channel').value;
                     var table_container = document.getElementById('h5container');
                     table_container.innerHTML = '<h5>' + argtype + '</h5>';
                 });
@@ -1790,18 +1792,41 @@
                 $('#btn_set_table').on('click', function (e) {
                     var argyear = document.getElementById('shipout_year').value;
                     var argchannel = document.getElementById('shipout_channel').value;
-                    var argtype = document.getElementById('shipout_type').value;
+//                    var argtype = document.getElementById('shipout_type').value;
                     var text_html = '';
                     var table_container = document.getElementById('shipout_table_container');
-                    $.post(postShipoutDashboard, {type: argtype, year: argyear, channel: argchannel}, function (data) {
+                    document.getElementById("loading-animation2").style.display = "block";
+                    $.post(postShipoutDashboard, {year: argyear, channel: argchannel}, function (data) {
 
                     }).done(function (data) {
-                        text_html += "<tr>";
-                        data.forEach(function setPerData(item) {
-                            text_html += "<td>" + item + "</td>";
+                        $.each(data, function (key, val) {
+                            var total = 0;
+                            var header = '';
+                            text_html += "<tr>";
+                            if (key == '1')
+                                header = 'SIM 3G';
+                            else if (key == '4')
+                                header = 'SIM 4G';
+                            else if (key.toUpperCase() == 'KR0250')
+                                header = 'EVOC 300';
+                            else if (key.toUpperCase() == 'KR0150')
+                                header = 'EVOC 100';
+                            else if (key.toUpperCase() == 'KR0450')
+                                header = 'EVOC 50';
+                            else if (key.toUpperCase() == 'KR0350')
+                                header = 'PHVOC 100';
+                            else if (key.toUpperCase() == 'KR1850')
+                                header = 'PHVOC 300';
+                            text_html += "<td>" + header + "</td>";
+                            val.forEach(function setPerData(item) {
+                                text_html += "<td>" + item + "</td>";
+                                total += parseInt(item);
+                            });
+                            text_html += "<td>" + total + "</td>";
+                            text_html += "</tr>";
+                            table_container.innerHTML = text_html;
                         });
-                        text_html += "</tr>";
-                        table_container.innerHTML = text_html;
+                        document.getElementById("loading-animation2").style.display = "none";
                     });
                 });
                 var refreshTable = function () {
@@ -1864,9 +1889,9 @@
                     var table_container = document.getElementById('h4container');
                     table_container.innerHTML = '<h4>Shipout Reporting ' + argyear + '</h4>';
 
-                    var argtype = document.getElementById('shipout_type').value;
-                    var table_container2 = document.getElementById('h5container');
-                    table_container2.innerHTML = '<h5>' + argtype + '</h5>';
+//                    var argtype = document.getElementById('shipout_type').value;
+//                    var table_container2 = document.getElementById('h5container');
+//                    table_container2.innerHTML = '<h5>' + argtype + '</h5>';
                     $('ul.excel-report li').click(function (e) {
                         $(".chosen-select").chosen("destroy");
                         $(".chosen-select").chosen({width: '100%'});
