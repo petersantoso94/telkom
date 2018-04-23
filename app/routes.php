@@ -42,7 +42,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('exportExcel/{start}', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
     Route::post('exportExcel', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
     Route::post('exportExcelDashboard', array('as' => 'exportExcelDashboard', 'before' => '', 'uses' => 'InventoryController@exportExcelDashboard'));
-    Route::post('exportExcelShipoutDashboard', array('as' => 'exportExcelShipoutDashboard', 'before' => '', 'uses' => 'InventoryController@exportExcelShipoutDashboard'));
+    Route::any('exportExcelShipoutDashboard', array('as' => 'exportExcelShipoutDashboard', 'before' => '', 'uses' => 'InventoryController@exportExcelShipoutDashboard'));
     Route::any('exportExcelWeeklyDashboard', array('as' => 'exportExcelWeeklyDashboard', 'before' => '', 'uses' => 'InventoryController@exportExcelWeeklyDashboard'));
     Route::post('exportExcelSIM1Dashboard', array('as' => 'exportExcelSIM1Dashboard', 'before' => '', 'uses' => 'InventoryController@exportExcelSIM1Dashboard'));
     Route::post('addInv', array('as' => 'addInv', 'before' => '', 'uses' => 'InventoryController@addInv'));
