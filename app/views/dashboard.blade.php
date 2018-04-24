@@ -420,6 +420,7 @@
                                 <div class="nav-tabs-custom">
                                     <ul class="nav nav-tabs excel-report">
                                         <li class="active"><a href="#excel_shipout_container" data-toggle="tab" aria-expanded="true">Shipout Reporting</a></li>
+                                        <li><a href="#excel_shipin_container" data-toggle="tab" aria-expanded="true">Per Customer Reporting</a></li>
                                         <li><a href="#excel_weekly_container" data-toggle="tab" aria-expanded="true">Weekly Performance</a></li>
                                         <li><a href="#excel_sim1_container" data-toggle="tab" aria-expanded="true">Sub Agent #1</a></li>
                                         <li><a href="#excel_sim2_container" data-toggle="tab" aria-expanded="true">Sub Agent SIM card #2</a></li>
@@ -530,13 +531,13 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
-<!--                                                        <div class="col-md-6">
-                                                            Type:
-                                                            <select style="width: 100%" id="shipout_type" class="chosen-select">
-                                                                <option value='SIM Card'>SIM Card</option>
-                                                                <option value='Voucher'>Voucher</option>
-                                                            </select>
-                                                        </div>-->
+                                                        <!--                                                        <div class="col-md-6">
+                                                                                                                    Type:
+                                                                                                                    <select style="width: 100%" id="shipout_type" class="chosen-select">
+                                                                                                                        <option value='SIM Card'>SIM Card</option>
+                                                                                                                        <option value='Voucher'>Voucher</option>
+                                                                                                                    </select>
+                                                                                                                </div>-->
                                                         <div class="col-md-6">
                                                             Channel:
                                                             <select style="width: 100%" id="shipout_channel" class="chosen-select">
@@ -583,6 +584,31 @@
                                                         </tbody>
                                                     </table>
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane active" id="excel_shipin_container">
+                                            <div class="row">
+                                                <!-- /.col -->
+                                                <div class="info-box">
+<!--                                                    <div class='row margbot20'>
+                                                        <div class="col-md-6">
+                                                            Year:
+                                                            <select style="width: 100%" id="shipin_year" class="chosen-select">
+                                                                @foreach(DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year)
+                                                                @if($year->year >0)
+                                                                <option value="{{$year->year}}">{{$year->year}}</option>
+                                                                @endif
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>-->
+                                                    <div class="row margtop20 margbot20">
+                                                        <button type="button" onclick="exportExcel(this)" data-id='8' data-nama='shipin'><span class="glyphicon glyphicon-export"></span></button> Export list detail excel
+                                                        <div class="loader" id="loading-animation8" style="display:none;"></div>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
                                             </div>
                                         </div>
                                         <div class="tab-pane" id="excel_weekly_container">
@@ -1860,6 +1886,8 @@
                         exportExcelLink = '<?php echo Route('exportExcelShipoutDashboard') ?>';
                     else if (id_concate == 'weekly')
                         exportExcelLink = '<?php echo Route('exportExcelWeeklyDashboard') ?>';
+                    else if (id_concate == 'shipin')
+                        exportExcelLink = '<?php echo Route('exportExcelUserDashboard') ?>';
 
                     $.post(exportExcelLink, {argyear: year, argsubagent: subagent, argwh: wh}, function (data) {
 
