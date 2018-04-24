@@ -157,9 +157,9 @@ class InventoryController extends BaseController {
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_sn); $i++) {
                         if ($i == 0)
-                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                         else
-                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
                     DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
@@ -330,9 +330,9 @@ class InventoryController extends BaseController {
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_sn); $i++) {
                         if ($i == 0)
-                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                         else
-                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
                     DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
@@ -433,9 +433,9 @@ class InventoryController extends BaseController {
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_sn); $i++) {
                         if ($i == 0)
-                            $for_raw .= "('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= "('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                         else
-                            $for_raw .= ",('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= ",('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
                     DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
@@ -765,7 +765,7 @@ class InventoryController extends BaseController {
                 DB::update('UPDATE `m_inventory` SET `ChurnDate`=NULL WHERE 1');
                 return View::make('resetreporting')->withPage('reset reporting')->withSuccess('ok');
             } else if (Input::get('jenis') == 'reset_prod') {
-                DB::delete('DELETE FROM `r_stats` WHERE Status LIKE "%_sum%" OR Status LIKE "%services%');
+                DB::delete('DELETE FROM `r_stats` WHERE Status LIKE "%_sum%" OR Status LIKE "%services%"');
                 DB::delete('DELETE FROM `m_productive` WHERE 1');
                 return View::make('resetreporting')->withPage('reset reporting')->withSuccessp('ok');
             } else if (Input::get('jenis') == 'reset_ivr') {
@@ -1323,9 +1323,9 @@ class InventoryController extends BaseController {
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
                             $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i];
                             if ($i == 0)
-                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "','99','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
+                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,'" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
                             else
-                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "','99','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
+                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,'" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
                         }
                         DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Unik=Unik;");
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberpr(count($arr_msisdn));
@@ -1360,9 +1360,9 @@ class InventoryController extends BaseController {
                                         }
                                         array_push($arr_msisdn, $msisdn);
                                         $date_return = $value[6];
-                                        $date_return = str_replace('\'', '',$date_return);
+                                        $date_return = str_replace('\'', '', $date_return);
                                         array_push($arr_return, $date_return);
-                                        $name = str_replace('\'', '',$value[1]);
+                                        $name = str_replace('\'', '', $value[1]);
                                         array_push($arr_names, $name);
                                     }
                                 }
@@ -2777,7 +2777,7 @@ class InventoryController extends BaseController {
 //            return $data;
 //        }
         $simshipout = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                        ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                         ->whereRaw('m_inventory.Type IN (1,4)')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
                         ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel . '%')->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
                         ->groupBy(DB::raw('MONTH(m_historymovement.Date), m_inventory.Type'))
@@ -2789,7 +2789,7 @@ class InventoryController extends BaseController {
             $data[$datas->type][$datas->month - 1] = $datas->counter;
         }
         $simshipout = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                        ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                         ->whereRaw('m_inventory.Type IN (2,3)')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
                         ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel . '%')->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
                         ->groupBy(DB::raw('MONTH(m_historymovement.Date), SUBSTRING(m_inventory.SerialNumber, 1, 6)'))
@@ -2801,6 +2801,61 @@ class InventoryController extends BaseController {
             $data[$datas->type][$datas->month - 1] = $datas->counter;
         }
         return $data;
+    }
+
+    static function exportExcelUserDashboard() {
+//        $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+//        $filePath = public_path() . "/user_report_allyears.xlsx";
+//        $writer->openToFile($filePath);
+//
+//        $myArr = array("All User  Reporting");
+//        $writer->addRow($myArr); // add a row at a time
+//        $myArr = array("Name", "Activation Date", "Churn Date", "Total Top Up (NTD)", "Last Top Up Date", "Service Usage", "Last Service Usage Date");
+//        $writer->addRow($myArr); // add a row at a time
+//        $servername = "localhost";
+//        $username = "root";
+//        $password = "";
+//        $dbname = "telkom2";
+//
+//// Create connection
+//        $conn = new mysqli($servername, $username, $password, $dbname);
+//// Check connection
+//        if ($conn->connect_error) {
+//            die("Connection failed: " . $conn->connect_error);
+//        }
+//
+//        $sql = "SELECT inv1.`ActivationDate`,inv1.`ActivationName`, (SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN`) as 'Total Voucher Purchased', (SELECT inv2.`TopUpDate` FROM `m_inventory` as inv2  WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` ORDER BY inv2.`TopUpDate` DESC LIMIT 1) as 'Last Date Purchased voucher', (SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN`) as 'Service Used', (SELECT CONCAT(prod.`Month`,prod.`Year`) FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) as 'Last Date Used Service'  FROM `m_inventory` as inv1 WHERE inv1.`ActivationName` IS NOT NULL";
+//        $result = $conn->query($sql);
+//        dd($result);
+        $simtopup = DB::table('m_inventory as inv1')
+                        ->whereRaw('inv1.ActivationName IS NOT NULL')
+                        ->select(DB::raw('inv1.`ActivationDate`,inv1.`ActivationName`,inv1.`ChurnDate`, (SELECT SUM(inv2.`VocValue`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN`) as "TotalVoucherPurchased"'
+                                        . ', (SELECT inv2.`TopUpDate` FROM `m_inventory` as inv2  WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` ORDER BY inv2.`TopUpDate` DESC LIMIT 1) as "LastDatePurchasedVoucher"'
+                                        . ', (SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN`) as "ServiceUsed", '
+                                        . '(SELECT CONCAT(prod.`Month`,prod.`Year`) FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) as "LastDateUsedService"'))->get();
+        dd($simtopup);
+        foreach ($simtopup as $data) {
+            $stats = "no service";
+            if ($data->ServiceUsed == '1') {
+                $stats = 'Voice only';
+            } else if ($data->ServiceUsed == '2') {
+                $stats = 'Internet only';
+            } else if ($data->ServiceUsed == '3') {
+                $stats = 'Voice + Internet';
+            } else if ($data->ServiceUsed == '5') {
+                $stats = 'SMS only';
+            } else if ($data->ServiceUsed == '6') {
+                $stats = 'Voice + SMS';
+            } else if ($data->ServiceUsed == '7') {
+                $stats = 'Internet + SMS';
+            } else if ($data->ServiceUsed == '8') {
+                $stats = 'All';
+            }
+            $myArr = array($data->ActivationName, $data->ActivationDate, $data->ChurnDate, $data->TotalVoucherPurchased, $data->LastDatePurchasedVoucher, $stats, $data->LastDateUsedService);
+            $writer->addRow($myArr); // add a row at a time
+        }
+        $writer->close();
+        return '/user_report_allyears.xlsx';
     }
 
     static function exportExcelShipoutDashboard() {
@@ -2896,7 +2951,7 @@ class InventoryController extends BaseController {
                     $vocshipout = DB::table('m_inventory')
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                     ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber','LIKE',"%KR0250%")
+                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', 'LIKE', "%KR0250%")
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
@@ -2930,7 +2985,7 @@ class InventoryController extends BaseController {
                     $vocshipout = DB::table('m_inventory')
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                     ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber',"LIKE","%KR0150%")
+                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR0150%")
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
@@ -2964,7 +3019,7 @@ class InventoryController extends BaseController {
                     $vocshipout = DB::table('m_inventory')
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                     ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber',"LIKE","%KR0450%")
+                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR0450%")
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
@@ -2998,7 +3053,7 @@ class InventoryController extends BaseController {
                     $vocshipout = DB::table('m_inventory')
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                     ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber',"LIKE","%KR0350%")
+                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR0350%")
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
@@ -3032,7 +3087,7 @@ class InventoryController extends BaseController {
                     $vocshipout = DB::table('m_inventory')
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                     ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber',"LIKE","%KR1850%")
+                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR1850%")
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
