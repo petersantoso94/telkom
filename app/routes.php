@@ -43,6 +43,8 @@ Route::group(array('before' => 'auth'), function() {
     Route::post('exportExcel', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
     Route::post('exportExcelDashboard', array('as' => 'exportExcelDashboard', 'before' => '', 'uses' => 'InventoryController@exportExcelDashboard'));
     Route::any('exportExcelShipoutDashboard', array('as' => 'exportExcelShipoutDashboard', 'before' => '', 'uses' => 'InventoryController@exportExcelShipoutDashboard'));
+    Route::any('exportExcelShipinDashboard', array('as' => 'exportExcelShipinDashboard', 'before' => '', 'uses' => 'InventoryController@exportExcelShipinDashboard'));
+    Route::any('exportExcelUsageDashboard', array('as' => 'exportExcelUsageDashboard', 'before' => '', 'uses' => 'InventoryController@exportExcelUsageDashboard'));
     Route::any('exportExcelUserDashboard', array('as' => 'exportExcelUserDashboard', 'before' => '', 'uses' => 'InventoryController@exportExcelUserDashboard'));
     Route::any('exportExcelWeeklyDashboard', array('as' => 'exportExcelWeeklyDashboard', 'before' => '', 'uses' => 'InventoryController@exportExcelWeeklyDashboard'));
     Route::post('exportExcelSIM1Dashboard', array('as' => 'exportExcelSIM1Dashboard', 'before' => '', 'uses' => 'InventoryController@exportExcelSIM1Dashboard'));
@@ -59,6 +61,8 @@ Route::group(array('before' => 'auth'), function() {
     Route::post('postWarehouse', array('as' => 'postWarehouse', 'before' => '', 'uses' => 'InventoryController@postWarehouse'));
     Route::any('postDashboard', array('as' => 'postDashboard', 'before' => '', 'uses' => 'InventoryController@postDashboard'));
     Route::any('postShipoutDashboard', array('as' => 'postShipoutDashboard', 'before' => '', 'uses' => 'InventoryController@postShipoutDashboard'));
+    Route::any('postUsageDashboard', array('as' => 'postUsageDashboard', 'before' => '', 'uses' => 'InventoryController@postUsageDashboard'));
+    Route::any('postShipinDashboard', array('as' => 'postShipinDashboard', 'before' => '', 'uses' => 'InventoryController@postShipinDashboard'));
     Route::post('postST', array('as' => 'postST', 'before' => '', 'uses' => 'InventoryController@postST'));
     Route::post('delST', array('as' => 'delST', 'before' => '', 'uses' => 'InventoryController@delST'));
     Route::get('getFS', array('as' => 'getFS', 'before' => '', 'uses' => 'InventoryController@getFS'));
