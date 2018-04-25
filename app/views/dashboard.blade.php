@@ -420,7 +420,9 @@
                                 <div class="nav-tabs-custom">
                                     <ul class="nav nav-tabs excel-report">
                                         <li class="active"><a href="#excel_shipout_container" data-toggle="tab" aria-expanded="true">Shipout Reporting</a></li>
-                                        <li><a href="#excel_shipin_container" data-toggle="tab" aria-expanded="true">Per Customer Reporting</a></li>
+                                        <li><a href="#excel_shipin_container" data-toggle="tab" aria-expanded="true">Shipin Reporting</a></li>
+                                        <li><a href="#excel_usage_container" data-toggle="tab" aria-expanded="true">Usage Reporting</a></li>
+                                        <li><a href="#excel_user_container" data-toggle="tab" aria-expanded="true">Per Customer Reporting</a></li>
                                         <li><a href="#excel_weekly_container" data-toggle="tab" aria-expanded="true">Weekly Performance</a></li>
                                         <li><a href="#excel_sim1_container" data-toggle="tab" aria-expanded="true">Sub Agent #1</a></li>
                                         <li><a href="#excel_sim2_container" data-toggle="tab" aria-expanded="true">Sub Agent SIM card #2</a></li>
@@ -586,7 +588,119 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="tab-pane active" id="excel_shipin_container">
+                                        <div class="tab-pane" id="excel_shipin_container">
+                                            <div class="row">
+
+                                                <!-- /.col -->
+                                                <div class="info-box">
+                                                    <div class='row margbot20'>
+                                                        <div class="col-md-6">
+                                                            Year:
+                                                            <select style="width: 100%" id="shipin_year" class="chosen-select">
+                                                                @foreach(DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year)
+                                                                @if($year->year >0)
+                                                                <option value="{{$year->year}}">{{$year->year}}</option>
+                                                                @endif
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row margtop20 margbot20">
+                                                        <div class="col-sm-6"><button type="button" class="button btn-wide wide-h" id="btn_set_table2" style="background-color: #424242; color: white;">Set</button></div>
+                                                        <button type="button" onclick="exportExcel(this)" data-id='10' data-nama='shipin'><span class="glyphicon glyphicon-export"></span></button> Export list detail excel
+                                                        <div class="loader" id="loading-animation10" style="display:none;"></div>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                            <div class="row margbot20">
+                                                <div class="white-pane__bordered margbot20">
+                                                    <div id="h4container2"></div>
+                                                    <div id="h5container2"></div>
+                                                    <table id="example" class="display table-rwd table-inventory table text-center" cellspacing="0" width="100%">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Type</th>
+                                                                <th>January</th>
+                                                                <th>February</th>
+                                                                <th>March</th>
+                                                                <th>April</th>
+                                                                <th>May</th>
+                                                                <th>June</th>
+                                                                <th>July</th>
+                                                                <th>August</th>
+                                                                <th>September</th>
+                                                                <th>October</th>
+                                                                <th>November</th>
+                                                                <th>December</th>
+                                                                <th>Total</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="shipin_table_container">
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane" id="excel_usage_container">
+                                            <div class="row">
+
+                                                <!-- /.col -->
+                                                <div class="info-box">
+                                                    <div class='row margbot20'>
+                                                        <div class="col-md-6">
+                                                            Year:
+                                                            <select style="width: 100%" id="usage_year" class="chosen-select">
+                                                                @foreach(DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year)
+                                                                @if($year->year >0)
+                                                                <option value="{{$year->year}}">{{$year->year}}</option>
+                                                                @endif
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row margtop20 margbot20">
+                                                        <div class="col-sm-6"><button type="button" class="button btn-wide wide-h" id="btn_set_table3" style="background-color: #424242; color: white;">Set</button></div>
+                                                        <button type="button" onclick="exportExcel(this)" data-id='11' data-nama='usage'><span class="glyphicon glyphicon-export"></span></button> Export list detail excel
+                                                        <div class="loader" id="loading-animation11" style="display:none;"></div>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                            <div class="row margbot20">
+                                                <div class="white-pane__bordered margbot20">
+                                                    <div id="h4container3"></div>
+                                                    <div id="h5container3"></div>
+                                                    <table id="example" class="display table-rwd table-inventory table text-center" cellspacing="0" width="100%">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Type</th>
+                                                                <th>January</th>
+                                                                <th>February</th>
+                                                                <th>March</th>
+                                                                <th>April</th>
+                                                                <th>May</th>
+                                                                <th>June</th>
+                                                                <th>July</th>
+                                                                <th>August</th>
+                                                                <th>September</th>
+                                                                <th>October</th>
+                                                                <th>November</th>
+                                                                <th>December</th>
+                                                                <th>Total</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="usage_table_container">
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane" id="excel_user_container">
                                             <div class="row">
                                                 <!-- /.col -->
                                                 <div class="info-box">
@@ -1768,6 +1882,8 @@
                 var table = '';
                 var postDashboard = '<?php echo Route('postDashboard') ?>';
                 var postShipoutDashboard = '<?php echo Route('postShipoutDashboard') ?>';
+                var postShipinDashboard = '<?php echo Route('postShipinDashboard') ?>';
+                var postUsageDashboard = '<?php echo Route('postUsageDashboard') ?>';
 
                 $('#shipout_year').on('change', function (e) {
                     var argyear = document.getElementById('shipout_year').value;
@@ -1778,6 +1894,28 @@
                 $('#shipout_channel').on('change', function (e) {
                     var argtype = document.getElementById('shipout_channel').value;
                     var table_container = document.getElementById('h5container');
+                    table_container.innerHTML = '<h5>' + argtype + '</h5>';
+                });
+                $('#shipin_year').on('change', function (e) {
+                    var argyear = document.getElementById('shipin_year').value;
+                    var table_container = document.getElementById('h4container2');
+                    table_container.innerHTML = '<h4>Shipin Reporting ' + argyear + '</h4>';
+                });
+
+                $('#shipin_channel').on('change', function (e) {
+                    var argtype = document.getElementById('shipin_channel').value;
+                    var table_container = document.getElementById('h5container2');
+                    table_container.innerHTML = '<h5>' + argtype + '</h5>';
+                });
+                $('#usage_year').on('change', function (e) {
+                    var argyear = document.getElementById('usage_year').value;
+                    var table_container = document.getElementById('h4container3');
+                    table_container.innerHTML = '<h4>Usage Reporting ' + argyear + '</h4>';
+                });
+
+                $('#usage_channel').on('change', function (e) {
+                    var argtype = document.getElementById('usage_channel').value;
+                    var table_container = document.getElementById('h5container3');
                     table_container.innerHTML = '<h5>' + argtype + '</h5>';
                 });
 
@@ -1855,6 +1993,86 @@
                         document.getElementById("loading-animation2").style.display = "none";
                     });
                 });
+                $('#btn_set_table2').on('click', function (e) {
+                    var argyear = document.getElementById('shipin_year').value;
+//                    var argchannel = document.getElementById('shipin_channel').value;
+//                    var argtype = document.getElementById('shipout_type').value;
+                    var text_html = '';
+                    var table_container = document.getElementById('shipin_table_container');
+                    document.getElementById("loading-animation10").style.display = "block";
+                    $.post(postShipinDashboard, {year: argyear}, function (data) {
+
+                    }).done(function (data) {
+                        $.each(data, function (key, val) {
+                            var total = 0;
+                            var header = '';
+                            text_html += "<tr>";
+                            if (key == '1')
+                                header = 'SIM 3G';
+                            else if (key == '4')
+                                header = 'SIM 4G';
+                            else if (key.toUpperCase() == 'KR0250')
+                                header = 'EVOC 300';
+                            else if (key.toUpperCase() == 'KR0150')
+                                header = 'EVOC 100';
+                            else if (key.toUpperCase() == 'KR0450')
+                                header = 'EVOC 50';
+                            else if (key.toUpperCase() == 'KR0350')
+                                header = 'PHVOC 100';
+                            else if (key.toUpperCase() == 'KR1850')
+                                header = 'PHVOC 300';
+                            text_html += "<td>" + header + "</td>";
+                            val.forEach(function setPerData(item) {
+                                text_html += "<td>" + item + "</td>";
+                                total += parseInt(item);
+                            });
+                            text_html += "<td>" + total + "</td>";
+                            text_html += "</tr>";
+                            table_container.innerHTML = text_html;
+                        });
+                        document.getElementById("loading-animation10").style.display = "none";
+                    });
+                });
+                $('#btn_set_table3').on('click', function (e) {
+                    var argyear = document.getElementById('usage_year').value;
+//                    var argchannel = document.getElementById('shipin_channel').value;
+//                    var argtype = document.getElementById('shipout_type').value;
+                    var text_html = '';
+                    var table_container = document.getElementById('usage_table_container');
+                    document.getElementById("loading-animation11").style.display = "block";
+                    $.post(postUsageDashboard, {year: argyear}, function (data) {
+
+                    }).done(function (data) {
+                        $.each(data, function (key, val) {
+                            var total = 0;
+                            var header = '';
+                            text_html += "<tr>";
+                            if (key == '1')
+                                header = 'SIM 3G';
+                            else if (key == '4')
+                                header = 'SIM 4G';
+                            else if (key.toUpperCase() == 'KR0250')
+                                header = 'EVOC 300';
+                            else if (key.toUpperCase() == 'KR0150')
+                                header = 'EVOC 100';
+                            else if (key.toUpperCase() == 'KR0450')
+                                header = 'EVOC 50';
+                            else if (key.toUpperCase() == 'KR0350')
+                                header = 'PHVOC 100';
+                            else if (key.toUpperCase() == 'KR1850')
+                                header = 'PHVOC 300';
+                            text_html += "<td>" + header + "</td>";
+                            val.forEach(function setPerData(item) {
+                                text_html += "<td>" + item + "</td>";
+                                total += parseInt(item);
+                            });
+                            text_html += "<td>" + total + "</td>";
+                            text_html += "</tr>";
+                            table_container.innerHTML = text_html;
+                        });
+                        document.getElementById("loading-animation11").style.display = "none";
+                    });
+                });
                 var refreshTable = function () {
                     if ($.fn.dataTable.isDataTable('#example')) {
                         table.fnDestroy();
@@ -1884,10 +2102,14 @@
                         exportExcelLink = '<?php echo Route('exportExcelDashboard') ?>';
                     else if (id_concate == 'shipout')
                         exportExcelLink = '<?php echo Route('exportExcelShipoutDashboard') ?>';
+                    else if (id_concate == 'shipin')
+                        exportExcelLink = '<?php echo Route('exportExcelShipinDashboard') ?>';
                     else if (id_concate == 'weekly')
                         exportExcelLink = '<?php echo Route('exportExcelWeeklyDashboard') ?>';
                     else if (id_concate == 'shipin')
                         exportExcelLink = '<?php echo Route('exportExcelUserDashboard') ?>';
+                    else if (id_concate == 'usage')
+                        exportExcelLink = '<?php echo Route('exportExcelUsageDashboard') ?>';
 
                     $.post(exportExcelLink, {argyear: year, argsubagent: subagent, argwh: wh}, function (data) {
 
