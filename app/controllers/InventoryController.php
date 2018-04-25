@@ -6,7 +6,7 @@ class InventoryController extends BaseController {
         return sprintf("%'.19d\n", $num);
     }
 
-    public function showInsertInventory4() { #sim
+    public function showInsertInventory2() { #sim
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
@@ -181,7 +181,7 @@ class InventoryController extends BaseController {
         return View::make('insertinventory')->withPage('insert inventory');
     }
 
-    public function showInsertInventory2() { #vocher
+    public function showInsertInventory4() { #vocher
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
@@ -2742,7 +2742,7 @@ class InventoryController extends BaseController {
 //        $channel = 'DIRECT';
 //        $arr_type = "'2','3'";
 //        $is_SIM = false;
-//        $data = [];
+        $data = [];
 //        if ($type === 'SIM Card') {
 //            $arr_type = "'1','4'";
 //            $is_SIM = true;
@@ -2803,6 +2803,56 @@ class InventoryController extends BaseController {
         return $data;
     }
 
+    static function postShipinDashboard() {
+        $year = Input::get("year");
+//        $type = Input::get("type");
+        $channel = Input::get("channel");
+        $data = [];
+        $simshipout = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                        ->whereRaw('m_inventory.Type IN (1,4)')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                        ->where('m_historymovement.Status', '0')->where('m_historymovement.Deleted', '0')
+                        ->groupBy(DB::raw('MONTH(m_historymovement.Date), m_inventory.Type'))
+                        ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month, m_inventory.Type as type'))->get();
+        foreach ($simshipout as $datas) {
+            if (!isset($data[$datas->type])) {
+                $data[$datas->type] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            }
+            $data[$datas->type][$datas->month - 1] = $datas->counter;
+        }
+        $simshipout = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                        ->whereRaw('m_inventory.Type IN (2,3)')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                        ->where('m_historymovement.Status', '0')->where('m_historymovement.Deleted', '0')
+                        ->groupBy(DB::raw('MONTH(m_historymovement.Date), SUBSTRING(m_inventory.SerialNumber, 1, 6)'))
+                        ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month , SUBSTRING(m_inventory.SerialNumber, 1, 6) as type'))->get();
+        foreach ($simshipout as $datas) {
+            if (!isset($data[$datas->type])) {
+                $data[$datas->type] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            }
+            $data[$datas->type][$datas->month - 1] = $datas->counter;
+        }
+        return $data;
+    }
+    static function postUsageDashboard() {
+        $year = Input::get("year");
+//        $year = '2017';
+//        $type = Input::get("type");
+//        $channel = Input::get("channel");
+        $data = [];
+        $simshipout = DB::table('m_inventory')
+                        ->whereRaw('Type IN (2,3)')->whereRaw('YEAR(TopUpDate) = ' . $year)->whereRaw('TopUpMSISDN IS NOT NULL')
+                        ->groupBy(DB::raw('MONTH(TopUpDate), SUBSTRING(SerialNumber, 1, 6)'))
+                        ->select(DB::raw('count(SerialNumber) as counter, MONTH(TopUpDate) as month , SUBSTRING(SerialNumber, 1, 6) as type'))->get();
+        foreach ($simshipout as $datas) {
+            if (!isset($data[$datas->type])) {
+                $data[$datas->type] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            }
+            $data[$datas->type][$datas->month - 1] = $datas->counter;
+        }
+        return $data;
+    }
+
     static function exportExcelUserDashboard() {
 //        $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
 //        $filePath = public_path() . "/user_report_allyears.xlsx";
@@ -2824,15 +2874,17 @@ class InventoryController extends BaseController {
 //            die("Connection failed: " . $conn->connect_error);
 //        }
 //
-//        $sql = "SELECT inv1.`ActivationDate`,inv1.`ActivationName`, (SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN`) as 'Total Voucher Purchased', (SELECT inv2.`TopUpDate` FROM `m_inventory` as inv2  WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` ORDER BY inv2.`TopUpDate` DESC LIMIT 1) as 'Last Date Purchased voucher', (SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN`) as 'Service Used', (SELECT CONCAT(prod.`Month`,prod.`Year`) FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) as 'Last Date Used Service'  FROM `m_inventory` as inv1 WHERE inv1.`ActivationName` IS NOT NULL";
+//        $sql = "SELECT inv1.`ActivationDate`,inv1.`ActivationName`, (SELECT inv2.`TopUpDate` FROM `m_inventory` as inv2  WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` ORDER BY inv2.`TopUpDate` DESC LIMIT 1) as 'Last Date Purchased voucher' FROM `m_inventory` as inv1 WHERE inv1.`ActivationName` IS NOT NULL";
 //        $result = $conn->query($sql);
 //        dd($result);
         $simtopup = DB::table('m_inventory as inv1')
-                        ->whereRaw('inv1.ActivationName IS NOT NULL')
-                        ->select(DB::raw('inv1.`ActivationDate`,inv1.`ActivationName`,inv1.`ChurnDate`, (SELECT SUM(inv2.`VocValue`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN`) as "TotalVoucherPurchased"'
-                                        . ', (SELECT inv2.`TopUpDate` FROM `m_inventory` as inv2  WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` ORDER BY inv2.`TopUpDate` DESC LIMIT 1) as "LastDatePurchasedVoucher"'
-                                        . ', (SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN`) as "ServiceUsed", '
-                                        . '(SELECT CONCAT(prod.`Month`,prod.`Year`) FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) as "LastDateUsedService"'))->get();
+                ->whereRaw('inv1.ActivationName IS NOT NULL')
+                ->select(DB::raw("inv1.`ActivationDate`,inv1.`ActivationName`,inv1.`ChurnDate`,"
+//                                . "(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN`) as 'Total Voucher Purchased',"
+//                                . "(SELECT inv2.`TopUpDate` FROM `m_inventory` as inv2  WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` ORDER BY inv2.`TopUpDate` DESC LIMIT 1) as 'Last Date Purchased voucher', "
+                                . "(SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN`) as 'Service Used', "
+                                . "(SELECT CONCAT(prod.`Month`,prod.`Year`) FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) as 'Last Date Used Service'"))
+                ->get();
         dd($simtopup);
         foreach ($simtopup as $data) {
             $stats = "no service";
@@ -3111,6 +3163,162 @@ class InventoryController extends BaseController {
         }
         $writer->close();
         return "/shippout_report_allyears.xlsx";
+    }
+
+    static function exportExcelShipinDashboard() {
+//        $year = Input::get("argyear");
+//        $year = "2017";
+        $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+        $filePath = public_path() . "/shipin_report_allyears.xlsx";
+        $writer->openToFile($filePath);
+
+        $myArr = array("Shipin Reporting");
+        $writer->addRow($myArr); // add a row at a time
+
+        foreach (DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year) {
+            $year = $year->year;
+            $myArr = array("SHIPIN " . $year);
+            $writer->addRow($myArr); // add a row at a time
+            $myArr = array("TYPE", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year, "TOTAL");
+            $writer->addRow($myArr); // add a row at a time
+            $simshipout = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                            ->whereRaw('m_inventory.Type IN (1,4)')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                            ->where('m_historymovement.Status', '0')->where('m_historymovement.Deleted', '0')
+                            ->groupBy(DB::raw('MONTH(m_historymovement.Date), m_inventory.Type'))
+                            ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month, m_inventory.Type as type'))->get();
+            $data = [];
+            $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            foreach ($simshipout as $datas) {
+                $key = $datas->type;
+                $header = "";
+                if ($key == '1')
+                    $header = 'SIM 3G';
+                else if ($key == '4')
+                    $header = 'SIM 4G';
+                else if (strtoupper($key) == 'KR0250')
+                    $header = 'EVOC 300';
+                else if (strtoupper($key) == 'KR0150')
+                    $header = 'EVOC 100';
+                else if (strtoupper($key) == 'KR0450')
+                    $header = 'EVOC 50';
+                else if (strtoupper($key) == 'KR0350')
+                    $header = 'PHVOC 100';
+                else if (strtoupper($key) == 'KR1850')
+                    $header = 'PHVOC 300';
+                if (!isset($data[$header])) {
+                    $data[$header] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                }
+                $data[$header][$datas->month - 1] = $datas->counter;
+            }
+            foreach ($data as $key => $val) {
+                for ($i = 0; $i < 12; $i++) {
+                    $totalvoc[$i] += $val[$i];
+                }
+                $myArr = array($key, $val[0], $val[1], $val[2], $val[3], $val[4], $val[5], $val[6], $val[7], $val[8], $val[9], $val[10], $val[11], array_sum($val));
+                $writer->addRow($myArr); // add a row at a time
+            }
+
+            $simshipout = DB::table('m_inventory')
+                            ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                            ->whereRaw('m_inventory.Type IN (2,3)')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                            ->where('m_historymovement.Status', '0')->where('m_historymovement.Deleted', '0')
+                            ->groupBy(DB::raw('MONTH(m_historymovement.Date), SUBSTRING(m_inventory.SerialNumber, 1, 6)'))
+                            ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month , SUBSTRING(m_inventory.SerialNumber, 1, 6) as type'))->get();
+            $data = [];
+            foreach ($simshipout as $datas) {
+                $key = $datas->type;
+                $header = "";
+                if ($key == '1')
+                    $header = 'SIM 3G';
+                else if ($key == '4')
+                    $header = 'SIM 4G';
+                else if (strtoupper($key) == 'KR0250')
+                    $header = 'EVOC 300';
+                else if (strtoupper($key) == 'KR0150')
+                    $header = 'EVOC 100';
+                else if (strtoupper($key) == 'KR0450')
+                    $header = 'EVOC 50';
+                else if (strtoupper($key) == 'KR0350')
+                    $header = 'PHVOC 100';
+                else if (strtoupper($key) == 'KR1850')
+                    $header = 'PHVOC 300';
+                if (!isset($data[$header])) {
+                    $data[$header] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                }
+                $data[$header][$datas->month - 1] = $datas->counter;
+            }
+            foreach ($data as $key => $val) {
+                for ($i = 0; $i < 12; $i++) {
+                    $totalvoc[$i] += $val[$i];
+                }
+                $myArr = array($key, $val[0], $val[1], $val[2], $val[3], $val[4], $val[5], $val[6], $val[7], $val[8], $val[9], $val[10], $val[11], array_sum($val));
+                $writer->addRow($myArr); // add a row at a time
+            }
+            $myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+            $writer->addRow($myArr); // add a row at a time
+            $writer->addRow(['']);
+        }
+        $writer->close();
+        return "/shipin_report_allyears.xlsx";
+    }
+    static function exportExcelUsageDashboard() {
+//        $year = Input::get("argyear");
+//        $year = "2017";
+        $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+        $filePath = public_path() . "/usage_report_allyears.xlsx";
+        $writer->openToFile($filePath);
+
+        $myArr = array("Usage Reporting");
+        $writer->addRow($myArr); // add a row at a time
+
+        foreach (DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year) {
+            $year = $year->year;
+            $myArr = array("USAGE " . $year);
+            $writer->addRow($myArr); // add a row at a time
+            $myArr = array("TYPE", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year, "TOTAL");
+            $writer->addRow($myArr); // add a row at a time
+            $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $simshipout = DB::table('m_inventory')
+                            ->whereRaw('Type IN (2,3)')->whereRaw('YEAR(TopUpDate) = ' . $year)
+                            ->groupBy(DB::raw('MONTH(TopUpDate), SUBSTRING(SerialNumber, 1, 6)'))
+                            ->select(DB::raw('count(SerialNumber) as counter, MONTH(TopUpDate) as month , SUBSTRING(SerialNumber, 1, 6) as type'))->get();
+            $data = [];
+            foreach ($simshipout as $datas) {
+                $key = $datas->type;
+                $header = "";
+                if ($key == '1')
+                    $header = 'SIM 3G';
+                else if ($key == '4')
+                    $header = 'SIM 4G';
+                else if (strtoupper($key) == 'KR0250')
+                    $header = 'EVOC 300';
+                else if (strtoupper($key) == 'KR0150')
+                    $header = 'EVOC 100';
+                else if (strtoupper($key) == 'KR0450')
+                    $header = 'EVOC 50';
+                else if (strtoupper($key) == 'KR0350')
+                    $header = 'PHVOC 100';
+                else if (strtoupper($key) == 'KR1850')
+                    $header = 'PHVOC 300';
+                if (!isset($data[$header])) {
+                    $data[$header] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                }
+                $data[$header][$datas->month - 1] = $datas->counter;
+            }
+            foreach ($data as $key => $val) {
+                for ($i = 0; $i < 12; $i++) {
+                    $totalvoc[$i] += $val[$i];
+                }
+                $myArr = array($key, $val[0], $val[1], $val[2], $val[3], $val[4], $val[5], $val[6], $val[7], $val[8], $val[9], $val[10], $val[11], array_sum($val));
+                $writer->addRow($myArr); // add a row at a time
+            }
+            $myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+            $writer->addRow($myArr); // add a row at a time
+            $writer->addRow(['']);
+        }
+        $writer->close();
+        return "/usage_report_allyears.xlsx";
     }
 
     static function exportExcel2($filter) {
