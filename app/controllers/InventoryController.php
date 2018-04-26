@@ -1019,20 +1019,20 @@ class InventoryController extends BaseController {
                                 foreach ($sheet->getRowIterator() as $rowNumber => $value) {
                                     if ($rowNumber > 1) {
                                         // do stuff with the row
-                                        $msisdn = (string) $value[2];
+                                        $msisdn = (string) $value[3];
                                         if ($msisdn != '' && $msisdn != null) {
                                             $msisdn = str_replace('\'', '', $msisdn);
                                             if (substr($msisdn, 0, 1) === '0') {
                                                 $msisdn = substr($msisdn, 1);
                                             }
                                             array_push($arr_msisdn, $msisdn);
-                                            $date_return = $value[1];
+                                            $date_return = $value[2];
                                             //$date_return = explode('/', $date_return);
                                             //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                             $date_return = strtotime($date_return);
                                             $date_return = date('Y-m-d', $date_return);
                                             if (substr($date_return, 0, 4) === '1970') {
-                                                $date_return = $value[1];
+                                                $date_return = $value[2];
                                                 $date_return = explode('/', $date_return);
                                                 $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                                 $date_return = strtotime($date_return);
@@ -2834,12 +2834,23 @@ class InventoryController extends BaseController {
         }
         return $data;
     }
+
     static function postUsageDashboard() {
         $year = Input::get("year");
 //        $year = '2017';
 //        $type = Input::get("type");
 //        $channel = Input::get("channel");
         $data = [];
+        $simshipout = DB::table('m_inventory')
+                        ->whereRaw('Type IN (1,4)')->whereRaw('YEAR(ActivationDate) = ' . $year)
+                        ->groupBy(DB::raw('MONTH(ActivationDate), Type'))
+                        ->select(DB::raw('count(SerialNumber) as counter, MONTH(ActivationDate) as month , Type'))->get();
+        foreach ($simshipout as $datas) {
+            if (!isset($data[$datas->Type])) {
+                $data[$datas->Type] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            }
+            $data[$datas->Type][$datas->month - 1] = $datas->counter;
+        }
         $simshipout = DB::table('m_inventory')
                         ->whereRaw('Type IN (2,3)')->whereRaw('YEAR(TopUpDate) = ' . $year)->whereRaw('TopUpMSISDN IS NOT NULL')
                         ->groupBy(DB::raw('MONTH(TopUpDate), SUBSTRING(SerialNumber, 1, 6)'))
@@ -2854,38 +2865,23 @@ class InventoryController extends BaseController {
     }
 
     static function exportExcelUserDashboard() {
-//        $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
-//        $filePath = public_path() . "/user_report_allyears.xlsx";
-//        $writer->openToFile($filePath);
+        $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+        $filePath = public_path() . "/user_report_allyears.xlsx";
+        $writer->openToFile($filePath);
 //
-//        $myArr = array("All User  Reporting");
-//        $writer->addRow($myArr); // add a row at a time
-//        $myArr = array("Name", "Activation Date", "Churn Date", "Total Top Up (NTD)", "Last Top Up Date", "Service Usage", "Last Service Usage Date");
-//        $writer->addRow($myArr); // add a row at a time
-//        $servername = "localhost";
-//        $username = "root";
-//        $password = "";
-//        $dbname = "telkom2";
-//
-//// Create connection
-//        $conn = new mysqli($servername, $username, $password, $dbname);
-//// Check connection
-//        if ($conn->connect_error) {
-//            die("Connection failed: " . $conn->connect_error);
-//        }
-//
-//        $sql = "SELECT inv1.`ActivationDate`,inv1.`ActivationName`, (SELECT inv2.`TopUpDate` FROM `m_inventory` as inv2  WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` ORDER BY inv2.`TopUpDate` DESC LIMIT 1) as 'Last Date Purchased voucher' FROM `m_inventory` as inv1 WHERE inv1.`ActivationName` IS NOT NULL";
-//        $result = $conn->query($sql);
-//        dd($result);
+        $myArr = array("All User  Reporting");
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("Name", "Activation Date", "Churn Date", "Total Top Up (NTD)", "Last Top Up Date", "Service Usage", "Last Service Usage Date");
+        $writer->addRow($myArr); // add a row at a time
+        
         $simtopup = DB::table('m_inventory as inv1')
-                ->whereRaw('inv1.ActivationName IS NOT NULL')
-                ->select(DB::raw("inv1.`ActivationDate`,inv1.`ActivationName`,inv1.`ChurnDate`,"
-//                                . "(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN`) as 'Total Voucher Purchased',"
-//                                . "(SELECT inv2.`TopUpDate` FROM `m_inventory` as inv2  WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` ORDER BY inv2.`TopUpDate` DESC LIMIT 1) as 'Last Date Purchased voucher', "
-                                . "(SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN`) as 'Service Used', "
-                                . "(SELECT CONCAT(prod.`Month`,prod.`Year`) FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) as 'Last Date Used Service'"))
-                ->get();
-        dd($simtopup);
+                        ->whereRaw('inv1.ActivationName IS NOT NULL')
+                        ->select(DB::raw("inv1.`ActivationDate`,inv1.`ActivationName`,inv1.`ChurnDate`"
+                                        . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN`) as 'TotalVoucherPurchased'"
+                                        . ",(SELECT inv2.`TopUpDate` FROM `m_inventory` as inv2  WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` ORDER BY inv2.`TopUpDate` DESC LIMIT 1) as 'LastDatePurchasedVoucher' "
+                                        . ",(SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN`) as 'ServiceUsed' "
+                                        . ",(SELECT CONCAT(prod.`Month`,prod.`Year`) FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) as 'LastDateUsedService'"
+                        ))->get();
         foreach ($simtopup as $data) {
             $stats = "no service";
             if ($data->ServiceUsed == '1') {
@@ -3262,6 +3258,7 @@ class InventoryController extends BaseController {
         $writer->close();
         return "/shipin_report_allyears.xlsx";
     }
+
     static function exportExcelUsageDashboard() {
 //        $year = Input::get("argyear");
 //        $year = "2017";
@@ -3279,6 +3276,40 @@ class InventoryController extends BaseController {
             $myArr = array("TYPE", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year, "TOTAL");
             $writer->addRow($myArr); // add a row at a time
             $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $simshipout = DB::table('m_inventory')
+                            ->whereRaw('Type IN (1,4)')->whereRaw('YEAR(ActivationDate) = ' . $year)
+                            ->groupBy(DB::raw('MONTH(ActivationDate), Type'))
+                            ->select(DB::raw('count(SerialNumber) as counter, MONTH(ActivationDate) as month , Type'))->get();
+            $data = [];
+            foreach ($simshipout as $datas) {
+                $key = $datas->Type;
+                $header = "";
+                if ($key == '1')
+                    $header = 'SIM 3G';
+                else if ($key == '4')
+                    $header = 'SIM 4G';
+                else if (strtoupper($key) == 'KR0250')
+                    $header = 'EVOC 300';
+                else if (strtoupper($key) == 'KR0150')
+                    $header = 'EVOC 100';
+                else if (strtoupper($key) == 'KR0450')
+                    $header = 'EVOC 50';
+                else if (strtoupper($key) == 'KR0350')
+                    $header = 'PHVOC 100';
+                else if (strtoupper($key) == 'KR1850')
+                    $header = 'PHVOC 300';
+                if (!isset($data[$header])) {
+                    $data[$header] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                }
+                $data[$header][$datas->month - 1] = $datas->counter;
+            }
+            foreach ($data as $key => $val) {
+                for ($i = 0; $i < 12; $i++) {
+                    $totalvoc[$i] += $val[$i];
+                }
+                $myArr = array($key, $val[0], $val[1], $val[2], $val[3], $val[4], $val[5], $val[6], $val[7], $val[8], $val[9], $val[10], $val[11], array_sum($val));
+                $writer->addRow($myArr); // add a row at a time
+            }
             $simshipout = DB::table('m_inventory')
                             ->whereRaw('Type IN (2,3)')->whereRaw('YEAR(TopUpDate) = ' . $year)
                             ->groupBy(DB::raw('MONTH(TopUpDate), SUBSTRING(SerialNumber, 1, 6)'))
