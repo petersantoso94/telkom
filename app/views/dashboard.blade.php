@@ -1950,6 +1950,7 @@
                         }).done(function () {
                             refreshTable();
                             document.getElementById("loading-animation1").style.display = "none";
+                            window.scrollBy(0, 200);
                         });
                     }
                 });
