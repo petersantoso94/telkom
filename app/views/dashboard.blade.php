@@ -717,7 +717,7 @@
                                                         </div>
                                                     </div>-->
                                                     <div class="row margtop20 margbot20">
-                                                        <button type="button" onclick="exportExcel(this)" data-id='8' data-nama='shipin'><span class="glyphicon glyphicon-export"></span></button> Export list detail excel
+                                                        <button type="button" onclick="exportExcel(this)" data-id='8' data-nama='user'><span class="glyphicon glyphicon-export"></span></button> Export list detail excel
                                                         <div class="loader" id="loading-animation8" style="display:none;"></div>
                                                     </div>
                                                     <!-- /.info-box-content -->
@@ -2106,7 +2106,7 @@
                         exportExcelLink = '<?php echo Route('exportExcelShipinDashboard') ?>';
                     else if (id_concate == 'weekly')
                         exportExcelLink = '<?php echo Route('exportExcelWeeklyDashboard') ?>';
-                    else if (id_concate == 'shipin')
+                    else if (id_concate == 'user')
                         exportExcelLink = '<?php echo Route('exportExcelUserDashboard') ?>';
                     else if (id_concate == 'usage')
                         exportExcelLink = '<?php echo Route('exportExcelUsageDashboard') ?>';
