@@ -377,10 +377,10 @@ $('#btn-submit-ivr').on('click', function (e) {
 });
 $('#btn-submit-act').on('click', function (e) {
     if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv') {
-        if (global_name.toLowerCase().includes('aqcuisition'))
+        if (global_name.toLowerCase().includes('acquisition'))
             document.getElementById("form-activation").submit();
         else
-            alert('Please insert aqcuisition file, containing "aqcuisition" in its name');
+            alert('Please insert acquisition file, containing "acquisition" in its name');
     } else
         alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
