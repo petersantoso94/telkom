@@ -216,6 +216,44 @@
         </form>
     </div>
     <div class='col-xs-8'>
+        <form method="POST" accept-charset="UTF-8" enctype="multipart/form-data" id='form-productive-tst'>
+            <div class="white-pane__bordered margbot20">
+                <div class="row">
+                    <?php if (isset($numberprtst)) { ?>
+                        <?php if ($numberprtst > 0) { ?>
+                            <div class="alert alert-success alert-dismissible" role="alert" style="width: 98%; margin: 1%">
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                Successfully inserting {{$numberprtst}} data.
+                            </div>
+                        <?php } ?>
+                    <?php } ?>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h4>Productive MSISDN TST</h4>
+                    </div>
+                </div>
+                <div class="row margtop20">
+                    <div class="col-xs-8">
+                        <div class="form-group">
+                            <div class="col-md-12">
+                                <input type="file" name="sample_file" class="vis-hide" style="height:0px; overflow: hidden" id="input-pict8" data-validation="required" required>
+                                <button type="button" class="button btndef btn-mini no-shadow" id="btn-insert-image8"><span class="glyphicon glyphicon-picture cgrey"></span> insert file</button>
+                                <span id='pict-name8'></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" name='jenis' value='productive-tst'>
+                <div class="row margtop20">
+                    <div class="col-xs-8">
+                        <button type="button" id='btn-submit-productive-tst' class="button btnblue btn-wide wide-h" style="background-color: #424242; color: white;">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class='col-xs-8'>
         <form method="POST" accept-charset="UTF-8" enctype="multipart/form-data" id='form-topup'>
             <div class="white-pane__bordered margbot20">
                 <div class="row">
@@ -357,6 +395,14 @@ $('#input-pict7').on('change', function (e) {
     global_name = ($('#input-pict7').val().split('\\').pop()).split('.')[0];
     $('#pict-name7').html($('#input-pict7').val().split('\\').pop());
 });
+$('#btn-insert-image8').on('click', function (e) {
+    $('#input-pict8').click();
+});
+$('#input-pict8').on('change', function (e) {
+    global_file_name = ($('#input-pict8').val().split('\\').pop()).split('.')[1];
+    global_name = ($('#input-pict8').val().split('\\').pop()).split('.')[0];
+    $('#pict-name8').html($('#input-pict8').val().split('\\').pop());
+});
 $('#btn-submit-apf').on('click', function (e) {
     if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv') {
         if (global_name.toLowerCase().includes('apf'))
@@ -395,10 +441,19 @@ $('#btn-submit-churn').on('click', function (e) {
 });
 $('#btn-submit-productive').on('click', function (e) {
     if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv') {
-        if (global_name.toLowerCase().includes('productive'))
+        if (global_name.toLowerCase().includes('productive') && global_name.toLowerCase().includes('hk'))
             document.getElementById("form-productive").submit();
         else
-            alert('Please insert Productive file, containing "Productive" in its name');
+            alert('Please insert Productive file, containing "Productive HK" in its name');
+    } else
+        alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
+});
+$('#btn-submit-productive-tst').on('click', function (e) {
+    if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv') {
+        if (global_name.toLowerCase().includes('productive') && global_name.toLowerCase().includes('tst'))
+            document.getElementById("form-productive-tst").submit();
+        else
+            alert('Please insert Productive file, containing "Productive TST" in its name');
     } else
         alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
