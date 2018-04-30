@@ -450,10 +450,10 @@ $('#btn-submit-productive').on('click', function (e) {
 });
 $('#btn-submit-productive-tst').on('click', function (e) {
     if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv') {
-        if (global_name.toLowerCase().includes('productive') && global_name.toLowerCase().includes('tst'))
+        if (global_name.toLowerCase().includes('mkt'))
             document.getElementById("form-productive-tst").submit();
         else
-            alert('Please insert Productive file, containing "Productive TST" in its name');
+            alert('Please insert Productive file, containing "MKT" in its name');
     } else
         alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
