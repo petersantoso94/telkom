@@ -1438,6 +1438,10 @@ class InventoryController extends BaseController {
                             $date_temp = $real_filename;
                             $date_temp = explode("_", $date_temp)[2];
                             $month_temp = substr($date_temp, 4, 2);
+                            $month_temp = (int) $month_temp - 1;
+                            if(strlen($month_temp) === 1){
+                                $month_temp = "0".$month_temp;
+                            }
                             $year_temp = substr($date_temp, 0, 4);
                             if (substr($date_temp, 0, 1) === '2') {
                                 foreach ($sheet->getRowIterator() as $rowNumber => $value) {
@@ -1451,7 +1455,6 @@ class InventoryController extends BaseController {
                                                 $msisdn = substr($msisdn, 1);
                                             }
                                             array_push($arr_msisdn, $msisdn);
-                                            $month_temp = (int)$month_temp -1;
                                             array_push($arr_month, $month_temp);
                                             array_push($arr_year, $year_temp);
                                             array_push($arr_mo, $value[4]);
