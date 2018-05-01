@@ -1640,6 +1640,31 @@ class InventoryController extends BaseController {
         }
         return $data;
     }
+    
+    static function getCHURN2() {
+        $year = Input::get('year');
+//        $year = '2017';
+        $data["Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Churn%\'')->get();
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $data["Churn"][($ivr->Month - 1)] = $ivr->Counter;
+            }
+        }
+        return $data;
+    }
+    static function getSubsriber() {
+        $year = Input::get('year');
+//        $year = '2017';
+        $data["Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Activation%\'')->get();
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $data["Subscriber"][($ivr->Month - 1)] = $ivr->Counter;
+            }
+        }
+        return $data;
+    }
 
     static function getProductive() {
         $year = Input::get('year');
@@ -3139,7 +3164,7 @@ class InventoryController extends BaseController {
             $myArr = array("TOTAL", $totalsim[0], $totalsim[1], $totalsim[2], $totalsim[3], $totalsim[4], $totalsim[5], $totalsim[6], $totalsim[7], $totalsim[8], $totalsim[9], $totalsim[10], $totalsim[11]);
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
-            $myArr = array("EVOC 300 SHIPOUT " . $year);
+            $myArr = array("eVC 300 SHIPOUT " . $year);
             $writer->addRow($myArr); // add a row at a time
             $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
             $writer->addRow($myArr); // add a row at a time
@@ -3173,7 +3198,7 @@ class InventoryController extends BaseController {
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
             $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            $myArr = array("EVOC 100 SHIPOUT " . $year);
+            $myArr = array("eVC 100 SHIPOUT " . $year);
             $writer->addRow($myArr); // add a row at a time
             $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
             $writer->addRow($myArr); // add a row at a time
@@ -3207,7 +3232,7 @@ class InventoryController extends BaseController {
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
             $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            $myArr = array("EVOC 50 SHIPOUT " . $year);
+            $myArr = array("eVC 50 SHIPOUT " . $year);
             $writer->addRow($myArr); // add a row at a time
             $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
             $writer->addRow($myArr); // add a row at a time
@@ -3241,7 +3266,7 @@ class InventoryController extends BaseController {
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
             $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            $myArr = array("PHVOC 100 SHIPOUT " . $year);
+            $myArr = array("phVC 100 SHIPOUT " . $year);
             $writer->addRow($myArr); // add a row at a time
             $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
             $writer->addRow($myArr); // add a row at a time
@@ -3275,7 +3300,7 @@ class InventoryController extends BaseController {
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
             $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            $myArr = array("PHVOC 300 SHIPOUT " . $year);
+            $myArr = array("phVC 300 SHIPOUT " . $year);
             $writer->addRow($myArr); // add a row at a time
             $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
             $writer->addRow($myArr); // add a row at a time
@@ -3345,15 +3370,15 @@ class InventoryController extends BaseController {
                 else if ($key == '4')
                     $header = 'SIM 4G';
                 else if (strtoupper($key) == 'KR0250')
-                    $header = 'EVOC 300';
+                    $header = 'eVC 300';
                 else if (strtoupper($key) == 'KR0150')
-                    $header = 'EVOC 100';
+                    $header = 'eVC 100';
                 else if (strtoupper($key) == 'KR0450')
-                    $header = 'EVOC 50';
+                    $header = 'eVC 50';
                 else if (strtoupper($key) == 'KR0350')
-                    $header = 'PHVOC 100';
+                    $header = 'phVC 100';
                 else if (strtoupper($key) == 'KR1850')
-                    $header = 'PHVOC 300';
+                    $header = 'phVC 300';
                 if (!isset($data[$header])) {
                     $data[$header] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 }
@@ -3382,15 +3407,15 @@ class InventoryController extends BaseController {
                 else if ($key == '4')
                     $header = 'SIM 4G';
                 else if (strtoupper($key) == 'KR0250')
-                    $header = 'EVOC 300';
+                    $header = 'eVC 300';
                 else if (strtoupper($key) == 'KR0150')
-                    $header = 'EVOC 100';
+                    $header = 'eVC 100';
                 else if (strtoupper($key) == 'KR0450')
-                    $header = 'EVOC 50';
+                    $header = 'eVC 50';
                 else if (strtoupper($key) == 'KR0350')
-                    $header = 'PHVOC 100';
+                    $header = 'phVC 100';
                 else if (strtoupper($key) == 'KR1850')
-                    $header = 'PHVOC 300';
+                    $header = 'phVC 300';
                 if (!isset($data[$header])) {
                     $data[$header] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 }
@@ -3441,15 +3466,15 @@ class InventoryController extends BaseController {
                 else if ($key == '4')
                     $header = 'SIM 4G';
                 else if (strtoupper($key) == 'KR0250')
-                    $header = 'EVOC 300';
+                    $header = 'eVC 300';
                 else if (strtoupper($key) == 'KR0150')
-                    $header = 'EVOC 100';
+                    $header = 'eVC 100';
                 else if (strtoupper($key) == 'KR0450')
-                    $header = 'EVOC 50';
+                    $header = 'eVC 50';
                 else if (strtoupper($key) == 'KR0350')
-                    $header = 'PHVOC 100';
+                    $header = 'phVC 100';
                 else if (strtoupper($key) == 'KR1850')
-                    $header = 'PHVOC 300';
+                    $header = 'phVC 300';
                 if (!isset($data[$header])) {
                     $data[$header] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 }
@@ -3475,15 +3500,15 @@ class InventoryController extends BaseController {
                 else if ($key == '4')
                     $header = 'SIM 4G';
                 else if (strtoupper($key) == 'KR0250')
-                    $header = 'EVOC 300';
+                    $header = 'eVC 300';
                 else if (strtoupper($key) == 'KR0150')
-                    $header = 'EVOC 100';
+                    $header = 'eVC 100';
                 else if (strtoupper($key) == 'KR0450')
-                    $header = 'EVOC 50';
+                    $header = 'eVC 50';
                 else if (strtoupper($key) == 'KR0350')
-                    $header = 'PHVOC 100';
+                    $header = 'phVC 100';
                 else if (strtoupper($key) == 'KR1850')
-                    $header = 'PHVOC 300';
+                    $header = 'phVC 300';
                 if (!isset($data[$header])) {
                     $data[$header] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 }
