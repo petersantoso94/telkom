@@ -3021,15 +3021,17 @@ class InventoryController extends BaseController {
 //
         $myArr = array("All User  Reporting");
         $writer->addRow($myArr); // add a row at a time
-        $myArr = array("Name", "Activation Date", "Churn Date", "Total Top Up (NTD)", "Last Top Up Date", "Service Usage", "Last Service Usage Date");
+        $myArr = array("Name","MSISDN", "Activation Date", "Churn Date", "Voc 300 TopUp", "Voc 100 TopUp", "Voc 50 TopUp", "Last Top Up Date", "Service Usage", "Last Service Usage Date");
         $writer->addRow($myArr); // add a row at a time
 
         $simtopup = DB::table('m_inventory as inv1')
                         ->whereRaw('inv1.ActivationName IS NOT NULL')
-                        ->select(DB::raw("inv1.`ActivationDate`,inv1.`ActivationName`,inv1.`ChurnDate`"
-                                        . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN`) as 'TotalVoucherPurchased'"
-                                        . ",(SELECT inv2.`TopUpDate` FROM `m_inventory` as inv2  WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` ORDER BY inv2.`TopUpDate` DESC LIMIT 1) as 'LastDatePurchasedVoucher' "
-                                        . ",(SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN`) as 'ServiceUsed' "
+                        ->select(DB::raw("inv1.`ActivationDate`,inv1.`ActivationName`,inv1.`MSISDN`,inv1.`ChurnDate`"
+                                        . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0250%' OR inv2.`SerialNumber` LIKE '%KR1850%')) as 'Voc300'"
+                                        . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0150%' OR inv2.`SerialNumber` LIKE '%KR0350%')) as 'Voc100'"
+                                        . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND inv2.`SerialNumber` LIKE '%KR0450%') as 'Voc50'"
+                                        . ",(SELECT inv2.`TopUpDate` FROM `m_inventory` as inv2  WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN`  ORDER BY inv2.`TopUpDate` DESC LIMIT 1) as 'LastDatePurchasedVoucher' "
+                                        . ",(SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) as 'ServiceUsed' "
                                         . ",(SELECT CONCAT(prod.`Month`,prod.`Year`) FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) as 'LastDateUsedService'"
                         ))->get();
         foreach ($simtopup as $data) {
@@ -3049,7 +3051,7 @@ class InventoryController extends BaseController {
             } else if ($data->ServiceUsed == '8') {
                 $stats = 'All';
             }
-            $myArr = array($data->ActivationName, $data->ActivationDate, $data->ChurnDate, $data->TotalVoucherPurchased, $data->LastDatePurchasedVoucher, $stats, $data->LastDateUsedService);
+            $myArr = array($data->ActivationName,$data->MSISDN, $data->ActivationDate, $data->ChurnDate, $data->Voc300, $data->Voc100, $data->Voc50, $data->LastDatePurchasedVoucher, $stats, $data->LastDateUsedService);
             $writer->addRow($myArr); // add a row at a time
         }
         $writer->close();
