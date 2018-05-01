@@ -53,6 +53,7 @@
                             <div class="nav-tabs-custom">
                                 <ul class="nav nav-tabs">
                                     <li class="active"><a href="#subs" data-toggle="tab" aria-expanded="true">Subscriber</a></li>
+                                    <li class=""><a href="#churn" data-toggle="tab" aria-expanded="true">Churn</a></li>
                                     <li class=""><a href="#vocres" data-toggle="tab" aria-expanded="false">Voucher Recharge</a></li>
                                     <li class=""><a href="#intus" data-toggle="tab" aria-expanded="false">Internet Usage</a></li>
                                 </ul>
@@ -73,9 +74,18 @@
                                                 </div>
                                                 <!-- /.info-box -->
                                             </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
 
-
-
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Subsriber</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_subs_month">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
                                             <!-- /.col -->
 
                                             <!-- fix for small devices only -->
@@ -106,19 +116,6 @@
                                                 </div>
                                                 <!-- /.info-box -->
                                             </div>
-
-                                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                                <div class="info-box">
-                                                    <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
-
-                                                    <div class="info-box-content">
-                                                        <span class="info-box-text">Detail Churn</span>
-                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_detail_churn_month">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
-                                                    </div>
-                                                    <!-- /.info-box-content -->
-                                                </div>
-                                                <!-- /.info-box -->
-                                            </div>
                                             <!-- /.col -->
                                         </div>
 
@@ -135,6 +132,21 @@
                                             <div class="chart">
                                                 <div id="legend2" class="legend"></div>
                                                 <canvas id="barChart_churn" height="100"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_subs_month" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="subs2_year">
+                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend13" class="legend"></div>
+                                                <canvas id="barChart_subs" height="100"></canvas>
                                             </div>
                                         </div>
                                         <div class="row toogling" id="info_prod_month" style="display: none;">
@@ -167,6 +179,34 @@
                                                 <canvas id="barChart_sum" height="100"></canvas>
                                             </div>
                                         </div>
+                                    </div>
+                                    <div class="tab-pane" id="churn">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Churn</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_churn2">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Detail Churn</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_detail_churn_month">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                        </div>
                                         <div class="row toogling" id="info_detail_churn_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="detail_churn_year">
@@ -180,6 +220,21 @@
                                             <div class="chart">
                                                 <div id="legend11" class="legend"></div>
                                                 <canvas id="barChart_detail_churn" height="100"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_churn2" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="churn2_year">>
+                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend12" class="legend"></div>
+                                                <canvas id="barChart_churn2" height="100"></canvas>
                                             </div>
                                         </div>
                                     </div>
@@ -716,7 +771,7 @@
                                                                                                                 </select>
                                                                                                             </div>
                                                                                                         </div>-->
-                                                    <div class="margtop20">
+                                                    <div class="margtop20" style="margin-left: 20px;">
                                                         <button type="button" onclick="exportExcel(this)" data-id='8' data-nama='user'><span class="glyphicon glyphicon-export"></span></button> Export list detail excel
                                                         <div class="loader" id="loading-animation8" style="display:none;"></div>
                                                     </div>
@@ -792,6 +847,8 @@
             <script>
                 var getIVR = '<?php echo Route('getIVR') ?>';
                 var getCHURN = '<?php echo Route('getCHURN') ?>';
+                var getCHURN2 = '<?php echo Route('getCHURN2') ?>';
+                var getSubsriber = '<?php echo Route('getSubsriber') ?>';
                 var getProductive = '<?php echo Route('getProductive') ?>';
                 var getSumService = '<?php echo Route('getSumService') ?>';
                 var getPayload = '<?php echo Route('getPayload') ?>';
@@ -811,6 +868,8 @@
                 var evoc_topup_year = document.getElementById('evoc_topup_year').value;
                 var subs_year = document.getElementById('subs_year').value;
                 var detail_churn_year = document.getElementById('detail_churn_year').value;
+                var churn2_year = document.getElementById('churn2_year').value;
+                var subs2_year = document.getElementById('subs2_year').value;
                 var colorNames = Object.keys(window.chartColors);
                 $('#ivr_year').on('change', function (e) {
                     l_year = document.getElementById('ivr_year').value;
@@ -821,9 +880,18 @@
                     c_year = document.getElementById('churn_year').value;
                     refreshBarChart();
                 });
+                $('#subs2_year').on('change', function (e) {
+                    subs2_year = document.getElementById('subs2_year').value;
+                    refreshBarChart();
+                });
 
                 $('#detail_churn_year').on('change', function (e) {
                     detail_churn_year = document.getElementById('detail_churn_year').value;
+                    refreshBarChart();
+                });
+
+                $('#churn2_year').on('change', function (e) {
+                    churn2_year = document.getElementById('churn2_year').value;
                     refreshBarChart();
                 });
 
@@ -907,6 +975,14 @@
                     labels: MONTHS,
                     datasets: []
                 };
+                var barChartData12 = {
+                    labels: MONTHS,
+                    datasets: []
+                };
+                var barChartData13 = {
+                    labels: MONTHS,
+                    datasets: []
+                };
 
                 // Define a plugin to provide data labels
                 Chart.plugins.register({
@@ -959,7 +1035,6 @@
                                     if (element._model.base > 584)
                                         temp_base = 584;
                                     var padding = ((temp_base - element._model.y) / 2);
-                                    console.log(temp_base);
                                     var position = element.tooltipPosition();
                                     var y_height = element._yScale.height;
                                     //                        if (dataString.includes('-')) {
@@ -1591,6 +1666,102 @@
                             }
                         }
                     });
+                    var ctx12 = document.getElementById("barChart_churn2").getContext("2d");
+                    window.myBar12 = new Chart(ctx12, {
+                        type: 'bar',
+                        data: barChartData12,
+                        options: {
+                            responsive: true,
+                            //                maintainAspectRatio: true,
+                            legend: {
+                                display: false
+                            },
+                            tooltips: {
+                                mode: 'index',
+                                callbacks: {
+                                    label: function (tooltipItem, data) {
+                                        var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+                                        var temp_arr = value.split('.');
+                                        if (temp_arr.length == 2) {
+                                            value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                            value += '.' + temp_arr[1];
+                                        } else {
+                                            value = value.toString();
+                                            value = value.split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                        }
+                                        return value;
+                                    }
+                                } // end callbacks:
+                            },
+                            title: {
+                                display: true,
+                                text: 'Monthly Churn'
+                            }, scales: {
+                                xAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        }
+                                    }],
+                                yAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        }, ticks: {
+                                            display: false
+                                        }
+                                    }]
+                            }
+                        }
+                    });
+                    var ctx13 = document.getElementById("barChart_subs").getContext("2d");
+                    window.myBar13 = new Chart(ctx13, {
+                        type: 'bar',
+                        data: barChartData13,
+                        options: {
+                            responsive: true,
+                            //                maintainAspectRatio: true,
+                            legend: {
+                                display: false
+                            },
+                            tooltips: {
+                                mode: 'index',
+                                callbacks: {
+                                    label: function (tooltipItem, data) {
+                                        var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+                                        var temp_arr = value.split('.');
+                                        if (temp_arr.length == 2) {
+                                            value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                            value += '.' + temp_arr[1];
+                                        } else {
+                                            value = value.toString();
+                                            value = value.split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                        }
+                                        return value;
+                                    }
+                                } // end callbacks:
+                            },
+                            title: {
+                                display: true,
+                                text: 'Monthly Subscriber'
+                            }, scales: {
+                                xAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        }
+                                    }],
+                                yAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        }, ticks: {
+                                            display: false
+                                        }
+                                    }]
+                            }
+                        }
+                    });
 
                     refreshBarChart();
                 };
@@ -1609,7 +1780,7 @@
                             $.each(data, function (index, value) {
                                 var colors = ["#0000FF", "#FF0000", "#00FF00"];
                                 var colorName = colorNames[barChartData.datasets.length % colorNames.length];
-//                                var dsColor = window.chartColors[colorName];
+                                //                                var dsColor = window.chartColors[colorName];
                                 var dsColor = colors[barChartData.datasets.length % colorNames.length];
                                 barChartData.datasets.push({
                                     label: index,
@@ -1648,7 +1819,52 @@
                             document.getElementById('legend2').innerHTML = myBar2.generateLegend();
                             window.scrollBy(0, 200);
                         });
-                    } else if (chartID == 'info_prod_month') {
+                    } else if (chartID == 'info_churn2') {
+
+                        $.post(getCHURN2, {year: churn2_year}, function (data) {
+
+                        }).done(function (data) {
+                            barChartData12.datasets = [];
+                            $.each(data, function (index, value) {
+                                var colors = ["#f2b6b6","#dff0d9"];
+                                var colorName = colorNames[barChartData12.datasets.length % colorNames.length];
+                                var dsColor = window.chartColors[colorName];
+                                barChartData12.datasets.push({
+                                    label: index,
+                                    backgroundColor: colors[barChartData12.datasets.length % colorNames.length],
+                                    borderColor: colors[barChartData12.datasets.length % colorNames.length],
+                                    borderWidth: 1,
+                                    data: value
+                                });
+                            });
+                            window.myBar12.update();
+                            document.getElementById('legend12').innerHTML = myBar12.generateLegend();
+                            window.scrollBy(0, 200);
+                        });
+                    }
+                    else if (chartID == 'info_subs_month') {
+
+                        $.post(getSubsriber, {year: subs2_year}, function (data) {
+
+                        }).done(function (data) {
+                            barChartData13.datasets = [];
+                            $.each(data, function (index, value) {
+                                var colors = ["#dff0d9"];
+                                var colorName = colorNames[barChartData13.datasets.length % colorNames.length];
+                                var dsColor = window.chartColors[colorName];
+                                barChartData13.datasets.push({
+                                    label: index,
+                                    backgroundColor: colors[barChartData13.datasets.length % colorNames.length],
+                                    borderColor: colors[barChartData13.datasets.length % colorNames.length],
+                                    borderWidth: 1,
+                                    data: value
+                                });
+                            });
+                            window.myBar13.update();
+                            document.getElementById('legend13').innerHTML = myBar13.generateLegend();
+                            window.scrollBy(0, 200);
+                        });
+                    }else if (chartID == 'info_prod_month') {
                         $.post(getProductive, {year: p_year}, function (data) {
 
                         }).done(function (data) {
@@ -1957,7 +2173,7 @@
                 $('#btn_set_table').on('click', function (e) {
                     var argyear = document.getElementById('shipout_year').value;
                     var argchannel = document.getElementById('shipout_channel').value;
-//                    var argtype = document.getElementById('shipout_type').value;
+                    //                    var argtype = document.getElementById('shipout_type').value;
                     var text_html = '';
                     var table_container = document.getElementById('shipout_table_container');
                     document.getElementById("loading-animation2").style.display = "block";
@@ -1996,8 +2212,8 @@
                 });
                 $('#btn_set_table2').on('click', function (e) {
                     var argyear = document.getElementById('shipin_year').value;
-//                    var argchannel = document.getElementById('shipin_channel').value;
-//                    var argtype = document.getElementById('shipout_type').value;
+                    //                    var argchannel = document.getElementById('shipin_channel').value;
+                    //                    var argtype = document.getElementById('shipout_type').value;
                     var text_html = '';
                     var table_container = document.getElementById('shipin_table_container');
                     document.getElementById("loading-animation10").style.display = "block";
@@ -2036,8 +2252,8 @@
                 });
                 $('#btn_set_table3').on('click', function (e) {
                     var argyear = document.getElementById('usage_year').value;
-//                    var argchannel = document.getElementById('shipin_channel').value;
-//                    var argtype = document.getElementById('shipout_type').value;
+                    //                    var argchannel = document.getElementById('shipin_channel').value;
+                    //                    var argtype = document.getElementById('shipout_type').value;
                     var text_html = '';
                     var table_container = document.getElementById('usage_table_container');
                     document.getElementById("loading-animation11").style.display = "block";
@@ -2140,9 +2356,9 @@
                     var table_container = document.getElementById('h4container');
                     table_container.innerHTML = '<h4>Shipout Reporting ' + argyear + '</h4>';
 
-//                    var argtype = document.getElementById('shipout_type').value;
-//                    var table_container2 = document.getElementById('h5container');
-//                    table_container2.innerHTML = '<h5>' + argtype + '</h5>';
+                    //                    var argtype = document.getElementById('shipout_type').value;
+                    //                    var table_container2 = document.getElementById('h5container');
+                    //                    table_container2.innerHTML = '<h5>' + argtype + '</h5>';
                     $('ul.excel-report li').click(function (e) {
                         $(".chosen-select").chosen("destroy");
                         $(".chosen-select").chosen({width: '100%'});
