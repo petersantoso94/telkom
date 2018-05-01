@@ -75,6 +75,8 @@ Route::group(array('before' => 'auth'), function() {
     Route::any('getVouchersTopUp', array('as' => 'getVouchersTopUp', 'before' => '', 'uses' => 'InventoryController@getVouchersTopUp'));
     Route::any('getMSISDNTopUp', array('as' => 'getMSISDNTopUp', 'before' => '', 'uses' => 'InventoryController@getMSISDNTopUp'));
     Route::any('getCHURN', array('as' => 'getCHURN', 'before' => '', 'uses' => 'InventoryController@getCHURN'));
+    Route::any('getCHURN2', array('as' => 'getCHURN2', 'before' => '', 'uses' => 'InventoryController@getCHURN2'));
+    Route::any('getSubsriber', array('as' => 'getSubsriber', 'before' => '', 'uses' => 'InventoryController@getSubsriber'));
     Route::any('getChurnDetail', array('as' => 'getChurnDetail', 'before' => '', 'uses' => 'InventoryController@getChurnDetail'));
     Route::post('postFS', array('as' => 'postFS', 'before' => '', 'uses' => 'InventoryController@postFS'));
     Route::any('getPDFShipout', array('as' => 'getPDFShipout', 'before' => '', 'uses' => 'InventoryController@getPDFShipout'));
