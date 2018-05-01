@@ -704,19 +704,19 @@
                                             <div class="row">
                                                 <!-- /.col -->
                                                 <div class="info-box">
-<!--                                                    <div class='row margbot20'>
-                                                        <div class="col-md-6">
-                                                            Year:
-                                                            <select style="width: 100%" id="shipin_year" class="chosen-select">
-                                                                @foreach(DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year)
-                                                                @if($year->year >0)
-                                                                <option value="{{$year->year}}">{{$year->year}}</option>
-                                                                @endif
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>-->
-                                                    <div class="row margtop20 margbot20">
+                                                    <!--                                                    <div class='row margbot20'>
+                                                                                                            <div class="col-md-6">
+                                                                                                                Year:
+                                                                                                                <select style="width: 100%" id="shipin_year" class="chosen-select">
+                                                                                                                    @foreach(DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year)
+                                                                                                                    @if($year->year >0)
+                                                                                                                    <option value="{{$year->year}}">{{$year->year}}</option>
+                                                                                                                    @endif
+                                                                                                                    @endforeach
+                                                                                                                </select>
+                                                                                                            </div>
+                                                                                                        </div>-->
+                                                    <div class="margtop20">
                                                         <button type="button" onclick="exportExcel(this)" data-id='8' data-nama='user'><span class="glyphicon glyphicon-export"></span></button> Export list detail excel
                                                         <div class="loader" id="loading-animation8" style="display:none;"></div>
                                                     </div>
