@@ -458,8 +458,8 @@ class InventoryController extends BaseController {
     }
 
     public function showDashboard() {
-
-        return View::make('dashboard')->withPage('dashboard');
+        $years = DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get();
+        return View::make('dashboard')->withPage('dashboard')->withYears($years);
     }
 
     public function showWarehouseInventory() {
@@ -1893,6 +1893,37 @@ class InventoryController extends BaseController {
         return $data;
     }
 
+    static function getVouchers300TopUp() {
+        $year = Input::get('year');
+//        $year = '2017';
+        $data = [];
+        //1 -> evoucher; 2 -> phvoucher
+        $all_ivr = [];
+        // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $stats = '';
+                $temp_stat = $ivr->Status;
+                if (substr($temp_stat, 0, 1) == '2') {
+                    $stats = 'PH-VOUCHER 300';
+                } else if (substr($temp_stat, 0, 1) == '5') {
+                    $stats = 'E-VOUCHER 300';
+                }
+                if ($stats != '') {
+                    if (!isset($data[$stats]))
+                        $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    for ($i = 0; $i < 12; $i++) {
+                        if ($i == $ivr->Month - 1) {
+                            $data[$stats][$i] += $ivr->Counter;
+                        }
+                    }
+                }
+            }
+        }
+        return $data;
+    }
+
     static function getVouchersTopUp() {
         $year = Input::get('year');
 //        $year = '2017';
@@ -3057,7 +3088,7 @@ class InventoryController extends BaseController {
 //
         $myArr = array("All User  Reporting");
         $writer->addRow($myArr); // add a row at a time
-        $myArr = array("Name", "MSISDN", "Activation Date","Activation Store", "Churn Date", "Voc 300 TopUp", "Voc 100 TopUp", "Voc 50 TopUp", "Last Top Up Date", "Service Usage", "Last Service Usage Date");
+        $myArr = array("Name", "MSISDN", "Activation Date", "Activation Store", "Churn Date", "Voc 300 TopUp", "Voc 100 TopUp", "Voc 50 TopUp", "Last Top Up Date", "Service Usage", "Last Service Usage Date");
         $writer->addRow($myArr); // add a row at a time
 
         $simtopup = DB::table('m_inventory as inv1')
