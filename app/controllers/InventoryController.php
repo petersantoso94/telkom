@@ -1151,6 +1151,7 @@ class InventoryController extends BaseController {
                             }
                         }
                         $reader->close();
+
                         $table = Inventory::getModel()->getTable();
                         $cases1 = [];
                         $cases2 = [];
@@ -1164,6 +1165,15 @@ class InventoryController extends BaseController {
                             $cases1[] = "WHEN '{$id}' then '{$arr_act[$i]}'";
                             $ids[] = '\'' . $id . '\'';
                         }
+//                        $check_msisdn = [];
+//                        $ids = implode(",", $ids);
+//                        $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE `MSISDN` in ({$ids})");
+//                        foreach ($right_msisdn as $msisdn) {
+//                            $check_msisdn[] = $msisdn->MSISDN;
+//                        }
+//                        $not_found = array_diff($arr_msisdn, $check_msisdn);
+//                        $not_found = implode("','", $not_found);
+//                        dd($not_found);
                         $ids = implode(',', $ids);
                         $cases1 = implode(' ', $cases1);
                         $cases2 = implode(' ', $cases2);
@@ -1439,8 +1449,8 @@ class InventoryController extends BaseController {
                             $date_temp = explode("_", $date_temp)[2];
                             $month_temp = substr($date_temp, 4, 2);
                             $month_temp = (int) $month_temp - 1;
-                            if(strlen($month_temp) === 1){
-                                $month_temp = "0".$month_temp;
+                            if (strlen($month_temp) === 1) {
+                                $month_temp = "0" . $month_temp;
                             }
                             $year_temp = substr($date_temp, 0, 4);
                             if (substr($date_temp, 0, 1) === '2') {
@@ -1640,7 +1650,7 @@ class InventoryController extends BaseController {
         }
         return $data;
     }
-    
+
     static function getCHURN2() {
         $year = Input::get('year');
 //        $year = '2017';
@@ -1653,6 +1663,7 @@ class InventoryController extends BaseController {
         }
         return $data;
     }
+
     static function getSubsriber() {
         $year = Input::get('year');
 //        $year = '2017';
@@ -3046,12 +3057,12 @@ class InventoryController extends BaseController {
 //
         $myArr = array("All User  Reporting");
         $writer->addRow($myArr); // add a row at a time
-        $myArr = array("Name","MSISDN", "Activation Date", "Churn Date", "Voc 300 TopUp", "Voc 100 TopUp", "Voc 50 TopUp", "Last Top Up Date", "Service Usage", "Last Service Usage Date");
+        $myArr = array("Name", "MSISDN", "Activation Date","Activation Store", "Churn Date", "Voc 300 TopUp", "Voc 100 TopUp", "Voc 50 TopUp", "Last Top Up Date", "Service Usage", "Last Service Usage Date");
         $writer->addRow($myArr); // add a row at a time
 
         $simtopup = DB::table('m_inventory as inv1')
                         ->whereRaw('inv1.ActivationName IS NOT NULL')
-                        ->select(DB::raw("inv1.`ActivationDate`,inv1.`ActivationName`,inv1.`MSISDN`,inv1.`ChurnDate`"
+                        ->select(DB::raw("inv1.`ActivationDate`,inv1.`ActivationName`,inv1.`MSISDN`,inv1.`ChurnDate`,inv1.`ActivationStore`"
                                         . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0250%' OR inv2.`SerialNumber` LIKE '%KR1850%')) as 'Voc300'"
                                         . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0150%' OR inv2.`SerialNumber` LIKE '%KR0350%')) as 'Voc100'"
                                         . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND inv2.`SerialNumber` LIKE '%KR0450%') as 'Voc50'"
@@ -3076,7 +3087,7 @@ class InventoryController extends BaseController {
             } else if ($data->ServiceUsed == '8') {
                 $stats = 'All';
             }
-            $myArr = array($data->ActivationName,$data->MSISDN, $data->ActivationDate, $data->ChurnDate, $data->Voc300, $data->Voc100, $data->Voc50, $data->LastDatePurchasedVoucher, $stats, $data->LastDateUsedService);
+            $myArr = array($data->ActivationName, $data->MSISDN, $data->ActivationDate, $data->ActivationStore, $data->ChurnDate, $data->Voc300, $data->Voc100, $data->Voc50, $data->LastDatePurchasedVoucher, $stats, $data->LastDateUsedService);
             $writer->addRow($myArr); // add a row at a time
         }
         $writer->close();
