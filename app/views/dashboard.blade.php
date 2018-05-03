@@ -122,7 +122,7 @@
                                         <div class="row toogling" id="info_churn_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="churn_year">
-                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @foreach($years as $year)
                                                     @if($year->Year >0)
                                                     <option value="{{$year->Year}}">{{$year->Year}}</option>
                                                     @endif
@@ -137,7 +137,7 @@
                                         <div class="row toogling" id="info_subs_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="subs2_year">
-                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @foreach($years as $year)
                                                     @if($year->Year >0)
                                                     <option value="{{$year->Year}}">{{$year->Year}}</option>
                                                     @endif
@@ -152,7 +152,7 @@
                                         <div class="row toogling" id="info_prod_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="prod_year">
-                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @foreach($years as $year)
                                                     @if($year->Year >0)
                                                     <option value="{{$year->Year}}">{{$year->Year}}</option>
                                                     @endif
@@ -167,7 +167,7 @@
                                         <div class="row toogling" id="info_sum_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="sum_year">
-                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @foreach($years as $year)
                                                     @if($year->Year >0)
                                                     <option value="{{$year->Year}}">{{$year->Year}}</option>
                                                     @endif
@@ -210,7 +210,7 @@
                                         <div class="row toogling" id="info_detail_churn_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="detail_churn_year">
-                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @foreach($years as $year)
                                                     @if($year->Year >0)
                                                     <option value="{{$year->Year}}">{{$year->Year}}</option>
                                                     @endif
@@ -225,7 +225,7 @@
                                         <div class="row toogling" id="info_churn2" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="churn2_year">>
-                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @foreach($years as $year)
                                                     @if($year->Year >0)
                                                     <option value="{{$year->Year}}">{{$year->Year}}</option>
                                                     @endif
@@ -247,6 +247,18 @@
                                                     <div class="info-box-content">
                                                         <span class="info-box-text">Voucher Topup</span>
                                                         <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_voc_topup">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-yellow"><i class="fa fa-bar-chart"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Voucher Topup300</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_voc_topup300">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
                                                     </div>
                                                     <!-- /.info-box-content -->
                                                 </div>
@@ -280,7 +292,7 @@
                                         <div class="row toogling" id="info_voc_topup" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="voc_topup_year">
-                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @foreach($years as $year)
                                                     @if($year->Year >0)
                                                     <option value="{{$year->Year}}">{{$year->Year}}</option>
                                                     @endif
@@ -292,10 +304,25 @@
                                                 <canvas id="barChart_voc_topup" height="100"></canvas>
                                             </div>
                                         </div>
+                                        <div class="row toogling" id="info_voc_topup300" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="voc_topup300_year">
+                                                    @foreach($years as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend14" class="legend"></div>
+                                                <canvas id="barChart_voc300_topup" height="100"></canvas>
+                                            </div>
+                                        </div>
                                         <div class="row toogling" id="info_evoc_topup" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="evoc_topup_year">
-                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @foreach($years as $year)
                                                     @if($year->Year >0)
                                                     <option value="{{$year->Year}}">{{$year->Year}}</option>
                                                     @endif
@@ -310,7 +337,7 @@
                                         <div class="row toogling" id="info_subs_topup" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="subs_year">
-                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @foreach($years as $year)
                                                     @if($year->Year >0)
                                                     <option value="{{$year->Year}}">{{$year->Year}}</option>
                                                     @endif
@@ -384,7 +411,7 @@
                                         <div class="row toogling" id="info_ivr_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="ivr_year">
-                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @foreach($years as $year)
                                                     @if($year->Year >0)
                                                     <option value="{{$year->Year}}">{{$year->Year}}</option>
                                                     @endif
@@ -399,7 +426,7 @@
                                         <div class="row toogling" id="info_internet_payloads" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="payload_year">
-                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @foreach($years as $year)
                                                     @if($year->Year >0)
                                                     <option value="{{$year->Year}}">{{$year->Year}}</option>
                                                     @endif
@@ -414,7 +441,7 @@
                                         <div class="row toogling" id="info_internet_payloads_peruser" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="payload_peruser_year">
-                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @foreach($years as $year)
                                                     @if($year->Year >0)
                                                     <option value="{{$year->Year}}">{{$year->Year}}</option>
                                                     @endif
@@ -429,7 +456,7 @@
                                         <div class="row toogling" id="info_internet_vs" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="vs_year">
-                                                    @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                    @foreach($years as $year)
                                                     @if($year->Year >0)
                                                     <option value="{{$year->Year}}">{{$year->Year}}</option>
                                                     @endif
@@ -505,7 +532,7 @@
                                                         <div class="col-xs-10">
                                                             Year
                                                             <select style="width: 100%" id="sim2_year" class="chosen-select">
-                                                                @foreach(DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get() as $year)
+                                                                @foreach($years as $year)
                                                                 @if($year->Year >0)
                                                                 <option value="{{$year->Year}}">{{$year->Year}}</option>
                                                                 @endif
@@ -855,6 +882,7 @@
                 var getPayloadPeruser = '<?php echo Route('getPayloadPerUser') ?>';
                 var getInternetVsNon = '<?php echo Route('getInternetVsNon') ?>';
                 var getVouchersTopUp = '<?php echo Route('getVouchersTopUp') ?>';
+                var getVouchers300TopUp = '<?php echo Route('getVouchers300TopUp') ?>';
                 var getMSISDNTopUp = '<?php echo Route('getMSISDNTopUp') ?>';
                 var getChurnDetail = '<?php echo Route('getChurnDetail') ?>';
                 var l_year = document.getElementById('ivr_year').value;
@@ -865,6 +893,7 @@
                 var internet_payload_peruser_year = document.getElementById('payload_peruser_year').value;
                 var internet_vs_year = document.getElementById('vs_year').value;
                 var voc_topup_year = document.getElementById('voc_topup_year').value;
+                var voc_topup300_year = document.getElementById('voc_topup300_year').value;
                 var evoc_topup_year = document.getElementById('evoc_topup_year').value;
                 var subs_year = document.getElementById('subs_year').value;
                 var detail_churn_year = document.getElementById('detail_churn_year').value;
@@ -918,6 +947,10 @@
                 });
                 $('#voc_topup_year').on('change', function (e) {
                     voc_topup_year = document.getElementById('voc_topup_year').value;
+                    refreshBarChart();
+                });
+                $('#voc_topup300_year').on('change', function (e) {
+                    voc_topup300_year = document.getElementById('voc_topup300_year').value;
                     refreshBarChart();
                 });
                 $('#evoc_topup_year').on('change', function (e) {
@@ -980,6 +1013,10 @@
                     datasets: []
                 };
                 var barChartData13 = {
+                    labels: MONTHS,
+                    datasets: []
+                };
+                var barChartData14 = {
                     labels: MONTHS,
                     datasets: []
                 };
@@ -1068,7 +1105,7 @@
                                 write = true;
                                 str_write = 'Activation';
                             }
-                            if (meta.controller.chart.canvas.id == 'barChart_voc_topup' || meta.controller.chart.canvas.id == 'barChart_evoc_topup') {
+                            if (meta.controller.chart.canvas.id == 'barChart_voc_topup' || meta.controller.chart.canvas.id == 'barChart_evoc_topup' || meta.controller.chart.canvas.id == 'barChart_voc300_topup') {
                                 write = true;
                                 str_write = 'Total';
                             }
@@ -1762,6 +1799,56 @@
                             }
                         }
                     });
+                    
+                    var ctx14 = document.getElementById("barChart_voc300_topup").getContext("2d");
+                    window.myBar14 = new Chart(ctx14, {
+                        type: 'bar',
+                        data: barChartData14,
+                        options: {
+                            responsive: true,
+                            //                maintainAspectRatio: true,
+                            legend: {
+                                display: false
+                            },
+                            tooltips: {
+                                mode: 'index',
+                                callbacks: {
+                                    label: function (tooltipItem, data) {
+                                        var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+                                        var temp_arr = value.split('.');
+                                        if (temp_arr.length == 2) {
+                                            value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                            value += '.' + temp_arr[1];
+                                        } else {
+                                            value = value.toString();
+                                            value = value.split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                        }
+                                        return value;
+                                    }
+                                } // end callbacks:
+                            },
+                            title: {
+                                display: true,
+                                text: 'Monthly Voucher 300NT Topup'
+                            }, scales: {xAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        },
+                                        stacked: true
+                                    }],
+                                yAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        }, ticks: {
+                                            display: false
+                                        },
+                                        stacked: true
+                                    }]
+                            }
+                        }
+                    });
 
                     refreshBarChart();
                 };
@@ -2002,6 +2089,26 @@
                             });
                             window.myBar8.update();
                             document.getElementById('legend8').innerHTML = myBar8.generateLegend();
+                            window.scrollBy(0, 200);
+                        });
+                    }else if (chartID == 'info_voc_topup300') {
+                        $.post(getVouchers300TopUp, {year: voc_topup300_year}, function (data) {
+
+                        }).done(function (data) {
+                            barChartData14.datasets = [];
+                            $.each(data, function (index, value) {
+                                var colorName = colorNames[barChartData14.datasets.length % colorNames.length];
+                                var dsColor = window.chartColors[colorName];
+                                barChartData14.datasets.push({
+                                    label: index,
+                                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                                    borderColor: dsColor,
+                                    borderWidth: 1,
+                                    data: value
+                                });
+                            });
+                            window.myBar14.update();
+                            document.getElementById('legend14').innerHTML = myBar14.generateLegend();
                             window.scrollBy(0, 200);
                         });
                     } else if (chartID == 'info_evoc_topup') {
