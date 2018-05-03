@@ -73,6 +73,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::any('getInternetVsNon', array('as' => 'getInternetVsNon', 'before' => '', 'uses' => 'InventoryController@getInternetVsNon'));
     Route::any('getPayloadPerUser', array('as' => 'getPayloadPerUser', 'before' => '', 'uses' => 'InventoryController@getPayloadPerUser'));
     Route::any('getVouchersTopUp', array('as' => 'getVouchersTopUp', 'before' => '', 'uses' => 'InventoryController@getVouchersTopUp'));
+    Route::any('getVouchers300TopUp', array('as' => 'getVouchers300TopUp', 'before' => '', 'uses' => 'InventoryController@getVouchers300TopUp'));
     Route::any('getMSISDNTopUp', array('as' => 'getMSISDNTopUp', 'before' => '', 'uses' => 'InventoryController@getMSISDNTopUp'));
     Route::any('getCHURN', array('as' => 'getCHURN', 'before' => '', 'uses' => 'InventoryController@getCHURN'));
     Route::any('getCHURN2', array('as' => 'getCHURN2', 'before' => '', 'uses' => 'InventoryController@getCHURN2'));
