@@ -3088,7 +3088,7 @@ class InventoryController extends BaseController {
 //
         $myArr = array("All User  Reporting");
         $writer->addRow($myArr); // add a row at a time
-        $myArr = array("Name", "MSISDN", "Activation Date", "Activation Store", "Churn Date", "Voc 300 TopUp", "Voc 100 TopUp", "Voc 50 TopUp", "Last Top Up Date", "Service Usage", "Last Service Usage Date");
+        $myArr = array("MSISDN", "Name", "Activation Date", "Activation Store", "Churn Date", "Voc 300 TopUp", "Voc 100 TopUp", "Voc 50 TopUp", "Last Top Up Date", "Service Usage", "Last Service Usage Date");
         $writer->addRow($myArr); // add a row at a time
 
         $simtopup = DB::table('m_inventory as inv1')
@@ -3118,7 +3118,7 @@ class InventoryController extends BaseController {
             } else if ($data->ServiceUsed == '8') {
                 $stats = 'All';
             }
-            $myArr = array($data->ActivationName, $data->MSISDN, $data->ActivationDate, $data->ActivationStore, $data->ChurnDate, $data->Voc300, $data->Voc100, $data->Voc50, $data->LastDatePurchasedVoucher, $stats, $data->LastDateUsedService);
+            $myArr = array( $data->MSISDN,$data->ActivationName, $data->ActivationDate, $data->ActivationStore, $data->ChurnDate, $data->Voc300, $data->Voc100, $data->Voc50, $data->LastDatePurchasedVoucher, $stats, $data->LastDateUsedService);
             $writer->addRow($myArr); // add a row at a time
         }
         $writer->close();
