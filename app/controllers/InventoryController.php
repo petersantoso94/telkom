@@ -395,17 +395,23 @@ class InventoryController extends BaseController {
                         $id_counter = 1;
                     else
                         $id_counter = $check_counter->ID + 1;
+                    
                     foreach ($reader->getSheetIterator() as $sheet) {
                         foreach ($sheet->getRowIterator() as $rowNumber => $value) {
                             if ($rowNumber > 1) {
                                 if ($value[0] != null && $value[0] != '') {
                                     // do stuff with the row
-                                    $type = $value[2];
+                                    $type = $value[1];
+                                    if($type === '1' || $type === '4'){
+                                        
+                                    }else{
+                                        
+                                    }
                                     $wh = Input::get('warehouse', false);
                                     $sn = (string) $value[0];
                                     array_push($arr_sn, $sn);
-                                    array_push($arr_msisdn, $value[1]);
                                     array_push($arr_type, $type);
+                                    array_push($arr_msisdn, $value[1]);
                                     array_push($arr_lastwarehouse, $wh);
                                     array_push($arr_remark, Input::get('remark', false));
 
@@ -2755,7 +2761,9 @@ class InventoryController extends BaseController {
                         $data['TELIN TAIWAN'][$i] = 0;
                     }
                 }
-                $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], $data['COLUMBIA'][1], $data['COLUMBIA'][4], $data['COLUMBIA'][3], $data['COLUMBIA'][2], $data['TELIN TAIWAN'][1], $data['TELIN TAIWAN'][4], $data['TELIN TAIWAN'][3], $data['TELIN TAIWAN'][2]);
+                $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], number_format($data['COLUMBIA'][1]), number_format($data['COLUMBIA'][4])
+                        , number_format($data['COLUMBIA'][3]), number_format($data['COLUMBIA'][2]), number_format($data['TELIN TAIWAN'][1])
+                    , number_format($data['TELIN TAIWAN'][4]), number_format($data['TELIN TAIWAN'][3]), number_format($data['TELIN TAIWAN'][2]));
                 $writer->addRow($myArr); // add a row at a time
             }
         }
@@ -2773,7 +2781,12 @@ class InventoryController extends BaseController {
                         $data['TELIN TAIWAN'][$i] = 0;
                     }
                 }
-                $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], $data['COLUMBIA'][1], $data['COLUMBIA'][4], $data['COLUMBIA'][3], $data['COLUMBIA'][2], $data['TELIN TAIWAN'][1], $data['TELIN TAIWAN'][4], $data['TELIN TAIWAN'][3], $data['TELIN TAIWAN'][2]);
+                $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], number_format($data['COLUMBIA'][1]), number_format($data['COLUMBIA'][4])
+                        , number_format($data['COLUMBIA'][3]), number_format($data['COLUMBIA'][2]), number_format($data['TELIN TAIWAN'][1])
+                    , number_format($data['TELIN TAIWAN'][4]), number_format($data['TELIN TAIWAN'][3]), number_format($data['TELIN TAIWAN'][2]));
+//                $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], $data['COLUMBIA'][1]
+//                        , $data['COLUMBIA'][4], $data['COLUMBIA'][3], $data['COLUMBIA'][2], $data['TELIN TAIWAN'][1]
+//                        , $data['TELIN TAIWAN'][4], $data['TELIN TAIWAN'][3], $data['TELIN TAIWAN'][2]);
                 $writer->addRow($myArr); // add a row at a time
             }
         }
@@ -2791,7 +2804,10 @@ class InventoryController extends BaseController {
                         $data['TELIN TAIWAN'][$i] = 0;
                     }
                 }
-                $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], $data['COLUMBIA'][1], $data['COLUMBIA'][4], $data['COLUMBIA'][3], $data['COLUMBIA'][2], $data['TELIN TAIWAN'][1], $data['TELIN TAIWAN'][4], $data['TELIN TAIWAN'][3], $data['TELIN TAIWAN'][2]);
+                $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], number_format($data['COLUMBIA'][1]), number_format($data['COLUMBIA'][4])
+                        , number_format($data['COLUMBIA'][3]), number_format($data['COLUMBIA'][2]), number_format($data['TELIN TAIWAN'][1])
+                    , number_format($data['TELIN TAIWAN'][4]), number_format($data['TELIN TAIWAN'][3]), number_format($data['TELIN TAIWAN'][2]));
+//                $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], $data['COLUMBIA'][1], $data['COLUMBIA'][4], $data['COLUMBIA'][3], $data['COLUMBIA'][2], $data['TELIN TAIWAN'][1], $data['TELIN TAIWAN'][4], $data['TELIN TAIWAN'][3], $data['TELIN TAIWAN'][2]);
                 $writer->addRow($myArr); // add a row at a time
             }
         }
@@ -2809,7 +2825,10 @@ class InventoryController extends BaseController {
                         $data['TELIN TAIWAN'][$i] = 0;
                     }
                 }
-                $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], $data['COLUMBIA'][1], $data['COLUMBIA'][4], $data['COLUMBIA'][3], $data['COLUMBIA'][2], $data['TELIN TAIWAN'][1], $data['TELIN TAIWAN'][4], $data['TELIN TAIWAN'][3], $data['TELIN TAIWAN'][2]);
+                $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], number_format($data['COLUMBIA'][1]), number_format($data['COLUMBIA'][4])
+                        , number_format($data['COLUMBIA'][3]), number_format($data['COLUMBIA'][2]), number_format($data['TELIN TAIWAN'][1])
+                    , number_format($data['TELIN TAIWAN'][4]), number_format($data['TELIN TAIWAN'][3]), number_format($data['TELIN TAIWAN'][2]));
+//                $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], $data['COLUMBIA'][1], $data['COLUMBIA'][4], $data['COLUMBIA'][3], $data['COLUMBIA'][2], $data['TELIN TAIWAN'][1], $data['TELIN TAIWAN'][4], $data['TELIN TAIWAN'][3], $data['TELIN TAIWAN'][2]);
                 $writer->addRow($myArr); // add a row at a time
             }
         }
@@ -2824,7 +2843,9 @@ class InventoryController extends BaseController {
             }
         }
 
-        $myArr = array("", "", "TOTAL: ", $total['COLUMBIA'][1], $total['COLUMBIA'][4], $total['COLUMBIA'][3], $total['COLUMBIA'][2], $total['TELIN TAIWAN'][1], $total['TELIN TAIWAN'][4], $total['TELIN TAIWAN'][3], $total['TELIN TAIWAN'][2]);
+        $myArr = array("", "", "TOTAL: ", number_format($total['COLUMBIA'][1]), number_format($total['COLUMBIA'][4]), number_format($total['COLUMBIA'][3])
+            , number_format($total['COLUMBIA'][2]), number_format($total['TELIN TAIWAN'][1]), number_format($total['TELIN TAIWAN'][4])
+            , number_format($total['TELIN TAIWAN'][3]), number_format($total['TELIN TAIWAN'][2]));
         $writer->addRow($myArr); // add a row at a time
 
         $writer->close();
@@ -2941,10 +2962,11 @@ class InventoryController extends BaseController {
             $total[3] += $idx4;
             $total[4] += $idx5;
             $total[5] += $idx6;
-            $myArr = array($month[$i], $idx1, $idx2, $idx3, $idx4, $idx5, $idx6);
+            $myArr = array($month[$i], number_format($idx1), number_format($idx2), number_format($idx3), number_format($idx4), number_format($idx5), number_format($idx6));
             $writer->addRow($myArr); // add a row at a time
         }
-        $myArr = array("TOTAL", $total[0], $total[1], $total[2], $total[3], $total[4], $total[5]);
+        $myArr = array("TOTAL", number_format($total[0]), number_format($total[1]), number_format($total[2]), number_format($total[3]), number_format($total[4])
+            , number_format($total[5]));
         $writer->addRow($myArr); // add a row at a time
         $writer->close();
         return "/subagent_SIMreport_" . $filenames . ".xlsx";
@@ -3118,7 +3140,7 @@ class InventoryController extends BaseController {
             } else if ($data->ServiceUsed == '8') {
                 $stats = 'All';
             }
-            $myArr = array( $data->MSISDN,$data->ActivationName, $data->ActivationDate, $data->ActivationStore, $data->ChurnDate, $data->Voc300, $data->Voc100, $data->Voc50, $data->LastDatePurchasedVoucher, $stats, $data->LastDateUsedService);
+            $myArr = array( $data->MSISDN,$data->ActivationName, $data->ActivationDate, $data->ActivationStore, $data->ChurnDate, number_format($data->Voc300), number_format($data->Voc100), number_format($data->Voc50), $data->LastDatePurchasedVoucher, $stats, $data->LastDateUsedService);
             $writer->addRow($myArr); // add a row at a time
         }
         $writer->close();
@@ -3167,11 +3189,16 @@ class InventoryController extends BaseController {
                                     }
                         }
                     }
-                    $myArr = array($channel->channel, $idx1[0], $idx1[1], $idx1[2], $idx1[3], $idx1[4], $idx1[5], $idx1[6], $idx1[7], $idx1[8], $idx1[9], $idx1[10], $idx1[11]);
+                    $myArr = array($channel->channel, number_format($idx1[0]), number_format($idx1[1]), number_format($idx1[2]), number_format($idx1[3])
+                        , number_format($idx1[4]), number_format($idx1[5]), number_format($idx1[6]), number_format($idx1[7]), number_format($idx1[8])
+                        , number_format($idx1[9]), number_format($idx1[10]), number_format($idx1[11]));
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
-            $myArr = array("TOTAL", $totalsim[0], $totalsim[1], $totalsim[2], $totalsim[3], $totalsim[4], $totalsim[5], $totalsim[6], $totalsim[7], $totalsim[8], $totalsim[9], $totalsim[10], $totalsim[11]);
+            $myArr = array("TOTAL", number_format($totalsim[0]), number_format($totalsim[1]), number_format($totalsim[2]), number_format($totalsim[3])
+                , number_format($totalsim[4]), number_format($totalsim[5]), number_format($totalsim[6]), number_format($totalsim[7]), number_format($totalsim[8])
+                , number_format($totalsim[9]), number_format($totalsim[10]), number_format($totalsim[11]));
+//            $myArr = array("TOTAL", $totalsim[0], $totalsim[1], $totalsim[2], $totalsim[3], $totalsim[4], $totalsim[5], $totalsim[6], $totalsim[7], $totalsim[8], $totalsim[9], $totalsim[10], $totalsim[11]);
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
             $totalsim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3199,11 +3226,16 @@ class InventoryController extends BaseController {
                                     }
                         }
                     }
-                    $myArr = array($channel->channel, $idx1[0], $idx1[1], $idx1[2], $idx1[3], $idx1[4], $idx1[5], $idx1[6], $idx1[7], $idx1[8], $idx1[9], $idx1[10], $idx1[11]);
+                    $myArr = array($channel->channel, number_format($idx1[0]), number_format($idx1[1]), number_format($idx1[2]), number_format($idx1[3])
+                        , number_format($idx1[4]), number_format($idx1[5]), number_format($idx1[6]), number_format($idx1[7]), number_format($idx1[8])
+                        , number_format($idx1[9]), number_format($idx1[10]), number_format($idx1[11]));
+//                    $myArr = array($channel->channel, $idx1[0], $idx1[1], $idx1[2], $idx1[3], $idx1[4], $idx1[5], $idx1[6], $idx1[7], $idx1[8], $idx1[9], $idx1[10], $idx1[11]);
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
-            $myArr = array("TOTAL", $totalsim[0], $totalsim[1], $totalsim[2], $totalsim[3], $totalsim[4], $totalsim[5], $totalsim[6], $totalsim[7], $totalsim[8], $totalsim[9], $totalsim[10], $totalsim[11]);
+            $myArr = array("TOTAL", number_format($totalsim[0]), number_format($totalsim[1]), number_format($totalsim[2]), number_format($totalsim[3])
+                , number_format($totalsim[4]), number_format($totalsim[5]), number_format($totalsim[6]), number_format($totalsim[7]), number_format($totalsim[8])
+                , number_format($totalsim[9]), number_format($totalsim[10]), number_format($totalsim[11]));
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
             $myArr = array("eVC 300 SHIPOUT " . $year);
@@ -3232,11 +3264,17 @@ class InventoryController extends BaseController {
                                     }
                         }
                     }
-                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
+                    $myArr = array($channel->channel, number_format($idx2[0]), number_format($idx2[1]), number_format($idx2[2]), number_format($idx2[3])
+                        , number_format($idx2[4]), number_format($idx2[5]), number_format($idx2[6]), number_format($idx2[7]), number_format($idx2[8])
+                        , number_format($idx2[9]), number_format($idx2[10]), number_format($idx2[11]));
+//                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
-            $myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+            $myArr = array("TOTAL", number_format($totalvoc[0]), number_format($totalvoc[1]), number_format($totalvoc[2])
+                , number_format($totalvoc[3]), number_format($totalvoc[4]), number_format($totalvoc[5]), number_format($totalvoc[6])
+                , number_format($totalvoc[7]), number_format($totalvoc[8]), number_format($totalvoc[9]), number_format($totalvoc[10]), number_format($totalvoc[11]));
+            //$myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
             $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3266,11 +3304,17 @@ class InventoryController extends BaseController {
                                     }
                         }
                     }
-                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
+                    $myArr = array($channel->channel, number_format($idx2[0]), number_format($idx2[1]), number_format($idx2[2]), number_format($idx2[3])
+                        , number_format($idx2[4]), number_format($idx2[5]), number_format($idx2[6]), number_format($idx2[7]), number_format($idx2[8])
+                        , number_format($idx2[9]), number_format($idx2[10]), number_format($idx2[11]));
+//                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
-            $myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+            $myArr = array("TOTAL", number_format($totalvoc[0]), number_format($totalvoc[1]), number_format($totalvoc[2])
+                , number_format($totalvoc[3]), number_format($totalvoc[4]), number_format($totalvoc[5]), number_format($totalvoc[6])
+                , number_format($totalvoc[7]), number_format($totalvoc[8]), number_format($totalvoc[9]), number_format($totalvoc[10]), number_format($totalvoc[11]));
+            //$myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
             $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3300,11 +3344,17 @@ class InventoryController extends BaseController {
                                     }
                         }
                     }
-                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
+                    $myArr = array($channel->channel, number_format($idx2[0]), number_format($idx2[1]), number_format($idx2[2]), number_format($idx2[3])
+                        , number_format($idx2[4]), number_format($idx2[5]), number_format($idx2[6]), number_format($idx2[7]), number_format($idx2[8])
+                        , number_format($idx2[9]), number_format($idx2[10]), number_format($idx2[11]));
+//                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
-            $myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+            $myArr = array("TOTAL", number_format($totalvoc[0]), number_format($totalvoc[1]), number_format($totalvoc[2])
+                , number_format($totalvoc[3]), number_format($totalvoc[4]), number_format($totalvoc[5]), number_format($totalvoc[6])
+                , number_format($totalvoc[7]), number_format($totalvoc[8]), number_format($totalvoc[9]), number_format($totalvoc[10]), number_format($totalvoc[11]));
+            //$myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
             $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3334,7 +3384,10 @@ class InventoryController extends BaseController {
                                     }
                         }
                     }
-                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
+                    $myArr = array($channel->channel, number_format($idx2[0]), number_format($idx2[1]), number_format($idx2[2]), number_format($idx2[3])
+                        , number_format($idx2[4]), number_format($idx2[5]), number_format($idx2[6]), number_format($idx2[7]), number_format($idx2[8])
+                        , number_format($idx2[9]), number_format($idx2[10]), number_format($idx2[11]));
+//                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
@@ -3368,11 +3421,17 @@ class InventoryController extends BaseController {
                                     }
                         }
                     }
-                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
+                    $myArr = array($channel->channel, number_format($idx2[0]), number_format($idx2[1]), number_format($idx2[2]), number_format($idx2[3])
+                        , number_format($idx2[4]), number_format($idx2[5]), number_format($idx2[6]), number_format($idx2[7]), number_format($idx2[8])
+                        , number_format($idx2[9]), number_format($idx2[10]), number_format($idx2[11]));
+//                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
-            $myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+            $myArr = array("TOTAL", number_format($totalvoc[0]), number_format($totalvoc[1]), number_format($totalvoc[2])
+                , number_format($totalvoc[3]), number_format($totalvoc[4]), number_format($totalvoc[5]), number_format($totalvoc[6])
+                , number_format($totalvoc[7]), number_format($totalvoc[8]), number_format($totalvoc[9]), number_format($totalvoc[10]), number_format($totalvoc[11]));
+            //$myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
         }
@@ -3430,7 +3489,10 @@ class InventoryController extends BaseController {
                 for ($i = 0; $i < 12; $i++) {
                     $totalvoc[$i] += $val[$i];
                 }
-                $myArr = array($key, $val[0], $val[1], $val[2], $val[3], $val[4], $val[5], $val[6], $val[7], $val[8], $val[9], $val[10], $val[11], array_sum($val));
+//                $myArr = array($key, $val[0], $val[1], $val[2], $val[3], $val[4], $val[5], $val[6], $val[7], $val[8], $val[9], $val[10], $val[11], array_sum($val));
+                $myArr = array($key, number_format($val[0]), number_format($val[1]), number_format($val[2]), number_format($val[3]), number_format($val[4]), 
+                    number_format($val[5]), number_format($val[6]), number_format($val[7]), number_format($val[8]), number_format($val[9]), number_format($val[10]), 
+                    number_format($val[11]), number_format(array_sum($val)));
                 $writer->addRow($myArr); // add a row at a time
             }
 
@@ -3467,10 +3529,16 @@ class InventoryController extends BaseController {
                 for ($i = 0; $i < 12; $i++) {
                     $totalvoc[$i] += $val[$i];
                 }
-                $myArr = array($key, $val[0], $val[1], $val[2], $val[3], $val[4], $val[5], $val[6], $val[7], $val[8], $val[9], $val[10], $val[11], array_sum($val));
+//                $myArr = array($key, $val[0], $val[1], $val[2], $val[3], $val[4], $val[5], $val[6], $val[7], $val[8], $val[9], $val[10], $val[11], array_sum($val));
+                $myArr = array($key, number_format($val[0]), number_format($val[1]), number_format($val[2]), number_format($val[3]), number_format($val[4]), 
+                    number_format($val[5]), number_format($val[6]), number_format($val[7]), number_format($val[8]), number_format($val[9]), number_format($val[10]), 
+                    number_format($val[11]), number_format(array_sum($val)));
                 $writer->addRow($myArr); // add a row at a time
             }
-            $myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+            $myArr = array("TOTAL", number_format($totalvoc[0]), number_format($totalvoc[1]), number_format($totalvoc[2])
+                , number_format($totalvoc[3]), number_format($totalvoc[4]), number_format($totalvoc[5]), number_format($totalvoc[6])
+                , number_format($totalvoc[7]), number_format($totalvoc[8]), number_format($totalvoc[9]), number_format($totalvoc[10]), number_format($totalvoc[11]));
+//            $myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
         }
@@ -3526,7 +3594,9 @@ class InventoryController extends BaseController {
                 for ($i = 0; $i < 12; $i++) {
                     $totalvoc[$i] += $val[$i];
                 }
-                $myArr = array($key, $val[0], $val[1], $val[2], $val[3], $val[4], $val[5], $val[6], $val[7], $val[8], $val[9], $val[10], $val[11], array_sum($val));
+                $myArr = array($key, number_format($val[0]), number_format($val[1]), number_format($val[2]), number_format($val[3]), number_format($val[4]), 
+                    number_format($val[5]), number_format($val[6]), number_format($val[7]), number_format($val[8]), number_format($val[9]), number_format($val[10]), 
+                    number_format($val[11]), number_format(array_sum($val)));
                 $writer->addRow($myArr); // add a row at a time
             }
             $simshipout = DB::table('m_inventory')
@@ -3560,10 +3630,12 @@ class InventoryController extends BaseController {
                 for ($i = 0; $i < 12; $i++) {
                     $totalvoc[$i] += $val[$i];
                 }
-                $myArr = array($key, $val[0], $val[1], $val[2], $val[3], $val[4], $val[5], $val[6], $val[7], $val[8], $val[9], $val[10], $val[11], array_sum($val));
+                $myArr = array($key, number_format($val[0]), number_format($val[1]), number_format($val[2]), number_format($val[3]), number_format($val[4]), number_format($val[5]), number_format($val[6]), number_format($val[7]), number_format($val[8]), number_format($val[9]), number_format($val[10]), number_format($val[11]), number_format(array_sum($val)));;
                 $writer->addRow($myArr); // add a row at a time
             }
-            $myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+            $myArr = array("TOTAL", number_format($totalvoc[0]), number_format($totalvoc[1]), number_format($totalvoc[2])
+                , number_format($totalvoc[3]), number_format($totalvoc[4]), number_format($totalvoc[5]), number_format($totalvoc[6])
+                , number_format($totalvoc[7]), number_format($totalvoc[8]), number_format($totalvoc[9]), number_format($totalvoc[10]), number_format($totalvoc[11]));
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
         }
