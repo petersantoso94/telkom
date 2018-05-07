@@ -401,7 +401,7 @@ class InventoryController extends BaseController {
                             if ($rowNumber > 1) {
                                 if ($value[0] != null && $value[0] != '') {
                                     // do stuff with the row
-                                    $type = $value[1];
+                                    $type = $value[2];
                                     if($type === '1' || $type === '4'){
                                         
                                     }else{
@@ -2581,13 +2581,13 @@ class InventoryController extends BaseController {
         $data["INTERNET"][1] = $data['1GB'][1] + $data['2GB'][1] + $data['30DAY'][1];
         $data['INTERNET'][2] = round((($data['INTERNET'][0] - $data['INTERNET'][1]) / $data['INTERNET'][0]) * 100, 2);
 
-        $myArr = array("INTERNET", "SUBS", $data["INTERNET"][0], $data["INTERNET"][1], $data["INTERNET"][2] . '%');
+        $myArr = array("INTERNET", "SUBS", number_format($data["INTERNET"][0]), number_format($data["INTERNET"][1]), $data["INTERNET"][2] . '%');
         $writer->addRow($myArr); // add a row at a time
-        $myArr = array("1GB", "SUBS", $data["1GB"][0], $data["1GB"][1], $data["1GB"][2] . '%');
+        $myArr = array("1GB", "SUBS", number_format($data["1GB"][0]), number_format($data["1GB"][1]), $data["1GB"][2] . '%');
         $writer->addRow($myArr);
-        $myArr = array("2GB", "SUBS", $data["2GB"][0], $data["2GB"][1], $data["2GB"][2] . '%');
+        $myArr = array("2GB", "SUBS", number_format($data["2GB"][0]), number_format($data["2GB"][1]), $data["2GB"][2] . '%');
         $writer->addRow($myArr);
-        $myArr = array("30 DAYS", "SUBS", $data["30DAY"][0], $data["30DAY"][1], $data["30DAY"][2] . '%');
+        $myArr = array("30 DAYS", "SUBS", number_format($data["30DAY"][0]), number_format($data["30DAY"][1]), $data["30DAY"][2] . '%');
         $writer->addRow($myArr);
         $writer->addRow(['']);
 
@@ -2650,17 +2650,17 @@ class InventoryController extends BaseController {
         $data["MVNO_CALL"][1] = $data['MT'][1] + $data['MO'][1];
         $data['MVNO_CALL'][2] = round((($data['MVNO_CALL'][0] - $data['MVNO_CALL'][1]) / $data['MVNO_CALL'][0]) * 100, 2);
 
-        $myArr = array("MVNO CALL", "MINS", $data["MVNO_CALL"][0], $data["MVNO_CALL"][1], $data["MVNO_CALL"][2] . '%');
+        $myArr = array("MVNO CALL", "MINS", number_format($data["MVNO_CALL"][0]), number_format($data["MVNO_CALL"][1]), $data["MVNO_CALL"][2] . '%');
         $writer->addRow($myArr); // add a row at a time
-        $myArr = array("MO CALL", "MINS", $data["MO"][0], $data["MO"][1], $data["MO"][2] . '%');
+        $myArr = array("MO CALL", "MINS", number_format($data["MO"][0]), number_format($data["MO"][1]), $data["MO"][2] . '%');
         $writer->addRow($myArr); // add a row at a time
-        $myArr = array("MT CALL", "MINS", $data["MT"][0], $data["MT"][1], $data["MT"][2] . '%');
-        $writer->addRow($myArr); // add a row at a time
-        $writer->addRow(['']);
-        $myArr = array("SMS", "TEXT", $data["SMS"][0], $data["SMS"][1], $data["SMS"][2] . '%');
+        $myArr = array("MT CALL", "MINS", number_format($data["MT"][0]), number_format($data["MT"][1]), $data["MT"][2] . '%');
         $writer->addRow($myArr); // add a row at a time
         $writer->addRow(['']);
-        $myArr = array("INTERNET", "GB", $data["IT"][0], $data["IT"][1], $data["IT"][2] . '%');
+        $myArr = array("SMS", "TEXT", number_format($data["SMS"][0]), number_format($data["SMS"][1]), $data["SMS"][2] . '%');
+        $writer->addRow($myArr); // add a row at a time
+        $writer->addRow(['']);
+        $myArr = array("INTERNET", "GB", number_format($data["IT"][0]), number_format($data["IT"][1]), $data["IT"][2] . '%');
         $writer->addRow($myArr); // add a row at a time
 
         $writer->close();
