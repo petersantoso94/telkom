@@ -395,16 +395,16 @@ class InventoryController extends BaseController {
                         $id_counter = 1;
                     else
                         $id_counter = $check_counter->ID + 1;
-                    
+
                     foreach ($reader->getSheetIterator() as $sheet) {
                         foreach ($sheet->getRowIterator() as $rowNumber => $value) {
                             if ($rowNumber > 1) {
                                 if ($value[0] != null && $value[0] != '') {
                                     // do stuff with the row
                                     $type = $value[2];
-                                    if($type === '1' || $type === '4'){
+                                    if ($type === '1' || $type === '4') {
                                         
-                                    }else{
+                                    } else {
                                         
                                     }
                                     $wh = Input::get('warehouse', false);
@@ -464,7 +464,7 @@ class InventoryController extends BaseController {
     }
 
     public function showDashboard() {
-        $years = DB::table('r_stats')->select('Year')->orderBy('Year','DESC')->distinct()->get();
+        $years = DB::table('r_stats')->select('Year')->orderBy('Year', 'DESC')->distinct()->get();
         return View::make('dashboard')->withPage('dashboard')->withYears($years);
     }
 
@@ -1579,8 +1579,11 @@ class InventoryController extends BaseController {
 
 
     static function getIVR() {
-//        $year = '2018';
+        $year = '2018';
         $year = Input::get('year');
+        $type = '2';
+        if (Input::get('type'))
+            $type = Input::get('type');
         $data = [];
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status >= 10')->get();
 //        if(!count($all_ivr)){
@@ -1608,6 +1611,21 @@ class InventoryController extends BaseController {
                         $data[$stats][$i] += $ivr->Counter;
                 }
             }
+        }
+
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stat')->select(DB::raw('YEAR(Date) as year'))->distinct()->get() as $year) {
+                $myArr = array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
+                foreach ($data as $a) {
+                    $myArr = array("");
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
         }
         return $data;
     }
@@ -2762,7 +2780,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], number_format($data['COLUMBIA'][1]), number_format($data['COLUMBIA'][4])
-                        , number_format($data['COLUMBIA'][3]), number_format($data['COLUMBIA'][2]), number_format($data['TELIN TAIWAN'][1])
+                    , number_format($data['COLUMBIA'][3]), number_format($data['COLUMBIA'][2]), number_format($data['TELIN TAIWAN'][1])
                     , number_format($data['TELIN TAIWAN'][4]), number_format($data['TELIN TAIWAN'][3]), number_format($data['TELIN TAIWAN'][2]));
                 $writer->addRow($myArr); // add a row at a time
             }
@@ -2782,7 +2800,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], number_format($data['COLUMBIA'][1]), number_format($data['COLUMBIA'][4])
-                        , number_format($data['COLUMBIA'][3]), number_format($data['COLUMBIA'][2]), number_format($data['TELIN TAIWAN'][1])
+                    , number_format($data['COLUMBIA'][3]), number_format($data['COLUMBIA'][2]), number_format($data['TELIN TAIWAN'][1])
                     , number_format($data['TELIN TAIWAN'][4]), number_format($data['TELIN TAIWAN'][3]), number_format($data['TELIN TAIWAN'][2]));
 //                $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], $data['COLUMBIA'][1]
 //                        , $data['COLUMBIA'][4], $data['COLUMBIA'][3], $data['COLUMBIA'][2], $data['TELIN TAIWAN'][1]
@@ -2805,7 +2823,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], number_format($data['COLUMBIA'][1]), number_format($data['COLUMBIA'][4])
-                        , number_format($data['COLUMBIA'][3]), number_format($data['COLUMBIA'][2]), number_format($data['TELIN TAIWAN'][1])
+                    , number_format($data['COLUMBIA'][3]), number_format($data['COLUMBIA'][2]), number_format($data['TELIN TAIWAN'][1])
                     , number_format($data['TELIN TAIWAN'][4]), number_format($data['TELIN TAIWAN'][3]), number_format($data['TELIN TAIWAN'][2]));
 //                $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], $data['COLUMBIA'][1], $data['COLUMBIA'][4], $data['COLUMBIA'][3], $data['COLUMBIA'][2], $data['TELIN TAIWAN'][1], $data['TELIN TAIWAN'][4], $data['TELIN TAIWAN'][3], $data['TELIN TAIWAN'][2]);
                 $writer->addRow($myArr); // add a row at a time
@@ -2826,7 +2844,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], number_format($data['COLUMBIA'][1]), number_format($data['COLUMBIA'][4])
-                        , number_format($data['COLUMBIA'][3]), number_format($data['COLUMBIA'][2]), number_format($data['TELIN TAIWAN'][1])
+                    , number_format($data['COLUMBIA'][3]), number_format($data['COLUMBIA'][2]), number_format($data['TELIN TAIWAN'][1])
                     , number_format($data['TELIN TAIWAN'][4]), number_format($data['TELIN TAIWAN'][3]), number_format($data['TELIN TAIWAN'][2]));
 //                $myArr = array($data['shipoutto'], $data['subagent'], $data['date'], $data['COLUMBIA'][1], $data['COLUMBIA'][4], $data['COLUMBIA'][3], $data['COLUMBIA'][2], $data['TELIN TAIWAN'][1], $data['TELIN TAIWAN'][4], $data['TELIN TAIWAN'][3], $data['TELIN TAIWAN'][2]);
                 $writer->addRow($myArr); // add a row at a time
@@ -3140,7 +3158,7 @@ class InventoryController extends BaseController {
             } else if ($data->ServiceUsed == '8') {
                 $stats = 'All';
             }
-            $myArr = array( $data->MSISDN,$data->ActivationName, $data->ActivationDate, $data->ActivationStore, $data->ChurnDate, number_format($data->Voc300), number_format($data->Voc100), number_format($data->Voc50), $data->LastDatePurchasedVoucher, $stats, $data->LastDateUsedService);
+            $myArr = array($data->MSISDN, $data->ActivationName, $data->ActivationDate, $data->ActivationStore, $data->ChurnDate, number_format($data->Voc300), number_format($data->Voc100), number_format($data->Voc50), $data->LastDatePurchasedVoucher, $stats, $data->LastDateUsedService);
             $writer->addRow($myArr); // add a row at a time
         }
         $writer->close();
@@ -3490,8 +3508,8 @@ class InventoryController extends BaseController {
                     $totalvoc[$i] += $val[$i];
                 }
 //                $myArr = array($key, $val[0], $val[1], $val[2], $val[3], $val[4], $val[5], $val[6], $val[7], $val[8], $val[9], $val[10], $val[11], array_sum($val));
-                $myArr = array($key, number_format($val[0]), number_format($val[1]), number_format($val[2]), number_format($val[3]), number_format($val[4]), 
-                    number_format($val[5]), number_format($val[6]), number_format($val[7]), number_format($val[8]), number_format($val[9]), number_format($val[10]), 
+                $myArr = array($key, number_format($val[0]), number_format($val[1]), number_format($val[2]), number_format($val[3]), number_format($val[4]),
+                    number_format($val[5]), number_format($val[6]), number_format($val[7]), number_format($val[8]), number_format($val[9]), number_format($val[10]),
                     number_format($val[11]), number_format(array_sum($val)));
                 $writer->addRow($myArr); // add a row at a time
             }
@@ -3530,8 +3548,8 @@ class InventoryController extends BaseController {
                     $totalvoc[$i] += $val[$i];
                 }
 //                $myArr = array($key, $val[0], $val[1], $val[2], $val[3], $val[4], $val[5], $val[6], $val[7], $val[8], $val[9], $val[10], $val[11], array_sum($val));
-                $myArr = array($key, number_format($val[0]), number_format($val[1]), number_format($val[2]), number_format($val[3]), number_format($val[4]), 
-                    number_format($val[5]), number_format($val[6]), number_format($val[7]), number_format($val[8]), number_format($val[9]), number_format($val[10]), 
+                $myArr = array($key, number_format($val[0]), number_format($val[1]), number_format($val[2]), number_format($val[3]), number_format($val[4]),
+                    number_format($val[5]), number_format($val[6]), number_format($val[7]), number_format($val[8]), number_format($val[9]), number_format($val[10]),
                     number_format($val[11]), number_format(array_sum($val)));
                 $writer->addRow($myArr); // add a row at a time
             }
@@ -3594,8 +3612,8 @@ class InventoryController extends BaseController {
                 for ($i = 0; $i < 12; $i++) {
                     $totalvoc[$i] += $val[$i];
                 }
-                $myArr = array($key, number_format($val[0]), number_format($val[1]), number_format($val[2]), number_format($val[3]), number_format($val[4]), 
-                    number_format($val[5]), number_format($val[6]), number_format($val[7]), number_format($val[8]), number_format($val[9]), number_format($val[10]), 
+                $myArr = array($key, number_format($val[0]), number_format($val[1]), number_format($val[2]), number_format($val[3]), number_format($val[4]),
+                    number_format($val[5]), number_format($val[6]), number_format($val[7]), number_format($val[8]), number_format($val[9]), number_format($val[10]),
                     number_format($val[11]), number_format(array_sum($val)));
                 $writer->addRow($myArr); // add a row at a time
             }
@@ -3630,7 +3648,8 @@ class InventoryController extends BaseController {
                 for ($i = 0; $i < 12; $i++) {
                     $totalvoc[$i] += $val[$i];
                 }
-                $myArr = array($key, number_format($val[0]), number_format($val[1]), number_format($val[2]), number_format($val[3]), number_format($val[4]), number_format($val[5]), number_format($val[6]), number_format($val[7]), number_format($val[8]), number_format($val[9]), number_format($val[10]), number_format($val[11]), number_format(array_sum($val)));;
+                $myArr = array($key, number_format($val[0]), number_format($val[1]), number_format($val[2]), number_format($val[3]), number_format($val[4]), number_format($val[5]), number_format($val[6]), number_format($val[7]), number_format($val[8]), number_format($val[9]), number_format($val[10]), number_format($val[11]), number_format(array_sum($val)));
+                ;
                 $writer->addRow($myArr); // add a row at a time
             }
             $myArr = array("TOTAL", number_format($totalvoc[0]), number_format($totalvoc[1]), number_format($totalvoc[2])
