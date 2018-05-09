@@ -1579,9 +1579,9 @@ class InventoryController extends BaseController {
 
 
     static function getIVR() {
-        $year = '2018';
+//        $year = '2018';
         $year = Input::get('year');
-        $type = '2';
+        $type = '';
         if (Input::get('type'))
             $type = Input::get('type');
         $data = [];
@@ -1644,8 +1644,8 @@ class InventoryController extends BaseController {
                         }
                     }
                 }
-                foreach ($data as $key=>$a) {
-                    $myArr = array($key,$a[0],$a[1],$a[2],$a[3],$a[4],$a[5],$a[6],$a[7],$a[8],$a[9],$a[10],$a[11]);
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
@@ -1657,6 +1657,10 @@ class InventoryController extends BaseController {
     static function getCHURN() {
         $year = Input::get('year');
 //        $year = '2016';
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
+
         $data = [];
         $counter_z = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         $counter_c = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -1696,11 +1700,70 @@ class InventoryController extends BaseController {
             if ($counter_c[$i] > 0)
                 $data['churn']['Churn'][$i] = -($sum_churn_bef);
         }
+
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
+                $counter_z = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $counter_c = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $data['churn']['Churn'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $data['act']['Active MSISDN'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $sum_bef = 0;
+                $sum_churn_bef = 0;
+                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Churn%\'')->get();
+                $all_act = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Activation%\'')->orderBy('Month', 'ASC')->get();
+                $churn_year_before = Stats::where('Year', '<', $year->Year)->whereRaw('Status LIKE \'%Churn%\'')->orderBy('Month', 'ASC')->get();
+                $act_year_before = Stats::where('Year', '<', $year->Year)->whereRaw('Status LIKE \'%Activation%\'')->orderBy('Month', 'ASC')->get();
+                if ($act_year_before != null) {
+                    foreach ($act_year_before as $act) {
+                        $sum_bef += $act->Counter;
+                    }
+                }
+                if ($churn_year_before != null) {
+                    foreach ($churn_year_before as $act) {
+                        $sum_churn_bef += $act->Counter;
+                    }
+                }
+                if ($all_ivr != null) {
+                    foreach ($all_ivr as $ivr) {
+                        $counter_c[($ivr->Month - 1)] = $ivr->Counter;
+                    }
+                }
+                if ($all_act != null) {
+                    foreach ($all_act as $ivr) {
+                        $counter_z[($ivr->Month - 1)] = $ivr->Counter;
+                    }
+                }
+                for ($i = 0; $i < 12; $i++) {
+                    $sum_bef += $counter_z[$i];
+                    $sum_churn_bef += $counter_c[$i];
+                    if ($counter_z[$i] > 0)
+                        $data['act']['Active MSISDN'][$i] = $sum_bef - $sum_churn_bef;
+                    if ($counter_c[$i] > 0)
+                        $data['churn']['Churn'][$i] = -($sum_churn_bef);
+                }
+                foreach ($data as $datas)
+                    foreach ($datas as $key => $a) {
+                        $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                        $writer->addRow($myArr); // add a row at a time
+                    }
+            }
+            $writer->close();
+        }
         return $data;
     }
 
     static function getCHURN2() {
         $year = Input::get('year');
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
 //        $year = '2017';
         $data["Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Churn%\'')->get();
@@ -1709,11 +1772,33 @@ class InventoryController extends BaseController {
                 $data["Churn"][($ivr->Month - 1)] = $ivr->Counter;
             }
         }
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+                $data["Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Churn%\'')->get();
+                if ($all_ivr != null) {
+                    foreach ($all_ivr as $ivr) {
+                        $data["Churn"][($ivr->Month - 1)] = $ivr->Counter;
+                    }
+                }
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
+        }
         return $data;
     }
 
     static function getSubsriber() {
         $year = Input::get('year');
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
 //        $year = '2017';
         $data["Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Activation%\'')->get();
@@ -1722,11 +1807,34 @@ class InventoryController extends BaseController {
                 $data["Subscriber"][($ivr->Month - 1)] = $ivr->Counter;
             }
         }
+
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+                $data["Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Activation%\'')->get();
+                if ($all_ivr != null) {
+                    foreach ($all_ivr as $ivr) {
+                        $data["Subscriber"][($ivr->Month - 1)] = $ivr->Counter;
+                    }
+                }
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
+        }
         return $data;
     }
 
     static function getProductive() {
         $year = Input::get('year');
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
 //        $year = '2017';
         $data = [];
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%services%\'')->get();
@@ -1763,11 +1871,61 @@ class InventoryController extends BaseController {
                 }
             }
         }
+
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%services%\'')->get();
+//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+                if ($all_ivr != null) {
+                    foreach ($all_ivr as $ivr) {
+                        $stats = 'no service';
+                        $temp_stat = $ivr->Status;
+                        if (substr($temp_stat, 0, 1) == '1') {
+                            $stats = 'Voice only';
+                        } else if (substr($temp_stat, 0, 1) == '2') {
+                            $stats = 'Internet only';
+                        } else if (substr($temp_stat, 0, 1) == '3') {
+                            $stats = 'Voice + Internet';
+                        } else if (substr($temp_stat, 0, 1) == '5') {
+                            $stats = 'SMS only';
+                        } else if (substr($temp_stat, 0, 1) == '6') {
+                            $stats = 'Voice + SMS';
+                        } else if (substr($temp_stat, 0, 1) == '7') {
+                            $stats = 'Internet + SMS';
+                        } else if (substr($temp_stat, 0, 1) == '8') {
+                            $stats = 'All';
+                        }
+                        if (!isset($data[$stats]))
+                            $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $data[$stats][$i] = $ivr->Counter;
+                            }
+                        }
+                    }
+                }
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
+        }
         return $data;
     }
 
     static function getSumService() {
         $year = Input::get('year');
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
 //        $year = '2017';
         $data = [];
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%_sum%\'')->get();
@@ -1803,11 +1961,59 @@ class InventoryController extends BaseController {
                 }
             }
         }
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%_sum%\'')->get();
+//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+                if ($all_ivr != null) {
+                    foreach ($all_ivr as $ivr) {
+                        $stats = '';
+                        $temp_stat = $ivr->Status;
+                        $temp_counter = $ivr->Counter;
+                        if (explode('_', $temp_stat)[0] == 'mt') {
+                            $stats = 'MT (/1000 mins)';
+                            $temp_counter = round(ceil($temp_counter / 60) / 1000, 1);
+                        } else if (explode('_', $temp_stat)[0] == 'mo') {
+                            $stats = 'MO (/1000 mins)';
+                            $temp_counter = round(ceil($temp_counter / 60) / 1000, 1);
+                        } else if (explode('_', $temp_stat)[0] == 'internet') {
+                            $stats = 'Internet (TB)';
+                            $temp_counter = round($temp_counter / 1000, 1);
+                        } else if (explode('_', $temp_stat)[0] == 'sms') {
+                            $stats = 'SMS (/1000 sms)';
+                            $temp_counter = round($temp_counter / 1000, 1);
+                        }
+                        if (!isset($data[$stats]))
+                            $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $data[$stats][$i] = $temp_counter;
+                            }
+                        }
+                    }
+                }
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
+        }
         return $data;
     }
 
     static function getPayload() {
         $year = Input::get('year');
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
 //        $year = '2017';
         $data = [];
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%internet_sum%\'')->get();
@@ -1829,11 +2035,45 @@ class InventoryController extends BaseController {
                 }
             }
         }
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%internet_sum%\'')->get();
+//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+                if ($all_ivr != null) {
+                    foreach ($all_ivr as $ivr) {
+                        $stats = 'Internet (TB)';
+                        $temp_counter = $ivr->Counter / 1000;
+                        if (!isset($data[$stats]))
+                            $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $data[$stats][$i] = round($temp_counter, 2);
+                            }
+                        }
+                    }
+                }
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
+        }
         return $data;
     }
 
     static function getPayloadPerUser() {
         $year = Input::get('year');
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
 //        $year = '2017';
         $data = [];
         $sum_internet = [];
@@ -1897,11 +2137,88 @@ class InventoryController extends BaseController {
                 $data['PayLoad Per User'][$i] = round($sum_internet['Internet (TB)'][$i] / $count_internet['Internet'][$i], 2);
             }
         }
+
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+                $sum_internet = [];
+                $count_internet = [];
+                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%internet_sum%\'')->get();
+//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+                if ($all_ivr != null) {
+                    foreach ($all_ivr as $ivr) {
+                        $stats = 'Internet (TB)';
+                        $temp_counter = $ivr->Counter;
+                        if (!isset($sum_internet[$stats]))
+                            $sum_internet[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $sum_internet[$stats][$i] = round($temp_counter, 2);
+                            }
+                        }
+                    }
+                }
+
+                $internet_user = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%services%\'')->get();
+//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+                $count_internet['Internet'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if ($internet_user != null) {
+                    foreach ($internet_user as $ivr) {
+                        $stats = 'non';
+                        $temp_stat = $ivr->Status;
+                        if (substr($temp_stat, 0, 1) == '2') {
+                            $stats = 'Internet';
+                        } else if (substr($temp_stat, 0, 1) == '3') {
+                            $stats = 'Internet';
+                        } else if (substr($temp_stat, 0, 1) == '7') {
+                            $stats = 'Internet';
+                        } else if (substr($temp_stat, 0, 1) == '8') {
+                            $stats = 'Internet';
+                        }
+                        if ($stats != 'non') {
+                            if (!isset($count_internet[$stats]))
+                                $count_internet[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                            for ($i = 0; $i < 12; $i++) {
+                                if ($i == $ivr->Month - 1) {
+                                    $count_internet[$stats][$i] += $ivr->Counter;
+                                }
+                            }
+                        }
+                    }
+                }
+                $data['PayLoad Per User'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($count_internet['Internet'][$i] == 0) {
+                        $data['PayLoad Per User'][$i] = 0;
+                    } else {
+                        $data['PayLoad Per User'][$i] = round($sum_internet['Internet (TB)'][$i] / $count_internet['Internet'][$i], 2);
+                    }
+                }
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
+        }
         return $data;
     }
 
     static function getInternetVsNon() {
         $year = Input::get('year');
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
 //        $year = '2017';
         $data = [];
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%services%\'')->get();
@@ -1938,11 +2255,61 @@ class InventoryController extends BaseController {
                 }
             }
         }
+
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%services%\'')->get();
+//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+                if ($all_ivr != null) {
+                    foreach ($all_ivr as $ivr) {
+                        $stats = 'Non-Internet';
+                        $temp_stat = $ivr->Status;
+                        if (substr($temp_stat, 0, 1) == '1') {
+                            $stats = 'Non-Internet';
+                        } else if (substr($temp_stat, 0, 1) == '2') {
+                            $stats = 'Internet';
+                        } else if (substr($temp_stat, 0, 1) == '3') {
+                            $stats = 'Internet';
+                        } else if (substr($temp_stat, 0, 1) == '5') {
+                            $stats = 'Non-Internet';
+                        } else if (substr($temp_stat, 0, 1) == '6') {
+                            $stats = 'Non-Internet';
+                        } else if (substr($temp_stat, 0, 1) == '7') {
+                            $stats = 'Internet';
+                        } else if (substr($temp_stat, 0, 1) == '8') {
+                            $stats = 'Internet';
+                        }
+                        if (!isset($data[$stats]))
+                            $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $data[$stats][$i] += $ivr->Counter;
+                            }
+                        }
+                    }
+                }
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
+        }
         return $data;
     }
 
     static function getVouchers300TopUp() {
         $year = Input::get('year');
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
 //        $year = '2017';
         $data = [];
         //1 -> evoucher; 2 -> phvoucher
@@ -1968,6 +2335,20 @@ class InventoryController extends BaseController {
                     }
                 }
             }
+        }
+
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
         }
         return $data;
     }
@@ -2037,12 +2418,27 @@ class InventoryController extends BaseController {
                 }
             }
             return $data;
+        } else if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
         }
         return $data;
     }
 
     static function getMSISDNTopUp() {
         $year = Input::get('year');
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
 //        $year = '2017';
         $data = [];
         //1 -> evoucher; 2 -> phvoucher
@@ -2059,11 +2455,28 @@ class InventoryController extends BaseController {
                 }
             }
         }
+
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
+        }
         return $data;
     }
 
     static function getChurnDetail() {
         $year = Input::get('year');
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
 //        $year = '2018';
         $type = '';
         $data = [];
@@ -2094,6 +2507,19 @@ class InventoryController extends BaseController {
                     }
                 }
             }
+        }
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
         }
         return $data;
     }
