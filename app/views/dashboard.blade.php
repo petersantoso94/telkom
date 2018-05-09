@@ -997,13 +997,14 @@
                 var getVouchers300TopUp = '<?php echo Route('getVouchers300TopUp') ?>';
                 var getMSISDNTopUp = '<?php echo Route('getMSISDNTopUp') ?>';
                 var getChurnDetail = '<?php echo Route('getChurnDetail') ?>';
-                var l_year = document.getElementById('ivr_year').value;
-                var c_year = document.getElementById('churn_year').value;
-                var p_year = document.getElementById('prod_year').value;
+                var default_year = document.getElementById('ivr_year').value;
+                var ivr_year = document.getElementById('ivr_year').value;
+                var churn_year = document.getElementById('churn_year').value;
+                var prod_year = document.getElementById('prod_year').value;
                 var s_year = document.getElementById('sum_year').value;
                 var internet_payload_year = document.getElementById('payload_year').value;
-                var internet_payload_peruser_year = document.getElementById('payload_peruser_year').value;
-                var internet_vs_year = document.getElementById('vs_year').value;
+                var payload_peruser_year = document.getElementById('payload_peruser_year').value;
+                var vs_year = document.getElementById('vs_year').value;
                 var voc_topup_year = document.getElementById('voc_topup_year').value;
                 var voc_topup300_year = document.getElementById('voc_topup300_year').value;
                 var evoc_topup_year = document.getElementById('evoc_topup_year').value;
@@ -1021,13 +1022,13 @@
                     refreshBarChart();
                 });
                 $('#ivr_year').on('change', function (e) {
-                    l_year = document.getElementById('ivr_year').value;
+                    ivr_year = document.getElementById('ivr_year').value;
                     scroll = false;
                     refreshBarChart();
                 });
 
                 $('#churn_year').on('change', function (e) {
-                    c_year = document.getElementById('churn_year').value;
+                    churn_year = document.getElementById('churn_year').value;
                     scroll = false;
                     refreshBarChart();
                 });
@@ -1050,7 +1051,7 @@
                 });
 
                 $('#prod_year').on('change', function (e) {
-                    p_year = document.getElementById('prod_year').value;
+                    prod_year = document.getElementById('prod_year').value;
                     scroll = false;
                     refreshBarChart();
                 });
@@ -1066,12 +1067,12 @@
                     refreshBarChart();
                 });
                 $('#payload_peruser_year').on('change', function (e) {
-                    internet_payload_peruser_year = document.getElementById('payload_peruser_year').value;
+                    payload_peruser_year = document.getElementById('payload_peruser_year').value;
                     scroll = false;
                     refreshBarChart();
                 });
                 $('#vs_year').on('change', function (e) {
-                    internet_vs_year = document.getElementById('vs_year').value;
+                    vs_year = document.getElementById('vs_year').value;
                     scroll = false;
                     refreshBarChart();
                 });
@@ -1998,7 +1999,7 @@
                         arg_type = '2';
                     }
                     if (chartID == 'info_ivr_month') {
-                        $.post(getIVR, {year: l_year, type: arg_type}, function (data) {
+                        $.post(getIVR, {year: ivr_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData.datasets = [];
@@ -2030,7 +2031,7 @@
                         });
                     } else if (chartID == 'info_churn_month') {
 
-                        $.post(getCHURN, {year: c_year, type: arg_type}, function (data) {
+                        $.post(getCHURN, {year: churn_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData2.datasets = [];
@@ -2121,7 +2122,7 @@
                             }
                         });
                     } else if (chartID == 'info_prod_month') {
-                        $.post(getProductive, {year: p_year, type: arg_type}, function (data) {
+                        $.post(getProductive, {year: prod_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData3.datasets = [];
@@ -2215,7 +2216,7 @@
                             }
                         });
                     } else if (chartID == 'info_internet_payloads_peruser') {
-                        $.post(getPayloadPeruser, {year: internet_payload_peruser_year, type: arg_type}, function (data) {
+                        $.post(getPayloadPeruser, {year: payload_peruser_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData6.datasets = [];
@@ -2243,7 +2244,7 @@
                             }
                         });
                     } else if (chartID == 'info_internet_vs') {
-                        $.post(getInternetVsNon, {year: internet_vs_year, type: arg_type}, function (data) {
+                        $.post(getInternetVsNon, {year: vs_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData7.datasets = [];
