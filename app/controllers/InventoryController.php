@@ -2342,7 +2342,27 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
-
+                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%topup%\'')->get();
+                if ($all_ivr != null) {
+                    foreach ($all_ivr as $ivr) {
+                        $stats = '';
+                        $temp_stat = $ivr->Status;
+                        if (substr($temp_stat, 0, 1) == '2') {
+                            $stats = 'pV300';
+                        } else if (substr($temp_stat, 0, 1) == '5') {
+                            $stats = 'eV300';
+                        }
+                        if ($stats != '') {
+                            if (!isset($data[$stats]))
+                                $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                            for ($i = 0; $i < 12; $i++) {
+                                if ($i == $ivr->Month - 1) {
+                                    $data[$stats][$i] += $ivr->Counter;
+                                }
+                            }
+                        }
+                    }
+                }
                 foreach ($data as $key => $a) {
                     $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
                     $writer->addRow($myArr); // add a row at a time
@@ -2423,7 +2443,34 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
-
+                // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%topup%\'')->get();
+                if ($all_ivr != null) {
+                    foreach ($all_ivr as $ivr) {
+                        $stats = '';
+                        $temp_stat = $ivr->Status;
+                        if (substr($temp_stat, 0, 1) == '1') {
+                            $stats = 'pV100';
+                        } else if (substr($temp_stat, 0, 1) == '2') {
+                            $stats = 'pV300';
+                        } else if (substr($temp_stat, 0, 1) == '3') {
+                            $stats = 'eV50';
+                        } else if (substr($temp_stat, 0, 1) == '4') {
+                            $stats = 'eV100';
+                        } else if (substr($temp_stat, 0, 1) == '5') {
+                            $stats = 'eV300';
+                        }
+                        if ($stats != '') {
+                            if (!isset($data[$stats]))
+                                $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                            for ($i = 0; $i < 12; $i++) {
+                                if ($i == $ivr->Month - 1) {
+                                    $data[$stats][$i] += $ivr->Counter;
+                                }
+                            }
+                        }
+                    }
+                }
                 foreach ($data as $key => $a) {
                     $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
                     $writer->addRow($myArr); // add a row at a time
@@ -2461,7 +2508,19 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
-
+                $counts = Inventory::select(DB::raw('count(DISTINCT `TopUpMSISDN`) as "Counter",MONTH(`TopUpDate`) as "Month"'))->
+                                whereRaw('`TopUpDate` LIKE "%' . $year->Year . '%" GROUP BY CONCAT(MONTH(`TopUpDate`),YEAR(`TopUpDate`))')->get();
+                if ($counts != null) {
+                    foreach ($counts as $count) {
+                        if (!isset($data['Top Up MSISDN']))
+                            $data['Top Up MSISDN'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $count->Month - 1) {
+                                $data['Top Up MSISDN'][$i] += $count->Counter;
+                            }
+                        }
+                    }
+                }
                 foreach ($data as $key => $a) {
                     $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
                     $writer->addRow($myArr); // add a row at a time
@@ -2513,7 +2572,34 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
-
+                $data['Churn'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $data['Active MSISDN'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                //1 -> evoucher; 2 -> phvoucher
+                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Chact%\'')->get();
+                $all_act = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Activation%\'')->get();
+//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+                if ($all_ivr != null) {
+                    foreach ($all_ivr as $ivr) {
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $data['Churn'][$i] = -($ivr->Counter);
+                            }
+                        }
+                    }
+                }
+                if ($all_act != null) {
+                    foreach ($all_act as $ivr) {
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $data['Active MSISDN'][$i] = $ivr->Counter + $data['Churn'][$i];
+                            }
+                        }
+                    }
+                }
                 foreach ($data as $key => $a) {
                     $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
                     $writer->addRow($myArr); // add a row at a time
