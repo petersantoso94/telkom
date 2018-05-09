@@ -129,6 +129,14 @@
                                                     @endforeach
                                                 </select>
                                             </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global"  style="display: none;"></div>
+                                            </div>
                                             <div class="chart">
                                                 <div id="legend2" class="legend"></div>
                                                 <canvas id="barChart_churn" height="100"></canvas>
@@ -143,6 +151,14 @@
                                                     @endif
                                                     @endforeach
                                                 </select>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
                                             </div>
                                             <div class="chart">
                                                 <div id="legend13" class="legend"></div>
@@ -159,6 +175,14 @@
                                                     @endforeach
                                                 </select>
                                             </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
+                                            </div>
                                             <div class="chart">
                                                 <div id="legend3" class="legend"></div>
                                                 <canvas id="barChart_prod" height="100"></canvas>
@@ -173,6 +197,14 @@
                                                     @endif
                                                     @endforeach
                                                 </select>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
                                             </div>
                                             <div class="chart">
                                                 <div id="legend4" class="legend"></div>
@@ -217,6 +249,14 @@
                                                     @endforeach
                                                 </select>
                                             </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
+                                            </div>
                                             <div class="chart">
                                                 <div id="legend11" class="legend"></div>
                                                 <canvas id="barChart_detail_churn" height="100"></canvas>
@@ -231,6 +271,14 @@
                                                     @endif
                                                     @endforeach
                                                 </select>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global"  style="display: none;"></div>
                                             </div>
                                             <div class="chart">
                                                 <div id="legend12" class="legend"></div>
@@ -299,6 +347,14 @@
                                                     @endforeach
                                                 </select>
                                             </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
+                                            </div>
                                             <div class="chart">
                                                 <div id="legend8" class="legend"></div>
                                                 <canvas id="barChart_voc_topup" height="100"></canvas>
@@ -313,6 +369,14 @@
                                                     @endif
                                                     @endforeach
                                                 </select>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
                                             </div>
                                             <div class="chart">
                                                 <div id="legend14" class="legend"></div>
@@ -329,6 +393,14 @@
                                                     @endforeach
                                                 </select>
                                             </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
+                                            </div>
                                             <div class="chart">
                                                 <div id="legend9" class="legend"></div>
                                                 <canvas id="barChart_evoc_topup" height="100"></canvas>
@@ -343,6 +415,14 @@
                                                     @endif
                                                     @endforeach
                                                 </select>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
                                             </div>
                                             <div class="chart">
                                                 <div id="legend10" class="legend"></div>
@@ -418,6 +498,14 @@
                                                     @endforeach
                                                 </select>
                                             </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
+                                            </div>
                                             <div class="chart">
                                                 <div id="legend" class="legend"></div>
                                                 <canvas id="barChart_ivr" height="100"></canvas>
@@ -432,6 +520,14 @@
                                                     @endif
                                                     @endforeach
                                                 </select>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
                                             </div>
                                             <div class="chart">
                                                 <div id="legend5" class="legend"></div>
@@ -448,6 +544,14 @@
                                                     @endforeach
                                                 </select>
                                             </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
+                                            </div>
                                             <div class="chart">
                                                 <div id="legend6" class="legend"></div>
                                                 <canvas id="barChart_internet_payload_peruser" height="100"></canvas>
@@ -462,6 +566,14 @@
                                                     @endif
                                                     @endforeach
                                                 </select>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
                                             </div>
                                             <div class="chart">
                                                 <div id="legend7" class="legend"></div>
@@ -900,65 +1012,87 @@
                 var churn2_year = document.getElementById('churn2_year').value;
                 var subs2_year = document.getElementById('subs2_year').value;
                 var colorNames = Object.keys(window.chartColors);
+                var scroll = true;
+                var excelbutton = false;
+                $('.btn-save-data').on('click', function (e) {
+                    $('.loading-animation-global').show();
+                    scroll = false;
+                    excelbutton = true;
+                    refreshBarChart();
+                });
                 $('#ivr_year').on('change', function (e) {
                     l_year = document.getElementById('ivr_year').value;
+                    scroll = false;
                     refreshBarChart();
                 });
 
                 $('#churn_year').on('change', function (e) {
                     c_year = document.getElementById('churn_year').value;
+                    scroll = false;
                     refreshBarChart();
                 });
                 $('#subs2_year').on('change', function (e) {
                     subs2_year = document.getElementById('subs2_year').value;
+                    scroll = false;
                     refreshBarChart();
                 });
 
                 $('#detail_churn_year').on('change', function (e) {
                     detail_churn_year = document.getElementById('detail_churn_year').value;
+                    scroll = false;
                     refreshBarChart();
                 });
 
                 $('#churn2_year').on('change', function (e) {
                     churn2_year = document.getElementById('churn2_year').value;
+                    scroll = false;
                     refreshBarChart();
                 });
 
                 $('#prod_year').on('change', function (e) {
                     p_year = document.getElementById('prod_year').value;
+                    scroll = false;
                     refreshBarChart();
                 });
 
                 $('#sum_year').on('change', function (e) {
                     s_year = document.getElementById('sum_year').value;
+                    scroll = false;
                     refreshBarChart();
                 });
                 $('#payload_year').on('change', function (e) {
                     internet_payload_year = document.getElementById('payload_year').value;
+                    scroll = false;
                     refreshBarChart();
                 });
                 $('#payload_peruser_year').on('change', function (e) {
                     internet_payload_peruser_year = document.getElementById('payload_peruser_year').value;
+                    scroll = false;
                     refreshBarChart();
                 });
                 $('#vs_year').on('change', function (e) {
                     internet_vs_year = document.getElementById('vs_year').value;
+                    scroll = false;
                     refreshBarChart();
                 });
                 $('#voc_topup_year').on('change', function (e) {
                     voc_topup_year = document.getElementById('voc_topup_year').value;
+                    scroll = false;
                     refreshBarChart();
                 });
                 $('#voc_topup300_year').on('change', function (e) {
                     voc_topup300_year = document.getElementById('voc_topup300_year').value;
+                    scroll = false;
                     refreshBarChart();
                 });
                 $('#evoc_topup_year').on('change', function (e) {
                     evoc_topup_year = document.getElementById('evoc_topup_year').value;
+                    scroll = false;
                     refreshBarChart();
                 });
                 $('#subs_year').on('change', function (e) {
                     subs_year = document.getElementById('subs_year').value;
+                    scroll = false;
                     refreshBarChart();
                 });
 
@@ -1799,7 +1933,7 @@
                             }
                         }
                     });
-                    
+
                     var ctx14 = document.getElementById("barChart_voc300_topup").getContext("2d");
                     window.myBar14 = new Chart(ctx14, {
                         type: 'bar',
@@ -1859,8 +1993,12 @@
                 //-------------
                 var refreshBarChart = function () {
                     var datasetz = [];
+                    var arg_type = '1';
+                    if (excelbutton) {
+                        arg_type = '2';
+                    }
                     if (chartID == 'info_ivr_month') {
-                        $.post(getIVR, {year: l_year}, function (data) {
+                        $.post(getIVR, {year: l_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData.datasets = [];
@@ -1880,11 +2018,19 @@
                             });
                             window.myBar.update();
                             document.getElementById('legend').innerHTML = myBar.generateLegend();
-                            window.scrollBy(0, 200);
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                excelbutton = false;
+                            }
                         });
                     } else if (chartID == 'info_churn_month') {
 
-                        $.post(getCHURN, {year: c_year}, function (data) {
+                        $.post(getCHURN, {year: c_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData2.datasets = [];
@@ -1904,16 +2050,24 @@
                             });
                             window.myBar2.update();
                             document.getElementById('legend2').innerHTML = myBar2.generateLegend();
-                            window.scrollBy(0, 200);
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                excelbutton = false;
+                            }
                         });
                     } else if (chartID == 'info_churn2') {
 
-                        $.post(getCHURN2, {year: churn2_year}, function (data) {
+                        $.post(getCHURN2, {year: churn2_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData12.datasets = [];
                             $.each(data, function (index, value) {
-                                var colors = ["#f2b6b6","#dff0d9"];
+                                var colors = ["#f2b6b6", "#dff0d9"];
                                 var colorName = colorNames[barChartData12.datasets.length % colorNames.length];
                                 var dsColor = window.chartColors[colorName];
                                 barChartData12.datasets.push({
@@ -1926,12 +2080,19 @@
                             });
                             window.myBar12.update();
                             document.getElementById('legend12').innerHTML = myBar12.generateLegend();
-                            window.scrollBy(0, 200);
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                excelbutton = false;
+                            }
                         });
-                    }
-                    else if (chartID == 'info_subs_month') {
+                    } else if (chartID == 'info_subs_month') {
 
-                        $.post(getSubsriber, {year: subs2_year}, function (data) {
+                        $.post(getSubsriber, {year: subs2_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData13.datasets = [];
@@ -1949,10 +2110,18 @@
                             });
                             window.myBar13.update();
                             document.getElementById('legend13').innerHTML = myBar13.generateLegend();
-                            window.scrollBy(0, 200);
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                excelbutton = false;
+                            }
                         });
-                    }else if (chartID == 'info_prod_month') {
-                        $.post(getProductive, {year: p_year}, function (data) {
+                    } else if (chartID == 'info_prod_month') {
+                        $.post(getProductive, {year: p_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData3.datasets = [];
@@ -1971,10 +2140,18 @@
                             });
                             window.myBar3.update();
                             document.getElementById('legend3').innerHTML = myBar3.generateLegend();
-                            window.scrollBy(0, 200);
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                excelbutton = false;
+                            }
                         });
                     } else if (chartID == 'info_sum_month') {
-                        $.post(getSumService, {year: s_year}, function (data) {
+                        $.post(getSumService, {year: s_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData4.datasets = [];
@@ -1998,10 +2175,18 @@
                             //myBar4.options.scales.yAxes[1].ticks.max = max;
                             //window.myBar4.update();
                             document.getElementById('legend4').innerHTML = myBar4.generateLegend();
-                            window.scrollBy(0, 200);
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                excelbutton = false;
+                            }
                         });
                     } else if (chartID == 'info_internet_payloads') {
-                        $.post(getPayload, {year: internet_payload_year}, function (data) {
+                        $.post(getPayload, {year: internet_payload_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData5.datasets = [];
@@ -2019,10 +2204,18 @@
                             });
                             window.myBar5.update();
                             document.getElementById('legend5').innerHTML = myBar5.generateLegend();
-                            window.scrollBy(0, 200);
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                excelbutton = false;
+                            }
                         });
                     } else if (chartID == 'info_internet_payloads_peruser') {
-                        $.post(getPayloadPeruser, {year: internet_payload_peruser_year}, function (data) {
+                        $.post(getPayloadPeruser, {year: internet_payload_peruser_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData6.datasets = [];
@@ -2039,10 +2232,18 @@
                             });
                             window.myBar6.update();
                             document.getElementById('legend6').innerHTML = myBar6.generateLegend();
-                            window.scrollBy(0, 200);
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                excelbutton = false;
+                            }
                         });
                     } else if (chartID == 'info_internet_vs') {
-                        $.post(getInternetVsNon, {year: internet_vs_year}, function (data) {
+                        $.post(getInternetVsNon, {year: internet_vs_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData7.datasets = [];
@@ -2060,10 +2261,18 @@
                             });
                             window.myBar7.update();
                             document.getElementById('legend7').innerHTML = myBar7.generateLegend();
-                            window.scrollBy(0, 200);
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                excelbutton = false;
+                            }
                         });
                     } else if (chartID == 'info_voc_topup') {
-                        $.post(getVouchersTopUp, {year: voc_topup_year}, function (data) {
+                        $.post(getVouchersTopUp, {year: voc_topup_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData8.datasets = [];
@@ -2080,10 +2289,18 @@
                             });
                             window.myBar8.update();
                             document.getElementById('legend8').innerHTML = myBar8.generateLegend();
-                            window.scrollBy(0, 200);
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                excelbutton = false;
+                            }
                         });
-                    }else if (chartID == 'info_voc_topup300') {
-                        $.post(getVouchers300TopUp, {year: voc_topup300_year}, function (data) {
+                    } else if (chartID == 'info_voc_topup300') {
+                        $.post(getVouchers300TopUp, {year: voc_topup300_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData14.datasets = [];
@@ -2100,10 +2317,18 @@
                             });
                             window.myBar14.update();
                             document.getElementById('legend14').innerHTML = myBar14.generateLegend();
-                            window.scrollBy(0, 200);
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                excelbutton = false;
+                            }
                         });
                     } else if (chartID == 'info_evoc_topup') {
-                        $.post(getVouchersTopUp, {year: evoc_topup_year, type: 1}, function (data) {
+                        $.post(getVouchersTopUp, {year: evoc_topup_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData9.datasets = [];
@@ -2120,10 +2345,18 @@
                             });
                             window.myBar9.update();
                             document.getElementById('legend9').innerHTML = myBar9.generateLegend();
-                            window.scrollBy(0, 200);
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                excelbutton = false;
+                            }
                         });
                     } else if (chartID == 'info_subs_topup') {
-                        $.post(getMSISDNTopUp, {year: subs_year}, function (data) {
+                        $.post(getMSISDNTopUp, {year: subs_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData10.datasets = [];
@@ -2140,10 +2373,18 @@
                             });
                             window.myBar10.update();
                             document.getElementById('legend10').innerHTML = myBar10.generateLegend();
-                            window.scrollBy(0, 200);
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                excelbutton = false;
+                            }
                         });
                     } else if (chartID == 'info_detail_churn_month') {
-                        $.post(getChurnDetail, {year: detail_churn_year}, function (data) {
+                        $.post(getChurnDetail, {year: detail_churn_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData11.datasets = [];
@@ -2161,9 +2402,18 @@
                             });
                             window.myBar11.update();
                             document.getElementById('legend11').innerHTML = myBar11.generateLegend();
-                            window.scrollBy(0, 200);
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                excelbutton = false;
+                            }
                         });
                     }
+                    $('.loading-animation-global').hide();
                 }
                 var chartID = '';
                 window.showChart = function (element) {
