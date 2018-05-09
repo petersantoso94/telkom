@@ -1617,12 +1617,12 @@ class InventoryController extends BaseController {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
-            foreach (DB::table('r_stat')->select(DB::raw('YEAR(Date) as year'))->distinct()->get() as $year) {
-                $myArr = array($year->year);
+            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+                $myArr = array($year->Year);
                 $writer->addRow($myArr); // add a row at a time
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
-                foreach (Stats::where('Year', $year->year)->whereRaw('Status >= 10')->get() as $ivr) {
+                foreach (Stats::where('Year', $year->Year)->whereRaw('Status >= 10')->get() as $ivr) {
                     $stats = '30 days';
                     if ($ivr->Status == '180') {
                         $stats = '1 GB';
@@ -1644,7 +1644,7 @@ class InventoryController extends BaseController {
                         }
                     }
                 }
-                foreach ($data as $key->$a) {
+                foreach ($data as $key=>$a) {
                     $myArr = array($key,$a[0],$a[1],$a[2],$a[3],$a[4],$a[5],$a[6],$a[7],$a[8],$a[9],$a[10],$a[11]);
                     $writer->addRow($myArr); // add a row at a time
                 }
