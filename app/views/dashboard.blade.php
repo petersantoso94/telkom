@@ -1001,7 +1001,7 @@
                 var ivr_year = document.getElementById('ivr_year').value;
                 var churn_year = document.getElementById('churn_year').value;
                 var prod_year = document.getElementById('prod_year').value;
-                var s_year = document.getElementById('sum_year').value;
+                var sum_year = document.getElementById('sum_year').value;
                 var internet_payload_year = document.getElementById('payload_year').value;
                 var payload_peruser_year = document.getElementById('payload_peruser_year').value;
                 var vs_year = document.getElementById('vs_year').value;
@@ -1057,7 +1057,7 @@
                 });
 
                 $('#sum_year').on('change', function (e) {
-                    s_year = document.getElementById('sum_year').value;
+                    sum_year = document.getElementById('sum_year').value;
                     scroll = false;
                     refreshBarChart();
                 });
@@ -2026,6 +2026,7 @@
                             }
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#ivr_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
@@ -2058,6 +2059,7 @@
                             }
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#churn_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
@@ -2088,6 +2090,7 @@
                             }
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#churn2_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
@@ -2118,6 +2121,7 @@
                             }
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#subs2_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
@@ -2148,11 +2152,12 @@
                             }
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#prod_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
                     } else if (chartID == 'info_sum_month') {
-                        $.post(getSumService, {year: s_year, type: arg_type}, function (data) {
+                        $.post(getSumService, {year: sum_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData4.datasets = [];
@@ -2183,6 +2188,7 @@
                             }
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#sum_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
@@ -2212,6 +2218,7 @@
                             }
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#internet_payload_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
@@ -2240,6 +2247,7 @@
                             }
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#payload_peruser_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
@@ -2269,6 +2277,7 @@
                             }
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#vs_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
@@ -2297,6 +2306,7 @@
                             }
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#voc_topup_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
@@ -2325,6 +2335,7 @@
                             }
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#voc_topup300_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
@@ -2353,6 +2364,7 @@
                             }
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#evoc_topup_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
@@ -2381,6 +2393,7 @@
                             }
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#subs_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
