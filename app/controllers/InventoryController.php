@@ -1617,7 +1617,7 @@ class InventoryController extends BaseController {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
-            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
                 $myArr = array($year->Year);
                 $writer->addRow($myArr); // add a row at a time
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
@@ -1705,7 +1705,7 @@ class InventoryController extends BaseController {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
-            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
                 $myArr = array($year->Year);
                 $writer->addRow($myArr); // add a row at a time
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
@@ -1776,7 +1776,7 @@ class InventoryController extends BaseController {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
-            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
                 $data["Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Churn%\'')->get();
                 if ($all_ivr != null) {
@@ -1812,7 +1812,7 @@ class InventoryController extends BaseController {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
-            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
                 $data["Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Activation%\'')->get();
                 if ($all_ivr != null) {
@@ -1876,7 +1876,7 @@ class InventoryController extends BaseController {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
-            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%services%\'')->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
@@ -1965,7 +1965,7 @@ class InventoryController extends BaseController {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
-            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%_sum%\'')->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
@@ -2039,7 +2039,7 @@ class InventoryController extends BaseController {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
-            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%internet_sum%\'')->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
@@ -2142,7 +2142,7 @@ class InventoryController extends BaseController {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
-            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
                 $sum_internet = [];
                 $count_internet = [];
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%internet_sum%\'')->get();
@@ -2260,7 +2260,7 @@ class InventoryController extends BaseController {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
-            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%services%\'')->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
@@ -2341,7 +2341,7 @@ class InventoryController extends BaseController {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
-            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%topup%\'')->get();
                 if ($all_ivr != null) {
                     foreach ($all_ivr as $ivr) {
@@ -2442,7 +2442,7 @@ class InventoryController extends BaseController {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
-            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
                 // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%topup%\'')->get();
                 if ($all_ivr != null) {
@@ -2507,7 +2507,7 @@ class InventoryController extends BaseController {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
-            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
                 $counts = Inventory::select(DB::raw('count(DISTINCT `TopUpMSISDN`) as "Counter",MONTH(`TopUpDate`) as "Month"'))->
                                 whereRaw('`TopUpDate` LIKE "%' . $year->Year . '%" GROUP BY CONCAT(MONTH(`TopUpDate`),YEAR(`TopUpDate`))')->get();
                 if ($counts != null) {
@@ -2571,7 +2571,7 @@ class InventoryController extends BaseController {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
-            foreach (DB::table('r_stats')->select('Year')->distinct()->get() as $year) {
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
                 $data['Churn'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 $data['Active MSISDN'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 //1 -> evoucher; 2 -> phvoucher
