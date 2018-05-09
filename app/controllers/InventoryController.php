@@ -1618,10 +1618,34 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stat')->select(DB::raw('YEAR(Date) as year'))->distinct()->get() as $year) {
-                $myArr = array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $myArr = array($year->year);
                 $writer->addRow($myArr); // add a row at a time
-                foreach ($data as $a) {
-                    $myArr = array("");
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
+                foreach (Stats::where('Year', $year->year)->whereRaw('Status >= 10')->get() as $ivr) {
+                    $stats = '30 days';
+                    if ($ivr->Status == '180') {
+                        $stats = '1 GB';
+                    } else if ($ivr->Status == '300') {
+                        $stats = '2 GB';
+                    } else if ($ivr->Status == '360') {
+                        $stats = '1 GB';
+                    } else if ($ivr->Status == '600') {
+                        $stats = '2 GB';
+                    }
+                    if (!isset($data[$stats]))
+                        $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    for ($i = 0; $i < 12; $i++) {
+                        if ($i == $ivr->Month - 1) {
+                            if (!$data[$stats][$i])
+                                $data[$stats][$i] = $ivr->Counter;
+                            else
+                                $data[$stats][$i] += $ivr->Counter;
+                        }
+                    }
+                }
+                foreach ($data as $key->$a) {
+                    $myArr = array($stats,);
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
