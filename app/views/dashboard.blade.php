@@ -2069,13 +2069,13 @@
                             barChartData8.datasets = [];
                             $.each(data, function (index, value) {
                                 var index_temp = 0;
-                                if (index == 'E-VOUCHER 100')
+                                if (index == 'eV100')
                                     index_temp = 1
-                                else if (index == 'PH-VOUCHER 100')
+                                else if (index == 'pV100')
                                     index_temp = 2
-                                else if (index == 'E-VOUCHER 300')
+                                else if (index == 'eV300')
                                     index_temp = 3
-                                else if (index == 'PH-VOUCHER 300')
+                                else if (index == 'pV300')
                                     index_temp = 4
                                 var colorName = colorNames[index_temp];
                                 var dsColor = window.chartColors[colorName];
@@ -2296,15 +2296,15 @@
                             else if (key == '4')
                                 header = 'SIM 4G';
                             else if (key.toUpperCase() == 'KR0250')
-                                header = 'EVOC 300';
+                                header = 'eV300';
                             else if (key.toUpperCase() == 'KR0150')
-                                header = 'EVOC 100';
+                                header = 'eV100';
                             else if (key.toUpperCase() == 'KR0450')
-                                header = 'EVOC 50';
+                                header = 'eV50';
                             else if (key.toUpperCase() == 'KR0350')
-                                header = 'PHVOC 100';
+                                header = 'pV100';
                             else if (key.toUpperCase() == 'KR1850')
-                                header = 'PHVOC 300';
+                                header = 'pV300';
                             text_html += "<td>" + header + "</td>";
                             val.forEach(function setPerData(item) {
                                 text_html += "<td>" + item + "</td>";
@@ -2336,15 +2336,15 @@
                             else if (key == '4')
                                 header = 'SIM 4G';
                             else if (key.toUpperCase() == 'KR0250')
-                                header = 'EVOC 300';
+                                header = 'eV300';
                             else if (key.toUpperCase() == 'KR0150')
-                                header = 'EVOC 100';
+                                header = 'eV100';
                             else if (key.toUpperCase() == 'KR0450')
-                                header = 'EVOC 50';
+                                header = 'eV50';
                             else if (key.toUpperCase() == 'KR0350')
-                                header = 'PHVOC 100';
+                                header = 'pV100';
                             else if (key.toUpperCase() == 'KR1850')
-                                header = 'PHVOC 300';
+                                header = 'pV300';
                             text_html += "<td>" + header + "</td>";
                             val.forEach(function setPerData(item) {
                                 text_html += "<td>" + item + "</td>";
@@ -2376,15 +2376,15 @@
                             else if (key == '4')
                                 header = 'SIM 4G';
                             else if (key.toUpperCase() == 'KR0250')
-                                header = 'EVOC 300';
+                                header = 'eV300';
                             else if (key.toUpperCase() == 'KR0150')
-                                header = 'EVOC 100';
+                                header = 'eV100';
                             else if (key.toUpperCase() == 'KR0450')
-                                header = 'EVOC 50';
+                                header = 'eV50';
                             else if (key.toUpperCase() == 'KR0350')
-                                header = 'PHVOC 100';
+                                header = 'pV100';
                             else if (key.toUpperCase() == 'KR1850')
-                                header = 'PHVOC 300';
+                                header = 'pV300';
                             text_html += "<td>" + header + "</td>";
                             val.forEach(function setPerData(item) {
                                 text_html += "<td>" + item + "</td>";
