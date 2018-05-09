@@ -1912,9 +1912,9 @@ class InventoryController extends BaseController {
                 $stats = '';
                 $temp_stat = $ivr->Status;
                 if (substr($temp_stat, 0, 1) == '2') {
-                    $stats = 'PH-VOUCHER 300';
+                    $stats = 'pV300';
                 } else if (substr($temp_stat, 0, 1) == '5') {
-                    $stats = 'E-VOUCHER 300';
+                    $stats = 'eV300';
                 }
                 if ($stats != '') {
                     if (!isset($data[$stats]))
@@ -1947,15 +1947,15 @@ class InventoryController extends BaseController {
                     $stats = '';
                     $temp_stat = $ivr->Status;
                     if (substr($temp_stat, 0, 1) == '1') {
-                        $stats = 'PH-VOUCHER 100';
+                        $stats = 'pV100';
                     } else if (substr($temp_stat, 0, 1) == '2') {
-                        $stats = 'PH-VOUCHER 300';
+                        $stats = 'pV300';
                     } else if (substr($temp_stat, 0, 1) == '3') {
-                        $stats = 'E-VOUCHER 50';
+                        $stats = 'eV50';
                     } else if (substr($temp_stat, 0, 1) == '4') {
-                        $stats = 'E-VOUCHER 100';
+                        $stats = 'eV100';
                     } else if (substr($temp_stat, 0, 1) == '5') {
-                        $stats = 'E-VOUCHER 300';
+                        $stats = 'eV300';
                     }
                     if ($stats != '') {
                         if (!isset($data[$stats]))
@@ -1977,11 +1977,11 @@ class InventoryController extends BaseController {
                     $stats = '';
                     $temp_stat = $ivr->Status;
                     if (substr($temp_stat, 0, 1) == '3') {
-                        $stats = 'E-VOUCHER 50';
+                        $stats = 'eV50';
                     } else if (substr($temp_stat, 0, 1) == '4') {
-                        $stats = 'E-VOUCHER 100';
+                        $stats = 'eV100';
                     } else if (substr($temp_stat, 0, 1) == '5') {
-                        $stats = 'E-VOUCHER 300';
+                        $stats = 'eV300';
                     }
                     if ($stats != '') {
                         if (!isset($data[$stats]))
