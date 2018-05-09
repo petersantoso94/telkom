@@ -2068,24 +2068,15 @@
                         }).done(function (data) {
                             barChartData8.datasets = [];
                             $.each(data, function (index, value) {
-                                var index_temp = 0;
-                                if (index == 'eV100')
-                                    index_temp = 1
-                                else if (index == 'pV100')
-                                    index_temp = 2
-                                else if (index == 'eV300')
-                                    index_temp = 3
-                                else if (index == 'pV300')
-                                    index_temp = 4
-                                var colorName = colorNames[index_temp];
+                                var colorName = colorNames[barChartData8.datasets.length % colorNames.length];
                                 var dsColor = window.chartColors[colorName];
-                                barChartData8.datasets[index_temp] = {
+                                barChartData8.datasets.push({
                                     label: index,
                                     backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                                     borderColor: dsColor,
                                     borderWidth: 1,
                                     data: value
-                                };
+                                });
                             });
                             window.myBar8.update();
                             document.getElementById('legend8').innerHTML = myBar8.generateLegend();
