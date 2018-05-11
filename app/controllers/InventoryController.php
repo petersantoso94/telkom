@@ -631,6 +631,13 @@ class InventoryController extends BaseController {
                     $counter++;
                 }
             }
+            $allInvMiss = Inventory::join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                            ->where('m_inventory.Missing', 1)
+                            ->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . $shipoutNumber . '%')->get();
+            foreach ($allInvMiss as $inv) {
+                $inv->Missing = 0;
+                $inv->save();
+            }
             Session::forget('snCons');
             return View::make('consignment')->withResponse('Success')->withPage('shipout consignment')->withNumber($counter);
         }
@@ -1181,7 +1188,7 @@ class InventoryController extends BaseController {
                         }
                         $not_found = array_diff($arr_msisdn, $check_msisdn);
                         $not_found = implode(",", $not_found);
-                        $not_found = explode(",",$not_found);
+                        $not_found = explode(",", $not_found);
                         if (count($not_found) > 0) {
                             $for_raw = '';
                             for ($i = 0; $i < count($not_found); $i++) {
@@ -1262,7 +1269,7 @@ class InventoryController extends BaseController {
                         }
                         $not_found = array_diff($arr_voc, $check_msisdn);
                         $not_found = implode(",", $not_found);
-                        $not_found = explode(",",$not_found);
+                        $not_found = explode(",", $not_found);
                         if (count($not_found) > 0) {
                             $for_raw = '';
                             for ($i = 0; $i < count($not_found); $i++) {
@@ -4540,6 +4547,15 @@ class InventoryController extends BaseController {
                 }
             }
         }
+        for ($i = 0; $i < (7 - count($all_start)); $i++) {
+            $html .= '<div style="width:102%; height:15px; border-left: 1px solid;  border-right: 1px solid;">
+                        <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;"></div>
+                    </div>';
+        }
         $html .= '<div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-top:1px solid;">
                         <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">備</div>
                         <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
@@ -4845,6 +4861,15 @@ class InventoryController extends BaseController {
                         <div style="width:115px; height:15px;float:left; display: inline-block;"></div>
                     </div>';
             }
+        }
+        for ($i = 0; $i < (7 - count($type)); $i++) {
+            $html .= '<div style="width:102%; height:15px; border-left: 1px solid;  border-right: 1px solid;">
+                        <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:115px; height:15px;float:left; display: inline-block;"></div>
+                    </div>';
         }
         $html .= '<div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; ">
                         <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">備</div>
@@ -5455,7 +5480,7 @@ class InventoryController extends BaseController {
     }
 
     static function getShipout() {
-        $lasthist = History::where('SN', 'like', '%' . Input::get('sn') . '%')->where('Status', '2')->orderBy('ID', 'desc')->first()->SubAgent;
+        $lasthist = History::where('SN', 'like', '%' . Input::get('sn') . '%')->where('Status', '2')->orWhere('Status', '4')->orderBy('ID', 'desc')->first()->SubAgent;
         return $lasthist;
     }
 
@@ -6120,7 +6145,7 @@ class InventoryController extends BaseController {
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
         $extraCondition = "(m_inventory.`SerialNumber` IN ('" . $array . "')";
         $extraCondition .= " OR m_inventory.`MSISDN` IN ('" . $array . "'))";
-        $extraCondition .= " AND m_historymovement.Status IN ('" . $string_temp. "')";
+        $extraCondition .= " AND m_historymovement.Status IN ('" . $string_temp . "')";
         $join = ' INNER JOIN m_historymovement on m_historymovement.ID = m_inventory.LastStatusID';
 
         echo json_encode(
