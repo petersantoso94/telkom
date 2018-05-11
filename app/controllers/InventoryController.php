@@ -4382,7 +4382,6 @@ class InventoryController extends BaseController {
         }
 
         if (Session::get('conses') == 0) {
-            $wh = 'TELIN TAIWAN';
             $temp_string = '銷貨單';
         }
         if (Session::get('conses') == 1) {
@@ -4436,7 +4435,7 @@ class InventoryController extends BaseController {
                     <div style="width:102%; height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block;">客戶名稱 ：</div>
                         <div style="width:430px; height:20px;float:left; display: inline-block;">' . Session::get('subagent') . '</div>
-                        <div style="width:200px; height:20px;float:left; display: inline-block;">統一編號: 54013468</div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block;">統一編號: </div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">送貨地址 ：</div>
@@ -4787,7 +4786,7 @@ class InventoryController extends BaseController {
                     <div style="width:102%; height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block;">客戶名稱 ：</div>
                         <div style="width:430px; height:20px;float:left; display: inline-block;">' . Session::get('subagent') . '</div>
-                        <div style="width:200px; height:20px;float:left; display: inline-block;">統一編號: 54013468</div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block;">統一編號: </div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">送貨地址 ：</div>
@@ -4979,7 +4978,7 @@ class InventoryController extends BaseController {
                     <div style="width:102%; height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block;">客戶名稱 ：</div>
                         <div style="width:430px; height:20px;float:left; display: inline-block;">' . $shipout_item . '</div>
-                        <div style="width:200px; height:20px;float:left; display: inline-block;">統一編號: 54013468</div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block;">統一編號: </div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">送貨地址 ：</div>
@@ -5317,7 +5316,7 @@ class InventoryController extends BaseController {
                     <div style="width:102%; height:20px; border-left: 1px solid; border-top: 1px solid; border-right: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block;">客戶名稱 ：</div>
                         <div style="width:430px; height:20px;float:left; display: inline-block;"></div>
-                        <div style="width:200px; height:20px;float:left; display: inline-block;">統一編號: 54013468</div>
+                        <div style="width:200px; height:20px;float:left; display: inline-block;">統一編號: </div>
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">送貨地址 ：</div>
