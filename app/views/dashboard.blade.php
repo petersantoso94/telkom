@@ -994,6 +994,7 @@
                 var getPayloadPeruser = '<?php echo Route('getPayloadPerUser') ?>';
                 var getInternetVsNon = '<?php echo Route('getInternetVsNon') ?>';
                 var getVouchersTopUp = '<?php echo Route('getVouchersTopUp') ?>';
+                var geteVouchersTopUp = '<?php echo Route('geteVouchersTopUp') ?>';
                 var getVouchers300TopUp = '<?php echo Route('getVouchers300TopUp') ?>';
                 var getMSISDNTopUp = '<?php echo Route('getMSISDNTopUp') ?>';
                 var getChurnDetail = '<?php echo Route('getChurnDetail') ?>';
@@ -2340,7 +2341,7 @@
                             }
                         });
                     } else if (chartID == 'info_evoc_topup') {
-                        $.post(getVouchersTopUp, {year: evoc_topup_year, type: arg_type}, function (data) {
+                        $.post(geteVouchersTopUp, {year: evoc_topup_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData9.datasets = [];
