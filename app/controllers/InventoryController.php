@@ -542,10 +542,11 @@ class InventoryController extends BaseController {
                     $hist->SN = $inv->SerialNumber;
                     $hist->SubAgent = $subagent;
                     $hist->Price = $inv->TempPrice;
-                    if ($price == '0' && $cs == 0) {
-                        $hist->Warehouse = 'TELIN TAIWAN';
-                        $inv->LastWarehouse = 'TELIN TAIWAN';
-                    }
+                    $hist->Warehouse = $inv->LastWarehouse;
+//                    if ($price == '0' && $cs == 0) {
+//                        $hist->Warehouse = 'TELIN TAIWAN';
+//                        $inv->LastWarehouse = 'TELIN TAIWAN';
+//                    }
                     if ($cs == 1) {
                         $status_ = 4;
                     }
@@ -671,7 +672,7 @@ class InventoryController extends BaseController {
                             $lastmovement = $inv->LastStatusID;
                             //update history
                             $hist = History::where('ID', $lastmovement)->first();
-                            if ($hist->Status == 2) {
+                            if ($hist->Status == 2 || $hist->Status == 4) {
                                 $counter++;
                                 if ($successins == '') {
                                     $successins .= $value[0];
@@ -6070,9 +6071,9 @@ class InventoryController extends BaseController {
         $statusAvail = explode(',,,', $id)[1];
         $arrayids = explode(',', explode(',,,', $id)[0]);
         $array = implode("','", $arrayids);
-        $string_temp = '= 2';
+        $string_temp = "2','4";
         if ($statusAvail == 0) {
-            $string_temp = '!= 2';
+            $string_temp = "0','1','3";
         }
         $table = 'm_inventory';
         $primaryKey = 'm_inventory`.`SerialNumber';
@@ -6120,7 +6121,7 @@ class InventoryController extends BaseController {
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
         $extraCondition = "(m_inventory.`SerialNumber` IN ('" . $array . "')";
         $extraCondition .= " OR m_inventory.`MSISDN` IN ('" . $array . "'))";
-        $extraCondition .= " AND m_historymovement.Status " . $string_temp;
+        $extraCondition .= " AND m_historymovement.Status IN ('" . $string_temp. "')";
         $join = ' INNER JOIN m_historymovement on m_historymovement.ID = m_inventory.LastStatusID';
 
         echo json_encode(
