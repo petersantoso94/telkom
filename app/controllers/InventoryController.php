@@ -1646,6 +1646,7 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
                 $myArr = array($year->Year);
                 $writer->addRow($myArr); // add a row at a time
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
@@ -1734,6 +1735,7 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
                 $myArr = array($year->Year);
                 $writer->addRow($myArr); // add a row at a time
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
@@ -1805,6 +1807,11 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
                 $data["Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Churn%\'')->get();
                 if ($all_ivr != null) {
@@ -1841,6 +1848,11 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
                 $data["Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Activation%\'')->get();
                 if ($all_ivr != null) {
@@ -1905,6 +1917,11 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%services%\'')->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
@@ -1994,6 +2011,11 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%_sum%\'')->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
@@ -2068,6 +2090,11 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%internet_sum%\'')->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
@@ -2171,6 +2198,11 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
                 $sum_internet = [];
                 $count_internet = [];
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%internet_sum%\'')->get();
@@ -2289,12 +2321,17 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%services%\'')->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 //            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 //        }
+                $data = [];
                 if ($all_ivr != null) {
                     foreach ($all_ivr as $ivr) {
                         $stats = 'Non-Internet';
@@ -2370,6 +2407,11 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%topup%\'')->get();
                 if ($all_ivr != null) {
                     foreach ($all_ivr as $ivr) {
@@ -2407,70 +2449,48 @@ class InventoryController extends BaseController {
         $type = '';
         if (Input::get('type'))
             $type = Input::get('type');
+
         $data = [];
         //1 -> evoucher; 2 -> phvoucher
         $all_ivr = [];
-        if ($type == '') {
-            // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
-            $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
-            if ($all_ivr != null) {
-                foreach ($all_ivr as $ivr) {
-                    $stats = '';
-                    $temp_stat = $ivr->Status;
-                    if (substr($temp_stat, 0, 1) == '1') {
-                        $stats = 'pV100';
-                    } else if (substr($temp_stat, 0, 1) == '2') {
-                        $stats = 'pV300';
-                    } else if (substr($temp_stat, 0, 1) == '3') {
-                        $stats = 'eV50';
-                    } else if (substr($temp_stat, 0, 1) == '4') {
-                        $stats = 'eV100';
-                    } else if (substr($temp_stat, 0, 1) == '5') {
-                        $stats = 'eV300';
-                    }
-                    if ($stats != '') {
-                        if (!isset($data[$stats]))
-                            $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        for ($i = 0; $i < 12; $i++) {
-                            if ($i == $ivr->Month - 1) {
-                                $data[$stats][$i] += $ivr->Counter;
-                            }
+        // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $stats = '';
+                $temp_stat = $ivr->Status;
+                if (substr($temp_stat, 0, 1) == '1') {
+                    $stats = 'pV100';
+                } else if (substr($temp_stat, 0, 1) == '2') {
+                    $stats = 'pV300';
+                } else if (substr($temp_stat, 0, 1) == '3') {
+                    $stats = 'eV50';
+                } else if (substr($temp_stat, 0, 1) == '4') {
+                    $stats = 'eV100';
+                } else if (substr($temp_stat, 0, 1) == '5') {
+                    $stats = 'eV300';
+                }
+                if ($stats != '') {
+                    if (!isset($data[$stats]))
+                        $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    for ($i = 0; $i < 12; $i++) {
+                        if ($i == $ivr->Month - 1) {
+                            $data[$stats][$i] += $ivr->Counter;
                         }
                     }
                 }
             }
-            return $data;
-        } else if ($type == '1') {
-            // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
-            $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
-            if ($all_ivr != null) {
-                foreach ($all_ivr as $ivr) {
-                    $stats = '';
-                    $temp_stat = $ivr->Status;
-                    if (substr($temp_stat, 0, 1) == '3') {
-                        $stats = 'eV50';
-                    } else if (substr($temp_stat, 0, 1) == '4') {
-                        $stats = 'eV100';
-                    } else if (substr($temp_stat, 0, 1) == '5') {
-                        $stats = 'eV300';
-                    }
-                    if ($stats != '') {
-                        if (!isset($data[$stats]))
-                            $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        for ($i = 0; $i < 12; $i++) {
-                            if ($i == $ivr->Month - 1) {
-                                $data[$stats][$i] += $ivr->Counter;
-                            }
-                        }
-                    }
-                }
-            }
-            return $data;
-        } else if ($type === '2') {
+        }
+        if ($type === '2') {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
                 // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%topup%\'')->get();
                 if ($all_ivr != null) {
@@ -2482,6 +2502,88 @@ class InventoryController extends BaseController {
                         } else if (substr($temp_stat, 0, 1) == '2') {
                             $stats = 'pV300';
                         } else if (substr($temp_stat, 0, 1) == '3') {
+                            $stats = 'eV50';
+                        } else if (substr($temp_stat, 0, 1) == '4') {
+                            $stats = 'eV100';
+                        } else if (substr($temp_stat, 0, 1) == '5') {
+                            $stats = 'eV300';
+                        }
+                        if ($stats != '') {
+                            if (!isset($data[$stats]))
+                                $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                            for ($i = 0; $i < 12; $i++) {
+                                if ($i == $ivr->Month - 1) {
+                                    $data[$stats][$i] += $ivr->Counter;
+                                }
+                            }
+                        }
+                    }
+                }
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
+        }
+
+
+
+        return $data;
+    }
+
+    static function geteVouchersTopUp() {
+        $year = Input::get('year');
+//        $year = '2016';
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
+
+        $data = [];
+        //1 -> evoucher; 2 -> phvoucher
+        $all_ivr = [];
+        // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $stats = '';
+                $temp_stat = $ivr->Status;
+                if (substr($temp_stat, 0, 1) == '3') {
+                    $stats = 'eV50';
+                } else if (substr($temp_stat, 0, 1) == '4') {
+                    $stats = 'eV100';
+                } else if (substr($temp_stat, 0, 1) == '5') {
+                    $stats = 'eV300';
+                }
+                if ($stats != '') {
+                    if (!isset($data[$stats]))
+                        $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    for ($i = 0; $i < 12; $i++) {
+                        if ($i == $ivr->Month - 1) {
+                            $data[$stats][$i] += $ivr->Counter;
+                        }
+                    }
+                }
+            }
+        }
+
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
+                // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%topup%\'')->get();
+                if ($all_ivr != null) {
+                    foreach ($all_ivr as $ivr) {
+                        $stats = '';
+                        $temp_stat = $ivr->Status;
+                        if (substr($temp_stat, 0, 1) == '3') {
                             $stats = 'eV50';
                         } else if (substr($temp_stat, 0, 1) == '4') {
                             $stats = 'eV100';
@@ -2536,6 +2638,11 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
                 $counts = Inventory::select(DB::raw('count(DISTINCT `TopUpMSISDN`) as "Counter",MONTH(`TopUpDate`) as "Month"'))->
                                 whereRaw('`TopUpDate` LIKE "%' . $year->Year . '%" GROUP BY CONCAT(MONTH(`TopUpDate`),YEAR(`TopUpDate`))')->get();
                 if ($counts != null) {
@@ -2565,7 +2672,7 @@ class InventoryController extends BaseController {
         if (Input::get('type'))
             $type = Input::get('type');
 //        $year = '2018';
-        $type = '';
+//        $type = '';
         $data = [];
         $data['Churn'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         $data['Active MSISDN'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2600,6 +2707,11 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
                 $data['Churn'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 $data['Active MSISDN'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 //1 -> evoucher; 2 -> phvoucher
