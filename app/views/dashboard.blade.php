@@ -898,19 +898,42 @@
                                             <div class="row">
                                                 <!-- /.col -->
                                                 <div class="info-box">
-                                                    <!--                                                    <div class='row margbot20'>
-                                                                                                            <div class="col-md-6">
-                                                                                                                Year:
-                                                                                                                <select style="width: 100%" id="shipin_year" class="chosen-select">
-                                                                                                                    @foreach(DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year)
-                                                                                                                    @if($year->year >0)
-                                                                                                                    <option value="{{$year->year}}">{{$year->year}}</option>
-                                                                                                                    @endif
-                                                                                                                    @endforeach
-                                                                                                                </select>
-                                                                                                            </div>
-                                                                                                        </div>-->
+                                                    <div class="row margtop20">
+                                                        <div class="col-xs-10">
+                                                            Active Status: 
+                                                            <select  style="width: 100%" id="filter_act">
+                                                                <option value="1" selected="">All</option>
+                                                                <option value="2">Active</option>
+                                                                <option value="3">Non-Active</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-xs-10">
+                                                            Using v300: 
+                                                            <select  style="width: 100%" id="filter_v300">
+                                                                <option value="1" selected="">All</option>
+                                                                <option value="2">Yes</option>
+                                                                <option value="3">No</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-xs-10">
+                                                            Using v100 and v50: 
+                                                            <select  style="width: 100%" id="filter_v100">
+                                                                <option value="1" selected="">All</option>
+                                                                <option value="2">Yes</option>
+                                                                <option value="3">No</option>
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-xs-10">
+                                                            Service Usage: 
+                                                            <select style="width: 100%" id="filter_service">
+                                                                <option value="1" selected="">All</option>
+                                                                <option value="2">Use Service</option>s
+                                                                <option value="3">No Service</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
                                                     <div class="margtop20" style="margin-left: 20px;">
+                                                        <button type="button" onclick="resetFilter(this)" data-id='filter_'>Reset Filter</button> 
                                                         <button type="button" onclick="exportExcel(this)" data-id='8' data-nama='user'><span class="glyphicon glyphicon-export"></span></button> Export list detail excel
                                                         <div class="loader" id="loading-animation8" style="display:none;"></div>
                                                     </div>
@@ -2463,6 +2486,38 @@
                 var postShipoutDashboard = '<?php echo Route('postShipoutDashboard') ?>';
                 var postShipinDashboard = '<?php echo Route('postShipinDashboard') ?>';
                 var postUsageDashboard = '<?php echo Route('postUsageDashboard') ?>';
+                
+                
+                var postUserResetFilter = '<?php echo Route('postUserResetFilter') ?>';
+                var postUserFilterActive = '<?php echo Route('postUserFilterActive') ?>';
+                var postUserFilterv300 = '<?php echo Route('postUserFilterv300') ?>';
+                var postUserFilterv100 = '<?php echo Route('postUserFilterv100') ?>';
+                var postUserFilterService = '<?php echo Route('postUserFilterService') ?>';
+
+                $('#filter_act').on('change', function (e) {
+                    var state = document.getElementById('filter_act').value;
+                    $.post(postUserFilterActive, {argstate: state}, function (data) {
+
+                    });
+                });
+                $('#filter_v300').on('change', function (e) {
+                    var state = document.getElementById('filter_v300').value;
+                    $.post(postUserFilterv300, {argstate: state}, function (data) {
+
+                    });
+                });
+                $('#filter_v100').on('change', function (e) {
+                    var state = document.getElementById('filter_v100').value;
+                    $.post(postUserFilterv100, {argstate: state}, function (data) {
+
+                    });
+                });
+                $('#filter_service').on('change', function (e) {
+                    var state = document.getElementById('filter_service').value;
+                    $.post(postUserFilterService, {argstate: state}, function (data) {
+
+                    });
+                });
 
                 $('#shipout_year').on('change', function (e) {
                     var argyear = document.getElementById('shipout_year').value;
@@ -2664,6 +2719,14 @@
                         "processing": true,
                         "serverSide": true,
                         "ajax": inventoryDataBackup
+                    });
+                };
+
+                var resetFilter = function (elem) {
+                    var used_filter = elem.dataset.id;
+                    $("[id^='" + used_filter + "']").val("1");
+                    $.post(postUserResetFilter, {}, function (data) {
+
                     });
                 };
                 var exportExcel = function (elem) {
