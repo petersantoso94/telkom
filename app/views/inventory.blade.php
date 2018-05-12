@@ -184,7 +184,6 @@
                             $.post(ajax2, {sns: sn}, function (data) {
                                 $("#series").append('<option></option>');
                                 $("#wh").append('<option></option>');
-                                console.log(data);
                                 $.each(data, function (key, val) {
                                     if (key == 'FS') {
                                         $.each(val, function (key, val) {
@@ -231,7 +230,6 @@
                     var exportExcel = function () {
                         document.getElementById("loading-animation").style.display = "block";
                         exportExcelLink = '<?php echo Route('exportExcel') ?>' + concat;
-                        console.log(exportExcelLink);
                         $.get(exportExcelLink, function (data) {
 
                         }).done(function (data) {
@@ -242,7 +240,6 @@
 
                     var drawTable = function () {
                         inventoryDataBackup = '<?php echo Route('inventoryDataBackup') ?>' + concat;
-                        console.log(inventoryDataBackup);
                         if ($.fn.dataTable.isDataTable('#example')) {
                             table.fnDestroy();
                         }
