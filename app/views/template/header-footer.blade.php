@@ -101,6 +101,7 @@
                         </a>
                         <ul class="treeview-menu list-sidebar-menu" style="display: none;">
                             <li><a href="{{Route('showChange')}}" @if($page == 'edit name') class="active-sidemenu" @endif >Edit Name</a></li>
+                            <li><a href="{{Route('showUncat')}}" @if($page == 'Shipin Uncatagorized Inventory') class="active-sidemenu" @endif >Shipin Uncatagorized Inventory</a></li>
                             <li><a href="{{Route('showInsertReporting')}}" @if($page == 'insert reporting') class="active-sidemenu" @endif >Insert Reporting</a></li>
                             <li><a href="{{Route('showResetReporting')}}" @if($page == 'reset reporting') class="active-sidemenu" @endif >Reset Reporting</a></li>
                         </ul>
