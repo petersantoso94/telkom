@@ -5700,7 +5700,27 @@ class InventoryController extends BaseController {
                 array('db' => 'FabiaoNumber', 'dt' => 5),
                 array('db' => 'LastWarehouse', 'dt' => 6),
                 array('db' => 'Date', 'dt' => 7),
-                array('db' => 'MSISDN', 'dt' => 8)
+                array('db' => 'MSISDN', 'dt' => 8),
+                array('db' => 'SerialNumber', 'dt' => 9, 'formatter' => function( $d, $row ) {
+                        $data = Inventory::find($d);
+                        if ($data->Missing == 0) {
+                            $hist = History::find($data->LastStatusID);
+                            $disa = '';
+                            if ($hist->Status == 2) {
+                                $disa = 'disabled';
+                            }
+                            $return = '<button type="button" data-internal="' . $data->SerialNumber . '"  onclick="deleteAttach(this)"
+                                             class="btn btn-pure-xs btn-xs btn-delete" ' . $disa . '>
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>';
+                        } else {
+                            $return = '<button title="Set to available" type="button" data-internal="' . $data->SerialNumber . '"  onclick="availAttach(this)"
+                                             class="btn btn-pure-xs btn-xs btn-delete">
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                                    </button>';
+                        }
+                        return $return;
+                    }, 'field' => 'm_inventory`.`SerialNumber')
             );
 
             $sql_details = getConnection();
@@ -5758,7 +5778,27 @@ class InventoryController extends BaseController {
                 array('db' => 'FabiaoNumber', 'dt' => 5),
                 array('db' => 'LastWarehouse', 'dt' => 6),
                 array('db' => 'Date', 'dt' => 7),
-                array('db' => 'MSISDN', 'dt' => 8)
+                array('db' => 'MSISDN', 'dt' => 8),
+                array('db' => 'SerialNumber', 'dt' => 9, 'formatter' => function( $d, $row ) {
+                        $data = Inventory::find($d);
+                        if ($data->Missing == 0) {
+                            $hist = History::find($data->LastStatusID);
+                            $disa = '';
+                            if ($hist->Status == 2) {
+                                $disa = 'disabled';
+                            }
+                            $return = '<button type="button" data-internal="' . $data->SerialNumber . '"  onclick="deleteAttach(this)"
+                                             class="btn btn-pure-xs btn-xs btn-delete" ' . $disa . '>
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </button>';
+                        } else {
+                            $return = '<button title="Set to available" type="button" data-internal="' . $data->SerialNumber . '"  onclick="availAttach(this)"
+                                             class="btn btn-pure-xs btn-xs btn-delete">
+                                        <span class="glyphicon glyphicon-thumbs-up"></span>
+                                    </button>';
+                        }
+                        return $return;
+                    }, 'field' => 'm_inventory`.`SerialNumber')
             );
 
             $sql_details = getConnection();
