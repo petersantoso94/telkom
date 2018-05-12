@@ -22,6 +22,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::any('showInventoryShipout', array('as' => 'showInventoryShipout', 'uses' => 'InventoryController@showInventoryShipout'));
     Route::any('showWarehouseInventory', array('as' => 'showWarehouseInventory', 'uses' => 'InventoryController@showWarehouseInventory'));
     Route::any('showChange', array('as' => 'showChange', 'uses' => 'InventoryController@showChange'));
+    Route::any('showUncat', array('as' => 'showUncat', 'uses' => 'InventoryController@showUncat'));
     Route::any('showInsertReporting', array('as' => 'showInsertReporting', 'uses' => 'InventoryController@showInsertReporting'));
     Route::any('showResetReporting', array('as' => 'showResetReporting', 'uses' => 'InventoryController@showResetReporting'));
     Route::get('showLogout', array('as' => 'showLogout', 'uses' => 'LoginController@showLogout'));
@@ -38,6 +39,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('inventoryDataBackupCons/{start}', array('as' => 'inventoryDataBackupCons', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackupCons'));
     Route::post('inventoryDataBackupCons', array('as' => 'inventoryDataBackupCons', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackupCons'));
     Route::any('inventoryDataBackupDashboard', array('as' => 'inventoryDataBackupDashboard', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackupDashboard'));
+    Route::any('inventoryDataBackupUncat', array('as' => 'inventoryDataBackupUncat', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackupUncat'));
     Route::get('getSN/{msi}', array('as' => 'getSN', 'before' => '', 'uses' => 'InventoryController@getSN'));
     Route::get('exportExcel/{start}', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
     Route::post('exportExcel', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
@@ -54,6 +56,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::post('getForm', array('as' => 'getForm', 'before' => '', 'uses' => 'InventoryController@getForm'));
     Route::post('getShipout', array('as' => 'getShipout', 'before' => '', 'uses' => 'InventoryController@getShipout'));
     Route::post('postMissing', array('as' => 'postMissing', 'before' => '', 'uses' => 'InventoryController@postMissing'));
+    Route::post('postShipin', array('as' => 'postShipin', 'before' => '', 'uses' => 'InventoryController@postShipin'));
     Route::post('postConsStat', array('as' => 'postConsStat', 'before' => '', 'uses' => 'InventoryController@postConsStat'));
     Route::post('postNewAgent', array('as' => 'postNewAgent', 'before' => '', 'uses' => 'InventoryController@postNewAgent'));
     Route::post('postNewWh', array('as' => 'postNewWh', 'before' => '', 'uses' => 'InventoryController@postNewWh'));
