@@ -736,6 +736,10 @@ class InventoryController extends BaseController {
         return View::make('returninventory')->withPage('inventory return');
     }
 
+    public function showUncat() {
+        return View::make('uncatagorized')->withPage('Shipin Uncatagorized Inventory');
+    }
+
     public function showChange() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (Input::get('jenis') == 'agent') {
@@ -2748,6 +2752,21 @@ class InventoryController extends BaseController {
             $writer->close();
         }
         return $data;
+    }
+
+    static function postShipin() {
+        $sn = Input::get('sn');
+        $check_counter = History::select('ID')->orderBy('ID', 'DESC')->first();
+        if ($check_counter == null)
+            $id_counter = 1;
+        else
+            $id_counter = $check_counter->ID + 1;
+
+        $for_raw = "('{$sn}',0,0,0,'{$id_counter}','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+        DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
+
+        $for_raw = "('{$id_counter}','{$sn}','" . $arr_subagent_hist[$i] . "','" . $arr_wh_hist[$i] . "',0,'" . $arr_shipoutnumber_hist[$i] . "',NULL,'" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+        DB::insert("INSERT INTO m_historymovement VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE ID=ID;");
     }
 
     static function postMissing() {
@@ -5815,6 +5834,38 @@ class InventoryController extends BaseController {
             echo json_encode(
                     SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
         }
+    }
+
+    static function inventoryDataBackupUncat() {
+        $table = 'm_uncatagorized';
+        $primaryKey = 'm_uncatagorized`.`SerialNumber';
+        $columns = array(
+            array('db' => 'SerialNumber', 'dt' => 0),
+            array(
+                'db' => 'MSISDN',
+                'dt' => 1
+            ),
+            array(
+                'db' => 'Remark',
+                'dt' => 2
+            ),
+            array('db' => 'SerialNumber', 'dt' => 3, 'formatter' => function( $d, $row ) {
+                    $return = '<button title="Set to available" type="button" data-internal="' . $d . '"  onclick="goShipin(this)"
+                                             class="btn btn-pure-xs btn-xs btn-delete">
+                                        <span class="glyphicon glyphicon-save"></span>
+                                    </button>';
+                    return $return;
+                })
+        );
+
+        $sql_details = getConnection();
+
+        require('ssp.class.php');
+//        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
+        $extraCondition = "";
+        $join = '';
+        echo json_encode(
+                SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
     }
 
     static function delInv() {
