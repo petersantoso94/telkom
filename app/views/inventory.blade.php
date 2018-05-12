@@ -37,13 +37,13 @@
                 Sub Agent: 
                 <select data-placeholder="Choose a destination..."  style="width: 100%" name="shipout" id="shipoutto">
                     <option></option>
-                        @foreach(DB::table('m_historymovement')->select('SubAgent')->distinct()->get() as $agent)
-                        @if($agent->SubAgent != '')
-                        <option value="{{$agent->SubAgent}}">
-                            {{$agent->SubAgent}}
-                        </option>
-                        @endif
-                        @endforeach
+                    @foreach(DB::table('m_historymovement')->select('SubAgent')->distinct()->get() as $agent)
+                    @if($agent->SubAgent != '')
+                    <option value="{{$agent->SubAgent}}">
+                        {{$agent->SubAgent}}
+                    </option>
+                    @endif
+                    @endforeach
                 </select>
             </div>
         </div>
@@ -117,7 +117,8 @@
                 <th>Last Warehouse</th>
                 <th>Date</th>
                 <th>MSISDN</th>
-                <!--<th>Actions</th>-->
+                <th>Action</th>
+            <!--<th>Actions</th>-->
             </tr>
         </thead>
     </table>
@@ -141,9 +142,33 @@
                     var delST = '<?php echo Route('delST') ?>';
                     var getPDF = '<?php echo Route('getPDFInv') ?>';
                     var changeFB = '<?php echo Route('changeFB') ?>';
+                    var postAvail = '<?php echo Route('postAvail') ?>';
+                    var postMissing = '<?php echo Route('postMissing') ?>';
 
                     window.printPDF = function (element) {
                         window.open(getPDF);
+                    };
+                    
+                    window.deleteAttach = function (element) {
+                        notin = $(element).data('internal');
+                        if (confirm("Do you want to mark this inventory (" + notin + ") as missing?") == true) {
+                            $.post(postMissing, {sn: notin}, function (data) {
+
+                            }).done(function () {
+                                drawTable();
+                            });
+                        }
+                    };
+
+                    window.availAttach = function (element) {
+                        notin = $(element).data('internal');
+                        if (confirm("Do you want to mark this inventory (" + notin + ") as found?") == true) {
+                            $.post(postAvail, {sn: notin}, function (data) {
+
+                            }).done(function () {
+                                drawTable();
+                            });
+                        }
                     };
 
                     $('#btn_setsn').on('click', function () {
