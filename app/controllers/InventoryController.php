@@ -465,6 +465,10 @@ class InventoryController extends BaseController {
 
     public function showDashboard() {
         $years = DB::table('r_stats')->select('Year')->orderBy('Year', 'DESC')->distinct()->get();
+        Session::put('UserFilterAct',0);
+        Session::put('UserFilterv300',0);
+        Session::put('UserFilterv100',0);
+        Session::put('UserFilterService',0);
         return View::make('dashboard')->withPage('dashboard')->withYears($years);
     }
 
@@ -3815,6 +3819,30 @@ class InventoryController extends BaseController {
         }
         return $data;
     }
+    
+    static function postUserFilterActive(){
+        $state = Input::get("argstate");
+        Session::put('UserFilterAct',$state);
+    }
+    static function postUserFilterv300(){
+        $state = Input::get("argstate");
+        Session::put('UserFilterv300',$state);
+    }
+    static function postUserFilterv100(){
+        $state = Input::get("argstate");
+        Session::put('UserFilterv100',$state);
+    }
+    static function postUserFilterService(){
+        $state = Input::get("argstate");
+        Session::put('UserFilterService',$state);
+    }
+    
+    static function postUserResetFilter(){
+        Session::put('UserFilterAct',0);
+        Session::put('UserFilterv300',0);
+        Session::put('UserFilterv100',0);
+        Session::put('UserFilterService',0);
+    }
 
     static function exportExcelUserDashboard() {
         $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
@@ -3825,9 +3853,44 @@ class InventoryController extends BaseController {
         $writer->addRow($myArr); // add a row at a time
         $myArr = array("MSISDN", "Name", "Activation Date", "Activation Store", "Churn Date", "Voc 300 TopUp", "Voc 100 TopUp", "Voc 50 TopUp", "Last Top Up Date", "Service Usage", "Last Service Usage Date");
         $writer->addRow($myArr); // add a row at a time
+        
+        $raw_where = '';
+        
+        if(Session::has('UserFilterAct')){
+            if(Session::get('UserFilterAct') === '2'){
+                $raw_where .= " AND inv1.`ChurnDate` IS NOT NULL";
+            }
+            else if(Session::get('UserFilterAct') === '3'){
+                $raw_where .= " AND inv1.`ChurnDate` IS NULL";
+            }
+        }
+        if(Session::has('UserFilterv300')){
+            if(Session::get('UserFilterv300') === '2'){
+                $raw_where .= " AND (SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0250%' OR inv2.`SerialNumber` LIKE '%KR1850%')) > 0";
+            }
+            else if(Session::get('UserFilterv300') === '3'){
+                $raw_where .= " AND (SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0250%' OR inv2.`SerialNumber` LIKE '%KR1850%')) = '0'";
+            }
+        }
+        if(Session::has('UserFilterv100')){
+            if(Session::get('UserFilterv100') === '2'){
+                $raw_where .= " AND ((SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0150%' OR inv2.`SerialNumber` LIKE '%KR0350%')) > 0 OR (SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND inv2.`SerialNumber` LIKE '%KR0450%') > 0)";
+            }
+            else if(Session::get('UserFilterv100') === '3'){
+                $raw_where .= " AND ((SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0150%' OR inv2.`SerialNumber` LIKE '%KR0350%')) = '0' OR (SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND inv2.`SerialNumber` LIKE '%KR0450%') = '0')";
+            }
+        }
+        if(Session::has('UserFilterService')){
+            if(Session::get('UserFilterService') === '2'){
+                $raw_where .= " AND (SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) != '0'";
+            }
+            else if(Session::get('UserFilterService') === '3'){
+                $raw_where .= " AND ((SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) IS NULL OR (SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) = '0')";
+            }
+        }
 
         $simtopup = DB::table('m_inventory as inv1')
-                        ->whereRaw('inv1.ActivationName IS NOT NULL')
+                        ->whereRaw('inv1.ActivationName IS NOT NULL'.$raw_where)
                         ->select(DB::raw("inv1.`ActivationDate`,inv1.`ActivationName`,inv1.`MSISDN`,inv1.`ChurnDate`,inv1.`ActivationStore`"
                                         . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0250%' OR inv2.`SerialNumber` LIKE '%KR1850%')) as 'Voc300'"
                                         . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0150%' OR inv2.`SerialNumber` LIKE '%KR0350%')) as 'Voc100'"
