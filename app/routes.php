@@ -91,4 +91,10 @@ Route::group(array('before' => 'auth'), function() {
     Route::post('postAvail', array('as' => 'postAvail', 'before' => '', 'uses' => 'InventoryController@postAvail'));
     Route::post('changeFB', array('as' => 'changeFB', 'before' => '', 'uses' => 'InventoryController@changeFB'));
     Route::post('getSubAgent', array('as' => 'getSubAgent', 'before' => '', 'uses' => 'InventoryController@getSubAgent'));
+    //filter user
+    Route::any('postUserResetFilter', array('as' => 'postUserResetFilter', 'before' => '', 'uses' => 'InventoryController@postUserResetFilter'));
+    Route::any('postUserFilterActive', array('as' => 'postUserFilterActive', 'before' => '', 'uses' => 'InventoryController@postUserFilterActive'));
+    Route::any('postUserFilterv300', array('as' => 'postUserFilterv300', 'before' => '', 'uses' => 'InventoryController@postUserFilterv300'));
+    Route::any('postUserFilterv100', array('as' => 'postUserFilterv100', 'before' => '', 'uses' => 'InventoryController@postUserFilterv100'));
+    Route::any('postUserFilterService', array('as' => 'postUserFilterService', 'before' => '', 'uses' => 'InventoryController@postUserFilterService'));
 });
