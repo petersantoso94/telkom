@@ -3227,7 +3227,7 @@ class InventoryController extends BaseController {
 
         $data["net"][0] = $data['act'][0] - $data['churn'][0];
         $data["net"][1] = $data['act'][1] - $data['churn'][1];
-        if($data['net'][0] === 0)
+        if ($data['net'][0] === 0)
             $data['net'][0] = 1;
         $data['net'][2] = round((($data['net'][0] - $data['net'][1]) / $data['net'][0]) * 100, 2);
 
@@ -3884,8 +3884,10 @@ class InventoryController extends BaseController {
 
     static function exportExcelSubAgentDashboard() {
         $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
-        $filePath = public_path() . "/subagent_report_allyears.xlsx";
+        $filePath = public_path() . "/subagent_report.xlsx";
         $writer->openToFile($filePath);
+        $year = Input::GET('argyear');
+//        $year = '2018';
 //
         $myArr = array("All Subagent Reporting");
         $writer->addRow($myArr); // add a row at a time
@@ -3899,38 +3901,69 @@ class InventoryController extends BaseController {
 
         $activation = DB::table('m_inventory as inv1')
                         ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
-                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL")
+                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
                         ->groupBy(DB::raw('hist1.SubAgent, MONTH(inv1.ActivationDate), YEAR(inv1.ActivationDate)'))
                         ->select(DB::raw("hist1.SubAgent, COUNT(inv1.SerialNumber) as 'count', MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
                         ))->get();
         $topup = DB::table('m_inventory as inv1')
                         ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
-                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL")
-                        ->groupBy(DB::raw('hist1.SubAgent, MONTH(inv1.ActivationDate), YEAR(inv1.ActivationDate)'))
+                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('2','3') AND inv1.TopUpDate IS NOT NULL AND YEAR(inv1.TopUpDate) = '{$year}'")
+                        ->groupBy(DB::raw('hist1.SubAgent, MONTH(inv1.TopUpDate), YEAR(inv1.TopUpDate)'))
                         ->select(DB::raw("hist1.SubAgent, COUNT(inv1.SerialNumber) as 'count', MONTH(inv1.TopUpDate) as 'month', YEAR(inv1.TopUpDate) as 'year'"
                         ))->get();
-        foreach ($simtopup as $data) {
-            $stats = "no service";
-            if ($data->ServiceUsed == '1') {
-                $stats = 'Voice only';
-            } else if ($data->ServiceUsed == '2') {
-                $stats = 'Internet only';
-            } else if ($data->ServiceUsed == '3') {
-                $stats = 'Voice + Internet';
-            } else if ($data->ServiceUsed == '5') {
-                $stats = 'SMS only';
-            } else if ($data->ServiceUsed == '6') {
-                $stats = 'Voice + SMS';
-            } else if ($data->ServiceUsed == '7') {
-                $stats = 'Internet + SMS';
-            } else if ($data->ServiceUsed == '8') {
-                $stats = 'All';
-            }
-            $myArr = array($data->MSISDN, $data->ActivationName, $data->ActivationDate, $data->ActivationStore, $data->ChurnDate, number_format($data->Voc300), number_format($data->Voc100), number_format($data->Voc50), $data->LastDatePurchasedVoucher, $stats, $data->LastDateUsedService);
+        $prod = DB::table('m_inventory as inv1')
+                        ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
+                        ->join('m_productive as prod1', 'inv1.MSISDN', '=', 'prod1.MSISDN')
+                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND prod1.Year = '{$year}'")
+                        ->groupBy(DB::raw('hist1.SubAgent, prod1.Month, prod1.Year'))
+                        ->select(DB::raw("hist1.SubAgent, COUNT(prod1.MSISDN) as 'count', prod1.Month as 'month', prod1.Year as 'year'"
+                        ))->get();
+        $write_array = [];
+        foreach ($activation as $data) {
+            if (!isset($write_array[$data->SubAgent]['Activation']))
+                $write_array[$data->SubAgent]['Activation'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            if (!isset($write_array[$data->SubAgent]['Topup']))
+                $write_array[$data->SubAgent]['Topup'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            if (!isset($write_array[$data->SubAgent]['Productive']))
+                $write_array[$data->SubAgent]['Productive'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $month = $data->month;
+            if ($month[0] === '0')
+                $month = substr($month, 1);
+            $write_array[$data->SubAgent]['Activation'][$month-1] = $data->count;
+        }
+        foreach ($topup as $data) {
+            if (!isset($write_array[$data->SubAgent]['Activation']))
+                $write_array[$data->SubAgent]['Activation'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            if (!isset($write_array[$data->SubAgent]['Topup']))
+                $write_array[$data->SubAgent]['Topup'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            if (!isset($write_array[$data->SubAgent]['Productive']))
+                $write_array[$data->SubAgent]['Productive'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $month = $data->month;
+            if ($month[0] === '0')
+                $month = substr($month, 1);
+            $write_array[$data->SubAgent]['Topup'][$month-1] = $data->count;
+        }
+        foreach ($prod as $data) {
+            if (!isset($write_array[$data->SubAgent]['Activation']))
+                $write_array[$data->SubAgent]['Activation'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            if (!isset($write_array[$data->SubAgent]['Topup']))
+                $write_array[$data->SubAgent]['Topup'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            if (!isset($write_array[$data->SubAgent]['Productive']))
+                $write_array[$data->SubAgent]['Productive'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            $month = $data->month;
+            if ($month[0] === '0')
+                $month = substr($month, 1);
+            $write_array[$data->SubAgent]['Productive'][$month-1] = $data->count;
+        }
+        foreach ($write_array as $key=>$data) {
+            $myArr = array($key, $data["Activation"][0], $data["Productive"][0], $data["Topup"][0], $data["Activation"][1], $data["Productive"][1], $data["Topup"][2], $data["Activation"][3], $data["Productive"][3], $data["Topup"][3]
+                    , $data["Activation"][4], $data["Productive"][4], $data["Topup"][4], $data["Activation"][5], $data["Productive"][5], $data["Topup"][5], $data["Activation"][6], $data["Productive"][6], $data["Topup"][6]
+                    , $data["Activation"][7], $data["Productive"][7], $data["Topup"][7], $data["Activation"][8], $data["Productive"][8], $data["Topup"][8], $data["Activation"][9], $data["Productive"][9], $data["Topup"][9]
+                    , $data["Activation"][10], $data["Productive"][10], $data["Topup"][10], $data["Activation"][11], $data["Productive"][11], $data["Topup"][11]);
             $writer->addRow($myArr); // add a row at a time
         }
         $writer->close();
-        return '/subagent_report_allyears.xlsx';
+        return '/subagent_report.xlsx';
     }
 
     static function exportExcelUserDashboard() {
