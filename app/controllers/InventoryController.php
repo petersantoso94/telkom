@@ -465,10 +465,10 @@ class InventoryController extends BaseController {
 
     public function showDashboard() {
         $years = DB::table('r_stats')->select('Year')->orderBy('Year', 'DESC')->distinct()->get();
-        Session::put('UserFilterAct',0);
-        Session::put('UserFilterv300',0);
-        Session::put('UserFilterv100',0);
-        Session::put('UserFilterService',0);
+        Session::put('UserFilterAct', 0);
+        Session::put('UserFilterv300', 0);
+        Session::put('UserFilterv100', 0);
+        Session::put('UserFilterService', 0);
         return View::make('dashboard')->withPage('dashboard')->withYears($years);
     }
 
@@ -3171,7 +3171,7 @@ class InventoryController extends BaseController {
 
     static function exportExcelWeeklyDashboard() {
         $date = Input::get("argyear");
-//        $date = "2018-01-21";
+        $date = "2018-05-21";
         $year = explode("-", $date)[0];
         $month = explode("-", $date)[1];
         $day = explode("-", $date)[2];
@@ -3198,20 +3198,37 @@ class InventoryController extends BaseController {
 
         $data = array();
         $all_ivr = Stats::where('Year', $year)->where('Month', $month)->whereRaw('Status LIKE \'%Churn%\'')->get();
-        $data['churn'][0] = $all_ivr[0]->Counter;
+        if (count($all_ivr) > 0)
+            $data['churn'][0] = $all_ivr[0]->Counter;
+        else {
+            $data['churn'][0] = 1;
+        }
         $all_ivr = Stats::where('Year', $last_year)->where('Month', $last_month)->whereRaw('Status LIKE \'%Churn%\'')->get();
-        $data['churn'][1] = $all_ivr[0]->Counter;
+        if (count($all_ivr) > 0)
+            $data['churn'][1] = $all_ivr[0]->Counter;
+        else {
+            $data['churn'][1] = 1;
+        }
         $all_ivr = Stats::where('Year', $year)->where('Month', $month)->whereRaw('Status LIKE \'%Activation%\'')->get();
-        $data['act'][0] = $all_ivr[0]->Counter;
+        if (count($all_ivr) > 0)
+            $data['act'][0] = $all_ivr[0]->Counter;
+        else {
+            $data['act'][0] = 1;
+        }
         $all_ivr = Stats::where('Year', $last_year)->where('Month', $last_month)->whereRaw('Status LIKE \'%Activation%\'')->get();
-        $data['act'][1] = $all_ivr[0]->Counter;
-
+        if (count($all_ivr) > 0)
+            $data['act'][1] = $all_ivr[0]->Counter;
+        else {
+            $data['act'][1] = 1;
+        }
         //total process
         $data['churn'][2] = round((($data['churn'][0] - $data['churn'][1]) / $data['churn'][0]) * 100, 2);
         $data['act'][2] = round((($data['act'][0] - $data['act'][1]) / $data['act'][0]) * 100, 2);
 
         $data["net"][0] = $data['act'][0] - $data['churn'][0];
         $data["net"][1] = $data['act'][1] - $data['churn'][1];
+        if($data['net'][0] === 0)
+            $data['net'][0] = 1;
         $data['net'][2] = round((($data['net'][0] - $data['net'][1]) / $data['net'][0]) * 100, 2);
 
         $myArr = array("NET ADDITIONAL", "SUBS", $data["net"][0], $data["net"][1], $data["net"][2] . '%');
@@ -3225,6 +3242,10 @@ class InventoryController extends BaseController {
         $data = array();
         $all_ivr = Stats::where('Year', $year)->where('Month', $month)->whereRaw('Status LIKE \'%topup%\'')->get();
         // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+        $data['PH300'][0] = 1;
+        $data['E300'][0] = 1;
+        $data['PH300'][1] = 1;
+        $data['E300'][1] = 1;
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
                 $stats = '';
@@ -3265,6 +3286,12 @@ class InventoryController extends BaseController {
         $writer->addRow(['']);
 
         $data = array();
+        $data['1GB'][0] = 1;
+        $data['2GB'][0] = 1;
+        $data['30DAY'][0] = 1;
+        $data['1GB'][1] = 1;
+        $data['2GB'][1] = 1;
+        $data['30DAY'][1] = 1;
         $all_ivr = Stats::where('Year', $year)->where('Month', $month)->whereRaw('Status > 10')->get();
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
@@ -3314,6 +3341,14 @@ class InventoryController extends BaseController {
         }
         $all_ivr = Stats::where('Year', $year)->where('Month', $tempmonth)->whereRaw('Status LIKE \'%_sum%\'')->get();
         $data = array();
+        $data['MT'][0] = 1;
+        $data['MO'][0] = 1;
+        $data['IT'][0] = 1;
+        $data['SMS'][0] = 1;
+        $data['MT'][1] = 1;
+        $data['MO'][1] = 1;
+        $data['IT'][1] = 1;
+        $data['SMS'][1] = 1;
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
                 $temp_stat = $ivr->Status;
@@ -3819,29 +3854,83 @@ class InventoryController extends BaseController {
         }
         return $data;
     }
-    
-    static function postUserFilterActive(){
+
+    static function postUserFilterActive() {
         $state = Input::get("argstate");
-        Session::put('UserFilterAct',$state);
+        Session::put('UserFilterAct', $state);
     }
-    static function postUserFilterv300(){
+
+    static function postUserFilterv300() {
         $state = Input::get("argstate");
-        Session::put('UserFilterv300',$state);
+        Session::put('UserFilterv300', $state);
     }
-    static function postUserFilterv100(){
+
+    static function postUserFilterv100() {
         $state = Input::get("argstate");
-        Session::put('UserFilterv100',$state);
+        Session::put('UserFilterv100', $state);
     }
-    static function postUserFilterService(){
+
+    static function postUserFilterService() {
         $state = Input::get("argstate");
-        Session::put('UserFilterService',$state);
+        Session::put('UserFilterService', $state);
     }
-    
-    static function postUserResetFilter(){
-        Session::put('UserFilterAct',0);
-        Session::put('UserFilterv300',0);
-        Session::put('UserFilterv100',0);
-        Session::put('UserFilterService',0);
+
+    static function postUserResetFilter() {
+        Session::put('UserFilterAct', 0);
+        Session::put('UserFilterv300', 0);
+        Session::put('UserFilterv100', 0);
+        Session::put('UserFilterService', 0);
+    }
+
+    static function exportExcelSubAgentDashboard() {
+        $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+        $filePath = public_path() . "/subagent_report_allyears.xlsx";
+        $writer->openToFile($filePath);
+//
+        $myArr = array("All Subagent Reporting");
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("SubAgent", "January Activation", "January Productive", "January Topup", "February Activation", "February Productive", "February Topup"
+            , "March Activation", "March Productive", "March Topup", "April Activation", "April Productive", "April Topup", "May Activation", "May Productive"
+            , "May Topup", "June Activation", "June Productive", "June Topup", "July Activation", "July Productive", "July Topup", "August Activation", "August Productive", "August Topup"
+            , "September Activation", "September Productive", "September Topup", "October Activation", "October Productive", "October Topup", "November Activation", "November Productive", "November Topup"
+            , "December Activation", "December Productive", "December Topup");
+        $writer->addRow($myArr); // add a row at a time
+
+
+        $activation = DB::table('m_inventory as inv1')
+                        ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
+                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL")
+                        ->groupBy(DB::raw('hist1.SubAgent, MONTH(inv1.ActivationDate), YEAR(inv1.ActivationDate)'))
+                        ->select(DB::raw("hist1.SubAgent, COUNT(inv1.SerialNumber) as 'count', MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
+                        ))->get();
+        $topup = DB::table('m_inventory as inv1')
+                        ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
+                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL")
+                        ->groupBy(DB::raw('hist1.SubAgent, MONTH(inv1.ActivationDate), YEAR(inv1.ActivationDate)'))
+                        ->select(DB::raw("hist1.SubAgent, COUNT(inv1.SerialNumber) as 'count', MONTH(inv1.TopUpDate) as 'month', YEAR(inv1.TopUpDate) as 'year'"
+                        ))->get();
+        foreach ($simtopup as $data) {
+            $stats = "no service";
+            if ($data->ServiceUsed == '1') {
+                $stats = 'Voice only';
+            } else if ($data->ServiceUsed == '2') {
+                $stats = 'Internet only';
+            } else if ($data->ServiceUsed == '3') {
+                $stats = 'Voice + Internet';
+            } else if ($data->ServiceUsed == '5') {
+                $stats = 'SMS only';
+            } else if ($data->ServiceUsed == '6') {
+                $stats = 'Voice + SMS';
+            } else if ($data->ServiceUsed == '7') {
+                $stats = 'Internet + SMS';
+            } else if ($data->ServiceUsed == '8') {
+                $stats = 'All';
+            }
+            $myArr = array($data->MSISDN, $data->ActivationName, $data->ActivationDate, $data->ActivationStore, $data->ChurnDate, number_format($data->Voc300), number_format($data->Voc100), number_format($data->Voc50), $data->LastDatePurchasedVoucher, $stats, $data->LastDateUsedService);
+            $writer->addRow($myArr); // add a row at a time
+        }
+        $writer->close();
+        return '/subagent_report_allyears.xlsx';
     }
 
     static function exportExcelUserDashboard() {
@@ -3853,44 +3942,40 @@ class InventoryController extends BaseController {
         $writer->addRow($myArr); // add a row at a time
         $myArr = array("MSISDN", "Name", "Activation Date", "Activation Store", "Churn Date", "Voc 300 TopUp", "Voc 100 TopUp", "Voc 50 TopUp", "Last Top Up Date", "Service Usage", "Last Service Usage Date");
         $writer->addRow($myArr); // add a row at a time
-        
+
         $raw_where = '';
-        
-        if(Session::has('UserFilterAct')){
-            if(Session::get('UserFilterAct') === '2'){
+
+        if (Session::has('UserFilterAct')) {
+            if (Session::get('UserFilterAct') === '2') {
                 $raw_where .= " AND inv1.`ChurnDate` IS NOT NULL";
-            }
-            else if(Session::get('UserFilterAct') === '3'){
+            } else if (Session::get('UserFilterAct') === '3') {
                 $raw_where .= " AND inv1.`ChurnDate` IS NULL";
             }
         }
-        if(Session::has('UserFilterv300')){
-            if(Session::get('UserFilterv300') === '2'){
+        if (Session::has('UserFilterv300')) {
+            if (Session::get('UserFilterv300') === '2') {
                 $raw_where .= " AND (SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0250%' OR inv2.`SerialNumber` LIKE '%KR1850%')) > 0";
-            }
-            else if(Session::get('UserFilterv300') === '3'){
+            } else if (Session::get('UserFilterv300') === '3') {
                 $raw_where .= " AND (SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0250%' OR inv2.`SerialNumber` LIKE '%KR1850%')) = '0'";
             }
         }
-        if(Session::has('UserFilterv100')){
-            if(Session::get('UserFilterv100') === '2'){
+        if (Session::has('UserFilterv100')) {
+            if (Session::get('UserFilterv100') === '2') {
                 $raw_where .= " AND ((SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0150%' OR inv2.`SerialNumber` LIKE '%KR0350%')) > 0 OR (SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND inv2.`SerialNumber` LIKE '%KR0450%') > 0)";
-            }
-            else if(Session::get('UserFilterv100') === '3'){
+            } else if (Session::get('UserFilterv100') === '3') {
                 $raw_where .= " AND ((SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0150%' OR inv2.`SerialNumber` LIKE '%KR0350%')) = '0' OR (SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND inv2.`SerialNumber` LIKE '%KR0450%') = '0')";
             }
         }
-        if(Session::has('UserFilterService')){
-            if(Session::get('UserFilterService') === '2'){
+        if (Session::has('UserFilterService')) {
+            if (Session::get('UserFilterService') === '2') {
                 $raw_where .= " AND (SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) != '0'";
-            }
-            else if(Session::get('UserFilterService') === '3'){
+            } else if (Session::get('UserFilterService') === '3') {
                 $raw_where .= " AND ((SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) IS NULL OR (SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) = '0')";
             }
         }
 
         $simtopup = DB::table('m_inventory as inv1')
-                        ->whereRaw('inv1.ActivationName IS NOT NULL'.$raw_where)
+                        ->whereRaw('inv1.ActivationName IS NOT NULL' . $raw_where)
                         ->select(DB::raw("inv1.`ActivationDate`,inv1.`ActivationName`,inv1.`MSISDN`,inv1.`ChurnDate`,inv1.`ActivationStore`"
                                         . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0250%' OR inv2.`SerialNumber` LIKE '%KR1850%')) as 'Voc300'"
                                         . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0150%' OR inv2.`SerialNumber` LIKE '%KR0350%')) as 'Voc100'"
