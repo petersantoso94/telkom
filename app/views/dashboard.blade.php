@@ -617,6 +617,7 @@
                                         <li><a href="#excel_shipin_container" data-toggle="tab" aria-expanded="true">Shipin Reporting</a></li>
                                         <li><a href="#excel_usage_container" data-toggle="tab" aria-expanded="true">Usage Reporting</a></li>
                                         <li><a href="#excel_user_container" data-toggle="tab" aria-expanded="true">Per Customer Reporting</a></li>
+                                        <li><a href="#excel_subagent_container" data-toggle="tab" aria-expanded="true">Per SubAgent Reporting</a></li>
                                         <li><a href="#excel_weekly_container" data-toggle="tab" aria-expanded="true">Weekly Performance</a></li>
                                         <li><a href="#excel_sim1_container" data-toggle="tab" aria-expanded="true">Sub Agent #1</a></li>
                                         <li><a href="#excel_sim2_container" data-toggle="tab" aria-expanded="true">Sub Agent SIM card #2</a></li>
@@ -892,6 +893,32 @@
                                                         </tbody>
                                                     </table>
                                                 </div>
+                                            </div>
+                                        </div>
+                                        <div class="tab-pane" id="excel_subagent_container">
+                                            <div class="row">
+
+                                                <!-- /.col -->
+                                                <div class="info-box">
+                                                    <div class='row margbot20'>
+                                                        <div class="col-md-6">
+                                                            Year:
+                                                            <select style="width: 100%" id="subagent_year" class="chosen-select">
+                                                                @foreach(DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year)
+                                                                @if($year->year >0)
+                                                                <option value="{{$year->year}}">{{$year->year}}</option>
+                                                                @endif
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row margtop20 margbot20">
+                                                        <button type="button" onclick="exportExcel(this)" data-id='12' data-nama='subagent'><span class="glyphicon glyphicon-export"></span></button> Export excel
+                                                        <div class="loader" id="loading-animation12" style="display:none;"></div>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
                                             </div>
                                         </div>
                                         <div class="tab-pane" id="excel_user_container">
@@ -2486,8 +2513,8 @@
                 var postShipoutDashboard = '<?php echo Route('postShipoutDashboard') ?>';
                 var postShipinDashboard = '<?php echo Route('postShipinDashboard') ?>';
                 var postUsageDashboard = '<?php echo Route('postUsageDashboard') ?>';
-                
-                
+
+
                 var postUserResetFilter = '<?php echo Route('postUserResetFilter') ?>';
                 var postUserFilterActive = '<?php echo Route('postUserFilterActive') ?>';
                 var postUserFilterv300 = '<?php echo Route('postUserFilterv300') ?>';
@@ -2753,6 +2780,8 @@
                         exportExcelLink = '<?php echo Route('exportExcelUserDashboard') ?>';
                     else if (id_concate == 'usage')
                         exportExcelLink = '<?php echo Route('exportExcelUsageDashboard') ?>';
+                    else if (id_concate == 'subagent')
+                        exportExcelLink = '<?php echo Route('exportExcelSubAgentDashboard') ?>';
 
                     $.post(exportExcelLink, {argyear: year, argsubagent: subagent, argwh: wh}, function (data) {
 
