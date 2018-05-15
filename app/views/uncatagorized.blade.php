@@ -29,40 +29,61 @@
 <script src="{{Asset('jquery-validation/form-validator/jquery.form-validator.js')}}"></script>
 <script type="text/javascript" src="{{Asset('js/chosen.jquery.min.js')}}"></script>
 <script>
-                    var table = '';
-                    var inventoryDataBackupUncat = '<?php echo Route('inventoryDataBackupUncat') ?>';
-                    var postShipin = '<?php echo Route('postShipin') ?>';
-                    
-                    window.goShipin = function (element) {
-                        notin = $(element).data('internal');
-                        if (confirm("Do you want to shipin this inventory (" + notin + ")?") == true) {
-                            $.post(postShipin, {sn: notin}, function (data) {
+var table = '';
+var inventoryDataBackupUncat = '<?php echo Route('inventoryDataBackupUncat') ?>';
+var postShipin = '<?php echo Route('postShipin') ?>';
+var postRemark = '<?php echo Route('postRemark') ?>';
+var newRemark = '';
 
-                            }).done(function () {
-                                drawTable();
-                            });
-                        }
-                    };
-                    table = $('#example').dataTable({
-                        "draw": 10,
-                        "processing": true,
-                        "bDestroy": true,
-                        "serverSide": true,
-                        "ajax": inventoryDataBackupUncat
-                    });
+window.goShipin = function (element) {
+    notin = $(element).data('internal');
+    if (confirm("Do you want to shipin this inventory (" + notin + ")?") == true) {
+        $.post(postShipin, {sn: notin}, function (data) {
 
-                    var drawTable = function () {
-                        if ($.fn.dataTable.isDataTable('#example')) {
-                            table.fnDestroy();
-                        }
-                        table = $('#example').dataTable({
-                            "draw": 10,
-                            "bDestroy": true,
-                            "processing": true,
-                            "serverSide": true,
-                            "ajax": inventoryDataBackupUncat
-                        });
-                    };
-                    
+        }).done(function () {
+            drawTable();
+        });
+    }
+};
+window.editRemark = function (element) {
+    notin = $(element).data('internal');
+    var person = prompt("Please enter New remark:", "please insert remark..");
+    if (person == null || person == "") {
+        txt = "User cancelled the prompt.";
+    } else {
+        newRemark = person;
+        confirmNewRemark();
+    }
+}
+var confirmNewRemark = function () {
+    if (confirm("Do you want to update remark in this inventory (" + notin + ")?") == true) {
+        $.post(postRemark, {sn: notin, new_remark: newRemark}, function (data) {
+
+        }).done(function () {
+            drawTable();
+        });
+    }
+};
+table = $('#example').dataTable({
+    "draw": 10,
+    "processing": true,
+    "bDestroy": true,
+    "serverSide": true,
+    "ajax": inventoryDataBackupUncat
+});
+
+var drawTable = function () {
+    if ($.fn.dataTable.isDataTable('#example')) {
+        table.fnDestroy();
+    }
+    table = $('#example').dataTable({
+        "draw": 10,
+        "bDestroy": true,
+        "processing": true,
+        "serverSide": true,
+        "ajax": inventoryDataBackupUncat
+    });
+};
+
 </script>
 @stop
