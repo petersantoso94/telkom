@@ -2772,6 +2772,14 @@ class InventoryController extends BaseController {
         $for_raw = "('{$id_counter}','{$sn}','" . $arr_subagent_hist[$i] . "','" . $arr_wh_hist[$i] . "',0,'" . $arr_shipoutnumber_hist[$i] . "',NULL,'" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
         DB::insert("INSERT INTO m_historymovement VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE ID=ID;");
     }
+    
+    static function postRemark(){
+        $sn = Input::get('sn');
+        $remark = Input::get('new_remark');
+//        $sn = 'FM155012310699003306';
+//        $remark = 'unfound from churn file2';
+        DB::Update("UPDATE `m_uncatagorized` SET `Remark` = '{$remark}' WHERE `SerialNumber` LIKE '{$sn}'");
+    }
 
     static function postMissing() {
         $sn = Input::get('sn');
@@ -6034,6 +6042,10 @@ class InventoryController extends BaseController {
                     $return = '<button title="Set to available" type="button" data-internal="' . $d . '"  onclick="goShipin(this)"
                                              class="btn btn-pure-xs btn-xs btn-delete">
                                         <span class="glyphicon glyphicon-save"></span>
+                                    </button>';
+                    $return .= '<button title="Edit remark" type="button" data-internal="' . $d . '"  onclick="editRemark(this)"
+                                             class="btn btn-pure-xs btn-xs btn-delete">
+                                        <span class="glyphicon glyphicon-pencil"></span>
                                     </button>';
                     return $return;
                 })
