@@ -58,6 +58,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::post('getShipout', array('as' => 'getShipout', 'before' => '', 'uses' => 'InventoryController@getShipout'));
     Route::post('postMissing', array('as' => 'postMissing', 'before' => '', 'uses' => 'InventoryController@postMissing'));
     Route::post('postShipin', array('as' => 'postShipin', 'before' => '', 'uses' => 'InventoryController@postShipin'));
+    Route::any('postRemark', array('as' => 'postRemark', 'before' => '', 'uses' => 'InventoryController@postRemark'));
     Route::post('postConsStat', array('as' => 'postConsStat', 'before' => '', 'uses' => 'InventoryController@postConsStat'));
     Route::post('postNewAgent', array('as' => 'postNewAgent', 'before' => '', 'uses' => 'InventoryController@postNewAgent'));
     Route::post('postNewWh', array('as' => 'postNewWh', 'before' => '', 'uses' => 'InventoryController@postNewWh'));
