@@ -861,6 +861,26 @@ class InventoryController extends BaseController {
                                 }
                         }
                         $reader->close();
+                        $check_msisdn = [];
+                        $ids = $arr_msisdn;
+                        $ids = implode("','", $ids);
+                        $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE `MSISDN` in ('{$ids}')");
+                        foreach ($right_msisdn as $msisdn) {
+                            $check_msisdn[] = $msisdn->MSISDN;
+                        }
+                        $not_found = array_diff($arr_msisdn, $check_msisdn);
+                        $not_found = implode(",", $not_found);
+                        $not_found = explode(",", $not_found);
+                        if (count($not_found) > 0) {
+                            $for_raw = '';
+                            for ($i = 0; $i < count($not_found); $i++) {
+                                if ($i == 0)
+                                    $for_raw .= "(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from ivr file')";
+                                else
+                                    $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from ivr file')";
+                            }
+                            DB::insert("INSERT INTO m_uncatagorized VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
+                        }
                         $for_raw = '';
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
                             $unik = $arr_msisdn[$i] . '-' . $arr_buydate[$i] . '-' . $arr_buy[$i];
@@ -925,6 +945,26 @@ class InventoryController extends BaseController {
                         }
 
                         $reader->close();
+                        $check_msisdn = [];
+                        $ids = $arr_msisdn;
+                        $ids = implode("','", $ids);
+                        $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE `MSISDN` in ('{$ids}')");
+                        foreach ($right_msisdn as $msisdn) {
+                            $check_msisdn[] = $msisdn->MSISDN;
+                        }
+                        $not_found = array_diff($arr_msisdn, $check_msisdn);
+                        $not_found = implode(",", $not_found);
+                        $not_found = explode(",", $not_found);
+                        if (count($not_found) > 0) {
+                            $for_raw = '';
+                            for ($i = 0; $i < count($not_found); $i++) {
+                                if ($i == 0)
+                                    $for_raw .= "(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from apf file')";
+                                else
+                                    $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from apf file')";
+                            }
+                            DB::insert("INSERT INTO m_uncatagorized VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
+                        }
                         $table = Inventory::getModel()->getTable();
                         $cases = [];
                         $ids = [];
@@ -978,26 +1018,25 @@ class InventoryController extends BaseController {
                                 }
                             }
                             $reader->close();
+                            $check_msisdn = [];
                             $ids = $arr_msisdn;
                             $ids = implode("','", $ids);
-                            $check_msisdn = [];
                             $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE `MSISDN` in ('{$ids}')");
                             foreach ($right_msisdn as $msisdn) {
                                 $check_msisdn[] = $msisdn->MSISDN;
                             }
                             $not_found = array_diff($arr_msisdn, $check_msisdn);
-                            $not_found_str = '';
-                            $counter = 0;
-                            foreach ($not_found as $str) {
-                                if ($counter == 0)
-                                    $not_found_str .= $str;
-                                else {
-                                    if ($counter % 7 == 0)
-                                        $not_found_str .= ',' . $str . '<br>';
+                            $not_found = implode(",", $not_found);
+                            $not_found = explode(",", $not_found);
+                            if (count($not_found) > 0) {
+                                $for_raw = '';
+                                for ($i = 0; $i < count($not_found); $i++) {
+                                    if ($i == 0)
+                                        $for_raw .= "(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from productive-hk file')";
                                     else
-                                        $not_found_str .= ',' . $str;
+                                        $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from productive-hk file')";
                                 }
-                                $counter++;
+                                DB::insert("INSERT INTO m_uncatagorized VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
                             }
                             $table = Inventory::getModel()->getTable();
 
@@ -1022,7 +1061,7 @@ class InventoryController extends BaseController {
                                 DB::update("UPDATE `{$table}` SET `ActivationStore` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
                             }
 
-                            return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNotfound($not_found_str);
+                            return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting');
                         } else {
                             $inputFileName = './uploaded_file/temp.' . $extention;
                             /** Load $inputFileName to a Spreadsheet Object  * */
@@ -1066,26 +1105,25 @@ class InventoryController extends BaseController {
                                 }
                             }
                             $reader->close();
+                            $check_msisdn = [];
                             $ids = $arr_msisdn;
                             $ids = implode("','", $ids);
-                            $check_msisdn = [];
                             $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE `MSISDN` in ('{$ids}')");
                             foreach ($right_msisdn as $msisdn) {
                                 $check_msisdn[] = $msisdn->MSISDN;
                             }
                             $not_found = array_diff($arr_msisdn, $check_msisdn);
-                            $not_found_str = '';
-                            $counter = 0;
-                            foreach ($not_found as $str) {
-                                if ($counter == 0)
-                                    $not_found_str .= $str;
-                                else {
-                                    if ($counter % 7 == 0)
-                                        $not_found_str .= ',' . $str . '<br>';
+                            $not_found = implode(",", $not_found);
+                            $not_found = explode(",", $not_found);
+                            if (count($not_found) > 0) {
+                                $for_raw = '';
+                                for ($i = 0; $i < count($not_found); $i++) {
+                                    if ($i == 0)
+                                        $for_raw .= "(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from aqcuisition file')";
                                     else
-                                        $not_found_str .= ',' . $str;
+                                        $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from acquisition file')";
                                 }
-                                $counter++;
+                                DB::insert("INSERT INTO m_uncatagorized VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
                             }
                             $table = Inventory::getModel()->getTable();
 
@@ -1109,7 +1147,7 @@ class InventoryController extends BaseController {
                                 $cases = implode(' ', $cases);
                                 DB::update("UPDATE `{$table}` SET `ActivationDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
                             }
-                            return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberac($counter)->withNotfound($not_found_str);
+                            return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberac($counter);
                         }
                     }
                 }
@@ -1440,6 +1478,26 @@ class InventoryController extends BaseController {
                             }
                         }
                         $reader->close();
+                        $check_msisdn = [];
+                        $ids = $arr_msisdn;
+                        $ids = implode("','", $ids);
+                        $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE `MSISDN` in ('{$ids}')");
+                        foreach ($right_msisdn as $msisdn) {
+                            $check_msisdn[] = $msisdn->MSISDN;
+                        }
+                        $not_found = array_diff($arr_msisdn, $check_msisdn);
+                        $not_found = implode(",", $not_found);
+                        $not_found = explode(",", $not_found);
+                        if (count($not_found) > 0) {
+                            $for_raw = '';
+                            for ($i = 0; $i < count($not_found); $i++) {
+                                if ($i == 0)
+                                    $for_raw .= "(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from productive-hk file')";
+                                else
+                                    $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from productive-hk file')";
+                            }
+                            DB::insert("INSERT INTO m_uncatagorized VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
+                        }
                         $for_raw = '';
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
                             $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i];
@@ -1520,6 +1578,26 @@ class InventoryController extends BaseController {
                             }
                         }
                         $reader->close();
+                        $check_msisdn = [];
+                        $ids = $arr_msisdn;
+                        $ids = implode("','", $ids);
+                        $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE `MSISDN` in ('{$ids}')");
+                        foreach ($right_msisdn as $msisdn) {
+                            $check_msisdn[] = $msisdn->MSISDN;
+                        }
+                        $not_found = array_diff($arr_msisdn, $check_msisdn);
+                        $not_found = implode(",", $not_found);
+                        $not_found = explode(",", $not_found);
+                        if (count($not_found) > 0) {
+                            $for_raw = '';
+                            for ($i = 0; $i < count($not_found); $i++) {
+                                if ($i == 0)
+                                    $for_raw .= "(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from productive-tst file')";
+                                else
+                                    $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from productive-tst file')";
+                            }
+                            DB::insert("INSERT INTO m_uncatagorized VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
+                        }
                         $for_raw = '';
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
                             $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i];
@@ -1571,6 +1649,47 @@ class InventoryController extends BaseController {
                             }
                         }
                         $reader->close();
+                        $check_msisdn = [];
+                        $ids = $arr_msisdn;
+                        $ids = implode("','", $ids);
+                        $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE `MSISDN` in ('{$ids}')");
+                        foreach ($right_msisdn as $msisdn) {
+                            $check_msisdn[] = $msisdn->MSISDN;
+                        }
+                        $not_found = array_diff($arr_msisdn, $check_msisdn);
+                        $not_found = implode(",", $not_found);
+                        $not_found = explode(",", $not_found);
+                        if (count($not_found) > 0) {
+                            $for_raw = '';
+                            for ($i = 0; $i < count($not_found); $i++) {
+                                if ($i == 0)
+                                    $for_raw .= "(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from sip file')";
+                                else
+                                    $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from sip file')";
+                            }
+                            DB::insert("INSERT INTO m_uncatagorized VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
+                        }
+
+                        $check_msisdn = [];
+                        $ids = $arr_msisdn;
+                        $ids = implode("','", $ids);
+                        $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE ActivationDate IS NOT NULL");
+                        foreach ($right_msisdn as $msisdn) {
+                            $check_msisdn[] = $msisdn->MSISDN;
+                        }
+                        $not_found = array_diff($arr_msisdn, $check_msisdn);
+                        $not_found = implode(",", $not_found);
+                        $not_found = explode(",", $not_found);
+                        if (count($not_found) > 0) {
+                            $for_raw = '';
+                            for ($i = 0; $i < count($not_found); $i++) {
+                                if ($i == 0)
+                                    $for_raw .= "(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'activation date without activation name')";
+                                else
+                                    $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'activation date without activation name')";
+                            }
+                            DB::insert("INSERT INTO m_anomalies VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
+                        }
 
                         $table = Inventory::getModel()->getTable();
                         $counter = count($arr_msisdn);
@@ -2766,14 +2885,14 @@ class InventoryController extends BaseController {
         else
             $id_counter = $check_counter->ID + 1;
 
-        $for_raw = "('{$sn}',0,0,0,'{$id_counter}','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+        $for_raw = "('{$sn}',0,0,0,'{$id_counter}','TELIN TAIWAN','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
         DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
-        $for_raw = "('{$id_counter}','{$sn}','" . $arr_subagent_hist[$i] . "','" . $arr_wh_hist[$i] . "',0,'" . $arr_shipoutnumber_hist[$i] . "',NULL,'" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+        $for_raw = "('{$id_counter}','{$sn}','" . $arr_subagent_hist[$i] . "','TELIN TAIWAN',0,'" . $arr_shipoutnumber_hist[$i] . "',NULL,'" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
         DB::insert("INSERT INTO m_historymovement VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE ID=ID;");
     }
-    
-    static function postRemark(){
+
+    static function postRemark() {
         $sn = Input::get('sn');
         $remark = Input::get('new_remark');
 //        $sn = 'FM155012310699003306';
@@ -3937,7 +4056,7 @@ class InventoryController extends BaseController {
             $month = $data->month;
             if ($month[0] === '0')
                 $month = substr($month, 1);
-            $write_array[$data->SubAgent]['Activation'][$month-1] = $data->count;
+            $write_array[$data->SubAgent]['Activation'][$month - 1] = $data->count;
         }
         foreach ($topup as $data) {
             if (!isset($write_array[$data->SubAgent]['Activation']))
@@ -3949,7 +4068,7 @@ class InventoryController extends BaseController {
             $month = $data->month;
             if ($month[0] === '0')
                 $month = substr($month, 1);
-            $write_array[$data->SubAgent]['Topup'][$month-1] = $data->count;
+            $write_array[$data->SubAgent]['Topup'][$month - 1] = $data->count;
         }
         foreach ($prod as $data) {
             if (!isset($write_array[$data->SubAgent]['Activation']))
@@ -3961,13 +4080,13 @@ class InventoryController extends BaseController {
             $month = $data->month;
             if ($month[0] === '0')
                 $month = substr($month, 1);
-            $write_array[$data->SubAgent]['Productive'][$month-1] = $data->count;
+            $write_array[$data->SubAgent]['Productive'][$month - 1] = $data->count;
         }
-        foreach ($write_array as $key=>$data) {
+        foreach ($write_array as $key => $data) {
             $myArr = array($key, $data["Activation"][0], $data["Productive"][0], $data["Topup"][0], $data["Activation"][1], $data["Productive"][1], $data["Topup"][2], $data["Activation"][3], $data["Productive"][3], $data["Topup"][3]
-                    , $data["Activation"][4], $data["Productive"][4], $data["Topup"][4], $data["Activation"][5], $data["Productive"][5], $data["Topup"][5], $data["Activation"][6], $data["Productive"][6], $data["Topup"][6]
-                    , $data["Activation"][7], $data["Productive"][7], $data["Topup"][7], $data["Activation"][8], $data["Productive"][8], $data["Topup"][8], $data["Activation"][9], $data["Productive"][9], $data["Topup"][9]
-                    , $data["Activation"][10], $data["Productive"][10], $data["Topup"][10], $data["Activation"][11], $data["Productive"][11], $data["Topup"][11]);
+                , $data["Activation"][4], $data["Productive"][4], $data["Topup"][4], $data["Activation"][5], $data["Productive"][5], $data["Topup"][5], $data["Activation"][6], $data["Productive"][6], $data["Topup"][6]
+                , $data["Activation"][7], $data["Productive"][7], $data["Topup"][7], $data["Activation"][8], $data["Productive"][8], $data["Topup"][8], $data["Activation"][9], $data["Productive"][9], $data["Topup"][9]
+                , $data["Activation"][10], $data["Productive"][10], $data["Topup"][10], $data["Activation"][11], $data["Productive"][11], $data["Topup"][11]);
             $writer->addRow($myArr); // add a row at a time
         }
         $writer->close();
