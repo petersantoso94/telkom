@@ -2879,16 +2879,21 @@ class InventoryController extends BaseController {
 
     static function postShipin() {
         $sn = Input::get('sn');
+        $msisdn = Input::get('msisdn');
         $check_counter = History::select('ID')->orderBy('ID', 'DESC')->first();
         if ($check_counter == null)
             $id_counter = 1;
         else
             $id_counter = $check_counter->ID + 1;
+        
+        $type = '3';
+        if($msisdn != NULL)
+            $type = '4';
 
-        $for_raw = "('{$sn}',0,0,0,'{$id_counter}','TELIN TAIWAN','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+        $for_raw = "('{$sn}',0,0,0,'{$id_counter}','TELIN TAIWAN','{$type}','{$msisdn}','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'shipin from uncatagorized',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
         DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
-        $for_raw = "('{$id_counter}','{$sn}','" . $arr_subagent_hist[$i] . "','TELIN TAIWAN',0,'" . $arr_shipoutnumber_hist[$i] . "',NULL,'" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+        $for_raw = "('{$id_counter}','{$sn}','-','TELIN TAIWAN',0,CONCAT(CURDATE(),'/SI/TST001'),NULL,'0','{$id_counter}',0,CURDATE(),'shipin from uncatagorized',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
         DB::insert("INSERT INTO m_historymovement VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE ID=ID;");
     }
 
@@ -6158,7 +6163,12 @@ class InventoryController extends BaseController {
                 'dt' => 2
             ),
             array('db' => 'SerialNumber', 'dt' => 3, 'formatter' => function( $d, $row ) {
-                    $return = '<button title="Set to available" type="button" data-internal="' . $d . '"  onclick="goShipin(this)"
+                    $set_msisdn = '';
+                    $MSISDN = DB::table('m_uncatagorized')
+                            ->where('SerialNumber', $d)->select('MSISDN')->get();
+                    if($MSISDN[0]->MSISDN != NULL)
+                        $set_msisdn = $MSISDN[0]->MSISDN;
+                    $return = '<button title="Set to available" type="button" data-internal="' . $d . '" data-msisdn="' . $set_msisdn . '"  onclick="goShipin(this)"
                                              class="btn btn-pure-xs btn-xs btn-delete">
                                         <span class="glyphicon glyphicon-save"></span>
                                     </button>';
