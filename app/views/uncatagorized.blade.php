@@ -37,8 +37,9 @@ var newRemark = '';
 
 window.goShipin = function (element) {
     notin = $(element).data('internal');
+    msi = $(element).data('msisdn');
     if (confirm("Do you want to shipin this inventory (" + notin + ")?") == true) {
-        $.post(postShipin, {sn: notin}, function (data) {
+        $.post(postShipin, {sn: notin, msisdn : msi}, function (data) {
 
         }).done(function () {
             drawTable();
