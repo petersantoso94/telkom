@@ -741,7 +741,7 @@ class InventoryController extends BaseController {
     }
 
     public function showUncat() {
-        return View::make('uncatagorized')->withPage('Shipin Uncatagorized Inventory');
+        return View::make('uncatagorized')->withPage('Uncatagorized Inventory');
     }
 
     public function showChange() {
