@@ -1684,9 +1684,9 @@ class InventoryController extends BaseController {
                             $for_raw = '';
                             for ($i = 0; $i < count($not_found); $i++) {
                                 if ($i == 0)
-                                    $for_raw .= "(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'activation date without activation name')";
+                                    $for_raw .= "(NULL,'{$not_found[$i]}','activation date without activation name',CURDATE(),CURDATE())";
                                 else
-                                    $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'activation date without activation name')";
+                                    $for_raw .= ",(NULL,'{$not_found[$i]}','activation date without activation name',CURDATE(),CURDATE())";
                             }
                             DB::insert("INSERT INTO m_anomalies VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
                         }
