@@ -6189,6 +6189,30 @@ class InventoryController extends BaseController {
         echo json_encode(
                 SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
     }
+    static function inventoryDataBackupAnomalies() {
+        $table = 'm_anomalies';
+        $primaryKey = 'm_anomalies`.`SerialNumber';
+        $columns = array(
+            array('db' => 'SerialNumber', 'dt' => 0),
+            array(
+                'db' => 'MSISDN',
+                'dt' => 1
+            ),
+            array(
+                'db' => 'Remark',
+                'dt' => 2
+            )
+        );
+
+        $sql_details = getConnection();
+
+        require('ssp.class.php');
+//        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
+        $extraCondition = "";
+        $join = '';
+        echo json_encode(
+                SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
+    }
 
     static function delInv() {
         Session::forget('temp_inv_start');
