@@ -40,6 +40,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::post('inventoryDataBackupCons', array('as' => 'inventoryDataBackupCons', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackupCons'));
     Route::any('inventoryDataBackupDashboard', array('as' => 'inventoryDataBackupDashboard', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackupDashboard'));
     Route::any('inventoryDataBackupUncat', array('as' => 'inventoryDataBackupUncat', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackupUncat'));
+    Route::any('inventoryDataBackupAnomalies', array('as' => 'inventoryDataBackupAnomalies', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackupAnomalies'));
     Route::get('getSN/{msi}', array('as' => 'getSN', 'before' => '', 'uses' => 'InventoryController@getSN'));
     Route::get('exportExcel/{start}', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
     Route::post('exportExcel', array('as' => 'exportExcel', 'before' => '', 'uses' => 'InventoryController@exportExcel'));
