@@ -559,11 +559,11 @@ class InventoryController extends BaseController {
             $allInvAvail = Inventory::join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')->whereIn('m_inventory.SerialNumber', $arr_inv)
                     ->where('m_historymovement.Status', '!=', '2')->where('m_inventory.Missing', 0)
                     ->get();
+            $status = 2;
+            if ($cs == 1) {
+                $status = 4;
+            }
             foreach ($allInvAvail as $inv) {
-                $status = 2;
-                if ($cs == 1) {
-                    $status = 4;
-                }
 
                 array_push($arr_sn_hist, $inv->SerialNumber);
                 array_push($arr_status_hist, $status);
@@ -581,7 +581,6 @@ class InventoryController extends BaseController {
                 //update last status
                 $inv->LastStatusID = $id_counter;
                 $inv->save();
-
                 $allhist = History::where('SN', $inv->SerialNumber)->get();
                 foreach ($allhist as $hist) {
                     $hist->LastStatus = $status;
@@ -599,6 +598,40 @@ class InventoryController extends BaseController {
                     $for_raw .= ",('" . $arr_id_hist[$i] . "','" . $arr_sn_hist[$i] . "','" . $arr_subagent_hist[$i] . "','" . $arr_wh_hist[$i] . "','" . $arr_price_hist[$i] . "','" . $arr_shipoutnumber_hist[$i] . "','{$fabiaoNumber}','" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
             }
             DB::insert("INSERT INTO m_historymovement VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE ID=ID;");
+
+//            $table = Inventory::getModel()->getTable();
+//            $cases = [];
+//            $ids = [];
+//            $params = [];
+//
+//            for ($i = 0; $i < count($arr_sn_hist); $i++) {
+//                $id = (int) $arr_sn_hist[$i];
+//                $cases[] = "WHEN {$id} then ?";
+//                $params[] = $arr_id_hist[$i];
+//                $ids[] = $id;
+//            }
+//            $ids = implode(',', $ids);
+//            $cases = implode(' ', $cases);
+//            DB::update("UPDATE `{$table}` SET `LastStatusID` = CASE `SerialNumber` {$cases} END WHERE `SerialNumber` in ({$ids})", $params);
+//            
+//            for ($i = 0; $i < count($arr_sn_hist); $i++) {
+//                DB::update("UPDATE `m_historymovement` SET `LastStatus` = '{$arr_laststatus_hist[$i]}'  WHERE `SN` = '{$arr_sn_hist[$i]}'");
+//            }
+
+//            
+//            $cases = [];
+//            $ids = [];
+//            $params = [];
+//
+//            for ($i = 0; $i < count($arr_sn_hist); $i++) {
+//                $id = (int) $arr_sn_hist[$i];
+//                $cases[] = "WHEN {$id} then ?";
+//                $params[] = $arr_laststatus_hist[$i];
+//                $ids[] = $id;
+//            }
+//            $ids = implode(',', $ids);
+//            $cases = implode(' ', $cases);
+//            DB::update("UPDATE `m_historymovement` SET `LastStatus` = CASE `SN` {$cases} END WHERE `SN` in ({$ids})", $params);
 
             Session::forget('temp_inv_start');
             Session::forget('temp_inv_end');
@@ -5059,7 +5092,7 @@ class InventoryController extends BaseController {
                         <div style="width:230px; height:20px;float:left; display: inline-block;">承辦人</div>
                     </div>
                     <div style="width:102%;text-align:center; height:60px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:200px; height:60px;float:left; display: inline-block; border-right: 1px solid;">'.Session::get('remark').'</div>
+                        <div style="width:200px; height:60px;float:left; display: inline-block; border-right: 1px solid;">' . Session::get('remark') . '</div>
                         <div style="width:200px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:70px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:230px; height:60px;float:left; display: inline-block;">' . Auth::user()->UserEmail . '</div>
@@ -6195,23 +6228,7 @@ class InventoryController extends BaseController {
             array(
                 'db' => 'Remark',
                 'dt' => 2
-            ),
-            array('db' => 'SerialNumber', 'dt' => 3, 'formatter' => function( $d, $row ) {
-                    $set_msisdn = '';
-                    $MSISDN = DB::table('m_uncatagorized')
-                                    ->where('SerialNumber', $d)->select('MSISDN')->get();
-                    if ($MSISDN[0]->MSISDN != NULL)
-                        $set_msisdn = $MSISDN[0]->MSISDN;
-                    $return = '<button title="Set to available" type="button" data-internal="' . $d . '" data-msisdn="' . $set_msisdn . '"  onclick="goShipin(this)"
-                                             class="btn btn-pure-xs btn-xs btn-delete">
-                                        <span class="glyphicon glyphicon-save"></span>
-                                    </button>';
-                    $return .= '<button title="Edit remark" type="button" data-internal="' . $d . '"  onclick="editRemark(this)"
-                                             class="btn btn-pure-xs btn-xs btn-delete">
-                                        <span class="glyphicon glyphicon-pencil"></span>
-                                    </button>';
-                    return $return;
-                })
+            )
         );
 
         $sql_details = getConnection();
