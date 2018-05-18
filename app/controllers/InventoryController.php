@@ -25,6 +25,7 @@ class InventoryController extends BaseController {
                     $arr_sn = [];
                     $arr_msisdn = [];
                     $arr_sn = [];
+                    $arr_hist_status = [];
                     $arr_shipinprice = [];
                     $arr_type = [];
                     $arr_lastwarehouse = [];
@@ -146,6 +147,7 @@ class InventoryController extends BaseController {
                                         array_push($arr_subagent_hist, $subagent);
                                         array_push($arr_wh_hist, $wh);
                                     }
+                                    array_push($arr_hist_status, $status);
                                     array_push($arr_laststatus_hist, $status);
                                     array_push($arr_laststatusid, $id_counter);
                                     $id_counter++;
@@ -157,9 +159,9 @@ class InventoryController extends BaseController {
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_sn); $i++) {
                         if ($i == 0)
-                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','".$arr_hist_status[$i]."','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                         else
-                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','".$arr_hist_status[$i]."','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
                     DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
@@ -198,6 +200,7 @@ class InventoryController extends BaseController {
                     $reader->open($filePath);
                     $counter = 0;
                     $arr_sn = [];
+                    $arr_hist_status = [];
                     $arr_shipinprice = [];
                     $arr_type = [];
                     $arr_lastwarehouse = [];
@@ -319,6 +322,7 @@ class InventoryController extends BaseController {
                                         array_push($arr_subagent_hist, $subagent);
                                         array_push($arr_wh_hist, $wh);
                                     }
+                                    array_push($arr_hist_status, $status);
                                     array_push($arr_laststatus_hist, $status);
                                     array_push($arr_laststatusid, $id_counter);
                                     $id_counter++;
@@ -330,9 +334,9 @@ class InventoryController extends BaseController {
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_sn); $i++) {
                         if ($i == 0)
-                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','".$arr_hist_status[$i]."','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                         else
-                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','".$arr_hist_status[$i]."','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
                     DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
@@ -439,9 +443,9 @@ class InventoryController extends BaseController {
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_sn); $i++) {
                         if ($i == 0)
-                            $for_raw .= "('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= "('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','".$arr_laststatus_hist[$i]."','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                         else
-                            $for_raw .= ",('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= ",('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','".$arr_laststatus_hist[$i]."','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
                     DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
@@ -504,14 +508,9 @@ class InventoryController extends BaseController {
 
                     //update last status
                     $inv->LastStatusID = $hist->ID;
+                    $inv->LastStatusHist = 3;
                     $inv->LastWarehouse = $moveto;
                     $inv->save();
-
-                    $allhist = History::where('SN', $inv->SerialNumber)->get();
-                    foreach ($allhist as $hist) {
-                        $hist->LastStatus = 3;
-                        $hist->save();
-                    }
                     $counter++;
                 }
             }
@@ -578,14 +577,15 @@ class InventoryController extends BaseController {
                 array_push($arr_subagent_hist, $subagent);
                 array_push($arr_wh_hist, $inv->LastWarehouse);
 
-                //update last status
-                $inv->LastStatusID = $id_counter;
-                $inv->save();
-                $allhist = History::where('SN', $inv->SerialNumber)->get();
-                foreach ($allhist as $hist) {
-                    $hist->LastStatus = $status;
-                    $hist->save();
-                }
+//                //update last status
+//                $inv->LastStatusID = $id_counter;
+//                $inv->save();
+//                
+//                $allhist = History::where('SN', $inv->SerialNumber)->get();
+//                foreach ($allhist as $hist) {
+//                    $hist->LastStatus = $status;
+//                    $hist->save();
+//                }
                 $id_counter++;
                 $counter++;
             }
@@ -684,13 +684,8 @@ class InventoryController extends BaseController {
 
                     //update last status
                     $inv->LastStatusID = $hist->ID;
+                    $inv->LastStatusHist = 2;
                     $inv->save();
-
-                    $allhist = History::where('SN', $inv->SerialNumber)->get();
-                    foreach ($allhist as $hist) {
-                        $hist->LastStatus = 2;
-                        $hist->save();
-                    }
                     $counter++;
                 }
             }
@@ -767,13 +762,8 @@ class InventoryController extends BaseController {
                                 $hist2->save();
 
                                 $inv->LastStatusID = $hist2->ID;
+                                $inv->LastStatusHist = 1;
                                 $inv->save();
-
-                                $allhist = History::where('SN', $inv->SerialNumber)->get();
-                                foreach ($allhist as $hist) {
-                                    $hist->LastStatus = 1;
-                                    $hist->save();
-                                }
                             } else {
                                 if ($notavail == '') {
                                     $notavail .= $value[0];
@@ -3131,7 +3121,7 @@ class InventoryController extends BaseController {
             $invs = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                             ->where('m_inventory.Type', $typesym, $type)
-                            ->where('m_historymovement.LastStatus', $statussym, $status)
+                            ->where('m_inventory.LastStatusHist', $statussym, $status)
                             ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->get();
             if ($wh != '') {
                 $invs = DB::table('m_inventory')
@@ -6078,7 +6068,7 @@ class InventoryController extends BaseController {
                     }
                 ),
                 array(
-                    'db' => 'LastStatus',
+                    'db' => 'LastStatusHist',
                     'dt' => 2,
                     'formatter' => function( $d, $row ) {
                         if ($d == 0) {
@@ -6127,7 +6117,7 @@ class InventoryController extends BaseController {
             require('ssp.class.php');
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
             $extraCondition = "m_inventory.Type " . $type;
-            $extraCondition .= " && m_historymovement.LastStatus " . $status;
+            $extraCondition .= " && m_inventory.LastStatusHist " . $status;
             if ($wh != '')
                 $extraCondition .= " && m_inventory.LastWarehouse LIKE '%" . $wh . "%'";
             if ($st != '')
