@@ -25,7 +25,6 @@
                                     <th>Serial Number</th>
                                     <th>MSISDN</th>
                                     <th>Remark</th>
-                                    <th>Action</th>
                                 <!--<th>Actions</th>-->
                                 </tr>
                             </thead>
