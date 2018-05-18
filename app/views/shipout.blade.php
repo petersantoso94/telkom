@@ -192,7 +192,7 @@
                     <label class="fw300" style="margin-top: 7px;">Remark: </label>
                 </div>
                 <div class="col-sm-5">
-                    <input type="text" class="input-stretch" name="remark">
+                    <input type="text" class="input-stretch" name="remark" id="remark">
                 </div>
             </div>
         </div>
@@ -306,9 +306,10 @@
                         var shipout_start = document.getElementById('shipoutstart').value;
                         var shipout_end = document.getElementById('shipoutend').value;
                         var fabiaonum = document.getElementById('fabiao').value;
+                        var remark_ = document.getElementById('remark').value;
                         $.post(getPDF,
                                 {date: shipout_date, sn: shipout_SN, to: shipout_to, subagent: shipout_subagent
-                                    , start: shipout_start, end: shipout_end, cs: cse, fabiao: fabiaonum}
+                                    , start: shipout_start, end: shipout_end, cs: cse, fabiao: fabiaonum, remark: remark_}
                         , function (data) {
 
                         }).done(function () {
