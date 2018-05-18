@@ -171,9 +171,9 @@
                         var shipout_date = document.getElementById('shipindate').value;
                         var shipout_SN = document.getElementById('formSN').value;
                         $.post(getPDFret,
-                                {date: shipout_date, sn: shipout_SN, array_SN:semua_sn}
+                                {date: shipout_date, sn: shipout_SN, array_SN: semua_sn}
                         , function (data) {
-                            
+
                         }).done(function (data) {
                             console.log(data);
                             window.open(getPDFret);
@@ -224,30 +224,31 @@
                             table2.fnDestroy();
                         }
                         $.post(postSemuaSN, {sn: semua_sn}, function (data) {
-                            
-                        });
-                        inventoryDataBackup = '<?php echo Route('inventoryDataBackupReturn') ?>' + '/1';
-                        inventoryDataBackup2 = '<?php echo Route('inventoryDataBackupReturn') ?>' + '/0';
-                        table = $('#example').dataTable({
-                            "draw": 10,
-                            "bDestroy": true,
-                            "processing": true,
-                            "serverSide": true,
-                            "ajax": inventoryDataBackup
-                        });
-                        table2 = $('#example2').dataTable({
-                            "draw": 10,
-                            "bDestroy": true,
-                            "processing": true,
-                            "serverSide": true,
-                            "ajax": inventoryDataBackup2
-                        });
-                        getShipout = '<?php echo Route('getShipout') ?>';
-                        $.post(getShipout, {sn: topsn}, function (data) {
-                            shto = data;
-                        }).done(function () {
-                            refreshFormSN();
-                            $('#btn-print-pdf-so').removeAttr('disabled');
+
+                        }).done(function (data) {
+                            inventoryDataBackup = '<?php echo Route('inventoryDataBackupReturn') ?>' + '/1';
+                            inventoryDataBackup2 = '<?php echo Route('inventoryDataBackupReturn') ?>' + '/0';
+                            table = $('#example').dataTable({
+                                "draw": 10,
+                                "bDestroy": true,
+                                "processing": true,
+                                "serverSide": true,
+                                "ajax": inventoryDataBackup
+                            });
+                            table2 = $('#example2').dataTable({
+                                "draw": 10,
+                                "bDestroy": true,
+                                "processing": true,
+                                "serverSide": true,
+                                "ajax": inventoryDataBackup2
+                            });
+                            getShipout = '<?php echo Route('getShipout') ?>';
+                            $.post(getShipout, {sn: topsn}, function (data) {
+                                shto = data;
+                            }).done(function () {
+                                refreshFormSN();
+                                $('#btn-print-pdf-so').removeAttr('disabled');
+                            });
                         });
                     });
                     $('#btn-insert-image').on('click', function (e) {
