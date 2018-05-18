@@ -2976,6 +2976,11 @@ class InventoryController extends BaseController {
     static function delST() {
         Session::forget('ShipouttoInv');
     }
+    
+    static function postSemuaSN(){
+        $sn = Input::get('sn');
+        Session::put('SemuaSN', $sn);
+    }
 
     static function exportExcel($filter) {
         $invs = '';
@@ -3303,7 +3308,7 @@ class InventoryController extends BaseController {
 
     static function exportExcelWeeklyDashboard() {
         $date = Input::get("argyear");
-        $date = "2018-05-21";
+//        $date = "2018-05-21";
         $year = explode("-", $date)[0];
         $month = explode("-", $date)[1];
         $day = explode("-", $date)[2];
@@ -6641,8 +6646,8 @@ class InventoryController extends BaseController {
     }
 
     static function inventoryDataBackupReturn($id) {
-        $statusAvail = explode(',,,', $id)[1];
-        $arrayids = explode(',', explode(',,,', $id)[0]);
+        $statusAvail = $id;
+        $arrayids = Session::get('SemuaSN');
         $array = implode("','", $arrayids);
         $string_temp = "2','4";
         if ($statusAvail == 0) {
@@ -6699,6 +6704,7 @@ class InventoryController extends BaseController {
 
         echo json_encode(
                 SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
+    
     }
 
 }
