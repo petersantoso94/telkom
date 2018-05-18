@@ -1032,9 +1032,9 @@ class InventoryController extends BaseController {
                                 $for_raw = '';
                                 for ($i = 0; $i < count($not_found); $i++) {
                                     if ($i == 0)
-                                        $for_raw .= "(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from productive-hk file')";
+                                        $for_raw .= "(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from activation file')";
                                     else
-                                        $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from productive-hk file')";
+                                        $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from activation file')";
                                 }
                                 DB::insert("INSERT INTO m_uncatagorized VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
                             }
