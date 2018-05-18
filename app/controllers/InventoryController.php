@@ -2979,6 +2979,7 @@ class InventoryController extends BaseController {
     
     static function postSemuaSN(){
         $sn = Input::get('sn');
+        $sn  = explode(",", $sn);
         Session::put('SemuaSN', $sn);
     }
 
