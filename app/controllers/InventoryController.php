@@ -532,48 +532,74 @@ class InventoryController extends BaseController {
             $price = Input::get('price');
             $series = Input::get('formSN');
             $subagent = Input::get('subagent');
+            $fabiaoNumber = Input::get('fabiaoNumber');
             $cs = Session::get('conses');
             $invs = str_replace("'", '', Session::get('temp_inv_arr'));
             $arr_inv = explode(',', $invs);
 
+            //for history
+            $arr_sn_hist = [];
+            $arr_id_hist = [];
+            $arr_price_hist = [];
+            $arr_hist_date = [];
+            $arr_remark_hist = [];
+            $arr_subagent_hist = [];
+            $arr_shipoutnumber_hist = [];
+            $arr_status_hist = [];
+            $arr_laststatus_hist = [];
+            $arr_wh_hist = [];
+
             $counter = 0;
-            $allInvAvail = Inventory::whereIn('SerialNumber', $arr_inv)->where('Missing', 0)->get();
+            $check_counter = History::select('ID')->orderBy('ID', 'DESC')->first();
+            if ($check_counter == null)
+                $id_counter = 1;
+            else
+                $id_counter = $check_counter->ID + 1;
+
+            $allInvAvail = Inventory::join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')->whereIn('m_inventory.SerialNumber', $arr_inv)
+                    ->where('m_historymovement.Status', '!=', '2')->where('m_inventory.Missing', 0)
+                    ->get();
             foreach ($allInvAvail as $inv) {
-                $status_ = 2;
-                $history = History::where('ID', $inv->LastStatusID)->first();
-                if ($history->Status != 2) { //available
-                    $hist = new History();
-                    $hist->SN = $inv->SerialNumber;
-                    $hist->SubAgent = $subagent;
-                    $hist->Price = $inv->TempPrice;
-                    $hist->Warehouse = $inv->LastWarehouse;
-//                    if ($price == '0' && $cs == 0) {
-//                        $hist->Warehouse = 'TELIN TAIWAN';
-//                        $inv->LastWarehouse = 'TELIN TAIWAN';
-//                    }
-                    if ($cs == 1) {
-                        $status_ = 4;
-                    }
-                    $hist->ShipoutNumber = $series;
-                    $hist->Status = $status_;
-                    $hist->Remark = Input::get('remark');
-                    $hist->FabiaoNumber = Input::get('fabiaoNumber');
-                    $hist->Date = Input::get('eventDate');
-                    $hist->userRecord = Auth::user()->ID;
-                    $hist->save();
-
-                    //update last status
-                    $inv->LastStatusID = $hist->ID;
-                    $inv->save();
-
-                    $allhist = History::where('SN', $inv->SerialNumber)->get();
-                    foreach ($allhist as $hist) {
-                        $hist->LastStatus = $status_;
-                        $hist->save();
-                    }
-                    $counter++;
+                $status = 2;
+                if ($cs == 1) {
+                    $status = 4;
                 }
+
+                array_push($arr_sn_hist, $inv->SerialNumber);
+                array_push($arr_status_hist, $status);
+                array_push($arr_laststatus_hist, $status);
+                array_push($arr_id_hist, $id_counter);
+                array_push($arr_price_hist, $inv->TempPrice);
+                $date_shipout = Input::get('eventDate');
+                $statusnum = $series;
+                array_push($arr_shipoutnumber_hist, $statusnum);
+                array_push($arr_hist_date, $date_shipout);
+                array_push($arr_remark_hist, Input::get('remark'));
+                array_push($arr_subagent_hist, $subagent);
+                array_push($arr_wh_hist, $inv->LastWarehouse);
+
+                //update last status
+                $inv->LastStatusID = $id_counter;
+                $inv->save();
+
+                $allhist = History::where('SN', $inv->SerialNumber)->get();
+                foreach ($allhist as $hist) {
+                    $hist->LastStatus = $status;
+                    $hist->save();
+                }
+                $id_counter++;
+                $counter++;
             }
+
+            $for_raw = '';
+            for ($i = 0; $i < count($arr_id_hist); $i++) {
+                if ($i == 0)
+                    $for_raw .= "('" . $arr_id_hist[$i] . "','" . $arr_sn_hist[$i] . "','" . $arr_subagent_hist[$i] . "','" . $arr_wh_hist[$i] . "','" . $arr_price_hist[$i] . "','" . $arr_shipoutnumber_hist[$i] . "','{$fabiaoNumber}','" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                else
+                    $for_raw .= ",('" . $arr_id_hist[$i] . "','" . $arr_sn_hist[$i] . "','" . $arr_subagent_hist[$i] . "','" . $arr_wh_hist[$i] . "','" . $arr_price_hist[$i] . "','" . $arr_shipoutnumber_hist[$i] . "','{$fabiaoNumber}','" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+            }
+            DB::insert("INSERT INTO m_historymovement VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE ID=ID;");
+
             Session::forget('temp_inv_start');
             Session::forget('temp_inv_end');
             Session::forget('temp_inv_price');
@@ -2885,9 +2911,9 @@ class InventoryController extends BaseController {
             $id_counter = 1;
         else
             $id_counter = $check_counter->ID + 1;
-        
+
         $type = '3';
-        if($msisdn != NULL)
+        if ($msisdn != NULL)
             $type = '4';
 
         $for_raw = "('{$sn}',0,0,0,'{$id_counter}','TELIN TAIWAN','{$type}','{$msisdn}','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'shipin from uncatagorized',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
@@ -2976,10 +3002,10 @@ class InventoryController extends BaseController {
     static function delST() {
         Session::forget('ShipouttoInv');
     }
-    
-    static function postSemuaSN(){
+
+    static function postSemuaSN() {
         $sn = Input::get('sn');
-        $sn  = explode(",", $sn);
+        $sn = explode(",", $sn);
         Session::put('SemuaSN', $sn);
     }
 
@@ -4788,6 +4814,7 @@ class InventoryController extends BaseController {
             $start = Input::get('start');
             $end = Input::get('end');
             $fabiao = Input::get('fabiao');
+            $remark = Input::get('remark');
 
             Session::put('sn', $sn);
             Session::put('date', $date);
@@ -4795,6 +4822,7 @@ class InventoryController extends BaseController {
             Session::put('to', $to);
             Session::put('fabiao', $fabiao);
             Session::put('conses', Input::get('cs'));
+            Session::put('remark', $remark);
             if ($start != '' && $end != '') {
                 Session::put('start', $start);
                 Session::put('end', $end);
@@ -5031,7 +5059,7 @@ class InventoryController extends BaseController {
                         <div style="width:230px; height:20px;float:left; display: inline-block;">承辦人</div>
                     </div>
                     <div style="width:102%;text-align:center; height:60px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:200px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:200px; height:60px;float:left; display: inline-block; border-right: 1px solid;">'.Session::get('remark').'</div>
                         <div style="width:200px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:70px; height:60px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:230px; height:60px;float:left; display: inline-block;">' . Auth::user()->UserEmail . '</div>
@@ -6171,8 +6199,8 @@ class InventoryController extends BaseController {
             array('db' => 'SerialNumber', 'dt' => 3, 'formatter' => function( $d, $row ) {
                     $set_msisdn = '';
                     $MSISDN = DB::table('m_uncatagorized')
-                            ->where('SerialNumber', $d)->select('MSISDN')->get();
-                    if($MSISDN[0]->MSISDN != NULL)
+                                    ->where('SerialNumber', $d)->select('MSISDN')->get();
+                    if ($MSISDN[0]->MSISDN != NULL)
                         $set_msisdn = $MSISDN[0]->MSISDN;
                     $return = '<button title="Set to available" type="button" data-internal="' . $d . '" data-msisdn="' . $set_msisdn . '"  onclick="goShipin(this)"
                                              class="btn btn-pure-xs btn-xs btn-delete">
@@ -6195,6 +6223,7 @@ class InventoryController extends BaseController {
         echo json_encode(
                 SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
     }
+
     static function inventoryDataBackupAnomalies() {
         $table = 'm_anomalies';
         $primaryKey = 'm_anomalies`.`SerialNumber';
@@ -6705,7 +6734,6 @@ class InventoryController extends BaseController {
 
         echo json_encode(
                 SSP::simple($_GET, $sql_details, $table, $primaryKey, $columns, $extraCondition, $join));
-    
     }
 
 }
