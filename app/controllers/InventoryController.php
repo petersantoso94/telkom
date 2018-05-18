@@ -1032,9 +1032,9 @@ class InventoryController extends BaseController {
                                 $for_raw = '';
                                 for ($i = 0; $i < count($not_found); $i++) {
                                     if ($i == 0)
-                                        $for_raw .= "(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from activation file')";
+                                        $for_raw .= "(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from acquisition file')";
                                     else
-                                        $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from activation file')";
+                                        $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from acquisition file')";
                                 }
                                 DB::insert("INSERT INTO m_uncatagorized VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
                             }
@@ -4112,9 +4112,9 @@ class InventoryController extends BaseController {
 
         if (Session::has('UserFilterAct')) {
             if (Session::get('UserFilterAct') === '2') {
-                $raw_where .= " AND inv1.`ChurnDate` IS NOT NULL";
-            } else if (Session::get('UserFilterAct') === '3') {
                 $raw_where .= " AND inv1.`ChurnDate` IS NULL";
+            } else if (Session::get('UserFilterAct') === '3') {
+                $raw_where .= " AND inv1.`ChurnDate` IS NOT NULL";
             }
         }
         if (Session::has('UserFilterv300')) {
