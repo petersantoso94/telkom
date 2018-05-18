@@ -158,6 +158,7 @@
                     var shto = '';
                     var topsn = '';
                     var getPDFret = '<?php echo Route('getPDFReturn') ?>';
+                    var postSemuaSN = '<?php echo Route('postSemuaSN') ?>';
 
                     $(function () {
                         oFileIn = document.getElementById('input-pict');
@@ -222,8 +223,11 @@
                             table.fnDestroy();
                             table2.fnDestroy();
                         }
-                        inventoryDataBackup = '<?php echo Route('inventoryDataBackupReturn') ?>' + '/' + semua_sn + ',,,1';
-                        inventoryDataBackup2 = '<?php echo Route('inventoryDataBackupReturn') ?>' + '/' + semua_sn + ',,,0';
+                        $.post(postSemuaSN, {sn: semua_sn}, function (data) {
+                            
+                        });
+                        inventoryDataBackup = '<?php echo Route('inventoryDataBackupReturn') ?>' + '/1';
+                        inventoryDataBackup2 = '<?php echo Route('inventoryDataBackupReturn') ?>' + '/0';
                         table = $('#example').dataTable({
                             "draw": 10,
                             "bDestroy": true,
