@@ -2641,13 +2641,13 @@ class InventoryController extends BaseController {
                         ->whereRaw("TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR0450%' AND YEAR(TopUpDate) = '{$year}'")
                         ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate)  as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
 
-        if ($simtopup300 != null) {
-            foreach ($simtopup300 as $sim) {
-                if (!isset($data['Voc300']))
-                    $data['Voc300'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        if ($simtopup50 != null) {
+            foreach ($simtopup50 as $sim) {
+                if (!isset($data['Voc50']))
+                    $data['Voc50'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $sim->month - 1) {
-                        $data['Voc300'][$i] += $sim->Counter;
+                        $data['Voc50'][$i] += $sim->Counter;
                     }
                 }
             }
@@ -2663,13 +2663,13 @@ class InventoryController extends BaseController {
                 }
             }
         }
-        if ($simtopup50 != null) {
-            foreach ($simtopup50 as $sim) {
-                if (!isset($data['Voc50']))
-                    $data['Voc50'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        if ($simtopup300 != null) {
+            foreach ($simtopup300 as $sim) {
+                if (!isset($data['Voc300']))
+                    $data['Voc300'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $sim->month - 1) {
-                        $data['Voc50'][$i] += $sim->Counter;
+                        $data['Voc300'][$i] += $sim->Counter;
                     }
                 }
             }
@@ -2699,13 +2699,13 @@ class InventoryController extends BaseController {
                                 ->whereRaw("TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR0450%' AND YEAR(TopUpDate) = '{$year->Year}'")
                                 ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate)  as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
 
-                if ($simtopup300 != null) {
-                    foreach ($simtopup300 as $sim) {
-                        if (!isset($data['Voc300']))
-                            $data['Voc300'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if ($simtopup50 != null) {
+                    foreach ($simtopup50 as $sim) {
+                        if (!isset($data['Voc50']))
+                            $data['Voc50'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                         for ($i = 0; $i < 12; $i++) {
                             if ($i == $sim->month - 1) {
-                                $data['Voc300'][$i] += $sim->Counter;
+                                $data['Voc50'][$i] += $sim->Counter;
                             }
                         }
                     }
@@ -2721,13 +2721,13 @@ class InventoryController extends BaseController {
                         }
                     }
                 }
-                if ($simtopup50 != null) {
-                    foreach ($simtopup50 as $sim) {
-                        if (!isset($data['Voc50']))
-                            $data['Voc50'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if ($simtopup300 != null) {
+                    foreach ($simtopup300 as $sim) {
+                        if (!isset($data['Voc300']))
+                            $data['Voc300'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                         for ($i = 0; $i < 12; $i++) {
                             if ($i == $sim->month - 1) {
-                                $data['Voc50'][$i] += $sim->Counter;
+                                $data['Voc300'][$i] += $sim->Counter;
                             }
                         }
                     }
