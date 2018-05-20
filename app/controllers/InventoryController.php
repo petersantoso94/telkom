@@ -159,9 +159,9 @@ class InventoryController extends BaseController {
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_sn); $i++) {
                         if ($i == 0)
-                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','".$arr_hist_status[$i]."','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_hist_status[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                         else
-                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','".$arr_hist_status[$i]."','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_hist_status[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
                     DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
@@ -334,9 +334,9 @@ class InventoryController extends BaseController {
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_sn); $i++) {
                         if ($i == 0)
-                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','".$arr_hist_status[$i]."','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_hist_status[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                         else
-                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','".$arr_hist_status[$i]."','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_hist_status[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
                     DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
@@ -443,9 +443,9 @@ class InventoryController extends BaseController {
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_sn); $i++) {
                         if ($i == 0)
-                            $for_raw .= "('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','".$arr_laststatus_hist[$i]."','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= "('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_laststatus_hist[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                         else
-                            $for_raw .= ",('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','".$arr_laststatus_hist[$i]."','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= ",('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_laststatus_hist[$i] . "','" . $arr_lastwarehouse[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
                     DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
@@ -617,7 +617,6 @@ class InventoryController extends BaseController {
 //            for ($i = 0; $i < count($arr_sn_hist); $i++) {
 //                DB::update("UPDATE `m_historymovement` SET `LastStatus` = '{$arr_laststatus_hist[$i]}'  WHERE `SN` = '{$arr_sn_hist[$i]}'");
 //            }
-
 //            
 //            $cases = [];
 //            $ids = [];
@@ -2605,6 +2604,130 @@ class InventoryController extends BaseController {
                                 if ($i == $ivr->Month - 1) {
                                     $data[$stats][$i] += $ivr->Counter;
                                 }
+                            }
+                        }
+                    }
+                }
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
+        }
+        return $data;
+    }
+
+    static function getSubsriberTopUp() {
+        $year = Input::get('year');
+//        $year = '2017';
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
+
+        $data = [];
+        //1 -> evoucher; 2 -> phvoucher
+        $simtopup300 = [];
+        $simtopup100 = [];
+        $simtopup50 = [];
+        // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+        $simtopup300 = DB::table('m_inventory')
+                        ->whereRaw("TopUpMSISDN IS NOT NULL AND (`SerialNumber` LIKE '%KR0250%' OR `SerialNumber` LIKE '%KR1850%') AND YEAR(TopUpDate) = '{$year}'")
+                        ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate) as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
+        $simtopup100 = DB::table('m_inventory')
+                        ->whereRaw("TopUpMSISDN IS NOT NULL AND (`SerialNumber` LIKE '%KR0150%' OR `SerialNumber` LIKE '%KR0350%') AND YEAR(TopUpDate) = '{$year}'")
+                        ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate)  as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
+        $simtopup50 = DB::table('m_inventory')
+                        ->whereRaw("TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR0450%' AND YEAR(TopUpDate) = '{$year}'")
+                        ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate)  as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
+
+        if ($simtopup300 != null) {
+            foreach ($simtopup300 as $sim) {
+                if (!isset($data['Voc300']))
+                    $data['Voc300'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $sim->month - 1) {
+                        $data['Voc300'][$i] += $sim->Counter;
+                    }
+                }
+            }
+        }
+        if ($simtopup100 != null) {
+            foreach ($simtopup100 as $sim) {
+                if (!isset($data['Voc100']))
+                    $data['Voc100'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $sim->month - 1) {
+                        $data['Voc100'][$i] += $sim->Counter;
+                    }
+                }
+            }
+        }
+        if ($simtopup50 != null) {
+            foreach ($simtopup50 as $sim) {
+                if (!isset($data['Voc50']))
+                    $data['Voc50'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $sim->month - 1) {
+                        $data['Voc50'][$i] += $sim->Counter;
+                    }
+                }
+            }
+        }
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
+                $data = [];
+                //1 -> evoucher; 2 -> phvoucher
+                $simtopup300 = [];
+                $simtopup100 = [];
+                $simtopup50 = [];
+                // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+                $simtopup300 = DB::table('m_inventory')
+                                ->whereRaw("TopUpMSISDN IS NOT NULL AND (`SerialNumber` LIKE '%KR0250%' OR `SerialNumber` LIKE '%KR1850%') AND YEAR(TopUpDate) = '{$year->Year}'")
+                                ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate) as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
+                $simtopup100 = DB::table('m_inventory')
+                                ->whereRaw("TopUpMSISDN IS NOT NULL AND (`SerialNumber` LIKE '%KR0150%' OR `SerialNumber` LIKE '%KR0350%') AND YEAR(TopUpDate) = '{$year->Year}'")
+                                ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate)  as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
+                $simtopup50 = DB::table('m_inventory')
+                                ->whereRaw("TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR0450%' AND YEAR(TopUpDate) = '{$year->Year}'")
+                                ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate)  as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
+
+                if ($simtopup300 != null) {
+                    foreach ($simtopup300 as $sim) {
+                        if (!isset($data['Voc300']))
+                            $data['Voc300'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $sim->month - 1) {
+                                $data['Voc300'][$i] += $sim->Counter;
+                            }
+                        }
+                    }
+                }
+                if ($simtopup100 != null) {
+                    foreach ($simtopup100 as $sim) {
+                        if (!isset($data['Voc100']))
+                            $data['Voc100'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $sim->month - 1) {
+                                $data['Voc100'][$i] += $sim->Counter;
+                            }
+                        }
+                    }
+                }
+                if ($simtopup50 != null) {
+                    foreach ($simtopup50 as $sim) {
+                        if (!isset($data['Voc50']))
+                            $data['Voc50'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $sim->month - 1) {
+                                $data['Voc50'][$i] += $sim->Counter;
                             }
                         }
                     }
