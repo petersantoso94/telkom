@@ -3481,7 +3481,7 @@ class InventoryController extends BaseController {
 
     static function exportExcelWeeklyDashboard() {
         $date = Input::get("argyear");
-//        $date = "2018-05-21";
+        $date = "2018-04-15";
         $year = explode("-", $date)[0];
         $month = explode("-", $date)[1];
         $day = explode("-", $date)[2];
@@ -3491,6 +3491,9 @@ class InventoryController extends BaseController {
         }
         $last_year = $year;
         $last_month = $month - 1;
+        $last_day = $day-1;
+        if($day === '1')
+            $last_day = $day;
         if ($month === "01" || $month === "1") {
             $last_year = $year - 1;
             $last_month = 12;
@@ -3507,30 +3510,31 @@ class InventoryController extends BaseController {
         $writer->addRow($myArr); // add a row at a time
 
         $data = array();
-        $all_ivr = Stats::where('Year', $year)->where('Month', $month)->whereRaw('Status LIKE \'%Churn%\'')->get();
+        $all_ivr = Inventory::whereRaw("ChurnDate IS NOT NULL AND YEAR(ChurnDate) LIKE '{$year}' AND MONTH(ChurnDate) LIKE '{$month}' AND DAY(ChurnDate) >= '1' AND DAY(ChurnDate) <= '{$day}'")->select(DB::raw("COUNT(MSISDN) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['churn'][0] = $all_ivr[0]->Counter;
         else {
             $data['churn'][0] = 1;
         }
-        $all_ivr = Stats::where('Year', $last_year)->where('Month', $last_month)->whereRaw('Status LIKE \'%Churn%\'')->get();
+        $all_ivr = Inventory::whereRaw("ChurnDate IS NOT NULL AND YEAR(ChurnDate) LIKE '{$year}' AND MONTH(ChurnDate) LIKE '{$last_month}' AND DAY(ChurnDate) >= '1' AND DAY(ChurnDate) <= '{$last_day}'")->select(DB::raw("COUNT(MSISDN) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['churn'][1] = $all_ivr[0]->Counter;
         else {
             $data['churn'][1] = 1;
         }
-        $all_ivr = Stats::where('Year', $year)->where('Month', $month)->whereRaw('Status LIKE \'%Activation%\'')->get();
+        $all_ivr = Inventory::whereRaw("ActivationDate IS NOT NULL AND YEAR(ActivationDate) LIKE '{$year}' AND MONTH(ActivationDate) LIKE '{$month}' AND DAY(ActivationDate) >= '1' AND DAY(ActivationDate) <= '{$day}'")->select(DB::raw("COUNT(MSISDN) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['act'][0] = $all_ivr[0]->Counter;
         else {
             $data['act'][0] = 1;
         }
-        $all_ivr = Stats::where('Year', $last_year)->where('Month', $last_month)->whereRaw('Status LIKE \'%Activation%\'')->get();
+        $all_ivr = Inventory::whereRaw("ActivationDate IS NOT NULL AND YEAR(ActivationDate) LIKE '{$year}' AND MONTH(ActivationDate) LIKE '{$month}' AND DAY(ActivationDate) >= '1' AND DAY(ActivationDate) <= '{$last_day}'")->select(DB::raw("COUNT(MSISDN) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['act'][1] = $all_ivr[0]->Counter;
         else {
             $data['act'][1] = 1;
         }
+        dd($data);
         //total process
         $data['churn'][2] = round((($data['churn'][0] - $data['churn'][1]) / $data['churn'][0]) * 100, 2);
         $data['act'][2] = round((($data['act'][0] - $data['act'][1]) / $data['act'][0]) * 100, 2);
