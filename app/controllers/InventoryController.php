@@ -395,7 +395,7 @@ class InventoryController extends BaseController {
                     $check_msisdn = [];
                     $ids = $arr_msisdn;
                     $ids = implode("','", $ids);
-                    $right_msisdn = DB::select("SELECT MSISDN FROM `m_inventory` WHERE `ChurnDate` BETWEEN '2018-05-01' AND '2018-05-20'");
+                    $right_msisdn = DB::select("SELECT SerialNumber FROM `m_inventory`");
                     foreach ($right_msisdn as $msisdn) {
                         $check_msisdn[] = $msisdn->MSISDN;
                     }
@@ -405,6 +405,7 @@ class InventoryController extends BaseController {
                 }
             }
         }
+        return View::make('insertinventory')->withPage('insert inventory');
     }
 
     public function showInsertInventory33() {
@@ -4323,7 +4324,7 @@ class InventoryController extends BaseController {
             $write_array[$data->SubAgent]['Productive'][$month - 1] = $data->count;
         }
         foreach ($write_array as $key => $data) {
-            $myArr = array($key, $data["Activation"][0], $data["Productive"][0], $data["Topup"][0], $data["Activation"][1], $data["Productive"][1], $data["Topup"][2], $data["Activation"][3], $data["Productive"][3], $data["Topup"][3]
+            $myArr = array($key, $data["Activation"][0], $data["Productive"][0], $data["Topup"][0], $data["Activation"][1], $data["Productive"][1], $data["Topup"][1], $data["Activation"][2], $data["Productive"][2], $data["Topup"][2], $data["Activation"][3], $data["Productive"][3], $data["Topup"][3]
                 , $data["Activation"][4], $data["Productive"][4], $data["Topup"][4], $data["Activation"][5], $data["Productive"][5], $data["Topup"][5], $data["Activation"][6], $data["Productive"][6], $data["Topup"][6]
                 , $data["Activation"][7], $data["Productive"][7], $data["Topup"][7], $data["Activation"][8], $data["Productive"][8], $data["Topup"][8], $data["Activation"][9], $data["Productive"][9], $data["Topup"][9]
                 , $data["Activation"][10], $data["Productive"][10], $data["Topup"][10], $data["Activation"][11], $data["Productive"][11], $data["Topup"][11]);
