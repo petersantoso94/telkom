@@ -3485,6 +3485,7 @@ class InventoryController extends BaseController {
         $year = explode("-", $date)[0];
         $month = explode("-", $date)[1];
         $day = explode("-", $date)[2];
+        $day = $day - 1;
 
         if (substr($month, 0, 1) === "0") {
             $month = substr($month, 1, 1);
