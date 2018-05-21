@@ -6221,7 +6221,8 @@ class InventoryController extends BaseController {
                 array('db' => 'LastWarehouse', 'dt' => 6),
                 array('db' => 'Date', 'dt' => 7),
                 array('db' => 'MSISDN', 'dt' => 8),
-                array('db' => 'SerialNumber', 'dt' => 9, 'formatter' => function( $d, $row ) {
+                array('db' => 'Remark', 'dt' => 9),
+                array('db' => 'SerialNumber', 'dt' => 10, 'formatter' => function( $d, $row ) {
                         $data = Inventory::find($d);
                         if ($data->Missing == 0) {
                             $hist = History::find($data->LastStatusID);
