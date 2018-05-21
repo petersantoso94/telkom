@@ -1311,7 +1311,7 @@
                                     //                        }
                                     //                        ctx.fillText(dataString, position.x, position.y +((canvas_height -position.y )/2)+ (fontSize / 2) + padding - (canvas_height - y_height));
                                     if (dataString != '0') {
-                                        if (meta.controller.chart.canvas.id == 'barChart_voc_topup' || meta.controller.chart.canvas.id == 'barChart_evoc_topup') {
+                                        if (meta.controller.chart.canvas.id == 'barChart_voc_topup' || meta.controller.chart.canvas.id == 'barChart_evoc_topup' || meta.controller.chart.canvas.id == 'barChart_unique_subs_topup') {
                                             if (dataset.data[index] > 300) {
                                                 ctx.fillText(dataString, element._model.x, (element._model.y + padding));
                                             }
