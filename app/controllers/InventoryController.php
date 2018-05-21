@@ -3481,7 +3481,7 @@ class InventoryController extends BaseController {
 
     static function exportExcelWeeklyDashboard() {
         $date = Input::get("argyear");
-        $date = "2018-04-15";
+//        $date = "2018-04-15";
         $year = explode("-", $date)[0];
         $month = explode("-", $date)[1];
         $day = explode("-", $date)[2];
@@ -3502,7 +3502,7 @@ class InventoryController extends BaseController {
         $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
         $filePath = public_path() . "/Weekly_Performance_" . $filenames . ".xlsx";
         $writer->openToFile($filePath);
-        $myArr = array($month . "-" . $year . ' vs ' . $last_month . "-" . $last_year);
+        $myArr = array($day."-".$month . "-" . $year . ' vs ' .$day."-". $last_month . "-" . $year);
         $writer->addRow($myArr); // add a row at a time
         $myArr = array("Peformance Report Per Week (Best on Current Date Transaction Month Over Month)");
         $writer->addRow($myArr); // add a row at a time
@@ -3516,7 +3516,7 @@ class InventoryController extends BaseController {
         else {
             $data['churn'][0] = 1;
         }
-        $all_ivr = Inventory::whereRaw("ChurnDate IS NOT NULL AND YEAR(ChurnDate) LIKE '{$year}' AND MONTH(ChurnDate) LIKE '{$last_month}' AND DAY(ChurnDate) >= '1' AND DAY(ChurnDate) <= '{$last_day}'")->select(DB::raw("COUNT(MSISDN) as Counter"))->get();
+        $all_ivr = Inventory::whereRaw("ChurnDate IS NOT NULL AND YEAR(ChurnDate) LIKE '{$year}' AND MONTH(ChurnDate) LIKE '{$last_month}' AND DAY(ChurnDate) >= '1' AND DAY(ChurnDate) <= '{$day}'")->select(DB::raw("COUNT(MSISDN) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['churn'][1] = $all_ivr[0]->Counter;
         else {
@@ -3528,13 +3528,12 @@ class InventoryController extends BaseController {
         else {
             $data['act'][0] = 1;
         }
-        $all_ivr = Inventory::whereRaw("ActivationDate IS NOT NULL AND YEAR(ActivationDate) LIKE '{$year}' AND MONTH(ActivationDate) LIKE '{$month}' AND DAY(ActivationDate) >= '1' AND DAY(ActivationDate) <= '{$last_day}'")->select(DB::raw("COUNT(MSISDN) as Counter"))->get();
+        $all_ivr = Inventory::whereRaw("ActivationDate IS NOT NULL AND YEAR(ActivationDate) LIKE '{$year}' AND MONTH(ActivationDate) LIKE '{$month}' AND DAY(ActivationDate) >= '1' AND DAY(ActivationDate) <= '{$day}'")->select(DB::raw("COUNT(MSISDN) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['act'][1] = $all_ivr[0]->Counter;
         else {
             $data['act'][1] = 1;
         }
-        dd($data);
         //total process
         $data['churn'][2] = round((($data['churn'][0] - $data['churn'][1]) / $data['churn'][0]) * 100, 2);
         $data['act'][2] = round((($data['act'][0] - $data['act'][1]) / $data['act'][0]) * 100, 2);
@@ -3554,35 +3553,26 @@ class InventoryController extends BaseController {
         $writer->addRow(['']);
 
         $data = array();
-        $all_ivr = Stats::where('Year', $year)->where('Month', $month)->whereRaw('Status LIKE \'%topup%\'')->get();
+        $all_ivr = Inventory::whereRaw("TopUpDate IS NOT NULL AND YEAR(TopUpDate) LIKE '{$year}' AND MONTH(TopUpDate) LIKE '{$month}' AND DAY(TopUpDate) >= '1' AND DAY(TopUpDate) <= '{$day}' AND (`SerialNumber` LIKE '%KR0250%')")->select(DB::raw("COUNT(SerialNumber) as Counter"))->get();
         // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
         $data['PH300'][0] = 1;
         $data['E300'][0] = 1;
         $data['PH300'][1] = 1;
         $data['E300'][1] = 1;
-        if ($all_ivr != null) {
-            foreach ($all_ivr as $ivr) {
-                $stats = '';
-                $temp_stat = $ivr->Status;
-                if (substr($temp_stat, 0, 1) == '2') {
-                    $data['PH300'][0] = $ivr->Counter;
-                } else if (substr($temp_stat, 0, 1) == '5') {
-                    $data['E300'][0] = $ivr->Counter;
-                }
-            }
-        }
-        $all_ivr = Stats::where('Year', $last_year)->where('Month', $last_month)->whereRaw('Status LIKE \'%topup%\'')->get();
-        if ($all_ivr != null) {
-            foreach ($all_ivr as $ivr) {
-                $stats = '';
-                $temp_stat = $ivr->Status;
-                if (substr($temp_stat, 0, 1) == '2') {
-                    $data['PH300'][1] = $ivr->Counter;
-                } else if (substr($temp_stat, 0, 1) == '5') {
-                    $data['E300'][1] = $ivr->Counter;
-                }
-            }
-        }
+        if (count($all_ivr) > 0)
+            $data['E300'][0] = $all_ivr[0]->Counter;
+        
+        $all_ivr = Inventory::whereRaw("TopUpDate IS NOT NULL AND YEAR(TopUpDate) LIKE '{$year}' AND MONTH(TopUpDate) LIKE '{$month}' AND DAY(TopUpDate) >= '1' AND DAY(TopUpDate) <= '{$day}' AND (`SerialNumber` LIKE '%KR1850%')")->select(DB::raw("COUNT(SerialNumber) as Counter"))->get();
+        if (count($all_ivr) > 0)
+            $data['PH300'][0] = $all_ivr[0]->Counter;
+        
+        $all_ivr = Inventory::whereRaw("TopUpDate IS NOT NULL AND YEAR(TopUpDate) LIKE '{$year}' AND MONTH(TopUpDate) LIKE '{$last_month}' AND DAY(TopUpDate) >= '1' AND DAY(TopUpDate) <= '{$day}' AND (`SerialNumber` LIKE '%KR1850%')")->select(DB::raw("COUNT(SerialNumber) as Counter"))->get();
+        if (count($all_ivr) > 0)
+            $data['PH300'][1] = $all_ivr[0]->Counter;
+        
+        $all_ivr = Inventory::whereRaw("TopUpDate IS NOT NULL AND YEAR(TopUpDate) LIKE '{$year}' AND MONTH(TopUpDate) LIKE '{$last_month}' AND DAY(TopUpDate) >= '1' AND DAY(TopUpDate) <= '{$day}' AND (`SerialNumber` LIKE '%KR0250%')")->select(DB::raw("COUNT(SerialNumber) as Counter"))->get();
+        if (count($all_ivr) > 0)
+            $data['E300'][1] = $all_ivr[0]->Counter;
         //total process
         $data['PH300'][2] = round((($data['PH300'][0] - $data['PH300'][1]) / $data['PH300'][0]) * 100, 2);
         $data['E300'][2] = round((($data['E300'][0] - $data['E300'][1]) / $data['E300'][0]) * 100, 2);
@@ -3606,30 +3596,43 @@ class InventoryController extends BaseController {
         $data['1GB'][1] = 1;
         $data['2GB'][1] = 1;
         $data['30DAY'][1] = 1;
-        $all_ivr = Stats::where('Year', $year)->where('Month', $month)->whereRaw('Status > 10')->get();
-        if ($all_ivr != null) {
-            foreach ($all_ivr as $ivr) {
-                if ($ivr->Status == '180') {
-                    $data['1GB'][0] = $ivr->Counter;
-                } else if ($ivr->Status == '300') {
-                    $data['2GB'][0] = $ivr->Counter;
-                } else {
-                    $data['30DAY'][0] = $ivr->Counter;
-                }
-            }
-        }
-        $all_ivr = Stats::where('Year', $last_year)->where('Month', $last_month)->whereRaw('Status > 10')->get();
-        if ($all_ivr != null) {
-            foreach ($all_ivr as $ivr) {
-                if ($ivr->Status == '180') {
-                    $data['1GB'][1] = $ivr->Counter;
-                } else if ($ivr->Status == '300') {
-                    $data['2GB'][1] = $ivr->Counter;
-                } else {
-                    $data['30DAY'][1] = $ivr->Counter;
-                }
-            }
-        }
+        
+        $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
+        . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '180'")
+                ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+        if (count($all_ivr) > 0)
+            $data['1GB'][0] = $all_ivr[0]->Counter;
+        
+        $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
+        . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '300'")
+                ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+        if (count($all_ivr) > 0)
+            $data['2GB'][0] = $all_ivr[0]->Counter;
+        
+        $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
+        . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300")
+                ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+        if (count($all_ivr) > 0)
+            $data['30DAY'][0] = $all_ivr[0]->Counter;
+        
+        $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
+        . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '180'")
+                ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+        if (count($all_ivr) > 0)
+            $data['1GB'][1] = $all_ivr[0]->Counter;
+        
+        $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
+        . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '300'")
+                ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+        if (count($all_ivr) > 0)
+            $data['2GB'][1] = $all_ivr[0]->Counter;
+        
+        $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
+        . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300")
+                ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+        if (count($all_ivr) > 0)
+            $data['30DAY'][1] = $all_ivr[0]->Counter;
+        
         //total process
         $data['1GB'][2] = round((($data['1GB'][0] - $data['1GB'][1]) / $data['1GB'][0]) * 100, 2);
         $data['2GB'][2] = round((($data['2GB'][0] - $data['2GB'][1]) / $data['2GB'][0]) * 100, 2);
@@ -3686,7 +3689,7 @@ class InventoryController extends BaseController {
         if (strlen($last_month) === 1) {
             $tempmonth = "0" . $last_month;
         }
-        $all_ivr = Stats::where('Year', $last_year)->where('Month', $tempmonth)->whereRaw('Status LIKE \'%_sum%\'')->get();
+        $all_ivr = Stats::where('Year', $year)->where('Month', $tempmonth)->whereRaw('Status LIKE \'%_sum%\'')->get();
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
                 $temp_stat = $ivr->Status;
