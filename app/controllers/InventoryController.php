@@ -369,6 +369,55 @@ class InventoryController extends BaseController {
                     Input::file('sample_file')->move($destination, $filename);
                     $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
                     $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+                    $reader->open($filePath);
+                    $counter = 0;
+                    $arr_msisdn = [];
+                    $arr_buydate = [];
+                    $arr_buy = [];
+                    foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
+                        if ($sheetIndex == 1)
+                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                if ($rowNumber > 2) {
+                                    // do stuff with the row
+                                    $msisdn = (string) $value[0];
+
+                                    if ($msisdn != '' && $msisdn != null) {
+                                        $msisdn = str_replace('\'', '', $msisdn);
+                                        if (substr($msisdn, 0, 1) === '0') {
+                                            $msisdn = substr($msisdn, 1);
+                                        }
+                                        array_push($arr_msisdn, $msisdn);
+                                    }
+                                }
+                            }
+                    }
+                    $reader->close();
+                    $check_msisdn = [];
+                    $ids = $arr_msisdn;
+                    $ids = implode("','", $ids);
+                    $right_msisdn = DB::select("SELECT MSISDN FROM `m_inventory` WHERE `ChurnDate` BETWEEN '2018-05-01' AND '2018-05-20'");
+                    foreach ($right_msisdn as $msisdn) {
+                        $check_msisdn[] = $msisdn->MSISDN;
+                    }
+                    $not_found = array_diff($arr_msisdn, $check_msisdn);
+                    $not_found = implode(",", $not_found);
+                    dd($not_found);
+                }
+            }
+        }
+    }
+
+    public function showInsertInventory33() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = Input::file('sample_file');
+            if ($input != '') {
+                if (Input::hasFile('sample_file')) {
+                    $destination = base_path() . '/uploaded_file/';
+                    $extention = Input::file('sample_file')->getClientOriginalExtension();
+                    $filename = 'temp.' . $extention;
+                    Input::file('sample_file')->move($destination, $filename);
+                    $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                    $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
 //$reader = ReaderFactory::create(Type::CSV); // for CSV files
 //$reader = ReaderFactory::create(Type::ODS); // for ODS files
 
@@ -3492,8 +3541,8 @@ class InventoryController extends BaseController {
         }
         $last_year = $year;
         $last_month = $month - 1;
-        $last_day = $day-1;
-        if($day === '1')
+        $last_day = $day - 1;
+        if ($day === '1')
             $last_day = $day;
         if ($month === "01" || $month === "1") {
             $last_year = $year - 1;
@@ -3503,7 +3552,7 @@ class InventoryController extends BaseController {
         $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
         $filePath = public_path() . "/Weekly_Performance_" . $filenames . ".xlsx";
         $writer->openToFile($filePath);
-        $myArr = array($day."-".$month . "-" . $year . ' vs ' .$day."-". $last_month . "-" . $year);
+        $myArr = array($day . "-" . $month . "-" . $year . ' vs ' . $day . "-" . $last_month . "-" . $year);
         $writer->addRow($myArr); // add a row at a time
         $myArr = array("Peformance Report Per Week (Best on Current Date Transaction Month Over Month)");
         $writer->addRow($myArr); // add a row at a time
@@ -3562,15 +3611,15 @@ class InventoryController extends BaseController {
         $data['E300'][1] = 1;
         if (count($all_ivr) > 0)
             $data['E300'][0] = $all_ivr[0]->Counter;
-        
+
         $all_ivr = Inventory::whereRaw("TopUpDate IS NOT NULL AND YEAR(TopUpDate) LIKE '{$year}' AND MONTH(TopUpDate) LIKE '{$month}' AND DAY(TopUpDate) >= '1' AND DAY(TopUpDate) <= '{$day}' AND (`SerialNumber` LIKE '%KR1850%')")->select(DB::raw("COUNT(SerialNumber) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['PH300'][0] = $all_ivr[0]->Counter;
-        
+
         $all_ivr = Inventory::whereRaw("TopUpDate IS NOT NULL AND YEAR(TopUpDate) LIKE '{$year}' AND MONTH(TopUpDate) LIKE '{$last_month}' AND DAY(TopUpDate) >= '1' AND DAY(TopUpDate) <= '{$day}' AND (`SerialNumber` LIKE '%KR1850%')")->select(DB::raw("COUNT(SerialNumber) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['PH300'][1] = $all_ivr[0]->Counter;
-        
+
         $all_ivr = Inventory::whereRaw("TopUpDate IS NOT NULL AND YEAR(TopUpDate) LIKE '{$year}' AND MONTH(TopUpDate) LIKE '{$last_month}' AND DAY(TopUpDate) >= '1' AND DAY(TopUpDate) <= '{$day}' AND (`SerialNumber` LIKE '%KR0250%')")->select(DB::raw("COUNT(SerialNumber) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['E300'][1] = $all_ivr[0]->Counter;
@@ -3597,43 +3646,43 @@ class InventoryController extends BaseController {
         $data['1GB'][1] = 1;
         $data['2GB'][1] = 1;
         $data['30DAY'][1] = 1;
-        
+
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
-        . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '180'")
-                ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+                                . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '180'")
+                        ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['1GB'][0] = $all_ivr[0]->Counter;
-        
+
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
-        . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '300'")
-                ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+                                . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '300'")
+                        ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['2GB'][0] = $all_ivr[0]->Counter;
-        
+
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
-        . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300")
-                ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+                                . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300")
+                        ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['30DAY'][0] = $all_ivr[0]->Counter;
-        
+
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
-        . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '180'")
-                ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+                                . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '180'")
+                        ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['1GB'][1] = $all_ivr[0]->Counter;
-        
+
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
-        . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '300'")
-                ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+                                . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '300'")
+                        ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['2GB'][1] = $all_ivr[0]->Counter;
-        
+
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
-        . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300")
-                ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+                                . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300")
+                        ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['30DAY'][1] = $all_ivr[0]->Counter;
-        
+
         //total process
         $data['1GB'][2] = round((($data['1GB'][0] - $data['1GB'][1]) / $data['1GB'][0]) * 100, 2);
         $data['2GB'][2] = round((($data['2GB'][0] - $data['2GB'][1]) / $data['2GB'][0]) * 100, 2);
