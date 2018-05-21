@@ -3529,7 +3529,7 @@ class InventoryController extends BaseController {
         else {
             $data['act'][0] = 1;
         }
-        $all_ivr = Inventory::whereRaw("ActivationDate IS NOT NULL AND YEAR(ActivationDate) LIKE '{$year}' AND MONTH(ActivationDate) LIKE '{$month}' AND DAY(ActivationDate) >= '1' AND DAY(ActivationDate) <= '{$day}'")->select(DB::raw("COUNT(MSISDN) as Counter"))->get();
+        $all_ivr = Inventory::whereRaw("ActivationDate IS NOT NULL AND YEAR(ActivationDate) LIKE '{$year}' AND MONTH(ActivationDate) LIKE '{$last_month}' AND DAY(ActivationDate) >= '1' AND DAY(ActivationDate) <= '{$day}'")->select(DB::raw("COUNT(MSISDN) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['act'][1] = $all_ivr[0]->Counter;
         else {
