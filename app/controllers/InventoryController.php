@@ -834,6 +834,7 @@ class InventoryController extends BaseController {
                     }
                 }
             }
+            $reader->close();
             return View::make('returninventory')->withResponse('Success')->withPage('inventory return')
                             ->withNumber($counter)->withNumberf($counterfail)->withFail($nodata)->withSucc($successins)->withNoav($notavail);
         }
@@ -1170,7 +1171,7 @@ class InventoryController extends BaseController {
                             $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
                             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
                             $writer->save('./uploaded_file/' . 'temp.xlsx');
-                            $writer->close();
+                            
                             $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                             $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
                             $reader->setShouldFormatDates(true);
@@ -1630,7 +1631,7 @@ class InventoryController extends BaseController {
                         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
                         $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
                         $writer->save('./uploaded_file/' . 'temp.xlsx');
-                        $writer->close();
+
                         $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
 //$reader = ReaderFactory::create(Type::CSV); // for CSV files
