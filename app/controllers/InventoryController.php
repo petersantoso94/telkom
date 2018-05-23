@@ -48,112 +48,113 @@ class InventoryController extends BaseController {
                         $id_counter = 1;
                     else
                         $id_counter = $check_counter->ID + 1;
-                    foreach ($reader->getSheetIterator() as $sheet) {
-                        foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                            if ($rowNumber > 1) {
-                                if ($value[1] != null && $value[1] != '') {
-                                    // do stuff with the row
-                                    $type = 1;
-                                    $wh = 'TELIN TAIWAN';
-                                    $sn = (string) $value[1];
-                                    $sn = strtoupper($sn);
-                                    $remark_obj = $value[9];
+                    foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
+                        if ($sheetIndex == 1)
+                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                if ($rowNumber > 1) {
+                                    if ($value[1] != null && $value[1] != '') {
+                                        // do stuff with the row
+                                        $type = 1;
+                                        $wh = 'TELIN TAIWAN';
+                                        $sn = (string) $value[1];
+                                        $sn = strtoupper($sn);
+                                        $remark_obj = $value[9];
 
-                                    if (is_object($remark_obj)) {
-                                        $remark_obj = $remark_obj->format('Y-m-d');
-                                    }
-                                    array_push($arr_sn, $sn);
-                                    array_push($arr_msisdn, $value[2]);
-                                    array_push($arr_shipinprice, $value[12]);
-                                    if (strtolower($value[14]) == '4g') {
-                                        $type = 4;
-                                    }
-                                    array_push($arr_type, $type);
-                                    if ($value[4] != null && $value[4] != '') {
-                                        $wh = $value[4];
-                                    }
-                                    array_push($arr_lastwarehouse, $wh);
-                                    array_push($arr_remark, $remark_obj);
-
-                                    //shipin
-                                    $status = 0;
-                                    array_push($arr_sn_hist, $sn);
-                                    array_push($arr_id_hist, $id_counter);
-                                    $date_shipin = $value[3];
-                                    if (is_object($date_shipin)) {
-                                        $date_shipin = $date_shipin->format('Y-m-d');
-                                    } else {
-                                        $date_shipin = strtotime($date_shipin);
-                                        $date_shipin = date('Y-m-d', $date_shipin);
-                                    }
-                                    array_push($arr_hist_date, $date_shipin);
-                                    array_push($arr_price_hist, $value[12]);
-                                    array_push($arr_remark_hist, $remark_obj);
-                                    $shipinNumber = $date_shipin . '/SI/TST001';
-                                    array_push($arr_shipoutnumber_hist, $shipinNumber);
-                                    array_push($arr_status_hist, $status);
-                                    array_push($arr_subagent_hist, '-');
-                                    array_push($arr_wh_hist, $wh);
-
-
-                                    //there is shipout
-                                    if ($value[7] != null && $value[7] != '') {
-                                        $id_counter++;
-                                        $status = 2;
-                                        $tempSA = '';
-                                        $tempSN = '/SO/';
-                                        if ($value[11] != null) {
-                                            $status = 4;
-                                            $tempSN = '/CO/';
+                                        if (is_object($remark_obj)) {
+                                            $remark_obj = $remark_obj->format('Y-m-d');
                                         }
-                                        $subagent = $value[6];
-                                        if ($subagent != null && $subagent != '') {
-                                            $temp_sub = $value[8];
-                                            if ($temp_sub != null && $temp_sub != '') {
-                                                $temp_sub2 = explode(' ', $temp_sub)[0];
-                                                if (strtolower($subagent) != strtolower($temp_sub2)) {
-                                                    $subagent .= ' ' . $temp_sub;
-                                                } else {
-                                                    if (isset(explode(' ', $temp_sub)[1]))
-                                                        $subagent .= ' ' . explode(' ', $temp_sub)[1];
+                                        array_push($arr_sn, $sn);
+                                        array_push($arr_msisdn, $value[2]);
+                                        array_push($arr_shipinprice, $value[12]);
+                                        if (strtolower($value[14]) == '4g') {
+                                            $type = 4;
+                                        }
+                                        array_push($arr_type, $type);
+                                        if ($value[4] != null && $value[4] != '') {
+                                            $wh = $value[4];
+                                        }
+                                        array_push($arr_lastwarehouse, $wh);
+                                        array_push($arr_remark, $remark_obj);
+
+                                        //shipin
+                                        $status = 0;
+                                        array_push($arr_sn_hist, $sn);
+                                        array_push($arr_id_hist, $id_counter);
+                                        $date_shipin = $value[3];
+                                        if (is_object($date_shipin)) {
+                                            $date_shipin = $date_shipin->format('Y-m-d');
+                                        } else {
+                                            $date_shipin = strtotime($date_shipin);
+                                            $date_shipin = date('Y-m-d', $date_shipin);
+                                        }
+                                        array_push($arr_hist_date, $date_shipin);
+                                        array_push($arr_price_hist, $value[12]);
+                                        array_push($arr_remark_hist, $remark_obj);
+                                        $shipinNumber = $date_shipin . '/SI/TST001';
+                                        array_push($arr_shipoutnumber_hist, $shipinNumber);
+                                        array_push($arr_status_hist, $status);
+                                        array_push($arr_subagent_hist, '-');
+                                        array_push($arr_wh_hist, $wh);
+
+
+                                        //there is shipout
+                                        if ($value[7] != null && $value[7] != '') {
+                                            $id_counter++;
+                                            $status = 2;
+                                            $tempSA = '';
+                                            $tempSN = '/SO/';
+                                            if ($value[11] != null) {
+                                                $status = 4;
+                                                $tempSN = '/CO/';
+                                            }
+                                            $subagent = $value[6];
+                                            if ($subagent != null && $subagent != '') {
+                                                $temp_sub = $value[8];
+                                                if ($temp_sub != null && $temp_sub != '') {
+                                                    $temp_sub2 = explode(' ', $temp_sub)[0];
+                                                    if (strtolower($subagent) != strtolower($temp_sub2)) {
+                                                        $subagent .= ' ' . $temp_sub;
+                                                    } else {
+                                                        if (isset(explode(' ', $temp_sub)[1]))
+                                                            $subagent .= ' ' . explode(' ', $temp_sub)[1];
+                                                    }
+                                                }
+                                                $tempSA = substr(explode(' ', $subagent)[0], 0, 3);
+                                                if (strtolower(explode(' ', $subagent)[0]) == 'asprof') {
+                                                    $tempSA = 'ASF';
+                                                } else if (strtolower(explode(' ', $subagent)[0]) == 'asprot') {
+                                                    $tempSA = 'AST';
                                                 }
                                             }
-                                            $tempSA = substr(explode(' ', $subagent)[0], 0, 3);
-                                            if (strtolower(explode(' ', $subagent)[0]) == 'asprof') {
-                                                $tempSA = 'ASF';
-                                            } else if (strtolower(explode(' ', $subagent)[0]) == 'asprot') {
-                                                $tempSA = 'AST';
-                                            }
-                                        }
 
-                                        array_push($arr_sn_hist, $sn);
-                                        array_push($arr_status_hist, $status);
-                                        array_push($arr_laststatus_hist, $status);
-                                        array_push($arr_id_hist, $id_counter);
-                                        array_push($arr_price_hist, $value[13]);
-                                        $date_shipout = $value[7];
-                                        if (is_object($date_shipout)) {
-                                            $date_shipout = $date_shipout->format('Y-m-d');
-                                        } else {
-                                            $date_shipout = strtotime($date_shipout);
-                                            $date_shipout = date('Y-m-d', $date_shipout);
+                                            array_push($arr_sn_hist, $sn);
+                                            array_push($arr_status_hist, $status);
+                                            array_push($arr_laststatus_hist, $status);
+                                            array_push($arr_id_hist, $id_counter);
+                                            array_push($arr_price_hist, $value[13]);
+                                            $date_shipout = $value[7];
+                                            if (is_object($date_shipout)) {
+                                                $date_shipout = $date_shipout->format('Y-m-d');
+                                            } else {
+                                                $date_shipout = strtotime($date_shipout);
+                                                $date_shipout = date('Y-m-d', $date_shipout);
+                                            }
+                                            $statusnum = $date_shipout . $tempSN;
+                                            $statusnum .= $tempSA;
+                                            $statusnum .= '001';
+                                            array_push($arr_shipoutnumber_hist, $statusnum);
+                                            array_push($arr_hist_date, $date_shipout);
+                                            array_push($arr_remark_hist, $remark_obj);
+                                            array_push($arr_subagent_hist, $subagent);
+                                            array_push($arr_wh_hist, $wh);
                                         }
-                                        $statusnum = $date_shipout . $tempSN;
-                                        $statusnum .= $tempSA;
-                                        $statusnum .= '001';
-                                        array_push($arr_shipoutnumber_hist, $statusnum);
-                                        array_push($arr_hist_date, $date_shipout);
-                                        array_push($arr_remark_hist, $remark_obj);
-                                        array_push($arr_subagent_hist, $subagent);
-                                        array_push($arr_wh_hist, $wh);
+                                        array_push($arr_hist_status, $status);
+                                        array_push($arr_laststatus_hist, $status);
+                                        array_push($arr_laststatusid, $id_counter);
+                                        $id_counter++;
                                     }
-                                    array_push($arr_hist_status, $status);
-                                    array_push($arr_laststatus_hist, $status);
-                                    array_push($arr_laststatusid, $id_counter);
-                                    $id_counter++;
                                 }
                             }
-                        }
                     }
                     $reader->close();
                     $for_raw = '';
@@ -223,112 +224,113 @@ class InventoryController extends BaseController {
                         $id_counter = 1;
                     else
                         $id_counter = $check_counter->ID + 1;
-                    foreach ($reader->getSheetIterator() as $sheet) {
-                        foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                            if ($rowNumber > 1) {
-                                if ($value[0] != null && $value[0] != '') {
-                                    // do stuff with the row
-                                    $type = 2;
-                                    $wh = 'TELIN TAIWAN';
-                                    $sn = (string) $value[0];
-                                    $sn = strtoupper($sn);
+                    foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
+                        if ($sheetIndex == 1)
+                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                if ($rowNumber > 1) {
+                                    if ($value[0] != null && $value[0] != '') {
+                                        // do stuff with the row
+                                        $type = 2;
+                                        $wh = 'TELIN TAIWAN';
+                                        $sn = (string) $value[0];
+                                        $sn = strtoupper($sn);
 
-                                    $remark_obj = $value[9];
+                                        $remark_obj = $value[9];
 
-                                    if (is_object($remark_obj)) {
-                                        $remark_obj = $remark_obj->format('Y-m-d');
-                                    }
-                                    array_push($arr_sn, $sn);
-                                    array_push($arr_shipinprice, $value[13]);
-                                    if (substr($value[0], 0, 6) == 'KR0350' || substr($value[0], 0, 6) == 'KR1850') {
-                                        $type = 3;
-                                    }
-                                    array_push($arr_type, $type);
-                                    if ($value[4] != null && $value[4] != '') {
-                                        $wh = $value[4];
-                                    }
-                                    array_push($arr_lastwarehouse, $wh);
-                                    array_push($arr_remark, $remark_obj);
-
-                                    //shipin
-                                    $status = 0;
-                                    array_push($arr_sn_hist, $sn);
-                                    array_push($arr_id_hist, $id_counter);
-                                    $date_shipin = $value[3];
-                                    if (is_object($date_shipin)) {
-                                        $date_shipin = $date_shipin->format('Y-m-d');
-                                    } else {
-                                        $date_shipin = strtotime($date_shipin);
-                                        $date_shipin = date('Y-m-d', $date_shipin);
-                                    }
-                                    array_push($arr_hist_date, $date_shipin);
-                                    array_push($arr_price_hist, $value[13]);
-                                    array_push($arr_remark_hist, $remark_obj);
-                                    $shipinNumber = $date_shipin . '/SI/TST001';
-                                    array_push($arr_shipoutnumber_hist, $shipinNumber);
-                                    array_push($arr_status_hist, $status);
-                                    array_push($arr_subagent_hist, '-');
-                                    array_push($arr_wh_hist, $wh);
-
-
-                                    //there is shipout
-                                    if ($value[7] != null && $value[7] != '') {
-                                        $id_counter++;
-                                        $status = 2;
-                                        $tempSA = '';
-                                        $tempSN = '/SO/';
-                                        if ($value[15] != null) {
-                                            $status = 4;
-                                            $tempSN = '/CO/';
+                                        if (is_object($remark_obj)) {
+                                            $remark_obj = $remark_obj->format('Y-m-d');
                                         }
-                                        $subagent = $value[6];
-                                        if ($subagent != null && $subagent != '') {
-                                            $temp_sub = $value[8];
-                                            if ($temp_sub != null && $temp_sub != '') {
-                                                $temp_sub2 = explode(' ', $temp_sub)[0];
-                                                if (strtolower($subagent) != strtolower($temp_sub2)) {
-                                                    $subagent .= ' ' . $temp_sub;
-                                                } else {
-                                                    if (isset(explode(' ', $temp_sub)[1]))
-                                                        $subagent .= ' ' . explode(' ', $temp_sub)[1];
+                                        array_push($arr_sn, $sn);
+                                        array_push($arr_shipinprice, $value[13]);
+                                        if (substr($value[0], 0, 6) == 'KR0350' || substr($value[0], 0, 6) == 'KR1850') {
+                                            $type = 3;
+                                        }
+                                        array_push($arr_type, $type);
+                                        if ($value[4] != null && $value[4] != '') {
+                                            $wh = $value[4];
+                                        }
+                                        array_push($arr_lastwarehouse, $wh);
+                                        array_push($arr_remark, $remark_obj);
+
+                                        //shipin
+                                        $status = 0;
+                                        array_push($arr_sn_hist, $sn);
+                                        array_push($arr_id_hist, $id_counter);
+                                        $date_shipin = $value[3];
+                                        if (is_object($date_shipin)) {
+                                            $date_shipin = $date_shipin->format('Y-m-d');
+                                        } else {
+                                            $date_shipin = strtotime($date_shipin);
+                                            $date_shipin = date('Y-m-d', $date_shipin);
+                                        }
+                                        array_push($arr_hist_date, $date_shipin);
+                                        array_push($arr_price_hist, $value[13]);
+                                        array_push($arr_remark_hist, $remark_obj);
+                                        $shipinNumber = $date_shipin . '/SI/TST001';
+                                        array_push($arr_shipoutnumber_hist, $shipinNumber);
+                                        array_push($arr_status_hist, $status);
+                                        array_push($arr_subagent_hist, '-');
+                                        array_push($arr_wh_hist, $wh);
+
+
+                                        //there is shipout
+                                        if ($value[7] != null && $value[7] != '') {
+                                            $id_counter++;
+                                            $status = 2;
+                                            $tempSA = '';
+                                            $tempSN = '/SO/';
+                                            if ($value[15] != null) {
+                                                $status = 4;
+                                                $tempSN = '/CO/';
+                                            }
+                                            $subagent = $value[6];
+                                            if ($subagent != null && $subagent != '') {
+                                                $temp_sub = $value[8];
+                                                if ($temp_sub != null && $temp_sub != '') {
+                                                    $temp_sub2 = explode(' ', $temp_sub)[0];
+                                                    if (strtolower($subagent) != strtolower($temp_sub2)) {
+                                                        $subagent .= ' ' . $temp_sub;
+                                                    } else {
+                                                        if (isset(explode(' ', $temp_sub)[1]))
+                                                            $subagent .= ' ' . explode(' ', $temp_sub)[1];
+                                                    }
+                                                }
+                                                $tempSA = substr(explode(' ', $subagent)[0], 0, 3);
+                                                if (strtolower(explode(' ', $subagent)[0]) == 'asprof') {
+                                                    $tempSA = 'ASF';
+                                                } else if (strtolower(explode(' ', $subagent)[0]) == 'asprot') {
+                                                    $tempSA = 'AST';
                                                 }
                                             }
-                                            $tempSA = substr(explode(' ', $subagent)[0], 0, 3);
-                                            if (strtolower(explode(' ', $subagent)[0]) == 'asprof') {
-                                                $tempSA = 'ASF';
-                                            } else if (strtolower(explode(' ', $subagent)[0]) == 'asprot') {
-                                                $tempSA = 'AST';
-                                            }
-                                        }
 
-                                        array_push($arr_sn_hist, $sn);
-                                        array_push($arr_status_hist, $status);
-                                        array_push($arr_laststatus_hist, $status);
-                                        array_push($arr_id_hist, $id_counter);
-                                        array_push($arr_price_hist, $value[14]);
-                                        $date_shipout = $value[7];
-                                        if (is_object($date_shipout)) {
-                                            $date_shipout = $date_shipout->format('Y-m-d');
-                                        } else {
-                                            $date_shipout = strtotime($date_shipout);
-                                            $date_shipout = date('Y-m-d', $date_shipout);
+                                            array_push($arr_sn_hist, $sn);
+                                            array_push($arr_status_hist, $status);
+                                            array_push($arr_laststatus_hist, $status);
+                                            array_push($arr_id_hist, $id_counter);
+                                            array_push($arr_price_hist, $value[14]);
+                                            $date_shipout = $value[7];
+                                            if (is_object($date_shipout)) {
+                                                $date_shipout = $date_shipout->format('Y-m-d');
+                                            } else {
+                                                $date_shipout = strtotime($date_shipout);
+                                                $date_shipout = date('Y-m-d', $date_shipout);
+                                            }
+                                            $statusnum = $date_shipout . $tempSN;
+                                            $statusnum .= $tempSA;
+                                            $statusnum .= '001';
+                                            array_push($arr_shipoutnumber_hist, $statusnum);
+                                            array_push($arr_hist_date, $date_shipout);
+                                            array_push($arr_remark_hist, $remark_obj);
+                                            array_push($arr_subagent_hist, $subagent);
+                                            array_push($arr_wh_hist, $wh);
                                         }
-                                        $statusnum = $date_shipout . $tempSN;
-                                        $statusnum .= $tempSA;
-                                        $statusnum .= '001';
-                                        array_push($arr_shipoutnumber_hist, $statusnum);
-                                        array_push($arr_hist_date, $date_shipout);
-                                        array_push($arr_remark_hist, $remark_obj);
-                                        array_push($arr_subagent_hist, $subagent);
-                                        array_push($arr_wh_hist, $wh);
+                                        array_push($arr_hist_status, $status);
+                                        array_push($arr_laststatus_hist, $status);
+                                        array_push($arr_laststatusid, $id_counter);
+                                        $id_counter++;
                                     }
-                                    array_push($arr_hist_status, $status);
-                                    array_push($arr_laststatus_hist, $status);
-                                    array_push($arr_laststatusid, $id_counter);
-                                    $id_counter++;
                                 }
                             }
-                        }
                     }
                     $reader->close();
                     $for_raw = '';
@@ -1007,39 +1009,40 @@ class InventoryController extends BaseController {
                         $arr_msisdn = [];
                         $arr_date = [];
                         $reader->open($filePath);
-                        foreach ($reader->getSheetIterator() as $sheet) {
-                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                if ($rowNumber > 1) {
-                                    // do stuff with the row
-                                    $msisdn = (string) $value[0];
-                                    if ($msisdn != '' && $msisdn != null) {
-                                        $date_return = $value[1];
-                                        if ($date_return != '' && $date_return != null) {
-                                            $date_return = strtotime($date_return);
-                                            $date_return = date('Y-m-d', $date_return);
-                                            if (substr($date_return, 0, 4) === '1970') {
-                                                $date_return = $value[1];
-                                                $date_return = explode('/', $date_return);
-
-                                                try {
-                                                    $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
-                                                } catch (Exception $e) {
-                                                    dd($date_return);
-                                                }
+                        foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
+                            if ($sheetIndex == 1)
+                                foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                    if ($rowNumber > 1) {
+                                        // do stuff with the row
+                                        $msisdn = (string) $value[0];
+                                        if ($msisdn != '' && $msisdn != null) {
+                                            $date_return = $value[1];
+                                            if ($date_return != '' && $date_return != null) {
                                                 $date_return = strtotime($date_return);
                                                 $date_return = date('Y-m-d', $date_return);
-                                            }
-                                            array_push($arr_date, $date_return);
+                                                if (substr($date_return, 0, 4) === '1970') {
+                                                    $date_return = $value[1];
+                                                    $date_return = explode('/', $date_return);
 
-                                            $msisdn = str_replace('\'', '', $msisdn);
-                                            if (substr($msisdn, 0, 1) === '0') {
-                                                $msisdn = substr($msisdn, 1);
+                                                    try {
+                                                        $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                                    } catch (Exception $e) {
+                                                        dd($date_return);
+                                                    }
+                                                    $date_return = strtotime($date_return);
+                                                    $date_return = date('Y-m-d', $date_return);
+                                                }
+                                                array_push($arr_date, $date_return);
+
+                                                $msisdn = str_replace('\'', '', $msisdn);
+                                                if (substr($msisdn, 0, 1) === '0') {
+                                                    $msisdn = substr($msisdn, 1);
+                                                }
+                                                array_push($arr_msisdn, $msisdn);
                                             }
-                                            array_push($arr_msisdn, $msisdn);
                                         }
                                     }
                                 }
-                            }
                         }
 
                         $reader->close();
@@ -1098,22 +1101,23 @@ class InventoryController extends BaseController {
                             $reader->open($filePath);
                             $arr_msisdn = [];
                             $arr_act_store = [];
-                            foreach ($reader->getSheetIterator() as $sheet) {
-                                foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                    if ($rowNumber > 1) {
-                                        // do stuff with the row
-                                        $msisdn = (string) $value[14];
-                                        if ($msisdn != '' && $msisdn != null) {
-                                            $msisdn = str_replace(' ', '', $msisdn);
-                                            $msisdn = str_replace('\'', '', $msisdn);
-                                            if (substr($msisdn, 0, 1) === '0') {
-                                                $msisdn = substr($msisdn, 1);
+                            foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
+                                if ($sheetIndex == 1)
+                                    foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                        if ($rowNumber > 1) {
+                                            // do stuff with the row
+                                            $msisdn = (string) $value[14];
+                                            if ($msisdn != '' && $msisdn != null) {
+                                                $msisdn = str_replace(' ', '', $msisdn);
+                                                $msisdn = str_replace('\'', '', $msisdn);
+                                                if (substr($msisdn, 0, 1) === '0') {
+                                                    $msisdn = substr($msisdn, 1);
+                                                }
+                                                array_push($arr_msisdn, $msisdn);
+                                                array_push($arr_act_store, $value[6]);
                                             }
-                                            array_push($arr_msisdn, $msisdn);
-                                            array_push($arr_act_store, $value[6]);
                                         }
                                     }
-                                }
                             }
                             $reader->close();
                             $check_msisdn = [];
@@ -1266,47 +1270,48 @@ class InventoryController extends BaseController {
                         $arr_msisdn = [];
                         $arr_return = [];
                         $arr_act = [];
-                        foreach ($reader->getSheetIterator() as $sheet) {
-                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                if ($rowNumber > 2) {
-                                    // do stuff with the row
-                                    $msisdn = (string) $value[3];
-                                    if ($msisdn != '' && $msisdn != null) {
-                                        $msisdn = str_replace('\'', '', $msisdn);
-                                        if (substr($msisdn, 0, 1) === '0') {
-                                            $msisdn = substr($msisdn, 1);
-                                        }
-                                        array_push($arr_msisdn, $msisdn);
-                                        $date_return = $value[2];
-                                        //$date_return = explode('/', $date_return);
-                                        //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
-                                        $date_return = strtotime($date_return);
-                                        $date_return = date('Y-m-d', $date_return);
-                                        if (substr($date_return, 0, 4) === '1970') {
+                        foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
+                            if ($sheetIndex == 1)
+                                foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                    if ($rowNumber > 2) {
+                                        // do stuff with the row
+                                        $msisdn = (string) $value[3];
+                                        if ($msisdn != '' && $msisdn != null) {
+                                            $msisdn = str_replace('\'', '', $msisdn);
+                                            if (substr($msisdn, 0, 1) === '0') {
+                                                $msisdn = substr($msisdn, 1);
+                                            }
+                                            array_push($arr_msisdn, $msisdn);
                                             $date_return = $value[2];
-                                            $date_return = explode('/', $date_return);
-                                            $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                            //$date_return = explode('/', $date_return);
+                                            //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                             $date_return = strtotime($date_return);
                                             $date_return = date('Y-m-d', $date_return);
-                                        }
-                                        array_push($arr_return, $date_return);
+                                            if (substr($date_return, 0, 4) === '1970') {
+                                                $date_return = $value[2];
+                                                $date_return = explode('/', $date_return);
+                                                $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                                $date_return = strtotime($date_return);
+                                                $date_return = date('Y-m-d', $date_return);
+                                            }
+                                            array_push($arr_return, $date_return);
 
-                                        $date_act = $value[5];
-                                        //$date_return = explode('/', $date_return);
-                                        //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
-                                        $date_act = strtotime($date_act);
-                                        $date_act = date('Y-m-d', $date_act);
-                                        if (substr($date_act, 0, 4) === '1970') {
                                             $date_act = $value[5];
-                                            $date_act = explode('/', $date_act);
-                                            $date_act = $date_act[1] . '/' . $date_act[0] . '/' . $date_act[2];
+                                            //$date_return = explode('/', $date_return);
+                                            //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                             $date_act = strtotime($date_act);
                                             $date_act = date('Y-m-d', $date_act);
+                                            if (substr($date_act, 0, 4) === '1970') {
+                                                $date_act = $value[5];
+                                                $date_act = explode('/', $date_act);
+                                                $date_act = $date_act[1] . '/' . $date_act[0] . '/' . $date_act[2];
+                                                $date_act = strtotime($date_act);
+                                                $date_act = date('Y-m-d', $date_act);
+                                            }
+                                            array_push($arr_act, $date_act);
                                         }
-                                        array_push($arr_act, $date_act);
                                     }
                                 }
-                            }
                         }
                         $reader->close();
 
@@ -1546,34 +1551,35 @@ class InventoryController extends BaseController {
                         $arr_internet = [];
                         $arr_sms = [];
                         $arr_services = [];
-                        foreach ($reader->getSheetIterator() as $sheet) {
+                        foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
                             $date_temp = $real_filename;
                             $date_temp = explode(" ", $date_temp)[0];
                             $month_temp = substr($date_temp, 4, 2);
                             $year_temp = substr($date_temp, 0, 4);
-                            if (substr($date_temp, 0, 1) === '2') {
-                                foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                    if ($rowNumber > 1) {
-                                        // do stuff with the row
-                                        $msisdn = (string) $value[0];
+                            if ($sheetIndex == 1)
+                                if (substr($date_temp, 0, 1) === '2') {
+                                    foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                        if ($rowNumber > 1) {
+                                            // do stuff with the row
+                                            $msisdn = (string) $value[0];
 
-                                        if ($msisdn != '' && $msisdn != null) {
-                                            $msisdn = str_replace('\'', '', $msisdn);
-                                            if (substr($msisdn, 0, 1) === '0') {
-                                                $msisdn = substr($msisdn, 1);
-                                            }
-                                            array_push($arr_msisdn, $msisdn);
-                                            array_push($arr_month, $month_temp);
-                                            array_push($arr_year, $year_temp);
-                                            array_push($arr_mo, $value[3]);
-                                            array_push($arr_mt, $value[6]);
-                                            array_push($arr_internet, 0);
-                                            array_push($arr_sms, $value[8]);
+                                            if ($msisdn != '' && $msisdn != null) {
+                                                $msisdn = str_replace('\'', '', $msisdn);
+                                                if (substr($msisdn, 0, 1) === '0') {
+                                                    $msisdn = substr($msisdn, 1);
+                                                }
+                                                array_push($arr_msisdn, $msisdn);
+                                                array_push($arr_month, $month_temp);
+                                                array_push($arr_year, $year_temp);
+                                                array_push($arr_mo, $value[3]);
+                                                array_push($arr_mt, $value[6]);
+                                                array_push($arr_internet, 0);
+                                                array_push($arr_sms, $value[8]);
 //                                            array_push($arr_services, $value[11]);
+                                            }
                                         }
                                     }
                                 }
-                            }
                         }
                         $reader->close();
                         $check_msisdn = [];
@@ -1642,7 +1648,7 @@ class InventoryController extends BaseController {
                         $arr_internet = [];
                         $arr_sms = [];
                         $arr_services = [];
-                        foreach ($reader->getSheetIterator() as $sheet) {
+                        foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
                             $date_temp = $real_filename;
                             $date_temp = explode("_", $date_temp)[2];
                             $month_temp = substr($date_temp, 4, 2);
@@ -1651,29 +1657,30 @@ class InventoryController extends BaseController {
                                 $month_temp = "0" . $month_temp;
                             }
                             $year_temp = substr($date_temp, 0, 4);
-                            if (substr($date_temp, 0, 1) === '2') {
-                                foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                    if ($rowNumber > 1) {
-                                        // do stuff with the row
-                                        $msisdn = (string) $value[0];
+                            if ($sheetIndex == 1)
+                                if (substr($date_temp, 0, 1) === '2') {
+                                    foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                        if ($rowNumber > 1) {
+                                            // do stuff with the row
+                                            $msisdn = (string) $value[0];
 
-                                        if ($msisdn != '' && $msisdn != null) {
-                                            $msisdn = str_replace('\'', '', $msisdn);
-                                            if (substr($msisdn, 0, 1) === '0') {
-                                                $msisdn = substr($msisdn, 1);
-                                            }
-                                            array_push($arr_msisdn, $msisdn);
-                                            array_push($arr_month, $month_temp);
-                                            array_push($arr_year, $year_temp);
-                                            array_push($arr_mo, $value[4]);
-                                            array_push($arr_mt, $value[5]);
-                                            array_push($arr_internet, $value[6]);
-                                            array_push($arr_sms, $value[7]);
+                                            if ($msisdn != '' && $msisdn != null) {
+                                                $msisdn = str_replace('\'', '', $msisdn);
+                                                if (substr($msisdn, 0, 1) === '0') {
+                                                    $msisdn = substr($msisdn, 1);
+                                                }
+                                                array_push($arr_msisdn, $msisdn);
+                                                array_push($arr_month, $month_temp);
+                                                array_push($arr_year, $year_temp);
+                                                array_push($arr_mo, $value[4]);
+                                                array_push($arr_mt, $value[5]);
+                                                array_push($arr_internet, $value[6]);
+                                                array_push($arr_sms, $value[7]);
 //                                            array_push($arr_services, $value[11]);
+                                            }
                                         }
                                     }
                                 }
-                            }
                         }
                         $reader->close();
                         $check_msisdn = [];
@@ -1726,7 +1733,8 @@ class InventoryController extends BaseController {
                         $arr_msisdn = [];
                         $arr_return = [];
                         $arr_names = [];
-                        foreach ($reader->getSheetIterator() as $sheet) {
+                        foreach ($reader->getSheetIterator() as $sheetIndex =>$sheet) {
+                            if($sheetIndex == 1)
                             foreach ($sheet->getRowIterator() as $rowNumber => $value) {
                                 if ($rowNumber > 1) {
                                     // do stuff with the row
