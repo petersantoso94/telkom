@@ -1171,7 +1171,7 @@ class InventoryController extends BaseController {
                             $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
                             $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
                             $writer->save('./uploaded_file/' . 'temp.xlsx');
-                            
+
                             $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                             $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
                             $reader->setShouldFormatDates(true);
@@ -1734,26 +1734,26 @@ class InventoryController extends BaseController {
                         $arr_msisdn = [];
                         $arr_return = [];
                         $arr_names = [];
-                        foreach ($reader->getSheetIterator() as $sheetIndex =>$sheet) {
-                            if($sheetIndex == 1)
-                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                if ($rowNumber > 1) {
-                                    // do stuff with the row
-                                    $msisdn = (string) $value[14];
-                                    if ($msisdn != '' && $msisdn != null) {
-                                        $msisdn = str_replace('\'', '', $msisdn);
-                                        if (substr($msisdn, 0, 1) === '0') {
-                                            $msisdn = substr($msisdn, 1);
+                        foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
+                            if ($sheetIndex == 1)
+                                foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                    if ($rowNumber > 1) {
+                                        // do stuff with the row
+                                        $msisdn = (string) $value[14];
+                                        if ($msisdn != '' && $msisdn != null) {
+                                            $msisdn = str_replace('\'', '', $msisdn);
+                                            if (substr($msisdn, 0, 1) === '0') {
+                                                $msisdn = substr($msisdn, 1);
+                                            }
+                                            array_push($arr_msisdn, $msisdn);
+                                            $date_return = $value[6];
+                                            $date_return = str_replace('\'', '', $date_return);
+                                            array_push($arr_return, $date_return);
+                                            $name = str_replace('\'', '', $value[1]);
+                                            array_push($arr_names, $name);
                                         }
-                                        array_push($arr_msisdn, $msisdn);
-                                        $date_return = $value[6];
-                                        $date_return = str_replace('\'', '', $date_return);
-                                        array_push($arr_return, $date_return);
-                                        $name = str_replace('\'', '', $value[1]);
-                                        array_push($arr_names, $name);
                                     }
                                 }
-                            }
                         }
                         $reader->close();
                         $check_msisdn = [];
@@ -1775,27 +1775,6 @@ class InventoryController extends BaseController {
                                     $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from sip file')";
                             }
                             DB::insert("INSERT INTO m_uncatagorized VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
-                        }
-
-                        $check_msisdn = [];
-                        $ids = $arr_msisdn;
-                        $ids = implode("','", $ids);
-                        $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE ActivationDate IS NOT NULL");
-                        foreach ($right_msisdn as $msisdn) {
-                            $check_msisdn[] = $msisdn->MSISDN;
-                        }
-                        $not_found = array_diff($arr_msisdn, $check_msisdn);
-                        $not_found = implode(",", $not_found);
-                        $not_found = explode(",", $not_found);
-                        if (count($not_found) > 0) {
-                            $for_raw = '';
-                            for ($i = 0; $i < count($not_found); $i++) {
-                                if ($i == 0)
-                                    $for_raw .= "(NULL,'{$not_found[$i]}','activation date without activation name',CURDATE(),CURDATE())";
-                                else
-                                    $for_raw .= ",(NULL,'{$not_found[$i]}','activation date without activation name',CURDATE(),CURDATE())";
-                            }
-                            DB::insert("INSERT INTO m_anomalies VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
                         }
 
                         $table = Inventory::getModel()->getTable();
@@ -1820,6 +1799,27 @@ class InventoryController extends BaseController {
                             $cases1 = implode(' ', $cases1);
                             $cases2 = implode(' ', $cases2);
                             DB::update("UPDATE `{$table}` SET `ActivationStore` = CASE `MSISDN` {$cases1} END, `ActivationName` = CASE `MSISDN` {$cases2} END WHERE `MSISDN` in ({$ids})");
+
+                            $check_msisdn = [];
+                            $ids = $arr_msisdn;
+                            $ids = implode("','", $ids);
+                            $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE ActivationDate IS NOT NULL");
+                            foreach ($right_msisdn as $msisdn) {
+                                $check_msisdn[] = $msisdn->MSISDN;
+                            }
+                            $not_found = array_diff($arr_msisdn, $check_msisdn);
+                            $not_found = implode(",", $not_found);
+                            $not_found = explode(",", $not_found);
+                            if (count($not_found) > 0) {
+                                $for_raw = '';
+                                for ($i = 0; $i < count($not_found); $i++) {
+                                    if ($i == 0)
+                                        $for_raw .= "(NULL,'{$not_found[$i]}','activation date without activation name',CURDATE(),CURDATE())";
+                                    else
+                                        $for_raw .= ",(NULL,'{$not_found[$i]}','activation date without activation name',CURDATE(),CURDATE())";
+                                }
+                                DB::insert("INSERT INTO m_anomalies VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
+                            }
                         }
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumbersip($counter);
                     }
