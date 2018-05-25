@@ -3216,6 +3216,7 @@ class InventoryController extends BaseController {
     }
 
     static function exportExcel($filter) {
+        ini_set('memory_limit','3000M');
         $invs = '';
         $filter = explode(',,,', $filter);
         $typesym = '>=';
@@ -3267,12 +3268,12 @@ class InventoryController extends BaseController {
             }
         }
 
-        /* $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
-          $filePath = public_path() . "/inventory_" . $filenames . ".xlsx";
-          $writer->openToFile($filePath);
-          $myArr = array("SERIAL NUMBER", "MSISDN", "TYPE", "LAST STATUS", "SHIPOUT TO", "SUBAGENT", "FORM SERIES", "LAST WAREHOUSE", "SHIPOUT DATE", "SHIPOUT PRICE", "SHIPIN DATE", "SHIPIN PRICE", "REMARK");
-          $writer->addRow($myArr); // add a row at a time
-         */
+        $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+        $filePath = public_path() . "/inventory_" . $filenames . ".xlsx";
+        $writer->openToFile($filePath);
+        $myArr = array("SERIAL NUMBER", "MSISDN", "TYPE", "LAST STATUS", "SHIPOUT TO", "SUBAGENT", "FORM SERIES", "LAST WAREHOUSE", "SHIPOUT DATE", "SHIPOUT PRICE", "SHIPIN DATE", "SHIPIN PRICE", "REMARK");
+        $writer->addRow($myArr); // add a row at a time
+
         $invs;
         if ($fs == '') {
             $invs = DB::table('m_inventory')
@@ -3332,64 +3333,64 @@ class InventoryController extends BaseController {
             }
         }
 
-        Excel::create('ExcelExport', function ($excel) use ($invs){
-            $excel->sheet('Sheetname', function ($sheet) use ($invs){
-                // putting users data as next rows
-                if (count($invs) > 0)
-                    foreach ($invs as $inv) {
-                        $sheet->appendRow($inv);
-                    }
-            });
-        })->export('xls');
-        /* foreach ($invs as $inv) {
-          $type = 'SIM 3G';
-          if ($inv->Type == 2) {
-          $type = 'eVoucher';
-          } else if ($inv->Type == 3) {
-          $type = 'phVoucher';
-          } else if ($inv->Type == 4) {
-          $type = 'SIM 4G';
-          }
+//        Excel::create('ExcelExport', function ($excel) use ($invs){
+//            $excel->sheet('Sheetname', function ($sheet) use ($invs){
+//                // putting users data as next rows
+//                if (count($invs) > 0)
+//                    foreach ($invs as $inv) {
+//                        $sheet->appendRow($inv);
+//                    }
+//            });
+//        })->export('xls');
+        foreach ($invs as $inv) {
+            $type = 'SIM 3G';
+            if ($inv->Type == 2) {
+                $type = 'eVoucher';
+            } else if ($inv->Type == 3) {
+                $type = 'phVoucher';
+            } else if ($inv->Type == 4) {
+                $type = 'SIM 4G';
+            }
 
-          $hist = History::where('ID', $inv->LastStatusID)->orderBy('ID', 'DESC')->first();
-          $status = 'Available';
-          $cons = 'no';
-          $shipoutdt = '';
-          $shipoutprice = '0';
-          $histshipin = History::where('SN', $inv->SerialNumber)->where('Status', '0')->first();
-          $shipindt = $histshipin->Date;
-          if ($hist->Status == 1) {
-          $status = 'Return';
-          } else if ($hist->Status == 2) {
-          $status = 'Shipout';
-          $shipoutdt = $hist->Date;
-          $shipoutprice = $hist->Price;
-          } else if ($hist->Status == 3) {
-          $status = 'Warehouse';
-          } else if ($hist->Status == 4) {
-          $status = 'Consignment';
-          }
+            $hist = History::where('ID', $inv->LastStatusID)->orderBy('ID', 'DESC')->first();
+            $status = 'Available';
+            $cons = 'no';
+            $shipoutdt = '';
+            $shipoutprice = '0';
+            $histshipin = History::where('SN', $inv->SerialNumber)->where('Status', '0')->first();
+            $shipindt = $histshipin->Date;
+            if ($hist->Status == 1) {
+                $status = 'Return';
+            } else if ($hist->Status == 2) {
+                $status = 'Shipout';
+                $shipoutdt = $hist->Date;
+                $shipoutprice = $hist->Price;
+            } else if ($hist->Status == 3) {
+                $status = 'Warehouse';
+            } else if ($hist->Status == 4) {
+                $status = 'Consignment';
+            }
 
-          $shipout = '';
-          $agent = '';
-          $subagent = '';
-          $tempcount = 0;
-          if ($hist->SubAgent != '') {
-          $shipout = explode(' ', $hist->SubAgent);
-          //                foreach ($shipout as $word) {
-          //                    if ($tempcount > 0) {
-          //                        $subagent .= $word . ' ';
-          //                    }
-          //                    $tempcount++;
-          //                }
-          }
-          if ($shipout != '') {
-          $agent = $shipout[0];
-          }
-          $myArr = array($inv->SerialNumber, $inv->MSISDN, $type, $status, $agent, $hist->SubAgent, $hist->ShipoutNumber, $inv->LastWarehouse, $shipoutdt, $shipoutprice, $shipindt, $inv->Price, $hist->Remark);
-          $writer->addRow($myArr);
-          }
-          $writer->close(); */
+            $shipout = '';
+            $agent = '';
+            $subagent = '';
+            $tempcount = 0;
+            if ($hist->SubAgent != '') {
+                $shipout = explode(' ', $hist->SubAgent);
+                //                foreach ($shipout as $word) {
+                //                    if ($tempcount > 0) {
+                //                        $subagent .= $word . ' ';
+                //                    }
+                //                    $tempcount++;
+                //                }
+            }
+            if ($shipout != '') {
+                $agent = $shipout[0];
+            }
+            $myArr = array($inv->SerialNumber, $inv->MSISDN, $type, $status, $agent, $hist->SubAgent, $hist->ShipoutNumber, $inv->LastWarehouse, $shipoutdt, $shipoutprice, $shipindt, $inv->Price, $hist->Remark);
+            $writer->addRow($myArr);
+        }
+        $writer->close();
         return "/inventory_" . $filenames . ".xlsx";
     }
 
