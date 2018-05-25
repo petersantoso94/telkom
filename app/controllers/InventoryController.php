@@ -3216,7 +3216,7 @@ class InventoryController extends BaseController {
     }
 
     static function exportExcel($filter) {
-        ini_set('memory_limit','3000M');
+        ini_set('memory_limit', '3000M');
         $invs = '';
         $filter = explode(',,,', $filter);
         $typesym = '>=';
@@ -3267,19 +3267,37 @@ class InventoryController extends BaseController {
                 $filenames .= '_consignment';
             }
         }
+        $invs;
+        $invs = DB::table('m_inventory as inv1')
+                        ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
+                        ->where('inv1.Type', $typesym, $type)
+                        ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                . '(SELECT IFNULL(SubAgent,"-") FROM m_historymovement WHERE Status = "2" AND SN = inv1.SerialNumber) as "SubAgent", '
+                                . '(SELECT IFNULL(Date,"-") FROM m_historymovement WHERE Status = "2" AND SN = inv1.SerialNumber) as "ShipoutDate", '
+                                . '(SELECT IFNULL(Price,"-") FROM m_historymovement WHERE Status = "2" AND SN = inv1.SerialNumber) as "ShipoutPrice", '
+                                . '(SELECT IFNULL(Price,"-") FROM m_historymovement WHERE Status = "0" AND SN = inv1.SerialNumber) as "ShipinPrice", '
+                                . '(SELECT IFNULL(Date,"-") FROM m_historymovement WHERE Status = "0" AND SN = inv1.SerialNumber) as "ShipinDate"'))->get();
+        dd($invs);
 
-        /*$writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+        $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
         $filePath = public_path() . "/inventory_" . $filenames . ".xlsx";
         $writer->openToFile($filePath);
         $myArr = array("SERIAL NUMBER", "MSISDN", "TYPE", "LAST STATUS", "SHIPOUT TO", "SUBAGENT", "FORM SERIES", "LAST WAREHOUSE", "SHIPOUT DATE", "SHIPOUT PRICE", "SHIPIN DATE", "SHIPIN PRICE", "REMARK");
         $writer->addRow($myArr); // add a row at a time
-*/
-        $invs;
+
         if ($fs == '') {
-            $invs = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                            ->where('m_inventory.Type', $typesym, $type)
-                            ->where('m_historymovement.Status', $statussym, $status)->get();
+            $invs = DB::table('m_inventory as inv1')
+                            ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
+                            ->where('inv1.Type', $typesym, $type)
+                            ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                                    . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                    . '(SELECT IFNULL(SubAgent,"-") FROM m_historymovement WHERE Status = "2" AND SN = inv1.SerialNumber) as "SubAgent", '
+                                    . '(SELECT IFNULL(Date,"-") FROM m_historymovement WHERE Status = "2" AND SN = inv1.SerialNumber) as "ShipoutDate", '
+                                    . '(SELECT IFNULL(Price,"-") FROM m_historymovement WHERE Status = "2" AND SN = inv1.SerialNumber) as "ShipoutPrice", '
+                                    . '(SELECT IFNULL(Price,"-") FROM m_historymovement WHERE Status = "0" AND SN = inv1.SerialNumber) as "ShipinPrice", '
+                                    . '(SELECT IFNULL(Date,"-") FROM m_historymovement WHERE Status = "0" AND SN = inv1.SerialNumber) as "ShipinDate"'))->get();
+            dd($invs);
             if ($wh != '') {
                 $invs = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
@@ -3332,17 +3350,7 @@ class InventoryController extends BaseController {
                 }
             }
         }
-        $invs = $invs->toArray();
-        Excel::create('ExcelExport', function ($excel) use ($invs){
-            $excel->sheet('Sheetname', function ($sheet) use ($invs){
-                // putting users data as next rows
-                if (count($invs) > 0)
-                    foreach ($invs as $inv) {
-                        $sheet->appendRow($inv);
-                    }
-            });
-        })->export('xls');
-        /*foreach ($invs as $inv) {
+        foreach ($invs as $inv) {
             $type = 'SIM 3G';
             if ($inv->Type == 2) {
                 $type = 'eVoucher';
@@ -3391,7 +3399,7 @@ class InventoryController extends BaseController {
             $writer->addRow($myArr);
         }
         $writer->close();
-        return "/inventory_" . $filenames . ".xlsx"; */
+        return "/inventory_" . $filenames . ".xlsx";
     }
 
     static function postDashboard() {
