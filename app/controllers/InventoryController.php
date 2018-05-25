@@ -3268,12 +3268,12 @@ class InventoryController extends BaseController {
             }
         }
 
-        $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+        /*$writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
         $filePath = public_path() . "/inventory_" . $filenames . ".xlsx";
         $writer->openToFile($filePath);
         $myArr = array("SERIAL NUMBER", "MSISDN", "TYPE", "LAST STATUS", "SHIPOUT TO", "SUBAGENT", "FORM SERIES", "LAST WAREHOUSE", "SHIPOUT DATE", "SHIPOUT PRICE", "SHIPIN DATE", "SHIPIN PRICE", "REMARK");
         $writer->addRow($myArr); // add a row at a time
-
+*/
         $invs;
         if ($fs == '') {
             $invs = DB::table('m_inventory')
@@ -3332,17 +3332,17 @@ class InventoryController extends BaseController {
                 }
             }
         }
-
-//        Excel::create('ExcelExport', function ($excel) use ($invs){
-//            $excel->sheet('Sheetname', function ($sheet) use ($invs){
-//                // putting users data as next rows
-//                if (count($invs) > 0)
-//                    foreach ($invs as $inv) {
-//                        $sheet->appendRow($inv);
-//                    }
-//            });
-//        })->export('xls');
-        foreach ($invs as $inv) {
+        $invs = $invs->toArray();
+        Excel::create('ExcelExport', function ($excel) use ($invs){
+            $excel->sheet('Sheetname', function ($sheet) use ($invs){
+                // putting users data as next rows
+                if (count($invs) > 0)
+                    foreach ($invs as $inv) {
+                        $sheet->appendRow($inv);
+                    }
+            });
+        })->export('xls');
+        /*foreach ($invs as $inv) {
             $type = 'SIM 3G';
             if ($inv->Type == 2) {
                 $type = 'eVoucher';
@@ -3391,7 +3391,7 @@ class InventoryController extends BaseController {
             $writer->addRow($myArr);
         }
         $writer->close();
-        return "/inventory_" . $filenames . ".xlsx";
+        return "/inventory_" . $filenames . ".xlsx"; */
     }
 
     static function postDashboard() {
