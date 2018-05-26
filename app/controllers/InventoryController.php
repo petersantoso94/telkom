@@ -3268,17 +3268,6 @@ class InventoryController extends BaseController {
             }
         }
         $invs;
-        $invs = DB::table('m_inventory as inv1')
-                        ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('inv1.Type', $typesym, $type)
-                        ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
-                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
-                                . '(SELECT IFNULL(SubAgent,"-") FROM m_historymovement WHERE Status = "2" AND SN = inv1.SerialNumber) as "SubAgent", '
-                                . '(SELECT IFNULL(Date,"-") FROM m_historymovement WHERE Status = "2" AND SN = inv1.SerialNumber) as "ShipoutDate", '
-                                . '(SELECT IFNULL(Price,"-") FROM m_historymovement WHERE Status = "2" AND SN = inv1.SerialNumber) as "ShipoutPrice", '
-                                . '(SELECT IFNULL(Price,"-") FROM m_historymovement WHERE Status = "0" AND SN = inv1.SerialNumber) as "ShipinPrice", '
-                                . '(SELECT IFNULL(Date,"-") FROM m_historymovement WHERE Status = "0" AND SN = inv1.SerialNumber) as "ShipinDate"'))->get();
-        dd($invs);
 
         $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
         $filePath = public_path() . "/inventory_" . $filenames . ".xlsx";
@@ -3291,24 +3280,36 @@ class InventoryController extends BaseController {
                             ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
                             ->where('inv1.Type', $typesym, $type)
                             ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
-                                    . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
-                                    . '(SELECT IFNULL(SubAgent,"-") FROM m_historymovement WHERE Status = "2" AND SN = inv1.SerialNumber) as "SubAgent", '
-                                    . '(SELECT IFNULL(Date,"-") FROM m_historymovement WHERE Status = "2" AND SN = inv1.SerialNumber) as "ShipoutDate", '
-                                    . '(SELECT IFNULL(Price,"-") FROM m_historymovement WHERE Status = "2" AND SN = inv1.SerialNumber) as "ShipoutPrice", '
-                                    . '(SELECT IFNULL(Price,"-") FROM m_historymovement WHERE Status = "0" AND SN = inv1.SerialNumber) as "ShipinPrice", '
-                                    . '(SELECT IFNULL(Date,"-") FROM m_historymovement WHERE Status = "0" AND SN = inv1.SerialNumber) as "ShipinDate"'))->get();
-            dd($invs);
+                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "SubAgent", '
+                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutDate", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutPrice", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinPrice", '
+                                . '(SELECT Date FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinDate"'))->get();
+            
             if ($wh != '') {
-                $invs = DB::table('m_inventory')
-                                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                                ->where('m_inventory.Type', $typesym, $type)->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%')
-                                ->where('m_historymovement.Status', $statussym, $status)->get();
+                $invs = DB::table('m_inventory as inv1')
+                                ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
+                                ->where('inv1.Type', $typesym, $type)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
+                                ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "SubAgent", '
+                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutDate", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutPrice", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinPrice", '
+                                . '(SELECT Date FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinDate"'))->get();
                 if ($st != '') {
-                    $invs = DB::table('m_inventory')
-                                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                                    ->where('m_inventory.Type', $typesym, $type)->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%')
+                    $invs = DB::table('m_inventory as inv1')
+                                    ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
+                                    ->where('inv1.Type', $typesym, $type)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
-                                    ->where('m_historymovement.Status', $statussym, $status)->get();
+                                    ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "SubAgent", '
+                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutDate", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutPrice", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinPrice", '
+                                . '(SELECT Date FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinDate"'))->get();
                 }
             } else {
                 if ($st != '') {
@@ -3316,37 +3317,67 @@ class InventoryController extends BaseController {
                                     ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                                     ->where('m_inventory.Type', $typesym, $type)
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
-                                    ->where('m_historymovement.Status', $statussym, $status)->get();
+                                    ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "SubAgent", '
+                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutDate", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutPrice", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinPrice", '
+                                . '(SELECT Date FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinDate"'))->get();
                 }
             }
         } else if ($fs != '') {
-            $invs = DB::table('m_inventory')
-                            ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
-                            ->where('m_inventory.Type', $typesym, $type)
-                            ->where('m_inventory.LastStatusHist', $statussym, $status)
-                            ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->get();
+            $invs = DB::table('m_inventory as inv1')
+                            ->join('m_historymovement', 'inv1.SerialNumber', '=', 'm_historymovement.SN')
+                            ->where('inv1.Type', $typesym, $type)
+                            ->where('inv1.LastStatusHist', $statussym, $status)
+                            ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "SubAgent", '
+                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutDate", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutPrice", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinPrice", '
+                                . '(SELECT Date FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinDate"'))->get();
             if ($wh != '') {
-                $invs = DB::table('m_inventory')
-                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
-                                ->where('m_inventory.Type', $typesym, $type)
-                                ->where('m_historymovement.Status', $statussym, $status)->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%')
-                                ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->get();
+                $invs = DB::table('m_inventory as inv1')
+                                ->join('m_historymovement', 'inv1.SerialNumber', '=', 'm_historymovement.SN')
+                                ->where('inv1.Type', $typesym, $type)
+                                ->where('m_historymovement.Status', $statussym, $status)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
+                                ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "SubAgent", '
+                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutDate", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutPrice", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinPrice", '
+                                . '(SELECT Date FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinDate"'))->get();
                 if ($st != '') {
-                    $invs = DB::table('m_inventory')
-                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
-                                    ->where('m_inventory.Type', $typesym, $type)
-                                    ->where('m_historymovement.Status', $statussym, $status)->where('m_inventory.LastWarehouse', 'LIKE', '%' . $wh . '%')
+                    $invs = DB::table('m_inventory as inv1')
+                                    ->join('m_historymovement', 'inv1.SerialNumber', '=', 'm_historymovement.SN')
+                                    ->where('inv1.Type', $typesym, $type)
+                                    ->where('m_historymovement.Status', $statussym, $status)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
-                                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->get();
+                                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "SubAgent", '
+                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutDate", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutPrice", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinPrice", '
+                                . '(SELECT Date FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinDate"'))->get();
                 }
             } else {
                 if ($st != '') {
-                    $invs = DB::table('m_inventory')
-                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
-                                    ->where('m_inventory.Type', $typesym, $type)
+                    $invs = DB::table('m_inventory as inv1')
+                                    ->join('m_historymovement', 'inv1.SerialNumber', '=', 'm_historymovement.SN')
+                                    ->where('inv1.Type', $typesym, $type)
                                     ->where('m_historymovement.Status', $statussym, $status)
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
-                                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->get();
+                                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "SubAgent", '
+                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutDate", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber) as "ShipoutPrice", '
+                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinPrice", '
+                                . '(SELECT Date FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber) as "ShipinDate"'))->get();
                 }
             }
         }
@@ -3359,23 +3390,20 @@ class InventoryController extends BaseController {
             } else if ($inv->Type == 4) {
                 $type = 'SIM 4G';
             }
-
-            $hist = History::where('ID', $inv->LastStatusID)->orderBy('ID', 'DESC')->first();
             $status = 'Available';
             $cons = 'no';
             $shipoutdt = '';
             $shipoutprice = '0';
-            $histshipin = History::where('SN', $inv->SerialNumber)->where('Status', '0')->first();
-            $shipindt = $histshipin->Date;
-            if ($hist->Status == 1) {
+            $shipindt = $inv->ShipinDate;
+            if ($inv->Status == 1) {
                 $status = 'Return';
-            } else if ($hist->Status == 2) {
+            } else if ($inv->Status == 2) {
                 $status = 'Shipout';
-                $shipoutdt = $hist->Date;
-                $shipoutprice = $hist->Price;
-            } else if ($hist->Status == 3) {
+                $shipoutdt = $inv->ShipoutDate;
+                $shipoutprice = $inv->ShipoutPrice;
+            } else if ($inv->Status == 3) {
                 $status = 'Warehouse';
-            } else if ($hist->Status == 4) {
+            } else if ($inv->Status == 4) {
                 $status = 'Consignment';
             }
 
@@ -3383,8 +3411,8 @@ class InventoryController extends BaseController {
             $agent = '';
             $subagent = '';
             $tempcount = 0;
-            if ($hist->SubAgent != '') {
-                $shipout = explode(' ', $hist->SubAgent);
+            if ($inv->SubAgent != '') {
+                $shipout = explode(' ', $inv->SubAgent);
                 //                foreach ($shipout as $word) {
                 //                    if ($tempcount > 0) {
                 //                        $subagent .= $word . ' ';
@@ -3395,7 +3423,7 @@ class InventoryController extends BaseController {
             if ($shipout != '') {
                 $agent = $shipout[0];
             }
-            $myArr = array($inv->SerialNumber, $inv->MSISDN, $type, $status, $agent, $hist->SubAgent, $hist->ShipoutNumber, $inv->LastWarehouse, $shipoutdt, $shipoutprice, $shipindt, $inv->Price, $hist->Remark);
+            $myArr = array($inv->SerialNumber, $inv->MSISDN, $type, $status, $agent, $inv->SubAgent, $inv->ShipoutNumber, $inv->LastWarehouse, $shipoutdt, $shipoutprice, $shipindt, $inv->Price, $hist->Remark);
             $writer->addRow($myArr);
         }
         $writer->close();
