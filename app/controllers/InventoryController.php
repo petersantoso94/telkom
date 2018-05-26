@@ -4319,7 +4319,7 @@ class InventoryController extends BaseController {
         $filePath = public_path() . "/subagent_report.xlsx";
         $writer->openToFile($filePath);
         $year = Input::GET('argyear');
-//        $year = '2018';
+        $year = '2018';
 //
         $myArr = array("All Subagent Reporting");
         $writer->addRow($myArr); // add a row at a time
@@ -4339,16 +4339,16 @@ class InventoryController extends BaseController {
                         ))->get();
         $topup = DB::table('m_inventory as inv1')
                         ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
-                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('2','3') AND inv1.TopUpDate IS NOT NULL AND YEAR(inv1.TopUpDate) = '{$year}'")
-                        ->groupBy(DB::raw('hist1.SubAgent, MONTH(inv1.TopUpDate), YEAR(inv1.TopUpDate)'))
-                        ->select(DB::raw("hist1.SubAgent, COUNT(inv1.SerialNumber) as 'count', MONTH(inv1.TopUpDate) as 'month', YEAR(inv1.TopUpDate) as 'year'"
+                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND YEAR(inv1.ActivationDate) = '{$year}'")
+//                        ->groupBy(DB::raw('hist1.SubAgent, MONTH(inv1.ActivationDate), YEAR(inv1.ActivationDate)'))
+                        ->select(DB::raw("hist1.SubAgent, (SELECT COUNT(inv2.SerialNumber) FROM m_inventory as inv2 WHERE inv2.TopUpMSISDN = inv1.MSISDN) as 'count', MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
                         ))->get();
         $prod = DB::table('m_inventory as inv1')
                         ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
-                        ->join('m_productive as prod1', 'inv1.MSISDN', '=', 'prod1.MSISDN')
-                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND prod1.Year = '{$year}'")
-                        ->groupBy(DB::raw('hist1.SubAgent, prod1.Month, prod1.Year'))
-                        ->select(DB::raw("hist1.SubAgent, COUNT(prod1.MSISDN) as 'count', prod1.Month as 'month', prod1.Year as 'year'"
+//                        ->join('m_productive as prod1', 'inv1.MSISDN', '=', 'prod1.MSISDN')
+                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND YEAR(inv1.ActivationDate) = '{$year}'")
+//                        ->groupBy(DB::raw('hist1.SubAgent, prod1.Month, prod1.Year'))
+                        ->select(DB::raw("hist1.SubAgent, (SELECT COUNT(prod1.MSISDN) FROM m_productive as prod1 WHERE prod1.MSISDN = inv1.MSISDN) as 'count', MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
                         ))->get();
         $write_array = [];
         foreach ($activation as $data) {
