@@ -3279,39 +3279,39 @@ class InventoryController extends BaseController {
                             ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
                             ->where('inv1.Type', $typesym, $type)
                             ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
-                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
-                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
-                                . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
-                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
-                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
-            
+                                    . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                    . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
+                                    . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                    . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
+                                    . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
+                                    . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
+                                    . '(SELECT `Date` FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
+
             if ($wh != '') {
                 $invs = DB::table('m_inventory as inv1')
                                 ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
                                 ->where('inv1.Type', $typesym, $type)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                 ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
-                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
-                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
-                                . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
-                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
-                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
+                                        . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                        . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
+                                        . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                        . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
+                                        . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
+                                        . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
+                                        . '(SELECT `Date` FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
                 if ($st != '') {
                     $invs = DB::table('m_inventory as inv1')
                                     ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
                                     ->where('inv1.Type', $typesym, $type)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
                                     ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
-                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
-                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
-                                . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
-                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
-                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
+                                            . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                            . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
+                                            . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                            . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
+                                            . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
+                                            . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
+                                            . '(SELECT `Date` FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
                 }
             } else {
                 if ($st != '') {
@@ -3320,13 +3320,13 @@ class InventoryController extends BaseController {
                                     ->where('m_inventory.Type', $typesym, $type)
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
                                     ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
-                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
-                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
-                                . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
-                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
-                                . '(SELECT Date FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
+                                            . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                            . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
+                                            . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                            . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
+                                            . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
+                                            . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
+                                            . '(SELECT Date FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
                 }
             }
         } else if ($fs != '') {
@@ -3335,26 +3335,26 @@ class InventoryController extends BaseController {
                             ->where('inv1.Type', $typesym, $type)
                             ->where('inv1.LastStatusHist', $statussym, $status)
                             ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
-                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
-                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
-                                . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
-                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
-                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
+                                    . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                    . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
+                                    . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                    . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
+                                    . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
+                                    . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
+                                    . '(SELECT `Date` FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
             if ($wh != '') {
                 $invs = DB::table('m_inventory as inv1')
                                 ->join('m_historymovement', 'inv1.SerialNumber', '=', 'm_historymovement.SN')
                                 ->where('inv1.Type', $typesym, $type)
                                 ->where('m_historymovement.Status', $statussym, $status)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                 ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
-                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
-                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
-                                . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
-                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
-                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
+                                        . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                        . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
+                                        . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                        . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
+                                        . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
+                                        . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
+                                        . '(SELECT `Date` FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
                 if ($st != '') {
                     $invs = DB::table('m_inventory as inv1')
                                     ->join('m_historymovement', 'inv1.SerialNumber', '=', 'm_historymovement.SN')
@@ -3362,13 +3362,13 @@ class InventoryController extends BaseController {
                                     ->where('m_historymovement.Status', $statussym, $status)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
                                     ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
-                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
-                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
-                                . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
-                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
-                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
+                                            . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                            . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
+                                            . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                            . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
+                                            . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
+                                            . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
+                                            . '(SELECT `Date` FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
                 }
             } else {
                 if ($st != '') {
@@ -3378,13 +3378,13 @@ class InventoryController extends BaseController {
                                     ->where('m_historymovement.Status', $statussym, $status)
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
                                     ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
-                                . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
-                                . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
-                                . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
-                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
-                                . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
-                                . '(SELECT `Date` FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
+                                            . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
+                                            . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
+                                            . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                            . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
+                                            . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
+                                            . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
+                                            . '(SELECT `Date` FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinDate"'))->get();
                 }
             }
         }
@@ -4319,7 +4319,7 @@ class InventoryController extends BaseController {
         $filePath = public_path() . "/subagent_report.xlsx";
         $writer->openToFile($filePath);
         $year = Input::GET('argyear');
-        $year = '2018';
+        $year = '2017';
 //
         $myArr = array("All Subagent Reporting");
         $writer->addRow($myArr); // add a row at a time
@@ -4335,20 +4335,23 @@ class InventoryController extends BaseController {
                         ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
                         ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
                         ->groupBy(DB::raw('hist1.SubAgent, MONTH(inv1.ActivationDate), YEAR(inv1.ActivationDate)'))
-                        ->select(DB::raw("hist1.SubAgent, COUNT(inv1.SerialNumber) as 'count', MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
+                        ->select(DB::raw("hist1.SubAgent, COUNT(inv1.MSISDN) as 'count', MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
                         ))->get();
         $topup = DB::table('m_inventory as inv1')
                         ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
-                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND YEAR(inv1.ActivationDate) = '{$year}'")
-//                        ->groupBy(DB::raw('hist1.SubAgent, MONTH(inv1.ActivationDate), YEAR(inv1.ActivationDate)'))
-                        ->select(DB::raw("hist1.SubAgent, (SELECT COUNT(inv2.SerialNumber) FROM m_inventory as inv2 WHERE inv2.TopUpMSISDN = inv1.MSISDN) as 'count', MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
+                        ->join('m_inventory as inv2', 'inv2.TopUpMSISDN', '=', 'inv1.MSISDN')
+                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
+                        ->groupBy(DB::raw('hist1.SubAgent, MONTH(inv1.ActivationDate), YEAR(inv1.ActivationDate)'))
+                        ->select(DB::raw("hist1.SubAgent"
+                                . ", COUNT(DISTINCT inv2.TopUpMSISDN) as 'count'"
+                                . ", MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
                         ))->get();
         $prod = DB::table('m_inventory as inv1')
                         ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
-//                        ->join('m_productive as prod1', 'inv1.MSISDN', '=', 'prod1.MSISDN')
-                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND YEAR(inv1.ActivationDate) = '{$year}'")
-//                        ->groupBy(DB::raw('hist1.SubAgent, prod1.Month, prod1.Year'))
-                        ->select(DB::raw("hist1.SubAgent, (SELECT COUNT(prod1.MSISDN) FROM m_productive as prod1 WHERE prod1.MSISDN = inv1.MSISDN) as 'count', MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
+                        ->join('m_productive as prod1', 'inv1.MSISDN', '=', 'prod1.MSISDN')
+                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
+                        ->groupBy(DB::raw("hist1.SubAgent, MONTH(inv1.ActivationDate), YEAR(inv1.ActivationDate)"))
+                        ->select(DB::raw("hist1.SubAgent, COUNT(DISTINCT prod1.MSISDN) as 'count', MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
                         ))->get();
         $write_array = [];
         foreach ($activation as $data) {
