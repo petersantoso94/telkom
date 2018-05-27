@@ -1329,7 +1329,7 @@
                                 write = true;
                                 str_write = 'Total';
                             }
-                            if (meta.controller.chart.canvas.id == 'barChart_ivr') {
+                            if (meta.controller.chart.canvas.id == 'barChart_ivr' || meta.controller.chart.canvas.id == 'barChart_subs' || meta.controller.chart.canvas.id == 'barChart_churn2') {
                                 write = true;
                                 str_write = 'Total';
                             }
@@ -2021,14 +2021,16 @@
                                 xAxes: [{
                                         gridLines: {
                                             display: false
-                                        }
+                                        },
+                                        stacked: true
                                     }],
                                 yAxes: [{
                                         gridLines: {
                                             display: false
                                         }, ticks: {
                                             display: false
-                                        }
+                                        },
+                                        stacked: true
                                     }]
                             }
                         }
@@ -2251,7 +2253,7 @@
                         }).done(function (data) {
                             barChartData13.datasets = [];
                             $.each(data, function (index, value) {
-                                var colors = ["#dff0d9"];
+                                var colors = ["#dff0d9", "#f2b6b6"];
                                 var colorName = colorNames[barChartData13.datasets.length % colorNames.length];
                                 var dsColor = window.chartColors[colorName];
                                 barChartData13.datasets.push({
