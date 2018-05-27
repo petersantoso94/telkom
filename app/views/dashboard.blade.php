@@ -2220,7 +2220,7 @@
                         }).done(function (data) {
                             barChartData12.datasets = [];
                             $.each(data, function (index, value) {
-                                var colors = ["#f2b6b6", "#dff0d9"];
+                                var colors = ["#dff0d9", "#f2b6b6"];
                                 var colorName = colorNames[barChartData12.datasets.length % colorNames.length];
                                 var dsColor = window.chartColors[colorName];
                                 barChartData12.datasets.push({
