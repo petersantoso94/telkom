@@ -2030,11 +2030,21 @@ class InventoryController extends BaseController {
         if (Input::get('type'))
             $type = Input::get('type');
 //        $year = '2017';
-        $data["Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $data["Productive Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $data["Not Productive Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Churn%\'')->get();
+        $churn = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ChurnDate) = '{$year}'")
+                        ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                        ->groupBy(DB::raw('YEAR(inv1.ChurnDate), MONTH(inv1.ChurnDate)'))
+                        ->select(DB::raw("COUNT(DISTINCT prod1.MSISDN) as 'Counter', YEAR(inv1.ChurnDate) as 'Year', MONTH(inv1.ChurnDate) as 'Month'"))->get();
+        if (count($churn) > 0) {
+            foreach ($churn as $ivr) {
+                $data["Productive Churn"][($ivr->Month - 1)] = $ivr->Counter;
+            }
+        }
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
-                $data["Churn"][($ivr->Month - 1)] = $ivr->Counter;
+                $data["Not Productive Churn"][($ivr->Month - 1)] = $ivr->Counter - $data["Productive Churn"][($ivr->Month - 1)];
             }
         }
         if ($type === '2') {
@@ -2047,11 +2057,21 @@ class InventoryController extends BaseController {
                 $writer->addRow($myArr); // add a row at a time
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
-                $data["Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $data["Productive Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $data["Not Productive Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Churn%\'')->get();
+                $churn = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ChurnDate) = '{$year->Year}'")
+                                ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                                ->groupBy(DB::raw('YEAR(inv1.ChurnDate), MONTH(inv1.ChurnDate)'))
+                                ->select(DB::raw("COUNT(DISTINCT prod1.MSISDN) as 'Counter', YEAR(inv1.ChurnDate) as 'Year', MONTH(inv1.ChurnDate) as 'Month'"))->get();
+                if (count($churn) > 0) {
+                    foreach ($churn as $ivr) {
+                        $data["Productive Churn"][($ivr->Month - 1)] = $ivr->Counter;
+                    }
+                }
                 if ($all_ivr != null) {
                     foreach ($all_ivr as $ivr) {
-                        $data["Churn"][($ivr->Month - 1)] = $ivr->Counter;
+                        $data["Not Productive Churn"][($ivr->Month - 1)] = $ivr->Counter - $data["Productive Churn"][($ivr->Month - 1)];
                     }
                 }
                 foreach ($data as $key => $a) {
@@ -4343,8 +4363,8 @@ class InventoryController extends BaseController {
                         ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
                         ->groupBy(DB::raw('hist1.SubAgent, MONTH(inv1.ActivationDate), YEAR(inv1.ActivationDate)'))
                         ->select(DB::raw("hist1.SubAgent"
-                                . ", COUNT(DISTINCT inv2.TopUpMSISDN) as 'count'"
-                                . ", MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
+                                        . ", COUNT(DISTINCT inv2.TopUpMSISDN) as 'count'"
+                                        . ", MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
                         ))->get();
         $prod = DB::table('m_inventory as inv1')
                         ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
