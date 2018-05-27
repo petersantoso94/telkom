@@ -4319,7 +4319,7 @@ class InventoryController extends BaseController {
         $filePath = public_path() . "/subagent_report.xlsx";
         $writer->openToFile($filePath);
         $year = Input::GET('argyear');
-        $year = '2017';
+//        $year = '2017';
 //
         $myArr = array("All Subagent Reporting");
         $writer->addRow($myArr); // add a row at a time
