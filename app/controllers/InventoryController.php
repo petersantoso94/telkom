@@ -2090,11 +2090,21 @@ class InventoryController extends BaseController {
         if (Input::get('type'))
             $type = Input::get('type');
 //        $year = '2017';
-        $data["Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $data["Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $data["Not Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Activation%\'')->get();
+        $act = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
+                        ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                        ->groupBy(DB::raw('YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)'))
+                        ->select(DB::raw("COUNT(DISTINCT prod1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
+        if (count($act) > 0) {
+            foreach ($act as $ivr) {
+                $data["Productive Subscriber"][($ivr->Month - 1)] = $ivr->Counter;
+            }
+        }
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
-                $data["Subscriber"][($ivr->Month - 1)] = $ivr->Counter;
+                $data["Not Productive Subscriber"][($ivr->Month - 1)] = $ivr->Counter - $data["Productive Subscriber"][($ivr->Month - 1)];
             }
         }
 
@@ -2108,11 +2118,21 @@ class InventoryController extends BaseController {
                 $writer->addRow($myArr); // add a row at a time
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
-                $data["Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $data["Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $data["Not Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Activation%\'')->get();
+                $act = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year->Year}'")
+                                ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                                ->groupBy(DB::raw('YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)'))
+                                ->select(DB::raw("COUNT(DISTINCT prod1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
+                if (count($act) > 0) {
+                    foreach ($act as $ivr) {
+                        $data["Productive Subscriber"][($ivr->Month - 1)] = $ivr->Counter;
+                    }
+                }
                 if ($all_ivr != null) {
                     foreach ($all_ivr as $ivr) {
-                        $data["Subscriber"][($ivr->Month - 1)] = $ivr->Counter;
+                        $data["Not Productive Subscriber"][($ivr->Month - 1)] = $ivr->Counter - $data["Productive Subscriber"][($ivr->Month - 1)];
                     }
                 }
                 foreach ($data as $key => $a) {
