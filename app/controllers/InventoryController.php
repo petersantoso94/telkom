@@ -2084,6 +2084,47 @@ class InventoryController extends BaseController {
         return $data;
     }
 
+    static function getChannel() {
+        $year = Input::get('year');
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
+        $year = '2017';
+        $data = [];
+//        $prod = DB::table('m_inventory as inv1')
+//                        ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
+//                        ->join('m_productive as prod1', 'inv1.MSISDN', '=', 'prod1.MSISDN')
+//                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
+//                        ->groupBy(DB::raw("hist1.SubAgent, MONTH(inv1.ActivationDate), YEAR(inv1.ActivationDate)"))
+//                        ->select(DB::raw("hist1.SubAgent, COUNT(DISTINCT prod1.MSISDN) as 'count', MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
+//                        ))->get();
+//        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Activation%\'')->get();
+        $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
+                        ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                        ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
+                        ->groupBy(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1), YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)"))
+                        ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(DISTINCT prod1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
+        $act = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
+                        ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
+                        ->groupBy(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1), YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)"))
+                        ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
+        if (count($act_prod) > 0) {
+            foreach ($act_prod as $ivr) {
+                if (!isset($data[$ivr->Channel]["Productive Subscriber"]))
+                    $data[$ivr->Channel]["Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $data[$ivr->Channel]["Productive Subscriber"][($ivr->Month - 1)] = $ivr->Counter;
+            }
+        }
+        if (count($act) > 0) {
+            foreach ($act as $ivr) {
+                if (!isset($data[$ivr->Channel]["Not Productive Subscriber"]))
+                    $data[$ivr->Channel]["Not Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $data[$ivr->Channel]["Not Productive Subscriber"][($ivr->Month - 1)] = $ivr->Counter - $data[$ivr->Channel]["Productive Subscriber"][($ivr->Month - 1)];
+            }
+        }
+        return $data;
+    }
+
     static function getSubsriber() {
         $year = Input::get('year');
         $type = '';
