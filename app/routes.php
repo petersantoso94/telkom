@@ -88,6 +88,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::any('getCHURN2', array('as' => 'getCHURN2', 'before' => '', 'uses' => 'InventoryController@getCHURN2'));
     Route::any('getSubsriber', array('as' => 'getSubsriber', 'before' => '', 'uses' => 'InventoryController@getSubsriber'));
     Route::any('getChurnDetail', array('as' => 'getChurnDetail', 'before' => '', 'uses' => 'InventoryController@getChurnDetail'));
+    Route::any('getChannel', array('as' => 'getChannel', 'before' => '', 'uses' => 'InventoryController@getChannel'));
     Route::post('postFS', array('as' => 'postFS', 'before' => '', 'uses' => 'InventoryController@postFS'));
     Route::any('getPDFShipout', array('as' => 'getPDFShipout', 'before' => '', 'uses' => 'InventoryController@getPDFShipout'));
     Route::any('getPDFReturn', array('as' => 'getPDFReturn', 'before' => '', 'uses' => 'InventoryController@getPDFReturn'));
