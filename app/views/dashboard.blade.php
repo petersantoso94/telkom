@@ -56,6 +56,7 @@
                                     <li class=""><a href="#churn" data-toggle="tab" aria-expanded="true">Churn</a></li>
                                     <li class=""><a href="#vocres" data-toggle="tab" aria-expanded="false">Voucher Recharge</a></li>
                                     <li class=""><a href="#intus" data-toggle="tab" aria-expanded="false">Internet Usage</a></li>
+                                    <li class=""><a href="#channel" data-toggle="tab" aria-expanded="false"></a></li>
                                 </ul>
                                 <div class="tab-content">
                                     <div class="tab-pane active" id="subs">
@@ -209,6 +210,45 @@
                                             <div class="chart">
                                                 <div id="legend4" class="legend"></div>
                                                 <canvas id="barChart_sum" height="100"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" id="channel">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Channel</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_channel">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_channel" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="detail_churn_year">
+                                                    @foreach($years as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend16" class="legend"></div>
+                                                <canvas id="barChart_channel" height="100"></canvas>
                                             </div>
                                         </div>
                                     </div>
