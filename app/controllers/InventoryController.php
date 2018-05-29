@@ -1181,7 +1181,7 @@ class InventoryController extends BaseController {
                             $arr_return = [];
                             foreach ($reader->getSheetIterator() as $sheet) {
                                 foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                    if ($rowNumber > 1) {
+                                    if ($rowNumber > 2) {
                                         // do stuff with the row
                                         $msisdn = (string) $value[3];
                                         if ($msisdn != '' && $msisdn != null) {
@@ -1195,6 +1195,7 @@ class InventoryController extends BaseController {
                                             //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                             $date_return = strtotime($date_return);
                                             $date_return = date('Y-m-d', $date_return);
+                                            
                                             if (substr($date_return, 0, 4) === '1970') {
                                                 $date_return = $value[2];
                                                 $date_return = explode('/', $date_return);
