@@ -56,7 +56,7 @@
                                     <li class=""><a href="#churn" data-toggle="tab" aria-expanded="true">Churn</a></li>
                                     <li class=""><a href="#vocres" data-toggle="tab" aria-expanded="false">Voucher Recharge</a></li>
                                     <li class=""><a href="#intus" data-toggle="tab" aria-expanded="false">Internet Usage</a></li>
-                                    <li class=""><a href="#channel" data-toggle="tab" aria-expanded="false"></a></li>
+                                    <li class=""><a href="#channel" data-toggle="tab" aria-expanded="false">Channel Reporting</a></li>
                                 </ul>
                                 <div class="tab-content">
                                     <div class="tab-pane active" id="subs">
@@ -230,7 +230,7 @@
                                         </div>
                                         <div class="row toogling" id="info_channel" style="display: none;">
                                             <div class="form-group col-md-2">
-                                                <select class="form-control" id="detail_churn_year">
+                                                <select class="form-control" id="channel_year">
                                                     @foreach($years as $year)
                                                     @if($year->Year >0)
                                                     <option value="{{$year->Year}}">{{$year->Year}}</option>
@@ -1111,6 +1111,7 @@
             <script>
                 var getIVR = '<?php echo Route('getIVR') ?>';
                 var getCHURN = '<?php echo Route('getCHURN') ?>';
+                var getChannel = '<?php echo Route('getChannel') ?>';
                 var getCHURN2 = '<?php echo Route('getCHURN2') ?>';
                 var getSubsriber = '<?php echo Route('getSubsriber') ?>';
                 var getProductive = '<?php echo Route('getProductive') ?>';
@@ -1132,6 +1133,7 @@
                 var internet_payload_year = document.getElementById('payload_year').value;
                 var payload_peruser_year = document.getElementById('payload_peruser_year').value;
                 var vs_year = document.getElementById('vs_year').value;
+                var channel_year = document.getElementById('channel_year').value;
                 var voc_topup_year = document.getElementById('voc_topup_year').value;
                 var voc_topup300_year = document.getElementById('voc_topup300_year').value;
                 var evoc_topup_year = document.getElementById('evoc_topup_year').value;
@@ -1151,6 +1153,11 @@
                 });
                 $('#ivr_year').on('change', function (e) {
                     ivr_year = document.getElementById('ivr_year').value;
+                    scroll = false;
+                    refreshBarChart();
+                });
+                $('#channel_year').on('change', function (e) {
+                    channel_year = document.getElementById('channel_year').value;
                     scroll = false;
                     refreshBarChart();
                 });
@@ -1292,6 +1299,10 @@
                     labels: MONTHS,
                     datasets: []
                 };
+                var barChartData16 = {
+                    labels: MONTHS,
+                    datasets: []
+                };
 
                 // Define a plugin to provide data labels
                 Chart.plugins.register({
@@ -1351,7 +1362,7 @@
                                     //                        }
                                     //                        ctx.fillText(dataString, position.x, position.y +((canvas_height -position.y )/2)+ (fontSize / 2) + padding - (canvas_height - y_height));
                                     if (dataString != '0') {
-                                        if (meta.controller.chart.canvas.id == 'barChart_voc_topup' || meta.controller.chart.canvas.id == 'barChart_evoc_topup' || meta.controller.chart.canvas.id == 'barChart_unique_subs_topup' || meta.controller.chart.canvas.id == 'barChart_churn2') {
+                                        if (meta.controller.chart.canvas.id == 'barChart_voc_topup' || meta.controller.chart.canvas.id == 'barChart_channel' || meta.controller.chart.canvas.id == 'barChart_evoc_topup' || meta.controller.chart.canvas.id == 'barChart_unique_subs_topup' || meta.controller.chart.canvas.id == 'barChart_churn2') {
                                             if (dataset.data[index] > 300) {
                                                 ctx.fillText(dataString, element._model.x, (element._model.y + padding));
                                             }
@@ -2125,7 +2136,7 @@
                             }
                         }
                     });
-                    
+
                     var ctx15 = document.getElementById("barChart_unique_subs_topup").getContext("2d");
                     window.myBar15 = new Chart(ctx15, {
                         type: 'bar',
@@ -2158,6 +2169,56 @@
                             title: {
                                 display: true,
                                 text: 'Monthly Unique Subsriber TopUp'
+                            }, scales: {
+                                xAxes: [{
+                                        stacked: true,
+                                        gridLines: {
+                                            display: false
+                                        }
+                                    }],
+                                yAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        }, ticks: {
+                                            display: false
+                                        },
+                                        stacked: true,
+                                    }]
+                            }
+                        }
+                    });
+                    var ctx16 = document.getElementById("barChart_channel").getContext("2d");
+                    window.myBar16 = new Chart(ctx16, {
+                        type: 'bar',
+                        data: barChartData16,
+                        options: {
+                            responsive: true,
+                            //                maintainAspectRatio: true,
+                            legend: {
+                                display: false
+                            },
+                            tooltips: {
+                                mode: 'index',
+                                callbacks: {
+                                    label: function (tooltipItem, data) {
+                                        var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+                                        var temp_arr = value.split('.');
+                                        if (temp_arr.length == 2) {
+                                            value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                            value += '.' + temp_arr[1];
+                                        } else {
+                                            value = value.toString();
+                                            value = value.split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                        }
+                                        return value;
+                                    }
+                                } // end callbacks:
+                            },
+                            title: {
+                                display: true,
+                                text: 'Monthly Channel Report'
                             }, scales: {
                                 xAxes: [{
                                         stacked: true,
@@ -2644,6 +2705,44 @@
                             }
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                excelbutton = false;
+                            }
+                        });
+                    } else if (chartID == 'info_channel') {
+                        $.post(getChannel, {year: channel_year, type: arg_type}, function (data) {
+
+                        }).done(function (data) {
+                            barChartData16.datasets = [];
+                            var idx = 1;
+                            var channel_name = "";
+                            $.each(data, function (index, value) {
+                                channel_name = index;
+                                $.each(value, function (index2, value2) {
+                                    var colorName = colorNames[barChartData16.datasets.length % colorNames.length];
+                                    var colors = ["#bc5c5c", "#dff0d9","#f2b6b6", "#dff0d9","#f2b6b6", "#dff0d9","#f2b6b6", "#dff0d9","#f2b6b6",
+                                        "#dff0d9","#f2b6b6", "#dff0d9","#f2b6b6", "#dff0d9","#f2b6b6", "#dff0d9", "#dff0d9","#f2b6b6", "#dff0d9","#f2b6b6", "#dff0d9"];
+                                    var dsColor = window.chartColors[colorName];
+                                    barChartData16.datasets.push({
+                                        label: channel_name+" "+index2,
+                                        stack: 'Stack '+idx,
+                                        backgroundColor: colors[barChartData16.datasets.length % colors.length],
+                                        borderColor: colors[barChartData16.datasets.length % colors.length],
+                                        borderWidth: 1,
+                                        data: value2
+                                    });
+                                });
+                                idx++;
+                            });
+                            window.myBar16.update();
+                            document.getElementById('legend16').innerHTML = myBar16.generateLegend();
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#channel_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
