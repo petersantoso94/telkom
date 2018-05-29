@@ -1168,9 +1168,9 @@ class InventoryController extends BaseController {
                         } else {
                             $inputFileName = './uploaded_file/temp.' . $extention;
                             /** Load $inputFileName to a Spreadsheet Object  * */
-                            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
-                            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-                            $writer->save('./uploaded_file/' . 'temp.xlsx');
+//                            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+//                            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+//                            $writer->save('./uploaded_file/' . 'temp.xlsx');
 
                             $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                             $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
@@ -1272,47 +1272,46 @@ class InventoryController extends BaseController {
                         $arr_return = [];
                         $arr_act = [];
                         foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
-                            if ($sheetIndex == 1)
-                                foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                    if ($rowNumber > 2) {
-                                        // do stuff with the row
-                                        $msisdn = (string) $value[3];
-                                        if ($msisdn != '' && $msisdn != null) {
-                                            $msisdn = str_replace('\'', '', $msisdn);
-                                            if (substr($msisdn, 0, 1) === '0') {
-                                                $msisdn = substr($msisdn, 1);
-                                            }
-                                            array_push($arr_msisdn, $msisdn);
+                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                if ($rowNumber > 2) {
+                                    // do stuff with the row
+                                    $msisdn = (string) $value[3];
+                                    if ($msisdn != '' && $msisdn != null) {
+                                        $msisdn = str_replace('\'', '', $msisdn);
+                                        if (substr($msisdn, 0, 1) === '0') {
+                                            $msisdn = substr($msisdn, 1);
+                                        }
+                                        array_push($arr_msisdn, $msisdn);
+                                        $date_return = $value[2];
+                                        //$date_return = explode('/', $date_return);
+                                        //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                        $date_return = strtotime($date_return);
+                                        $date_return = date('Y-m-d', $date_return);
+                                        if (substr($date_return, 0, 4) === '1970') {
                                             $date_return = $value[2];
-                                            //$date_return = explode('/', $date_return);
-                                            //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                            $date_return = explode('/', $date_return);
+                                            $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                             $date_return = strtotime($date_return);
                                             $date_return = date('Y-m-d', $date_return);
-                                            if (substr($date_return, 0, 4) === '1970') {
-                                                $date_return = $value[2];
-                                                $date_return = explode('/', $date_return);
-                                                $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
-                                                $date_return = strtotime($date_return);
-                                                $date_return = date('Y-m-d', $date_return);
-                                            }
-                                            array_push($arr_return, $date_return);
+                                        }
+                                        array_push($arr_return, $date_return);
 
+                                        $date_act = $value[5];
+                                        //$date_return = explode('/', $date_return);
+                                        //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                        $date_act = strtotime($date_act);
+                                        $date_act = date('Y-m-d', $date_act);
+                                        if (substr($date_act, 0, 4) === '1970') {
                                             $date_act = $value[5];
-                                            //$date_return = explode('/', $date_return);
-                                            //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                            $date_act = explode('/', $date_act);
+                                            $date_act = $date_act[1] . '/' . $date_act[0] . '/' . $date_act[2];
                                             $date_act = strtotime($date_act);
                                             $date_act = date('Y-m-d', $date_act);
-                                            if (substr($date_act, 0, 4) === '1970') {
-                                                $date_act = $value[5];
-                                                $date_act = explode('/', $date_act);
-                                                $date_act = $date_act[1] . '/' . $date_act[0] . '/' . $date_act[2];
-                                                $date_act = strtotime($date_act);
-                                                $date_act = date('Y-m-d', $date_act);
-                                            }
-                                            array_push($arr_act, $date_act);
                                         }
+                                        array_push($arr_act, $date_act);
                                     }
                                 }
+                            }
                         }
                         $reader->close();
 
@@ -2089,7 +2088,7 @@ class InventoryController extends BaseController {
         $type = '';
         if (Input::get('type'))
             $type = Input::get('type');
-        $year = '2017';
+//        $year = '2017';
         $data = [];
 //        $prod = DB::table('m_inventory as inv1')
 //                        ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
