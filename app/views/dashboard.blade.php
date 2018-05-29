@@ -2719,8 +2719,8 @@
                                 channel_name = index;
                                 $.each(value, function (index2, value2) {
                                     var colorName = colorNames[barChartData16.datasets.length % colorNames.length];
-                                    var colors = ["#bc5c5c", "#dff0d9","#f2b6b6", "#dff0d9","#f2b6b6", "#dff0d9","#f2b6b6", "#dff0d9","#f2b6b6",
-                                        "#dff0d9","#f2b6b6", "#dff0d9","#f2b6b6", "#dff0d9","#f2b6b6", "#dff0d9", "#dff0d9","#f2b6b6", "#dff0d9","#f2b6b6", "#dff0d9"];
+                                    var colors = ["#bc5c5c", "#db4141","#fce9bf", "#ce9a29", "#f7f7af","#f9f939", "#9ccc70","#77bf35",
+                                        "#bfefec","#73e2ca", "#739de2","#598ce0","#edc0ec", "#ef4aec"];
                                     var dsColor = window.chartColors[colorName];
                                     barChartData16.datasets.push({
                                         label: channel_name+" "+index2,
