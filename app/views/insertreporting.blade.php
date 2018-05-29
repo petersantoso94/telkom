@@ -34,6 +34,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <h4>IVR Purchase</h4>
+                        <p>File format in XLSX</p>
                     </div>
                 </div>
                 <div class="row margtop20">
@@ -63,6 +64,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <h4>APF Return</h4>
+                        <p>File format in XLSX, named : APF Returned.xlsx</p>
                     </div>
                 </div>
                 <div class="row">
@@ -115,6 +117,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <h4>Acquisition Report</h4>
+                        <p>File format in XLSX</p>
                     </div>
                 </div>
                 <div class="row margtop20">
@@ -155,6 +158,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <h4>Churn Date</h4>
+                        <p>File format in XSLX</p>
                     </div>
                 </div>
                 <div class="row margtop20">
@@ -193,6 +197,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <h4>Productive MSISDN HK</h4>
+                        <p>File format in CSV, named yyyymm_productive_hk</p>
                     </div>
                 </div>
                 <div class="row margtop20">
@@ -231,6 +236,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <h4>Productive MSISDN TST</h4>
+                        <p>File format in XLSX, named : MKT-M-0205_紅白動卡_yyyymm. These data will be put (month - 1) in database</p>
                     </div>
                 </div>
                 <div class="row margtop20">
@@ -269,6 +275,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <h4>Recharge Report</h4>
+                        <p>File format in XLSX</p>
                     </div>
                 </div>
                 <div class="row margtop20">
@@ -307,6 +314,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <h4>Activated SIP</h4>
+                        <p>File format in CSV, named : SIP Data.csv</p>
                     </div>
                 </div>
                 <div class="row margtop20">
