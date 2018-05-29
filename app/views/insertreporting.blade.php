@@ -12,7 +12,7 @@
 <div class='row'>
     <div class='col-xs-8'>
         <form method="POST" accept-charset="UTF-8" enctype="multipart/form-data" id='form-ivr-purchase'>
-            <div class="white-pane__bordered margbot20">
+            <div class="white-pane__bordered margbot20" style="height: 270px;">
                 <div class="row">
                     <?php if (isset($number)) { ?>
                         <?php if ($number > 0) { ?>
@@ -38,9 +38,9 @@
                     </div>
                 </div>
                 <div class="row margtop20">
-                    <div class="col-xs-8">
+                    <div class="col-xs-28">
                         <div class="form-group">
-                            <div class="col-md-12">
+                            <div class="col-md-28">
                                 <input type="file" name="sample_file" class="vis-hide" style="height:0px; overflow: hidden" id="input-pict" data-validation="required" required>
                                 <button type="button" class="button btndef btn-mini no-shadow" id="btn-insert-image"><span class="glyphicon glyphicon-picture cgrey"></span> insert file</button>
                                 <span id='pict-name'></span>
@@ -60,7 +60,7 @@
     <div class="col-xs-8">
         <form method="POST" accept-charset="UTF-8" enctype="multipart/form-data" id='form-apf'>
             <input type="hidden" name='jenis' value='apf'>
-            <div class="white-pane__bordered margbot20">
+            <div class="white-pane__bordered margbot20" style="height: 270px;">
                 <div class="row">
                     <div class="col-xs-12">
                         <h4>APF Return</h4>
@@ -76,9 +76,9 @@
                     <?php } ?>
                 </div>
                 <div class="row margtop20">
-                    <div class="col-xs-8">
+                    <div class="col-xs-28">
                         <div class="form-group">
-                            <div class="col-md-12">
+                            <div class="col-md-28">
                                 <input type="file" name="sample_file" class="vis-hide" style="height:0px; overflow: hidden" id="input-pict2" data-validation="required" required>
                                 <button type="button" class="button btndef btn-mini no-shadow" id="btn-insert-image2"><span class="glyphicon glyphicon-picture cgrey"></span> insert file</button>
                                 <span id='pict-name2'></span>
@@ -96,7 +96,7 @@
     </div>
     <div class="col-xs-8">
         <form method="POST" accept-charset="UTF-8" enctype="multipart/form-data" id='form-activation'>
-            <div class="white-pane__bordered margbot20">
+            <div class="white-pane__bordered margbot20" style="height: 270px;">
                 <div class="row">
                     <?php if (isset($numberac)) { ?>
                         <?php if ($numberac > 0) { ?>
@@ -121,9 +121,9 @@
                     </div>
                 </div>
                 <div class="row margtop20">
-                    <div class="col-xs-8">
+                    <div class="col-xs-28">
                         <div class="form-group">
-                            <div class="col-md-12">
+                            <div class="col-md-28">
                                 <input type="file" name="sample_file" class="vis-hide" style="height:0px; overflow: hidden" id="input-pict3" data-validation="required" required>
                                 <button type="button" class="button btndef btn-mini no-shadow" id="btn-insert-image3"><span class="glyphicon glyphicon-picture cgrey"></span> insert file</button>
                                 <span id='pict-name3'></span>
@@ -144,7 +144,7 @@
 <div class="row">
     <div class='col-xs-8'>
         <form method="POST" accept-charset="UTF-8" enctype="multipart/form-data" id='form-churn'>
-            <div class="white-pane__bordered margbot20">
+            <div class="white-pane__bordered margbot20" style="height: 270px;">
                 <div class="row">
                     <?php if (isset($numberch)) { ?>
                         <?php if ($numberch > 0) { ?>
@@ -162,9 +162,9 @@
                     </div>
                 </div>
                 <div class="row margtop20">
-                    <div class="col-xs-8">
+                    <div class="col-xs-28">
                         <div class="form-group">
-                            <div class="col-md-12">
+                            <div class="col-md-28">
                                 <input type="file" name="sample_file" class="vis-hide" style="height:0px; overflow: hidden" id="input-pict4" data-validation="required" required>
                                 <button type="button" class="button btndef btn-mini no-shadow" id="btn-insert-image4"><span class="glyphicon glyphicon-picture cgrey"></span> insert file</button>
                                 <span id='pict-name4'></span>
@@ -183,7 +183,7 @@
     </div>
     <div class='col-xs-8'>
         <form method="POST" accept-charset="UTF-8" enctype="multipart/form-data" id='form-productive'>
-            <div class="white-pane__bordered margbot20">
+            <div class="white-pane__bordered margbot20" style="height: 270px;">
                 <div class="row">
                     <?php if (isset($numberpr)) { ?>
                         <?php if ($numberpr > 0) { ?>
@@ -201,9 +201,9 @@
                     </div>
                 </div>
                 <div class="row margtop20">
-                    <div class="col-xs-8">
+                    <div class="col-xs-28">
                         <div class="form-group">
-                            <div class="col-md-12">
+                            <div class="col-md-28">
                                 <input type="file" name="sample_file" class="vis-hide" style="height:0px; overflow: hidden" id="input-pict5" data-validation="required" required>
                                 <button type="button" class="button btndef btn-mini no-shadow" id="btn-insert-image5"><span class="glyphicon glyphicon-picture cgrey"></span> insert file</button>
                                 <span id='pict-name5'></span>
@@ -222,7 +222,7 @@
     </div>
     <div class='col-xs-8'>
         <form method="POST" accept-charset="UTF-8" enctype="multipart/form-data" id='form-productive-tst'>
-            <div class="white-pane__bordered margbot20">
+            <div class="white-pane__bordered margbot20" style="height: 270px;">
                 <div class="row">
                     <?php if (isset($numberprtst)) { ?>
                         <?php if ($numberprtst > 0) { ?>
@@ -240,9 +240,9 @@
                     </div>
                 </div>
                 <div class="row margtop20">
-                    <div class="col-xs-8">
+                    <div class="col-xs-28">
                         <div class="form-group">
-                            <div class="col-md-12">
+                            <div class="col-md-28">
                                 <input type="file" name="sample_file" class="vis-hide" style="height:0px; overflow: hidden" id="input-pict8" data-validation="required" required>
                                 <button type="button" class="button btndef btn-mini no-shadow" id="btn-insert-image8"><span class="glyphicon glyphicon-picture cgrey"></span> insert file</button>
                                 <span id='pict-name8'></span>
@@ -261,7 +261,7 @@
     </div>
     <div class='col-xs-8'>
         <form method="POST" accept-charset="UTF-8" enctype="multipart/form-data" id='form-topup'>
-            <div class="white-pane__bordered margbot20">
+            <div class="white-pane__bordered margbot20" style="height: 270px;">
                 <div class="row">
                     <?php if (isset($numbertop)) { ?>
                         <?php if ($numbertop > 0) { ?>
@@ -279,9 +279,9 @@
                     </div>
                 </div>
                 <div class="row margtop20">
-                    <div class="col-xs-8">
+                    <div class="col-xs-28">
                         <div class="form-group">
-                            <div class="col-md-12">
+                            <div class="col-md-28">
                                 <input type="file" name="sample_file" class="vis-hide" style="height:0px; overflow: hidden" id="input-pict6" data-validation="required" required>
                                 <button type="button" class="button btndef btn-mini no-shadow" id="btn-insert-image6"><span class="glyphicon glyphicon-picture cgrey"></span> insert file</button>
                                 <span id='pict-name6'></span>
@@ -300,7 +300,7 @@
     </div>
     <div class='col-xs-8'>
         <form method="POST" accept-charset="UTF-8" enctype="multipart/form-data" id='form-sip'>
-            <div class="white-pane__bordered margbot20">
+            <div class="white-pane__bordered margbot20"  style="height: 270px;">
                 <div class="row">
                     <?php if (isset($numbersip)) { ?>
                         <?php if ($numbersip > 0) { ?>
@@ -318,9 +318,9 @@
                     </div>
                 </div>
                 <div class="row margtop20">
-                    <div class="col-xs-8">
+                    <div class="col-xs-28">
                         <div class="form-group">
-                            <div class="col-md-12">
+                            <div class="col-md-28">
                                 <input type="file" name="sample_file" class="vis-hide" style="height:0px; overflow: hidden" id="input-pict7" data-validation="required" required>
                                 <button type="button" class="button btndef btn-mini no-shadow" id="btn-insert-image7"><span class="glyphicon glyphicon-picture cgrey"></span> insert file</button>
                                 <span id='pict-name7'></span>
