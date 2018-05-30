@@ -220,8 +220,20 @@
                                                     <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
-                                                        <span class="info-box-text">Channel</span>
+                                                        <span class="info-box-text">Subsriber per Channel</span>
                                                         <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_channel">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Churn per Channel</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_channel_churn">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
                                                     </div>
                                                     <!-- /.info-box-content -->
                                                 </div>
@@ -249,6 +261,29 @@
                                             <div class="chart">
                                                 <div id="legend16" class="legend"></div>
                                                 <canvas id="barChart_channel" height="100"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_channel_churn" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="channel_churn_year">
+                                                    @foreach($years as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend17" class="legend"></div>
+                                                <canvas id="barChart_channel_churn" height="100"></canvas>
                                             </div>
                                         </div>
                                     </div>
@@ -1112,6 +1147,7 @@
                 var getIVR = '<?php echo Route('getIVR') ?>';
                 var getCHURN = '<?php echo Route('getCHURN') ?>';
                 var getChannel = '<?php echo Route('getChannel') ?>';
+                var getChannelChurn = '<?php echo Route('getChannelChurn') ?>';
                 var getCHURN2 = '<?php echo Route('getCHURN2') ?>';
                 var getSubsriber = '<?php echo Route('getSubsriber') ?>';
                 var getProductive = '<?php echo Route('getProductive') ?>';
@@ -1134,6 +1170,7 @@
                 var payload_peruser_year = document.getElementById('payload_peruser_year').value;
                 var vs_year = document.getElementById('vs_year').value;
                 var channel_year = document.getElementById('channel_year').value;
+                var channel_churn_year = document.getElementById('channel_churn_year').value;
                 var voc_topup_year = document.getElementById('voc_topup_year').value;
                 var voc_topup300_year = document.getElementById('voc_topup300_year').value;
                 var evoc_topup_year = document.getElementById('evoc_topup_year').value;
@@ -1158,6 +1195,11 @@
                 });
                 $('#channel_year').on('change', function (e) {
                     channel_year = document.getElementById('channel_year').value;
+                    scroll = false;
+                    refreshBarChart();
+                });
+                $('#channel_churn_year').on('change', function (e) {
+                    channel_churn_year = document.getElementById('channel_churn_year').value;
                     scroll = false;
                     refreshBarChart();
                 });
@@ -1300,6 +1342,10 @@
                     datasets: []
                 };
                 var barChartData16 = {
+                    labels: MONTHS,
+                    datasets: []
+                };
+                var barChartData17 = {
                     labels: MONTHS,
                     datasets: []
                 };
@@ -2237,6 +2283,56 @@
                             }
                         }
                     });
+                    var ctx17 = document.getElementById("barChart_channel_churn").getContext("2d");
+                    window.myBar17 = new Chart(ctx17, {
+                        type: 'bar',
+                        data: barChartData17,
+                        options: {
+                            responsive: true,
+                            //                maintainAspectRatio: true,
+                            legend: {
+                                display: false
+                            },
+                            tooltips: {
+                                mode: 'index',
+                                callbacks: {
+                                    label: function (tooltipItem, data) {
+                                        var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+                                        var temp_arr = value.split('.');
+                                        if (temp_arr.length == 2) {
+                                            value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                            value += '.' + temp_arr[1];
+                                        } else {
+                                            value = value.toString();
+                                            value = value.split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                        }
+                                        return value;
+                                    }
+                                } // end callbacks:
+                            },
+                            title: {
+                                display: true,
+                                text: 'Monthly Channel Churn Report'
+                            }, scales: {
+                                xAxes: [{
+                                        stacked: true,
+                                        gridLines: {
+                                            display: false
+                                        }
+                                    }],
+                                yAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        }, ticks: {
+                                            display: false
+                                        },
+                                        stacked: true,
+                                    }]
+                            }
+                        }
+                    });
 
                     refreshBarChart();
                 };
@@ -2719,12 +2815,12 @@
                                 channel_name = index;
                                 $.each(value, function (index2, value2) {
                                     var colorName = colorNames[barChartData16.datasets.length % colorNames.length];
-                                    var colors = ["#bc5c5c", "#db4141","#fce9bf", "#ce9a29", "#f7f7af","#f9f939", "#9ccc70","#77bf35",
-                                        "#bfefec","#73e2ca", "#739de2","#598ce0","#edc0ec", "#ef4aec"];
+                                    var colors = ["#bc5c5c", "#db4141", "#fce9bf", "#ce9a29", "#f7f7af", "#f9f939", "#9ccc70", "#77bf35",
+                                        "#bfefec", "#73e2ca", "#739de2", "#598ce0", "#edc0ec", "#ef4aec"];
                                     var dsColor = window.chartColors[colorName];
                                     barChartData16.datasets.push({
-                                        label: channel_name+" "+index2,
-                                        stack: 'Stack '+idx,
+                                        label: channel_name + " " + index2,
+                                        stack: 'Stack ' + idx,
                                         backgroundColor: colors[barChartData16.datasets.length % colors.length],
                                         borderColor: colors[barChartData16.datasets.length % colors.length],
                                         borderWidth: 1,
@@ -2743,6 +2839,44 @@
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
                                 $("#channel_year").val(default_year);
+                                excelbutton = false;
+                            }
+                        });
+                    }else if (chartID == 'info_channel_churn') {
+                        $.post(getChannelChurn, {year: channel_year, type: arg_type}, function (data) {
+
+                        }).done(function (data) {
+                            barChartData17.datasets = [];
+                            var idx = 1;
+                            var channel_name = "";
+                            $.each(data, function (index, value) {
+                                channel_name = index;
+                                $.each(value, function (index2, value2) {
+                                    var colorName = colorNames[barChartData17.datasets.length % colorNames.length];
+                                    var colors = ["#bc5c5c", "#db4141", "#fce9bf", "#ce9a29", "#f7f7af", "#f9f939", "#9ccc70", "#77bf35",
+                                        "#bfefec", "#73e2ca", "#739de2", "#598ce0", "#edc0ec", "#ef4aec"];
+                                    var dsColor = window.chartColors[colorName];
+                                    barChartData17.datasets.push({
+                                        label: channel_name + " " + index2,
+                                        stack: 'Stack ' + idx,
+                                        backgroundColor: colors[barChartData17.datasets.length % colors.length],
+                                        borderColor: colors[barChartData17.datasets.length % colors.length],
+                                        borderWidth: 1,
+                                        data: value2
+                                    });
+                                });
+                                idx++;
+                            });
+                            window.myBar17.update();
+                            document.getElementById('legend17').innerHTML = myBar17.generateLegend();
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#channel_churn_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
