@@ -2165,7 +2165,7 @@ class InventoryController extends BaseController {
         $type = '';
         if (Input::get('type'))
             $type = Input::get('type');
-        $year = '2017';
+//        $year = '2017';
         $data = [];
         $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ChurnDate) = '{$year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
                         ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
