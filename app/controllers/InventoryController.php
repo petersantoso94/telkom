@@ -2165,7 +2165,7 @@ class InventoryController extends BaseController {
         $type = '';
         if (Input::get('type'))
             $type = Input::get('type');
-//        $year = '2017';
+        $year = '2017';
         $data = [];
         $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ChurnDate) = '{$year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
                         ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
@@ -2187,7 +2187,7 @@ class InventoryController extends BaseController {
             foreach ($act as $ivr) {
                 if (!isset($data[$ivr->Channel]["Not Productive Churn"]))
                     $data[$ivr->Channel]["Not Productive Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                $data[$ivr->Channel]["Not Productive Churn"][($ivr->Month - 1)] = $ivr->Counter - $data[$ivr->Channel]["Productive Subscriber"][($ivr->Month - 1)];
+                $data[$ivr->Channel]["Not Productive Churn"][($ivr->Month - 1)] = $ivr->Counter - $data[$ivr->Channel]["Productive Churn"][($ivr->Month - 1)];
             }
         }
         if ($type === '2') {
@@ -2220,7 +2220,7 @@ class InventoryController extends BaseController {
                     foreach ($act as $ivr) {
                         if (!isset($data[$ivr->Channel]["Not Productive Churn"]))
                             $data[$ivr->Channel]["Not Productive Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        $data[$ivr->Channel]["Not Productive Churn"][($ivr->Month - 1)] = $ivr->Counter - $data[$ivr->Channel]["Productive Subscriber"][($ivr->Month - 1)];
+                        $data[$ivr->Channel]["Not Productive Churn"][($ivr->Month - 1)] = $ivr->Counter - $data[$ivr->Channel]["Productive Churn"][($ivr->Month - 1)];
                     }
                 }
                 foreach ($data as $key => $abc) {
