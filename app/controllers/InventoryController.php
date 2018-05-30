@@ -1195,7 +1195,7 @@ class InventoryController extends BaseController {
                                             //$date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
                                             $date_return = strtotime($date_return);
                                             $date_return = date('Y-m-d', $date_return);
-                                            
+
                                             if (substr($date_return, 0, 4) === '1970') {
                                                 $date_return = $value[2];
                                                 $date_return = explode('/', $date_return);
@@ -2086,19 +2086,11 @@ class InventoryController extends BaseController {
 
     static function getChannel() {
         $year = Input::get('year');
-        $type = '';
+//        $type = '2';
         if (Input::get('type'))
             $type = Input::get('type');
 //        $year = '2017';
         $data = [];
-//        $prod = DB::table('m_inventory as inv1')
-//                        ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
-//                        ->join('m_productive as prod1', 'inv1.MSISDN', '=', 'prod1.MSISDN')
-//                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
-//                        ->groupBy(DB::raw("hist1.SubAgent, MONTH(inv1.ActivationDate), YEAR(inv1.ActivationDate)"))
-//                        ->select(DB::raw("hist1.SubAgent, COUNT(DISTINCT prod1.MSISDN) as 'count', MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
-//                        ))->get();
-//        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Activation%\'')->get();
         $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
                         ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                         ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
@@ -2121,6 +2113,125 @@ class InventoryController extends BaseController {
                     $data[$ivr->Channel]["Not Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 $data[$ivr->Channel]["Not Productive Subscriber"][($ivr->Month - 1)] = $ivr->Counter - $data[$ivr->Channel]["Productive Subscriber"][($ivr->Month - 1)];
             }
+        }
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
+                $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year->Year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
+                                ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                                ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
+                                ->groupBy(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1), YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)"))
+                                ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(DISTINCT prod1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
+                $act = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year->Year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
+                                ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
+                                ->groupBy(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1), YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)"))
+                                ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
+                if (count($act_prod) > 0) {
+                    foreach ($act_prod as $ivr) {
+                        if (!isset($data[$ivr->Channel]["Productive Subscriber"]))
+                            $data[$ivr->Channel]["Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data[$ivr->Channel]["Productive Subscriber"][($ivr->Month - 1)] = $ivr->Counter;
+                    }
+                }
+                if (count($act) > 0) {
+                    foreach ($act as $ivr) {
+                        if (!isset($data[$ivr->Channel]["Not Productive Subscriber"]))
+                            $data[$ivr->Channel]["Not Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data[$ivr->Channel]["Not Productive Subscriber"][($ivr->Month - 1)] = $ivr->Counter - $data[$ivr->Channel]["Productive Subscriber"][($ivr->Month - 1)];
+                    }
+                }
+                foreach ($data as $key => $abc) {
+                    $name = $key;
+                    foreach ($abc as $key2 => $a) {
+                        $myArr = array($name.' '.$key2, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                        $writer->addRow($myArr); // add a row at a time
+                    }
+                }
+            }
+            $writer->close();
+        }
+        return $data;
+    }
+
+    static function getChannelChurn() {
+        $year = Input::get('year');
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
+//        $year = '2017';
+        $data = [];
+        $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ChurnDate) = '{$year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
+                        ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                        ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
+                        ->groupBy(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1), YEAR(inv1.ChurnDate), MONTH(inv1.ChurnDate)"))
+                        ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(DISTINCT prod1.MSISDN) as 'Counter', YEAR(inv1.ChurnDate) as 'Year', MONTH(inv1.ChurnDate) as 'Month'"))->get();
+        $act = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ChurnDate) = '{$year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
+                        ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
+                        ->groupBy(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1), YEAR(inv1.ChurnDate), MONTH(inv1.ChurnDate)"))
+                        ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ChurnDate) as 'Year', MONTH(inv1.ChurnDate) as 'Month'"))->get();
+        if (count($act_prod) > 0) {
+            foreach ($act_prod as $ivr) {
+                if (!isset($data[$ivr->Channel]["Productive Churn"]))
+                    $data[$ivr->Channel]["Productive Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $data[$ivr->Channel]["Productive Churn"][($ivr->Month - 1)] = $ivr->Counter;
+            }
+        }
+        if (count($act) > 0) {
+            foreach ($act as $ivr) {
+                if (!isset($data[$ivr->Channel]["Not Productive Churn"]))
+                    $data[$ivr->Channel]["Not Productive Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $data[$ivr->Channel]["Not Productive Churn"][($ivr->Month - 1)] = $ivr->Counter - $data[$ivr->Channel]["Productive Subscriber"][($ivr->Month - 1)];
+            }
+        }
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
+                $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ChurnDate) = '{$year->Year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
+                                ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                                ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
+                                ->groupBy(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1), YEAR(inv1.ChurnDate), MONTH(inv1.ChurnDate)"))
+                                ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(DISTINCT prod1.MSISDN) as 'Counter', YEAR(inv1.ChurnDate) as 'Year', MONTH(inv1.ChurnDate) as 'Month'"))->get();
+                $act = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ChurnDate) = '{$year->Year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
+                                ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
+                                ->groupBy(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1), YEAR(inv1.ChurnDate), MONTH(inv1.ChurnDate)"))
+                                ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ChurnDate) as 'Year', MONTH(inv1.ChurnDate) as 'Month'"))->get();
+                if (count($act_prod) > 0) {
+                    foreach ($act_prod as $ivr) {
+                        if (!isset($data[$ivr->Channel]["Productive Churn"]))
+                            $data[$ivr->Channel]["Productive Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data[$ivr->Channel]["Productive Churn"][($ivr->Month - 1)] = $ivr->Counter;
+                    }
+                }
+                if (count($act) > 0) {
+                    foreach ($act as $ivr) {
+                        if (!isset($data[$ivr->Channel]["Not Productive Churn"]))
+                            $data[$ivr->Channel]["Not Productive Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data[$ivr->Channel]["Not Productive Churn"][($ivr->Month - 1)] = $ivr->Counter - $data[$ivr->Channel]["Productive Subscriber"][($ivr->Month - 1)];
+                    }
+                }
+                foreach ($data as $key => $abc) {
+                    $name = $key;
+                    foreach ($abc as $key2 => $a) {
+                        $myArr = array($name.' '.$key2, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                        $writer->addRow($myArr); // add a row at a time
+                    }
+                }
+            }
+            $writer->close();
         }
         return $data;
     }
