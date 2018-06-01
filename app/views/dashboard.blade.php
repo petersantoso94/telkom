@@ -411,7 +411,7 @@
                                                 </div>
                                                 <!-- /.info-box -->
                                             </div>
-                                            <div class="col-md-6 col-sm-6 col-xs-12">
+<!--                                            <div class="col-md-6 col-sm-6 col-xs-12">
                                                 <div class="info-box">
                                                     <span class="info-box-icon bg-yellow"><i class="fa fa-bar-chart"></i></span>
 
@@ -419,10 +419,10 @@
                                                         <span class="info-box-text">Subsriber Topup</span>
                                                         <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_subs_topup">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
                                                     </div>
-                                                    <!-- /.info-box-content -->
+                                                     /.info-box-content 
                                                 </div>
-                                                <!-- /.info-box -->
-                                            </div>
+                                                 /.info-box 
+                                            </div>-->
                                         </div>
                                         <div class="row toogling" id="info_voc_topup" style="display: none;">
                                             <div class="form-group col-md-2">
