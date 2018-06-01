@@ -1505,7 +1505,7 @@ class InventoryController extends BaseController {
                 }
                 return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
             }
-             else if (Input::get('jenis') == 'productive') {
+             /*else if (Input::get('jenis') == 'productive') {
                 $input = Input::file('sample_file');
                 if ($input != '') {
                     if (Input::hasFile('sample_file')) {
@@ -1572,7 +1572,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
-            }
+            }*/
             else if (Input::get('jenis') == 'productive') {
                 $input = Input::file('sample_file');
                 if ($input != '') {
