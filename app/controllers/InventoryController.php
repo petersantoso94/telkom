@@ -95,6 +95,30 @@ class InventoryController extends BaseController {
                                         array_push($arr_status_hist, $status);
                                         array_push($arr_subagent_hist, '-');
                                         array_push($arr_wh_hist, $wh);
+                                        
+                                        //there is warehouse
+                                        if ($value[5] != null && $value[5] != '') {
+                                            $id_counter++;
+                                            $status = 3;
+                                            array_push($arr_sn_hist, $sn);
+                                            array_push($arr_id_hist, $id_counter);
+                                            $date_shipin = $value[5];
+                                            if (is_object($date_shipin)) {
+                                                $date_shipin = $date_shipin->format('Y-m-d');
+                                            } else {
+                                                $date_shipin = strtotime($date_shipin);
+                                                $date_shipin = date('Y-m-d', $date_shipin);
+                                            }
+                                            array_push($arr_hist_date, $date_shipin);
+                                            array_push($arr_price_hist, '0');
+                                            array_push($arr_remark_hist, $remark_obj);
+                                            array_push($arr_laststatus_hist, $status);
+                                            $shipinNumber = $date_shipin.'/WH/001';
+                                            array_push($arr_shipoutnumber_hist, $shipinNumber);
+                                            array_push($arr_status_hist, $status);
+                                            array_push($arr_subagent_hist, '-');
+                                            array_push($arr_wh_hist, $wh);
+                                        }
 
 
                                         //there is shipout
@@ -272,6 +296,29 @@ class InventoryController extends BaseController {
                                         array_push($arr_subagent_hist, '-');
                                         array_push($arr_wh_hist, $wh);
 
+                                        //there is warehouse
+                                        if ($value[5] != null && $value[5] != '') {
+                                            $id_counter++;
+                                            $status = 3;
+                                            array_push($arr_sn_hist, $sn);
+                                            array_push($arr_id_hist, $id_counter);
+                                            $date_shipin = $value[5];
+                                            if (is_object($date_shipin)) {
+                                                $date_shipin = $date_shipin->format('Y-m-d');
+                                            } else {
+                                                $date_shipin = strtotime($date_shipin);
+                                                $date_shipin = date('Y-m-d', $date_shipin);
+                                            }
+                                            array_push($arr_hist_date, $date_shipin);
+                                            array_push($arr_price_hist, '0');
+                                            array_push($arr_remark_hist, $remark_obj);
+                                            array_push($arr_laststatus_hist, $status);
+                                            $shipinNumber = $date_shipin.'/WH/001';
+                                            array_push($arr_shipoutnumber_hist, $shipinNumber);
+                                            array_push($arr_status_hist, $status);
+                                            array_push($arr_subagent_hist, '-');
+                                            array_push($arr_wh_hist, $wh);
+                                        }
 
                                         //there is shipout
                                         if ($value[7] != null && $value[7] != '') {
@@ -3797,19 +3844,19 @@ class InventoryController extends BaseController {
         if (substr($month, 0, 1) === "0") {
             $month = substr($month, 1, 1);
         }
-        
+
         if ($day !== '1')
             $day = $day - 1;
         else {
-            $month = $month -1 ;
-            if($month%2 == 1) //ganjil
+            $month = $month - 1;
+            if ($month % 2 == 1) //ganjil
                 $day = 31;
-            else if($month == 2)
+            else if ($month == 2)
                 $day = 28;
             else
                 $day = 30;
         }
-        
+
         $last_year = $year;
         $last_month = $month - 1;
         $last_day = $day - 1;
