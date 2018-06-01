@@ -241,7 +241,7 @@ class InventoryController extends BaseController {
                                             $remark_obj = $remark_obj->format('Y-m-d');
                                         }
                                         array_push($arr_sn, $sn);
-                                        array_push($arr_shipinprice, $value[13]);
+                                        array_push($arr_shipinprice, $value[12]);
                                         if (substr($value[0], 0, 6) == 'KR0350' || substr($value[0], 0, 6) == 'KR1850') {
                                             $type = 3;
                                         }
@@ -264,7 +264,7 @@ class InventoryController extends BaseController {
                                             $date_shipin = date('Y-m-d', $date_shipin);
                                         }
                                         array_push($arr_hist_date, $date_shipin);
-                                        array_push($arr_price_hist, $value[13]);
+                                        array_push($arr_price_hist, $value[12]);
                                         array_push($arr_remark_hist, $remark_obj);
                                         $shipinNumber = $date_shipin . '/SI/TST001';
                                         array_push($arr_shipoutnumber_hist, $shipinNumber);
@@ -279,7 +279,7 @@ class InventoryController extends BaseController {
                                             $status = 2;
                                             $tempSA = '';
                                             $tempSN = '/SO/';
-                                            if ($value[15] != null) {
+                                            if ($value[14] != null) {
                                                 $status = 4;
                                                 $tempSN = '/CO/';
                                             }
@@ -307,7 +307,7 @@ class InventoryController extends BaseController {
                                             array_push($arr_status_hist, $status);
                                             array_push($arr_laststatus_hist, $status);
                                             array_push($arr_id_hist, $id_counter);
-                                            array_push($arr_price_hist, $value[14]);
+                                            array_push($arr_price_hist, $value[13]);
                                             $date_shipout = $value[7];
                                             if (is_object($date_shipout)) {
                                                 $date_shipout = $date_shipout->format('Y-m-d');
@@ -2150,7 +2150,7 @@ class InventoryController extends BaseController {
                 foreach ($data as $key => $abc) {
                     $name = $key;
                     foreach ($abc as $key2 => $a) {
-                        $myArr = array($name.' '.$key2, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                        $myArr = array($name . ' ' . $key2, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
                         $writer->addRow($myArr); // add a row at a time
                     }
                 }
@@ -2167,7 +2167,7 @@ class InventoryController extends BaseController {
             $type = Input::get('type');
 //        $year = '2017';
         $data = [];
-        
+
         $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ChurnDate) = '{$year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
                         ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                         ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
@@ -2227,7 +2227,7 @@ class InventoryController extends BaseController {
                 foreach ($data as $key => $abc) {
                     $name = $key;
                     foreach ($abc as $key2 => $a) {
-                        $myArr = array($name.' '.$key2, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                        $myArr = array($name . ' ' . $key2, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
                         $writer->addRow($myArr); // add a row at a time
                     }
                 }
@@ -3788,15 +3788,28 @@ class InventoryController extends BaseController {
 
     static function exportExcelWeeklyDashboard() {
         $date = Input::get("argyear");
-//        $date = "2018-04-15";
+        $date = "2018-04-1";
         $year = explode("-", $date)[0];
         $month = explode("-", $date)[1];
         $day = explode("-", $date)[2];
-        $day = $day - 1;
+
 
         if (substr($month, 0, 1) === "0") {
             $month = substr($month, 1, 1);
         }
+        
+        if ($day !== '1')
+            $day = $day - 1;
+        else {
+            $month = $month -1 ;
+            if($month%2 == 1) //ganjil
+                $day = 31;
+            else if($month == 2)
+                $day = 28;
+            else
+                $day = 30;
+        }
+        
         $last_year = $year;
         $last_month = $month - 1;
         $last_day = $day - 1;
