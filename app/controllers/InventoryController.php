@@ -95,7 +95,7 @@ class InventoryController extends BaseController {
                                         array_push($arr_status_hist, $status);
                                         array_push($arr_subagent_hist, '-');
                                         array_push($arr_wh_hist, $wh);
-                                        
+
                                         //there is warehouse
                                         if ($value[5] != null && $value[5] != '') {
                                             $id_counter++;
@@ -113,7 +113,7 @@ class InventoryController extends BaseController {
                                             array_push($arr_price_hist, '0');
                                             array_push($arr_remark_hist, $remark_obj);
                                             array_push($arr_laststatus_hist, $status);
-                                            $shipinNumber = $date_shipin.'/WH/001';
+                                            $shipinNumber = $date_shipin . '/WH/001';
                                             array_push($arr_shipoutnumber_hist, $shipinNumber);
                                             array_push($arr_status_hist, $status);
                                             array_push($arr_subagent_hist, '-');
@@ -313,7 +313,7 @@ class InventoryController extends BaseController {
                                             array_push($arr_price_hist, '0');
                                             array_push($arr_remark_hist, $remark_obj);
                                             array_push($arr_laststatus_hist, $status);
-                                            $shipinNumber = $date_shipin.'/WH/001';
+                                            $shipinNumber = $date_shipin . '/WH/001';
                                             array_push($arr_shipoutnumber_hist, $shipinNumber);
                                             array_push($arr_status_hist, $status);
                                             array_push($arr_subagent_hist, '-');
@@ -1505,74 +1505,74 @@ class InventoryController extends BaseController {
                 }
                 return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
             }
-//             else if (Input::get('jenis') == 'productive') {
-//                $input = Input::file('sample_file');
-//                if ($input != '') {
-//                    if (Input::hasFile('sample_file')) {
-//                        $destination = base_path() . '/uploaded_file/';
-//                        $extention = Input::file('sample_file')->getClientOriginalExtension();
-//                        $real_filename = $_FILES['sample_file']['name'];
-//                        $filename = 'temp.' . $extention;
-//                        Input::file('sample_file')->move($destination, $filename);
-//                        $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
-//                        $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
-////$reader = ReaderFactory::create(Type::CSV); // for CSV files
-////$reader = ReaderFactory::create(Type::ODS); // for ODS files
-//
-//                        $reader->open($filePath);
-//                        $counter = 0;
-//                        $month_temp = 0;
-//                        $year_temp = 0;
-//                        $arr_msisdn = [];
-//                        $arr_month = [];
-//                        $arr_year = [];
-//                        $arr_mo = [];
-//                        $arr_mt = [];
-//                        $arr_internet = [];
-//                        $arr_sms = [];
-//                        $arr_services = [];
-//                        foreach ($reader->getSheetIterator() as $sheet) {
-//                            // grab sheet name from existing file
-//                            $sheet_name = $sheet->getName();
-//                            $month_temp = substr($sheet_name, 4, 2);
-//                            $year_temp = substr($sheet_name, 0, 4);
-//                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-//                                if ($rowNumber > 1) {
-//                                    // do stuff with the row
-//                                    $msisdn = (string) $value[0];
-//
-//                                    if ($msisdn != '' && $msisdn != null) {
-//                                        $msisdn = str_replace('\'', '', $msisdn);
-//                                        if (substr($msisdn, 0, 1) === '0') {
-//                                            $msisdn = substr($msisdn, 1);
-//                                        }
-//                                        array_push($arr_msisdn, $msisdn);
-//                                        array_push($arr_month, $month_temp);
-//                                        array_push($arr_year, $year_temp);
-//                                        array_push($arr_mo, $value[4]);
-//                                        array_push($arr_mt, $value[5]);
-//                                        array_push($arr_internet, $value[6]);
-//                                        array_push($arr_sms, $value[7]);
-////                                            array_push($arr_services, $value[11]);
-//                                    }
-//                                }
-//                            }
-//                        }
-//                        $reader->close();
-//                        $for_raw = '';
-//                        for ($i = 0; $i < count($arr_msisdn); $i++) {
-//                            $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i];
-//                            if ($i == 0)
-//                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
-//                            else
-//                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
-//                        }
-//                        DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Unik=Unik;");
-//                        return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberpr(count($arr_msisdn));
-//                    }
-//                }
-//                return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
-//            }
+             else if (Input::get('jenis') == 'productive') {
+                $input = Input::file('sample_file');
+                if ($input != '') {
+                    if (Input::hasFile('sample_file')) {
+                        $destination = base_path() . '/uploaded_file/';
+                        $extention = Input::file('sample_file')->getClientOriginalExtension();
+                        $real_filename = $_FILES['sample_file']['name'];
+                        $filename = 'temp.' . $extention;
+                        Input::file('sample_file')->move($destination, $filename);
+                        $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                        $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+//$reader = ReaderFactory::create(Type::CSV); // for CSV files
+//$reader = ReaderFactory::create(Type::ODS); // for ODS files
+
+                        $reader->open($filePath);
+                        $counter = 0;
+                        $month_temp = 0;
+                        $year_temp = 0;
+                        $arr_msisdn = [];
+                        $arr_month = [];
+                        $arr_year = [];
+                        $arr_mo = [];
+                        $arr_mt = [];
+                        $arr_internet = [];
+                        $arr_sms = [];
+                        $arr_services = [];
+                        foreach ($reader->getSheetIterator() as $sheet) {
+                            // grab sheet name from existing file
+                            $sheet_name = $sheet->getName();
+                            $month_temp = substr($sheet_name, 4, 2);
+                            $year_temp = substr($sheet_name, 0, 4);
+                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                                if ($rowNumber > 1) {
+                                    // do stuff with the row
+                                    $msisdn = (string) $value[0];
+
+                                    if ($msisdn != '' && $msisdn != null) {
+                                        $msisdn = str_replace('\'', '', $msisdn);
+                                        if (substr($msisdn, 0, 1) === '0') {
+                                            $msisdn = substr($msisdn, 1);
+                                        }
+                                        array_push($arr_msisdn, $msisdn);
+                                        array_push($arr_month, $month_temp);
+                                        array_push($arr_year, $year_temp);
+                                        array_push($arr_mo, $value[4]);
+                                        array_push($arr_mt, $value[5]);
+                                        array_push($arr_internet, $value[6]);
+                                        array_push($arr_sms, $value[7]);
+//                                            array_push($arr_services, $value[11]);
+                                    }
+                                }
+                            }
+                        }
+                        $reader->close();
+                        $for_raw = '';
+                        for ($i = 0; $i < count($arr_msisdn); $i++) {
+                            $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i];
+                            if ($i == 0)
+                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
+                            else
+                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
+                        }
+                        DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Unik=Unik;");
+                        return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberpr(count($arr_msisdn));
+                    }
+                }
+                return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
+            }
             else if (Input::get('jenis') == 'productive') {
                 $input = Input::file('sample_file');
                 if ($input != '') {
@@ -3511,17 +3511,18 @@ class InventoryController extends BaseController {
         $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
         $filePath = public_path() . "/inventory_" . $filenames . ".xlsx";
         $writer->openToFile($filePath);
-        $myArr = array("SERIAL NUMBER", "MSISDN", "TYPE", "LAST STATUS", "SHIPOUT TO", "SUBAGENT", "FORM SERIES", "LAST WAREHOUSE", "SHIPOUT DATE", "SHIPOUT PRICE", "SHIPIN DATE", "SHIPIN PRICE", "REMARK");
+        $myArr = array("SERIAL NUMBER", "MSISDN", "TYPE", "LAST STATUS", "SHIPOUT TO", "SUBAGENT", "FORM SERIES", "LAST WAREHOUSE", "WAREHOUSE DATE", "SHIPOUT DATE", "SHIPOUT PRICE", "SHIPIN DATE", "SHIPIN PRICE", "REMARK", "ACTIVATION/ TOPUP DATE");
         $writer->addRow($myArr); // add a row at a time
 
         if ($fs == '') {
             $invs = DB::table('m_inventory as inv1')
                             ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
                             ->where('inv1.Type', $typesym, $type)
-                            ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                            ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type,inv1.ActivationDate,inv1.TopUpDate, m_historymovement.Status,'
                                     . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                     . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                     . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                    . '(SELECT `Date` FROM m_historymovement WHERE Status = "3" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "WarehouseDate", '
                                     . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
                                     . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
                                     . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
@@ -3531,10 +3532,11 @@ class InventoryController extends BaseController {
                 $invs = DB::table('m_inventory as inv1')
                                 ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
                                 ->where('inv1.Type', $typesym, $type)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
-                                ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                                ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                         . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                         . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                         . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                        . '(SELECT `Date` FROM m_historymovement WHERE Status = "3" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "WarehouseDate", '
                                         . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
                                         . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
                                         . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
@@ -3544,10 +3546,11 @@ class InventoryController extends BaseController {
                                     ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
                                     ->where('inv1.Type', $typesym, $type)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
-                                    ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                                    ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                             . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                             . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                            . '(SELECT `Date` FROM m_historymovement WHERE Status = "3" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "WarehouseDate", '
                                             . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
                                             . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
                                             . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
@@ -3559,10 +3562,11 @@ class InventoryController extends BaseController {
                                     ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                                     ->where('m_inventory.Type', $typesym, $type)
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
-                                    ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                                    ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                             . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                             . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                            . '(SELECT `Date` FROM m_historymovement WHERE Status = "3" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "WarehouseDate", '
                                             . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
                                             . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
                                             . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
@@ -3574,10 +3578,11 @@ class InventoryController extends BaseController {
                             ->join('m_historymovement', 'inv1.SerialNumber', '=', 'm_historymovement.SN')
                             ->where('inv1.Type', $typesym, $type)
                             ->where('inv1.LastStatusHist', $statussym, $status)
-                            ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                            ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                     . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                     . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                     . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                    . '(SELECT `Date` FROM m_historymovement WHERE Status = "3" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "WarehouseDate", '
                                     . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
                                     . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
                                     . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
@@ -3591,6 +3596,7 @@ class InventoryController extends BaseController {
                                         . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                         . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                         . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                        . '(SELECT `Date` FROM m_historymovement WHERE Status = "3" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "WarehouseDate", '
                                         . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
                                         . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
                                         . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
@@ -3601,10 +3607,11 @@ class InventoryController extends BaseController {
                                     ->where('inv1.Type', $typesym, $type)
                                     ->where('m_historymovement.Status', $statussym, $status)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
-                                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                             . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                             . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                            . '(SELECT `Date` FROM m_historymovement WHERE Status = "3" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "WarehouseDate", '
                                             . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
                                             . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
                                             . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
@@ -3617,10 +3624,11 @@ class InventoryController extends BaseController {
                                     ->where('inv1.Type', $typesym, $type)
                                     ->where('m_historymovement.Status', $statussym, $status)
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
-                                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
+                                    ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                             . '(SELECT SubAgent FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                             . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
+                                            . '(SELECT `Date` FROM m_historymovement WHERE Status = "3" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "WarehouseDate", '
                                             . '(SELECT `Date` FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutDate", '
                                             . '(SELECT Price FROM m_historymovement WHERE Status = "2" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutPrice", '
                                             . '(SELECT Price FROM m_historymovement WHERE Status = "0" AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipinPrice", '
@@ -3630,9 +3638,12 @@ class InventoryController extends BaseController {
         }
         foreach ($invs as $inv) {
             $type = 'SIM 3G';
+            $lastDate = $inv->ActivationDate;
             if ($inv->Type == 2) {
+                $lastDate = $inv->TopUpDate;
                 $type = 'eVoucher';
             } else if ($inv->Type == 3) {
+                $lastDate = $inv->TopUpDate;
                 $type = 'phVoucher';
             } else if ($inv->Type == 4) {
                 $type = 'SIM 4G';
@@ -3670,7 +3681,7 @@ class InventoryController extends BaseController {
             if ($shipout != '') {
                 $agent = $shipout[0];
             }
-            $myArr = array($inv->SerialNumber, $inv->MSISDN, $type, $status, $agent, $inv->SubAgent, $inv->ShipoutNumber, $inv->LastWarehouse, $shipoutdt, $shipoutprice, $shipindt, $inv->ShipinPrice, $inv->Remark);
+            $myArr = array($inv->SerialNumber, $inv->MSISDN, $type, $status, $agent, $inv->SubAgent, $inv->ShipoutNumber, $inv->LastWarehouse, $inv->WarehouseDate, $shipoutdt, $shipoutprice, $shipindt, $inv->ShipinPrice, $inv->Remark, $lastDate);
             $writer->addRow($myArr);
         }
         $writer->close();
