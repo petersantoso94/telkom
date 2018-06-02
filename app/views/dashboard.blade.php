@@ -68,7 +68,7 @@
                                                     <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
-                                                        <span class="info-box-text">Subsriber and Churn</span>
+                                                        <span class="info-box-text">subscriber and Churn</span>
                                                         <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_churn_month">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
                                                     </div>
                                                     <!-- /.info-box-content -->
@@ -80,7 +80,7 @@
                                                     <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
-                                                        <span class="info-box-text">Subsriber</span>
+                                                        <span class="info-box-text">subscriber</span>
                                                         <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_subs_month">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
                                                     </div>
                                                     <!-- /.info-box-content -->
@@ -220,7 +220,7 @@
                                                     <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
-                                                        <span class="info-box-text">Subsriber per Channel</span>
+                                                        <span class="info-box-text">subscriber per Channel</span>
                                                         <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_channel">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
                                                     </div>
                                                     <!-- /.info-box-content -->
@@ -380,7 +380,7 @@
                                                     <span class="info-box-icon bg-yellow"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
-                                                        <span class="info-box-text">Unique Subsriber Topup</span>
+                                                        <span class="info-box-text">Unique Subscriber Topup</span>
                                                         <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_unique_subs_topup">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
                                                     </div>
                                                     <!-- /.info-box-content -->
@@ -2214,7 +2214,7 @@
                             },
                             title: {
                                 display: true,
-                                text: 'Monthly Unique Subsriber TopUp'
+                                text: 'Monthly Unique Subscriber TopUp'
                             }, scales: {
                                 xAxes: [{
                                         stacked: true,
