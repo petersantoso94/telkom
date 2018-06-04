@@ -47,7 +47,17 @@
                 right: 20px;
                 text-align: center;
             }
-            .legend ul li{list-style:none;float:left;margin-right:8px;display:inline-block;}
+            .legend ul li{list-style:none;float:left;margin-right:8px;display:inline-block;margin-top: 5px;padding:10px;}
+            .legend ul li:nth-child(6n){
+                
+            }
+
+            .legend ul li:nth-child(6n+1){
+                clear:both;
+            }
+
+            .legend ul li:nth-child(-n+6){
+            }
             .legend ul li span{ width:50px; height:15px; margin-right:5px; float:left; }
         </style>
         @yield('css-content')
