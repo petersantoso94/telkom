@@ -259,7 +259,7 @@
                                                 <div class="loader loading-animation-global" style="display: none;"></div>
                                             </div>
                                             <div class="chart">
-                                                <div id="legend16" class="legend"></div>
+                                                <div id="legend16" class="legend" style="font-size: 80%"></div>
                                                 <canvas id="barChart_channel" height="100"></canvas>
                                             </div>
                                         </div>
@@ -282,7 +282,7 @@
                                                 <div class="loader loading-animation-global" style="display: none;"></div>
                                             </div>
                                             <div class="chart">
-                                                <div id="legend17" class="legend"></div>
+                                                <div id="legend17" class="legend" style="font-size: 80%"></div>
                                                 <canvas id="barChart_channel_churn" height="100"></canvas>
                                             </div>
                                         </div>
@@ -411,18 +411,18 @@
                                                 </div>
                                                 <!-- /.info-box -->
                                             </div>
-<!--                                            <div class="col-md-6 col-sm-6 col-xs-12">
-                                                <div class="info-box">
-                                                    <span class="info-box-icon bg-yellow"><i class="fa fa-bar-chart"></i></span>
-
-                                                    <div class="info-box-content">
-                                                        <span class="info-box-text">Subsriber Topup</span>
-                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_subs_topup">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
-                                                    </div>
-                                                     /.info-box-content 
-                                                </div>
-                                                 /.info-box 
-                                            </div>-->
+                                            <!--                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                                                            <div class="info-box">
+                                                                                                <span class="info-box-icon bg-yellow"><i class="fa fa-bar-chart"></i></span>
+                                            
+                                                                                                <div class="info-box-content">
+                                                                                                    <span class="info-box-text">Subsriber Topup</span>
+                                                                                                    <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_subs_topup">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                                                                </div>
+                                                                                                 /.info-box-content 
+                                                                                            </div>
+                                                                                             /.info-box 
+                                                                                        </div>-->
                                         </div>
                                         <div class="row toogling" id="info_voc_topup" style="display: none;">
                                             <div class="form-group col-md-2">
@@ -1364,8 +1364,9 @@
                         chart.data.datasets.forEach(function (dataset, i) {
                             var meta = chart.getDatasetMeta(i);
                             var idx = i;
+                            var counter_idx = 0;
                             if (!meta.hidden) {
-                                meta.data.forEach(function (element, index) {
+                                meta.data.forEach(function (element, index) { //jalan ke kanan bukan ke atas
                                     // Draw the text in black, with the specified font
                                     ctx.fillStyle = 'rgb(0, 0, 0)';
                                     var fontSize = 12;
@@ -1373,6 +1374,31 @@
                                     var fontFamily = 'Helvetica Neue';
                                     ctx.font = Chart.helpers.fontString(fontSize, fontStyle, fontFamily);
                                     // Just naively convert to string for now
+                                    if (meta.controller.chart.canvas.id == 'barChart_channel' || meta.controller.chart.canvas.id == 'barChart_channel_churn') {
+//                                        console.log(dataset.data[index])
+//                                        dataset.data[index].forEach(function (dataz){
+//                                           console.log(dataz);
+//                                        });
+                                        if (idx % 2 == 0 && index == 0) {
+                                            total = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                                        }
+                                        if (idx % 2 == 1) {
+                                            total[index] += dataset.data[index];
+                                            var dataString = total[index].toString();
+                                            var temp_arr = dataString.split('.');
+                                            if (temp_arr.length == 2) {
+                                                dataString = temp_arr[0].split(/(?=(?:...)*$)/);
+                                                dataString = dataString.join(',');
+                                                dataString += '.' + temp_arr[1];
+                                            } else {
+                                                dataString = dataString.split(/(?=(?:...)*$)/);
+                                                dataString = dataString.join(',');
+                                            }
+                                            if (total[index] > 500)
+                                                ctx.fillText('Total : ' + dataString, element._model.x, element._model.y - 7);
+                                        }
+                                        counter_idx++;
+                                    }
 
                                     if ((meta.controller.chart.canvas.id == 'barChart_churn' || meta.controller.chart.canvas.id == 'barChart_detail_churn') && dataset.data[index] < 0) {
                                         total[index] -= dataset.data[index];
@@ -1408,7 +1434,7 @@
                                     //                        }
                                     //                        ctx.fillText(dataString, position.x, position.y +((canvas_height -position.y )/2)+ (fontSize / 2) + padding - (canvas_height - y_height));
                                     if (dataString != '0') {
-                                        if (meta.controller.chart.canvas.id == 'barChart_voc_topup' || meta.controller.chart.canvas.id == 'barChart_channel'|| meta.controller.chart.canvas.id == 'barChart_channel_churn' || meta.controller.chart.canvas.id == 'barChart_evoc_topup' || meta.controller.chart.canvas.id == 'barChart_unique_subs_topup' || meta.controller.chart.canvas.id == 'barChart_churn2') {
+                                        if (meta.controller.chart.canvas.id == 'barChart_voc_topup' || meta.controller.chart.canvas.id == 'barChart_channel' || meta.controller.chart.canvas.id == 'barChart_channel_churn' || meta.controller.chart.canvas.id == 'barChart_evoc_topup' || meta.controller.chart.canvas.id == 'barChart_unique_subs_topup' || meta.controller.chart.canvas.id == 'barChart_churn2') {
                                             if (dataset.data[index] > 300) {
                                                 ctx.fillText(dataString, element._model.x, (element._model.y + padding));
                                             }
@@ -2815,8 +2841,8 @@
                                 channel_name = index;
                                 $.each(value, function (index2, value2) {
                                     var colorName = colorNames[barChartData16.datasets.length % colorNames.length];
-                                    var colors = ["#bc5c5c", "#db4141", "#fce9bf", "#ce9a29", "#f7f7af", "#f9f939", "#9ccc70", "#77bf35",
-                                        "#bfefec", "#73e2ca", "#739de2", "#598ce0", "#edc0ec", "#ef4aec"];
+                                    var colors = ["#db4141", "#f2c9c9", "#ce9a29", "#f7e8c8", "#f9f939", "#fcfcbd", "#77bf35", "#cff7aa",
+                                        "#73e2ca", "#d5efe9", "#598ce0", "#d5dfef", "#ef4aec", "#f2d2f1"];
                                     var dsColor = window.chartColors[colorName];
                                     barChartData16.datasets.push({
                                         label: channel_name + " " + index2,
@@ -2842,7 +2868,7 @@
                                 excelbutton = false;
                             }
                         });
-                    }else if (chartID == 'info_channel_churn') {
+                    } else if (chartID == 'info_channel_churn') {
                         $.post(getChannelChurn, {year: channel_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
@@ -2853,8 +2879,8 @@
                                 channel_name = index;
                                 $.each(value, function (index2, value2) {
                                     var colorName = colorNames[barChartData17.datasets.length % colorNames.length];
-                                    var colors = ["#bc5c5c", "#db4141", "#fce9bf", "#ce9a29", "#f7f7af", "#f9f939", "#9ccc70", "#77bf35",
-                                        "#bfefec", "#73e2ca", "#739de2", "#598ce0", "#edc0ec", "#ef4aec"];
+                                    var colors = ["#db4141", "#f2c9c9", "#ce9a29", "#f7e8c8", "#f9f939", "#fcfcbd", "#77bf35", "#cff7aa",
+                                        "#73e2ca", "#d5efe9", "#598ce0", "#d5dfef", "#ef4aec", "#f2d2f1"];
                                     var dsColor = window.chartColors[colorName];
                                     barChartData17.datasets.push({
                                         label: channel_name + " " + index2,
