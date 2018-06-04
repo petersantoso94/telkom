@@ -2134,6 +2134,7 @@ class InventoryController extends BaseController {
     static function getChannel() {
         $year = Input::get('year');
 //        $type = '2';
+        $type = '';
         if (Input::get('type'))
             $type = Input::get('type');
 //        $year = '2017';
