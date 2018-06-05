@@ -1287,7 +1287,7 @@ class InventoryController extends BaseController {
                                 for ($i = 0 + (($j - 1) * $block); $i < $j * $block; $i++) {
                                     if ($i < $counter) {
                                         $id = (int) $arr_msisdn[$i];
-                                        $cases[] = "WHEN {$id} then ?";
+                                        $cases[] = "WHEN '{$id}' then '{$arr_return[$i]}'";
                                         $params[] = $arr_return[$i];
                                         $ids[] = $id;
                                     } else {
@@ -1296,7 +1296,7 @@ class InventoryController extends BaseController {
                                 }
                                 $ids = implode(',', $ids);
                                 $cases = implode(' ', $cases);
-                                DB::update("UPDATE `{$table}` SET `ActivationDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
+                                DB::update("UPDATE `{$table}` SET `ActivationDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})");
                             }
                             return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberac($counter);
                         }
