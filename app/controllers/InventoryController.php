@@ -6,7 +6,7 @@ class InventoryController extends BaseController {
         return sprintf("%'.19d\n", $num);
     }
 
-    public function showInsertInventory2() { #sim
+    public function showInsertInventory() { #sim
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
@@ -127,7 +127,7 @@ class InventoryController extends BaseController {
                                             $status = 2;
                                             $tempSA = '';
                                             $tempSN = '/SO/';
-                                            if ($value[11] != null) {
+                                            if (strtolower($value[11]) === 'consignment') {
                                                 $status = 4;
                                                 $tempSN = '/CO/';
                                             }
@@ -326,7 +326,7 @@ class InventoryController extends BaseController {
                                             $status = 2;
                                             $tempSA = '';
                                             $tempSN = '/SO/';
-                                            if ($value[14] != null) {
+                                            if (strtolower($value[14]) === 'consignment') {
                                                 $status = 4;
                                                 $tempSN = '/CO/';
                                             }
@@ -457,7 +457,7 @@ class InventoryController extends BaseController {
         return View::make('insertinventory')->withPage('insert inventory');
     }
 
-    public function showInsertInventory() {
+    public function showInsertInventory22() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
