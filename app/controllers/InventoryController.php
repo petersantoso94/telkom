@@ -66,7 +66,7 @@ class InventoryController extends BaseController {
                                         array_push($arr_sn, $sn);
                                         array_push($arr_msisdn, $value[2]);
                                         array_push($arr_shipinprice, $value[12]);
-                                        if (strtolower($value[14]) == '4g') {
+                                        if (strtolower($value[11]) == '4g') {
                                             $type = 4;
                                         }
                                         array_push($arr_type, $type);
@@ -127,7 +127,7 @@ class InventoryController extends BaseController {
                                             $status = 2;
                                             $tempSA = '';
                                             $tempSN = '/SO/';
-                                            if (strtolower($value[11]) === 'consignment') {
+                                            if (strtolower($value[14]) === 'consignment') {
                                                 $status = 4;
                                                 $tempSN = '/CO/';
                                             }
@@ -265,7 +265,7 @@ class InventoryController extends BaseController {
                                             $remark_obj = $remark_obj->format('Y-m-d');
                                         }
                                         array_push($arr_sn, $sn);
-                                        array_push($arr_shipinprice, $value[12]);
+                                        array_push($arr_shipinprice, $value[11]);
                                         if (substr($value[0], 0, 6) == 'KR0350' || substr($value[0], 0, 6) == 'KR1850') {
                                             $type = 3;
                                         }
@@ -288,7 +288,7 @@ class InventoryController extends BaseController {
                                             $date_shipin = date('Y-m-d', $date_shipin);
                                         }
                                         array_push($arr_hist_date, $date_shipin);
-                                        array_push($arr_price_hist, $value[12]);
+                                        array_push($arr_price_hist, $value[11]);
                                         array_push($arr_remark_hist, $remark_obj);
                                         $shipinNumber = $date_shipin . '/SI/TST001';
                                         array_push($arr_shipoutnumber_hist, $shipinNumber);
@@ -326,7 +326,7 @@ class InventoryController extends BaseController {
                                             $status = 2;
                                             $tempSA = '';
                                             $tempSN = '/SO/';
-                                            if (strtolower($value[14]) === 'consignment') {
+                                            if (strtolower($value[13]) === 'consignment') {
                                                 $status = 4;
                                                 $tempSN = '/CO/';
                                             }
@@ -354,7 +354,7 @@ class InventoryController extends BaseController {
                                             array_push($arr_status_hist, $status);
                                             array_push($arr_laststatus_hist, $status);
                                             array_push($arr_id_hist, $id_counter);
-                                            array_push($arr_price_hist, $value[13]);
+                                            array_push($arr_price_hist, $value[12]);
                                             $date_shipout = $value[7];
                                             if (is_object($date_shipout)) {
                                                 $date_shipout = $date_shipout->format('Y-m-d');
