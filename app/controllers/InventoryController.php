@@ -1911,6 +1911,10 @@ class InventoryController extends BaseController {
                 $stats = '2 GB';
             } else if ($ivr->Status == '200') {
                 $stats = '200NT';
+            } else if ($ivr->Status == '699') {
+                $stats = 'Movies 4G';
+            } else if ($ivr->Status == '630') {
+                $stats = 'Movies 3G';
             }
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -1946,6 +1950,10 @@ class InventoryController extends BaseController {
                         $stats = '2 GB';
                     } else if ($ivr->Status == '200') {
                         $stats = '200NT';
+                    } else if ($ivr->Status == '699') {
+                        $stats = 'Movies 4G';
+                    } else if ($ivr->Status == '630') {
+                        $stats = 'Movies 3G';
                     }
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
