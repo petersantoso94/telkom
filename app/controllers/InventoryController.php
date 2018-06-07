@@ -1505,75 +1505,74 @@ class InventoryController extends BaseController {
                 }
                 return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
             }
-             /*else if (Input::get('jenis') == 'productive') {
-                $input = Input::file('sample_file');
-                if ($input != '') {
-                    if (Input::hasFile('sample_file')) {
-                        $destination = base_path() . '/uploaded_file/';
-                        $extention = Input::file('sample_file')->getClientOriginalExtension();
-                        $real_filename = $_FILES['sample_file']['name'];
-                        $filename = 'temp.' . $extention;
-                        Input::file('sample_file')->move($destination, $filename);
-                        $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
-                        $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
-//$reader = ReaderFactory::create(Type::CSV); // for CSV files
-//$reader = ReaderFactory::create(Type::ODS); // for ODS files
+            /* else if (Input::get('jenis') == 'productive') {
+              $input = Input::file('sample_file');
+              if ($input != '') {
+              if (Input::hasFile('sample_file')) {
+              $destination = base_path() . '/uploaded_file/';
+              $extention = Input::file('sample_file')->getClientOriginalExtension();
+              $real_filename = $_FILES['sample_file']['name'];
+              $filename = 'temp.' . $extention;
+              Input::file('sample_file')->move($destination, $filename);
+              $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+              $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+              //$reader = ReaderFactory::create(Type::CSV); // for CSV files
+              //$reader = ReaderFactory::create(Type::ODS); // for ODS files
 
-                        $reader->open($filePath);
-                        $counter = 0;
-                        $month_temp = 0;
-                        $year_temp = 0;
-                        $arr_msisdn = [];
-                        $arr_month = [];
-                        $arr_year = [];
-                        $arr_mo = [];
-                        $arr_mt = [];
-                        $arr_internet = [];
-                        $arr_sms = [];
-                        $arr_services = [];
-                        foreach ($reader->getSheetIterator() as $sheet) {
-                            // grab sheet name from existing file
-                            $sheet_name = $sheet->getName();
-                            $month_temp = substr($sheet_name, 4, 2);
-                            $year_temp = substr($sheet_name, 0, 4);
-                            foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                if ($rowNumber > 1) {
-                                    // do stuff with the row
-                                    $msisdn = (string) $value[0];
+              $reader->open($filePath);
+              $counter = 0;
+              $month_temp = 0;
+              $year_temp = 0;
+              $arr_msisdn = [];
+              $arr_month = [];
+              $arr_year = [];
+              $arr_mo = [];
+              $arr_mt = [];
+              $arr_internet = [];
+              $arr_sms = [];
+              $arr_services = [];
+              foreach ($reader->getSheetIterator() as $sheet) {
+              // grab sheet name from existing file
+              $sheet_name = $sheet->getName();
+              $month_temp = substr($sheet_name, 4, 2);
+              $year_temp = substr($sheet_name, 0, 4);
+              foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+              if ($rowNumber > 1) {
+              // do stuff with the row
+              $msisdn = (string) $value[0];
 
-                                    if ($msisdn != '' && $msisdn != null) {
-                                        $msisdn = str_replace('\'', '', $msisdn);
-                                        if (substr($msisdn, 0, 1) === '0') {
-                                            $msisdn = substr($msisdn, 1);
-                                        }
-                                        array_push($arr_msisdn, $msisdn);
-                                        array_push($arr_month, $month_temp);
-                                        array_push($arr_year, $year_temp);
-                                        array_push($arr_mo, $value[4]);
-                                        array_push($arr_mt, $value[5]);
-                                        array_push($arr_internet, $value[6]);
-                                        array_push($arr_sms, $value[7]);
-//                                            array_push($arr_services, $value[11]);
-                                    }
-                                }
-                            }
-                        }
-                        $reader->close();
-                        $for_raw = '';
-                        for ($i = 0; $i < count($arr_msisdn); $i++) {
-                            $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i];
-                            if ($i == 0)
-                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
-                            else
-                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
-                        }
-                        DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Unik=Unik;");
-                        return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberpr(count($arr_msisdn));
-                    }
-                }
-                return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
-            }*/
-            else if (Input::get('jenis') == 'productive') {
+              if ($msisdn != '' && $msisdn != null) {
+              $msisdn = str_replace('\'', '', $msisdn);
+              if (substr($msisdn, 0, 1) === '0') {
+              $msisdn = substr($msisdn, 1);
+              }
+              array_push($arr_msisdn, $msisdn);
+              array_push($arr_month, $month_temp);
+              array_push($arr_year, $year_temp);
+              array_push($arr_mo, $value[4]);
+              array_push($arr_mt, $value[5]);
+              array_push($arr_internet, $value[6]);
+              array_push($arr_sms, $value[7]);
+              //                                            array_push($arr_services, $value[11]);
+              }
+              }
+              }
+              }
+              $reader->close();
+              $for_raw = '';
+              for ($i = 0; $i < count($arr_msisdn); $i++) {
+              $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i];
+              if ($i == 0)
+              $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
+              else
+              $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
+              }
+              DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Unik=Unik;");
+              return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberpr(count($arr_msisdn));
+              }
+              }
+              return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
+              } */ else if (Input::get('jenis') == 'productive') {
                 $input = Input::file('sample_file');
                 if ($input != '') {
                     if (Input::hasFile('sample_file')) {
@@ -1910,7 +1909,7 @@ class InventoryController extends BaseController {
                 $stats = '1 GB';
             } else if ($ivr->Status == '600') {
                 $stats = '2 GB';
-            }else if ($ivr->Status == '200') {
+            } else if ($ivr->Status == '200') {
                 $stats = '200NT';
             }
             if (!isset($data[$stats]))
@@ -1945,6 +1944,8 @@ class InventoryController extends BaseController {
                         $stats = '1 GB';
                     } else if ($ivr->Status == '600') {
                         $stats = '2 GB';
+                    } else if ($ivr->Status == '200') {
+                        $stats = '200NT';
                     }
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2326,8 +2327,8 @@ class InventoryController extends BaseController {
                 $data["Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 $data["Not Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 $all_ivr = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year->Year}'")
-                        ->groupBy(DB::raw('YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)'))
-                        ->select(DB::raw("COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
+                                ->groupBy(DB::raw('YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)'))
+                                ->select(DB::raw("COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
                 $act = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year->Year}'")
                                 ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                                 ->groupBy(DB::raw('YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)'))
