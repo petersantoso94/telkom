@@ -2293,7 +2293,9 @@ class InventoryController extends BaseController {
 //        $year = '2017';
         $data["Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         $data["Not Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Activation%\'')->get();
+        $all_ivr = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
+                        ->groupBy(DB::raw('YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)'))
+                        ->select(DB::raw("COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
         $act = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
                         ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                         ->groupBy(DB::raw('YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)'))
@@ -2321,7 +2323,9 @@ class InventoryController extends BaseController {
                 $writer->addRow($myArr); // add a row at a time
                 $data["Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 $data["Not Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Activation%\'')->get();
+                $all_ivr = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year->Year}'")
+                        ->groupBy(DB::raw('YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)'))
+                        ->select(DB::raw("COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
                 $act = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year->Year}'")
                                 ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                                 ->groupBy(DB::raw('YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)'))
