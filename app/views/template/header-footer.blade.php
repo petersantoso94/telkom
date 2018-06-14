@@ -43,11 +43,10 @@
             }
             .legend {
                 width: 100%;
-                top: 5px;
                 right: 20px;
                 text-align: center;
             }
-            .legend ul li{list-style:none;float:left;margin-right:8px;display:inline-block;margin-top: 5px;padding:10px;}
+            .legend ul li{list-style:none;float:left;margin-right:8px;display:inline-block;padding:10px;}
             .legend ul li:nth-child(6n){
                 
             }
