@@ -950,6 +950,9 @@ class InventoryController extends BaseController {
                 DB::delete('DELETE FROM `r_stats` WHERE Status LIKE "%topup%"');
                 DB::update('UPDATE `m_inventory` SET `TopUpDate`=NULL, TopUpMSISDN=NULL WHERE 1');
                 return View::make('resetreporting')->withPage('reset reporting')->withSuccesst('ok');
+            }else if (Input::get('jenis') == 'reset_top') {
+                DB::update('UPDATE `m_inventory` SET SET `ActivationName`= NULL,`ActivationStore`= NULL WHERE 1');
+                return View::make('resetreporting')->withPage('reset reporting')->withSuccesssip('ok');
             }
         }
         return View::make('resetreporting')->withPage('reset reporting');
