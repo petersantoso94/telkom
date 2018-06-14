@@ -46,7 +46,7 @@
                 right: 20px;
                 text-align: center;
             }
-            .legend ul li{list-style:none;float:left;margin-right:8px;display:inline-block;padding:10px;}
+            .legend ul li{list-style:none;float:left;margin-right:8px;display:inline-block;padding-bottom:10px;padding-left :10px;padding-right :10px;}
             .legend ul li:nth-child(6n){
                 
             }
