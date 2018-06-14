@@ -170,22 +170,34 @@
 <script type="text/javascript" src="{{Asset('js/chosen.jquery.min.js')}}"></script>
 <script>
 $('#btn-submit-ivr').on('click', function (e) {
-    document.getElementById("form-ivr-purchase").submit();
+    if (confirm("Do you want to reset Churn data ?") == true) {
+        document.getElementById("form-ivr-purchase").submit();
+    }
 });
 $('#btn-submit-reset-prod').on('click', function (e) {
-    document.getElementById("form-reset-productive").submit();
+    if (confirm("Do you want to reset Productive data ?") == true) {
+        document.getElementById("form-reset-productive").submit();
+    }
 });
 $('#btn-submit-reset-ivr').on('click', function (e) {
-    document.getElementById("form-reset-ivr").submit();
+    if (confirm("Do you want to reset IVR data ?") == true) {
+        document.getElementById("form-reset-ivr").submit();
+    }
 });
 $('#btn-submit-reset-act').on('click', function (e) {
-    document.getElementById("form-reset-act").submit();
+    if (confirm("Do you want to reset Acquisition data ?") == true) {
+        document.getElementById("form-reset-act").submit();
+    }
 });
 $('#btn-submit-reset-top').on('click', function (e) {
-    document.getElementById("form-reset-top").submit();
+    if (confirm("Do you want to reset Recharge data ?") == true) {
+        document.getElementById("form-reset-top").submit();
+    }
 });
 $('#btn-submit-reset-sip').on('click', function (e) {
-    document.getElementById("form-reset-sip").submit();
+    if (confirm("Do you want to reset SIP data ?") == true) {
+        document.getElementById("form-reset-sip").submit();
+    }
 });
 </script>
 @stop
