@@ -153,7 +153,7 @@
                         <h4>Reset SIP Reporting</h4>
                     </div>
                 </div>
-                <input type="hidden" name='jenis' value='reset_top'>
+                <input type="hidden" name='jenis' value='reset_sip'>
                 <div class="row margtop20">
                     <div class="col-xs-8">
                         <button type="button" id='btn-submit-reset-sip' class="button btnblue btn-wide wide-h" style="background-color: #424242; color: white;">Submit</button>
