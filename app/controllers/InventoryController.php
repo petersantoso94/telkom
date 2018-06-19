@@ -950,7 +950,7 @@ class InventoryController extends BaseController {
                 DB::delete('DELETE FROM `r_stats` WHERE Status LIKE "%topup%"');
                 DB::update('UPDATE `m_inventory` SET `TopUpDate`=NULL, TopUpMSISDN=NULL WHERE 1');
                 return View::make('resetreporting')->withPage('reset reporting')->withSuccesst('ok');
-            }else if (Input::get('jenis') == 'reset_sip') {
+            } else if (Input::get('jenis') == 'reset_sip') {
                 DB::update('UPDATE `m_inventory` SET `ActivationName`= NULL,`ActivationStore`= NULL WHERE 1');
                 return View::make('resetreporting')->withPage('reset reporting')->withSuccesssip('ok');
             }
@@ -2184,8 +2184,6 @@ class InventoryController extends BaseController {
                 $data = [];
                 $myArr = array($year->Year);
                 $writer->addRow($myArr); // add a row at a time
-                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
-                $writer->addRow($myArr); // add a row at a time
                 $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year->Year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
                                 ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                                 ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
@@ -2197,22 +2195,26 @@ class InventoryController extends BaseController {
                                 ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
                 if (count($act_prod) > 0) {
                     foreach ($act_prod as $ivr) {
-                        if (!isset($data[$ivr->Channel]["Productive Subscriber"]))
-                            $data[$ivr->Channel]["Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        $data[$ivr->Channel]["Productive Subscriber"][($ivr->Month - 1)] = $ivr->Counter;
+                        if (!isset($data["Productive Subscriber"][$ivr->Channel]))
+                            $data["Productive Subscriber"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data["Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter;
                     }
                 }
                 if (count($act) > 0) {
                     foreach ($act as $ivr) {
-                        if (!isset($data[$ivr->Channel]["Not Productive Subscriber"]))
-                            $data[$ivr->Channel]["Not Productive Subscriber"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        $data[$ivr->Channel]["Not Productive Subscriber"][($ivr->Month - 1)] = $ivr->Counter - $data[$ivr->Channel]["Productive Subscriber"][($ivr->Month - 1)];
+                        if (!isset($data["Not Productive Subscriber"][$ivr->Channel]))
+                            $data["Not Productive Subscriber"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data["Not Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter - $data[$ivr->Channel]["Productive Subscriber"][($ivr->Month - 1)];
                     }
                 }
                 foreach ($data as $key => $abc) {
                     $name = $key;
+                    $myArr = array($name);
+                    $writer->addRow($myArr);
+                    $myArr = array("Channel", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                    $writer->addRow($myArr); // add a row at a time
                     foreach ($abc as $key2 => $a) {
-                        $myArr = array($name . ' ' . $key2, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                        $myArr = array($key2, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
                         $writer->addRow($myArr); // add a row at a time
                     }
                 }
