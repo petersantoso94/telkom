@@ -2147,11 +2147,11 @@ class InventoryController extends BaseController {
 
     static function getChannel() {
         $year = Input::get('year');
-        $type = '2';
         $type = '';
+//        $type = '2';
         if (Input::get('type'))
             $type = Input::get('type');
-        $year = '2017';
+//        $year = '2017';
         $data = [];
         $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
                         ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
@@ -2204,7 +2204,7 @@ class InventoryController extends BaseController {
                     foreach ($act as $ivr) {
                         if (!isset($data["Not Productive Subscriber"][$ivr->Channel]))
                             $data["Not Productive Subscriber"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        $data["Not Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter - $data[$ivr->Channel]["Productive Subscriber"][($ivr->Month - 1)];
+                        $data["Not Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter - $data["Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)];
                     }
                 }
                 foreach ($data as $key => $abc) {
@@ -2263,8 +2263,7 @@ class InventoryController extends BaseController {
                 $data = [];
                 $myArr = array($year->Year);
                 $writer->addRow($myArr); // add a row at a time
-                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
-                $writer->addRow($myArr); // add a row at a time
+
                 $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ChurnDate) = '{$year->Year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
                                 ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                                 ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
@@ -2276,22 +2275,26 @@ class InventoryController extends BaseController {
                                 ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ChurnDate) as 'Year', MONTH(inv1.ChurnDate) as 'Month'"))->get();
                 if (count($act_prod) > 0) {
                     foreach ($act_prod as $ivr) {
-                        if (!isset($data[$ivr->Channel]["Productive Churn"]))
-                            $data[$ivr->Channel]["Productive Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        $data[$ivr->Channel]["Productive Churn"][($ivr->Month - 1)] = $ivr->Counter;
+                        if (!isset($data["Productive Churn"][$ivr->Channel]))
+                            $data["Productive Churn"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data["Productive Churn"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter;
                     }
                 }
                 if (count($act) > 0) {
                     foreach ($act as $ivr) {
-                        if (!isset($data[$ivr->Channel]["Not Productive Churn"]))
-                            $data[$ivr->Channel]["Not Productive Churn"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        $data[$ivr->Channel]["Not Productive Churn"][($ivr->Month - 1)] = $ivr->Counter - $data[$ivr->Channel]["Productive Churn"][($ivr->Month - 1)];
+                        if (!isset($data["Not Productive Churn"][$ivr->Channel]))
+                            $data["Not Productive Churn"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data["Not Productive Churn"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter - $data["Productive Churn"][$ivr->Channel][($ivr->Month - 1)];
                     }
                 }
                 foreach ($data as $key => $abc) {
                     $name = $key;
+                    $myArr = array($name);
+                    $writer->addRow($myArr);
+                    $myArr = array("Channel", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                    $writer->addRow($myArr); // add a row at a time
                     foreach ($abc as $key2 => $a) {
-                        $myArr = array($name . ' ' . $key2, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                        $myArr = array($key2, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
                         $writer->addRow($myArr); // add a row at a time
                     }
                 }
