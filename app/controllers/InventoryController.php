@@ -2181,7 +2181,7 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
-                $data = [];
+                $data2 = [];
                 $myArr = array($year->Year);
                 $writer->addRow($myArr); // add a row at a time
                 $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year->Year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
@@ -2195,19 +2195,19 @@ class InventoryController extends BaseController {
                                 ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
                 if (count($act_prod) > 0) {
                     foreach ($act_prod as $ivr) {
-                        if (!isset($data["Productive Subscriber"][$ivr->Channel]))
-                            $data["Productive Subscriber"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        $data["Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter;
+                        if (!isset($data2["Productive Subscriber"][$ivr->Channel]))
+                            $data2["Productive Subscriber"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data2["Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter;
                     }
                 }
                 if (count($act) > 0) {
                     foreach ($act as $ivr) {
-                        if (!isset($data["Not Productive Subscriber"][$ivr->Channel]))
-                            $data["Not Productive Subscriber"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        $data["Not Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter - $data["Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)];
+                        if (!isset($data2["Not Productive Subscriber"][$ivr->Channel]))
+                            $data2["Not Productive Subscriber"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data2["Not Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter - $data2["Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)];
                     }
                 }
-                foreach ($data as $key => $abc) {
+                foreach ($data2 as $key => $abc) {
                     $name = $key;
                     $myArr = array($name);
                     $writer->addRow($myArr);
@@ -2260,7 +2260,7 @@ class InventoryController extends BaseController {
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
-                $data = [];
+                $data2 = [];
                 $myArr = array($year->Year);
                 $writer->addRow($myArr); // add a row at a time
 
@@ -2275,19 +2275,19 @@ class InventoryController extends BaseController {
                                 ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ChurnDate) as 'Year', MONTH(inv1.ChurnDate) as 'Month'"))->get();
                 if (count($act_prod) > 0) {
                     foreach ($act_prod as $ivr) {
-                        if (!isset($data["Productive Churn"][$ivr->Channel]))
-                            $data["Productive Churn"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        $data["Productive Churn"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter;
+                        if (!isset($data2["Productive Churn"][$ivr->Channel]))
+                            $data2["Productive Churn"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data2["Productive Churn"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter;
                     }
                 }
                 if (count($act) > 0) {
                     foreach ($act as $ivr) {
-                        if (!isset($data["Not Productive Churn"][$ivr->Channel]))
-                            $data["Not Productive Churn"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        $data["Not Productive Churn"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter - $data["Productive Churn"][$ivr->Channel][($ivr->Month - 1)];
+                        if (!isset($data2["Not Productive Churn"][$ivr->Channel]))
+                            $data2["Not Productive Churn"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data2["Not Productive Churn"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter - $data["Productive Churn"][$ivr->Channel][($ivr->Month - 1)];
                     }
                 }
-                foreach ($data as $key => $abc) {
+                foreach ($data2 as $key => $abc) {
                     $name = $key;
                     $myArr = array($name);
                     $writer->addRow($myArr);
