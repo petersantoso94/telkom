@@ -4621,14 +4621,14 @@ class InventoryController extends BaseController {
 
         $activation = DB::table('m_inventory as inv1')
                         ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
-                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
+                        ->whereRaw("hist1.SubAgent != '-' AND (hist1.Status = 2 OR hist1.Status = 4) AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
                         ->groupBy(DB::raw('hist1.SubAgent, MONTH(inv1.ActivationDate), YEAR(inv1.ActivationDate)'))
                         ->select(DB::raw("hist1.SubAgent, COUNT(inv1.MSISDN) as 'count', MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
                         ))->get();
         $topup = DB::table('m_inventory as inv1')
                         ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
                         ->join('m_inventory as inv2', 'inv2.TopUpMSISDN', '=', 'inv1.MSISDN')
-                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
+                        ->whereRaw("hist1.SubAgent != '-' AND (hist1.Status = 2 OR hist1.Status = 4) AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
                         ->groupBy(DB::raw('hist1.SubAgent, MONTH(inv1.ActivationDate), YEAR(inv1.ActivationDate)'))
                         ->select(DB::raw("hist1.SubAgent"
                                         . ", COUNT(DISTINCT inv2.TopUpMSISDN) as 'count'"
@@ -4637,7 +4637,7 @@ class InventoryController extends BaseController {
         $prod = DB::table('m_inventory as inv1')
                         ->join('m_historymovement as hist1', 'inv1.LastStatusID', '=', 'hist1.ID')
                         ->join('m_productive as prod1', 'inv1.MSISDN', '=', 'prod1.MSISDN')
-                        ->whereRaw("hist1.SubAgent != '-' AND hist1.Status = 2 AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
+                        ->whereRaw("hist1.SubAgent != '-' AND (hist1.Status = 2 OR hist1.Status = 4) AND inv1.Type IN ('1','4') AND inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
                         ->groupBy(DB::raw("hist1.SubAgent, MONTH(inv1.ActivationDate), YEAR(inv1.ActivationDate)"))
                         ->select(DB::raw("hist1.SubAgent, COUNT(DISTINCT prod1.MSISDN) as 'count', MONTH(inv1.ActivationDate) as 'month', YEAR(inv1.ActivationDate) as 'year'"
                         ))->get();
