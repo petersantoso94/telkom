@@ -729,8 +729,8 @@
                                         <li><a href="#excel_user_container" data-toggle="tab" aria-expanded="true">Per Customer Reporting</a></li>
                                         <li><a href="#excel_subagent_container" data-toggle="tab" aria-expanded="true">Per SubAgent Reporting</a></li>
                                         <li><a href="#excel_weekly_container" data-toggle="tab" aria-expanded="true">Weekly Performance</a></li>
-                                        <li><a href="#excel_sim1_container" data-toggle="tab" aria-expanded="true">Sub Agent #1</a></li>
-                                        <li><a href="#excel_sim2_container" data-toggle="tab" aria-expanded="true">Sub Agent SIM card #2</a></li>
+                                        <li><a href="#excel_sim1_container" data-toggle="tab" aria-expanded="true">Shipout to Subagent</a></li>
+                                        <li><a href="#excel_sim2_container" data-toggle="tab" aria-expanded="true">SubAgent SIM card Reporting</a></li>
                                     </ul>
                                     <div class="tab-content">
                                         <div class="tab-pane" id="excel_sim2_container">
