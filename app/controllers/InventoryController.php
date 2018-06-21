@@ -2153,12 +2153,12 @@ class InventoryController extends BaseController {
             $type = Input::get('type');
 //        $year = '2017';
         $data = [];
-        $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
+        $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}' AND hist1.SubAgent != '-' AND (hist1.Status = 2 OR hist1.Status = 4)")
                         ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                         ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
                         ->groupBy(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1), YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)"))
                         ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(DISTINCT prod1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
-        $act = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
+        $act = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}' AND hist1.SubAgent != '-' AND (hist1.Status = 2 OR hist1.Status = 4)")
                         ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
                         ->groupBy(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1), YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)"))
                         ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
@@ -2184,12 +2184,12 @@ class InventoryController extends BaseController {
                 $data2 = [];
                 $myArr = array($year->Year);
                 $writer->addRow($myArr); // add a row at a time
-                $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year->Year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
+                $act_prod = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year->Year}' AND hist1.SubAgent != '-' AND (hist1.Status = 2 OR hist1.Status = 4)")
                                 ->join('m_productive as prod1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                                 ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
                                 ->groupBy(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1), YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)"))
                                 ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(DISTINCT prod1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
-                $act = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year->Year}' AND hist1.SubAgent != '-' AND hist1.Status = 2")
+                $act = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year->Year}' AND hist1.SubAgent != '-' AND (hist1.Status = 2 OR hist1.Status = 4)")
                                 ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
                                 ->groupBy(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1), YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)"))
                                 ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
