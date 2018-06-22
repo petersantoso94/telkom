@@ -1593,7 +1593,9 @@ class InventoryController extends BaseController {
                         $counter = 0;
                         $month_temp = 0;
                         $year_temp = 0;
+                        $day_temp = 0;
                         $arr_msisdn = [];
+                        $arr_day = [];
                         $arr_month = [];
                         $arr_year = [];
                         $arr_mo = [];
@@ -1606,6 +1608,7 @@ class InventoryController extends BaseController {
                             $date_temp = explode(" ", $date_temp)[0];
                             $month_temp = substr($date_temp, 4, 2);
                             $year_temp = substr($date_temp, 0, 4);
+                            $day_temp = substr($date_temp, 6, 2);
                             if ($sheetIndex == 1)
                                 if (substr($date_temp, 0, 1) === '2') {
                                     foreach ($sheet->getRowIterator() as $rowNumber => $value) {
@@ -1621,6 +1624,7 @@ class InventoryController extends BaseController {
                                                 array_push($arr_msisdn, $msisdn);
                                                 array_push($arr_month, $month_temp);
                                                 array_push($arr_year, $year_temp);
+                                                array_push($arr_day, $day_temp);
                                                 array_push($arr_mo, $value[3]);
                                                 array_push($arr_mt, $value[6]);
                                                 array_push($arr_internet, 0);
@@ -1654,11 +1658,11 @@ class InventoryController extends BaseController {
                         }
                         $for_raw = '';
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
-                            $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i];
+                            $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i] . '-' .  $arr_day[$i];
                             if ($i == 0)
-                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,1,0,'" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
+                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,1,0,'" . $arr_day[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "',CURDATE(),CURDATE())";
                             else
-                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,1,0,'" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
+                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,1,0,'" . $arr_day[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "',CURDATE(),CURDATE())";
                         }
                         DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Unik=Unik;");
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberpr(count($arr_msisdn));
@@ -1691,6 +1695,7 @@ class InventoryController extends BaseController {
                         $month_temp = 0;
                         $year_temp = 0;
                         $arr_msisdn = [];
+                        $arr_day = [];
                         $arr_month = [];
                         $arr_year = [];
                         $arr_mo = [];
@@ -1707,6 +1712,7 @@ class InventoryController extends BaseController {
                                 $month_temp = "0" . $month_temp;
                             }
                             $year_temp = substr($date_temp, 0, 4);
+                            $day_temp = substr($date_temp, 6, 2);
                             if ($sheetIndex == 1)
                                 if (substr($date_temp, 0, 1) === '2') {
                                     foreach ($sheet->getRowIterator() as $rowNumber => $value) {
@@ -1720,6 +1726,7 @@ class InventoryController extends BaseController {
                                                     $msisdn = substr($msisdn, 1);
                                                 }
                                                 array_push($arr_msisdn, $msisdn);
+                                                array_push($arr_day, $day_temp);
                                                 array_push($arr_month, $month_temp);
                                                 array_push($arr_year, $year_temp);
                                                 array_push($arr_mo, $value[4]);
@@ -1757,11 +1764,11 @@ class InventoryController extends BaseController {
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
                             $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i];
                             if ($i == 0)
-                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
+                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_day[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "',CURDATE(),CURDATE())";
                             else
-                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "')";
+                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_day[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "',CURDATE(),CURDATE())";
                         }
-                        DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Month=VALUES(Month), Year=VALUES(Year), Unik=VALUES(Unik), MO=VALUES(MO), MT=VALUES(MT), Internet=VALUES(Internet), Sms=VALUES(Sms), DataFromTST=1;");
+                        DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Day=VALUES(Day),Month=VALUES(Month), Year=VALUES(Year), Unik=VALUES(Unik), MO=VALUES(MO), MT=VALUES(MT), Internet=VALUES(Internet), Sms=VALUES(Sms), DataFromTST=1;");
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberprtst(count($arr_msisdn));
                     }
                 }
