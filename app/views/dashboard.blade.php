@@ -3155,7 +3155,7 @@
                             text_html += "<td>" + header + "</td>";
                             val.forEach(function setPerData(item) {
                                 text_html += "<td>" + item + "</td>";
-                                total += parseInt(item);
+                                total += new Intl.NumberFormat().format(parseInt(item));
                             });
                             text_html += "<td>" + total + "</td>";
                             text_html += "</tr>";
