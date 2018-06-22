@@ -1658,7 +1658,7 @@ class InventoryController extends BaseController {
                         }
                         $for_raw = '';
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
-                            $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i] . '-' .  $arr_day[$i];
+                            $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i];
                             if ($i == 0)
                                 $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,1,0,'" . $arr_day[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "',CURDATE(),CURDATE())";
                             else
@@ -1762,7 +1762,7 @@ class InventoryController extends BaseController {
                         }
                         $for_raw = '';
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
-                            $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i]. '-' .  $arr_day[$i];
+                            $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i];
                             if ($i == 0)
                                 $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_day[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "',CURDATE(),CURDATE())";
                             else
