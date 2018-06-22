@@ -1762,13 +1762,13 @@ class InventoryController extends BaseController {
                         }
                         $for_raw = '';
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
-                            $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i];
+                            $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i]. '-' .  $arr_day[$i];
                             if ($i == 0)
                                 $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_day[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "',CURDATE(),CURDATE())";
                             else
                                 $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_day[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "',CURDATE(),CURDATE())";
                         }
-                        DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Day=VALUES(Day),Month=VALUES(Month), Year=VALUES(Year), Unik=VALUES(Unik), MO=VALUES(MO), MT=VALUES(MT), Internet=VALUES(Internet), Sms=VALUES(Sms), DataFromTST=1;");
+                        DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Day=VALUES(Day),Month=VALUES(Month), Year=VALUES(Year), Unik=VALUES(Unik), MO=VALUES(MO), MT=VALUES(MT), Internet=VALUES(Internet), Sms=VALUES(Sms), DataFromTST=1, dtModified=CURDATE();");
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberprtst(count($arr_msisdn));
                     }
                 }
