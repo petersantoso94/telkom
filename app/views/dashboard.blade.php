@@ -3154,10 +3154,10 @@
                                 header = 'pV300';
                             text_html += "<td>" + header + "</td>";
                             val.forEach(function setPerData(item) {
-                                text_html += "<td>" + item + "</td>";
-                                total += new Intl.NumberFormat().format(parseInt(item));
+                                text_html += "<td>" + new Intl.NumberFormat().format(item) + "</td>";
+                                total += parseInt(item);
                             });
-                            text_html += "<td>" + total + "</td>";
+                            text_html += "<td>" + new Intl.NumberFormat().format(total) + "</td>";
                             text_html += "</tr>";
                             table_container.innerHTML = text_html;
                         });
