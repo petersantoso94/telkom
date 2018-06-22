@@ -7018,15 +7018,34 @@ class InventoryController extends BaseController {
         $primaryKey = 'r_shipout_subagent`.`SubAgent';
         $columns = array(
             array('db' => 'SubAgent', 'dt' => 0),
-            array('db' => '1Shipout', 'dt' => 1),
-            array('db' => '1Active', 'dt' => 2),
-            array('db' => '1ApfReturn', 'dt' => 3),
-            array('db' => '2Shipout', 'dt' => 4),
-            array('db' => '2Active', 'dt' => 5),
-            array('db' => '2ApfReturn', 'dt' => 6),
-            array('db' => '3Shipout', 'dt' => 7),
-            array('db' => '3Active', 'dt' => 8),
-            array('db' => '3ApfReturn', 'dt' => 9)
+            array('db' => '1Shipout', 'dt' => 1, 'formatter' => function( $d, $row ) {
+                    return number_format($d);
+                }
+            ),
+            array('db' => '1Active', 'dt' => 2, 'formatter' => function( $d, $row ) {
+                    return number_format($d);
+                }),
+            array('db' => '1ApfReturn', 'dt' => 3, 'formatter' => function( $d, $row ) {
+                    return number_format($d);
+                }),
+            array('db' => '2Shipout', 'dt' => 4, 'formatter' => function( $d, $row ) {
+                    return number_format($d);
+                }),
+            array('db' => '2Active', 'dt' => 5, 'formatter' => function( $d, $row ) {
+                    return number_format($d);
+                }),
+            array('db' => '2ApfReturn', 'dt' => 6, 'formatter' => function( $d, $row ) {
+                    return number_format($d);
+                }),
+            array('db' => '3Shipout', 'dt' => 7, 'formatter' => function( $d, $row ) {
+                    return number_format($d);
+                }),
+            array('db' => '3Active', 'dt' => 8, 'formatter' => function( $d, $row ) {
+                    return number_format($d);
+                }),
+            array('db' => '3ApfReturn', 'dt' => 9, 'formatter' => function( $d, $row ) {
+                    return number_format($d);
+                })
         );
 
         $sql_details = getConnection();
