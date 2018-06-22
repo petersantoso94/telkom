@@ -197,7 +197,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <h4>Productive MSISDN HK</h4>
-                        <p>File format in CSV, named yyyymm_productive_hk</p>
+                        <p>File format in CSV, named yyyymmdd_productive_hk</p>
                     </div>
                 </div>
                 <div class="row margtop20">
@@ -236,7 +236,7 @@
                 <div class="row">
                     <div class="col-xs-12">
                         <h4>Productive MSISDN TST</h4>
-                        <p>File format in XLSX, named : MKT-M-0205_紅白動卡_yyyymm. These data will be put (month - 1) in database</p>
+                        <p>File format in XLSX, named : MKT-D-0205_紅白動卡_yyyymmdd</p>
                     </div>
                 </div>
                 <div class="row margtop20">
