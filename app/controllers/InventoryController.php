@@ -953,6 +953,9 @@ class InventoryController extends BaseController {
             } else if (Input::get('jenis') == 'reset_sip') {
                 DB::update('UPDATE `m_inventory` SET `ActivationName`= NULL,`ActivationStore`= NULL WHERE 1');
                 return View::make('resetreporting')->withPage('reset reporting')->withSuccesssip('ok');
+            }else if (Input::get('jenis') == 'reset_today_prod') {
+                DB::delete('DELETE FROM `m_productive` WHERE DATE(dtRecord)= CURDATE()');
+                return View::make('resetreporting')->withPage('reset reporting')->withSuccesstoday('ok');
             }
         }
         return View::make('resetreporting')->withPage('reset reporting');
