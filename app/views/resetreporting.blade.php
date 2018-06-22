@@ -10,6 +10,7 @@
 
 @section('main-section')
 <div class='row'>
+    <h1>Reset All Reporting Data</h1>
     <div class='col-xs-8'>
         <form method="POST" accept-charset="UTF-8" enctype="multipart/form-data" id='form-ivr-purchase'>
             <div class="white-pane__bordered margbot20">
@@ -163,6 +164,34 @@
         </form>
     </div>
 </div>
+<div class='row'>
+    <h1>Reset Today's Inserted Data</h1>
+    <div class='col-xs-8'>
+        <form method="POST" accept-charset="UTF-8" enctype="multipart/form-data" id='form-reset-today-prod'>
+            <div class="white-pane__bordered margbot20">
+                <div class="row">
+                    <?php if (isset($successtoday)) { ?>
+                        <div class="alert alert-success alert-dismissible" role="alert" style="width: 98%; margin: 1%">
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            Successfully resetting Today' data.
+                        </div>
+                    <?php } ?>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12">
+                        <h4>Reset Productive Reporting</h4>
+                    </div>
+                </div>
+                <input type="hidden" name='jenis' value='reset_today_prod'>
+                <div class="row margtop20">
+                    <div class="col-xs-8">
+                        <button type="button" id='btn-submit-reset-today-prod' class="button btnblue btn-wide wide-h" style="background-color: #424242; color: white;">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 @stop
 @section('js-content')
 <script type="text/javascript" src="{{Asset('lib/bootstrap/js/jquery.dataTables.min.js')}}"></script>
@@ -197,6 +226,11 @@ $('#btn-submit-reset-top').on('click', function (e) {
 $('#btn-submit-reset-sip').on('click', function (e) {
     if (confirm("Do you want to reset SIP data ?") == true) {
         document.getElementById("form-reset-sip").submit();
+    }
+});
+$('#btn-submit-reset-today-prod').on('click', function (e) {
+    if (confirm("Do you want to reset Today's Productive data ?") == true) {
+        document.getElementById("form-reset-today-prod").submit();
     }
 });
 </script>
