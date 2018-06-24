@@ -59,7 +59,8 @@ Route::filter('admin', function()
 		}
 		else
 		{
-			return Redirect::route('showDashboard');
+			return Redirect::guest('/')
+                                    ->withMessages('belumLogin');
 		}
 	}
 });
