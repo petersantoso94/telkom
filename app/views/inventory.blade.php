@@ -122,7 +122,9 @@
                 <th>Date</th>
                 <th>MSISDN</th>
                 <th>Remark</th>
+                @if(Auth::user()->Position <= 1)
                 <th>Action</th>
+                @endif
             <!--<th>Actions</th>-->
             </tr>
         </thead>
