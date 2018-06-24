@@ -75,6 +75,7 @@
                 </select>
             </div>
         </div>
+        @if(Auth::user()->Position <= 1)
         <div class="col-xs-4" style="padding-top: 10px; margin-left: 20px">
             <div class="row" >
                 <button type="button" onclick="exportExcel(this)"><span class="glyphicon glyphicon-export"></span></button> Export excel
@@ -84,8 +85,10 @@
             </div>
         </div>
         <div class="loader" id="loading-animation" style="display:none;"></div>
+        @endif
     </div>
 </div>
+@if(Auth::user()->Position <= 1)
 <div class="white-pane__bordered margbot20" width="100%">
     <div class="row">
         <div class="col-xs-7" style="margin-left: 10px;">
@@ -104,6 +107,7 @@
         </div>        
     </div>
 </div>
+@endif
 <div class="white-pane__bordered margbot20">
     <table id="example" class="display table-rwd table-inventory" cellspacing="0" width="100%">
         <thead>
