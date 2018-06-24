@@ -13,6 +13,7 @@
 
 
 Route::any('/', array('as' => '/', 'uses' => 'LoginController@showLogin'));
+Route::get('showLogout', array('as' => 'showLogout', 'uses' => 'LoginController@showLogout'));
 Route::group(array('before' => 'auth'), function() {
 
     Route::any('showDashboard', array('as' => 'showDashboard', 'uses' => 'InventoryController@showDashboard'));
@@ -41,7 +42,7 @@ Route::group(array('before' => 'auth'), function() {
     Route::post('getSubAgent', array('as' => 'getSubAgent', 'before' => '', 'uses' => 'InventoryController@getSubAgent'));
     Route::post('delST', array('as' => 'delST', 'before' => '', 'uses' => 'InventoryController@delST'));
     Route::post('postWarehouse', array('as' => 'postWarehouse', 'before' => '', 'uses' => 'InventoryController@postWarehouse'));
-        Route::post('postFormSeries', array('as' => 'postFormSeries', 'before' => '', 'uses' => 'InventoryController@postFormSeries'));
+    Route::post('postFormSeries', array('as' => 'postFormSeries', 'before' => '', 'uses' => 'InventoryController@postFormSeries'));
 
     //Admin role
     Route::group(array('before' => 'admin'), function() {
@@ -54,7 +55,6 @@ Route::group(array('before' => 'auth'), function() {
         Route::any('showUncat', array('as' => 'showUncat', 'uses' => 'InventoryController@showUncat'));
         Route::any('showInsertReporting', array('as' => 'showInsertReporting', 'uses' => 'InventoryController@showInsertReporting'));
         Route::any('showResetReporting', array('as' => 'showResetReporting', 'uses' => 'InventoryController@showResetReporting'));
-        Route::get('showLogout', array('as' => 'showLogout', 'uses' => 'LoginController@showLogout'));
 
         //ajax
 //        Route::get('inventoryDataBackup/{start}', array('as' => 'inventoryDataBackup', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackup'));
