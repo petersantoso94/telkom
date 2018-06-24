@@ -86,6 +86,7 @@
                             <li><a href="{{Route('showInventory')}}" @if($page == 'inventory') class="active-sidemenu" @endif >View Inventory</a></li>
                         </ul>
                     </li>
+                    @if(Auth::user()->Position <= 1)
                     <li class="treeview">
                         <a href="#">
                             <i class="fa fa-spinner"></i> <span>Main Process</span>
@@ -115,6 +116,7 @@
                             <li><a href="{{Route('showResetReporting')}}" @if($page == 'reset reporting') class="active-sidemenu" @endif >Reset Reporting</a></li>
                         </ul>
                     </li>
+                    @endif
                 </ul>
             </div>
         </section>
