@@ -49,6 +49,21 @@ Route::filter('auth', function()
 	}
 });
 
+Route::filter('admin', function()
+{
+	if (Auth::user()->Position === 2)
+	{
+		if (Request::ajax())
+		{
+			return Response::make('Unauthorized', 401);
+		}
+		else
+		{
+			return Redirect::route('showDashboard');
+		}
+	}
+});
+
 
 Route::filter('auth.basic', function()
 {
