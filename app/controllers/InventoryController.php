@@ -6642,7 +6642,7 @@ class InventoryController extends BaseController {
                         if ($data->Missing == 0) {
                             $hist = History::find($data->LastStatusID);
                             $disa = '';
-                            if ($hist->Status == 2) {
+                            if ($hist->Status == 2 || Auth::user()->Position > 1) {
                                 $disa = 'disabled';
                             }
                             $return = '<button type="button" data-internal="' . $data->SerialNumber . '"  onclick="deleteAttach(this)"
@@ -6721,7 +6721,7 @@ class InventoryController extends BaseController {
                         if ($data->Missing == 0) {
                             $hist = History::find($data->LastStatusID);
                             $disa = '';
-                            if ($hist->Status == 2) {
+                            if ($hist->Status == 2 || Auth::user()->Position > 1) {
                                 $disa = 'disabled';
                             }
                             $return = '<button type="button" data-internal="' . $data->SerialNumber . '"  onclick="deleteAttach(this)"
