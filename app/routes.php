@@ -39,6 +39,9 @@ Route::group(array('before' => 'auth'), function() {
     Route::any('getChannel', array('as' => 'getChannel', 'before' => '', 'uses' => 'InventoryController@getChannel'));
     Route::any('getChannelChurn', array('as' => 'getChannelChurn', 'before' => '', 'uses' => 'InventoryController@getChannelChurn'));
     Route::post('getSubAgent', array('as' => 'getSubAgent', 'before' => '', 'uses' => 'InventoryController@getSubAgent'));
+    Route::post('delST', array('as' => 'delST', 'before' => '', 'uses' => 'InventoryController@delST'));
+    Route::post('postWarehouse', array('as' => 'postWarehouse', 'before' => '', 'uses' => 'InventoryController@postWarehouse'));
+        Route::post('postFormSeries', array('as' => 'postFormSeries', 'before' => '', 'uses' => 'InventoryController@postFormSeries'));
 
     //Admin role
     Route::group(array('before' => 'admin'), function() {
@@ -90,14 +93,14 @@ Route::group(array('before' => 'auth'), function() {
         Route::post('postConsStat', array('as' => 'postConsStat', 'before' => '', 'uses' => 'InventoryController@postConsStat'));
         Route::post('postNewAgent', array('as' => 'postNewAgent', 'before' => '', 'uses' => 'InventoryController@postNewAgent'));
         Route::post('postNewWh', array('as' => 'postNewWh', 'before' => '', 'uses' => 'InventoryController@postNewWh'));
-        Route::post('postFormSeries', array('as' => 'postFormSeries', 'before' => '', 'uses' => 'InventoryController@postFormSeries'));
-        Route::post('postWarehouse', array('as' => 'postWarehouse', 'before' => '', 'uses' => 'InventoryController@postWarehouse'));
+//        Route::post('postFormSeries', array('as' => 'postFormSeries', 'before' => '', 'uses' => 'InventoryController@postFormSeries'));
+//        Route::post('postWarehouse', array('as' => 'postWarehouse', 'before' => '', 'uses' => 'InventoryController@postWarehouse'));
         Route::any('postDashboard', array('as' => 'postDashboard', 'before' => '', 'uses' => 'InventoryController@postDashboard'));
         Route::any('postShipoutDashboard', array('as' => 'postShipoutDashboard', 'before' => '', 'uses' => 'InventoryController@postShipoutDashboard'));
         Route::any('postUsageDashboard', array('as' => 'postUsageDashboard', 'before' => '', 'uses' => 'InventoryController@postUsageDashboard'));
         Route::any('postShipinDashboard', array('as' => 'postShipinDashboard', 'before' => '', 'uses' => 'InventoryController@postShipinDashboard'));
         Route::post('postST', array('as' => 'postST', 'before' => '', 'uses' => 'InventoryController@postST'));
-        Route::post('delST', array('as' => 'delST', 'before' => '', 'uses' => 'InventoryController@delST'));
+//        Route::post('delST', array('as' => 'delST', 'before' => '', 'uses' => 'InventoryController@delST'));
 //        Route::get('getFS', array('as' => 'getFS', 'before' => '', 'uses' => 'InventoryController@getFS'));
 //        Route::any('getIVR', array('as' => 'getIVR', 'before' => '', 'uses' => 'InventoryController@getIVR'));
 //        Route::any('getProductive', array('as' => 'getProductive', 'before' => '', 'uses' => 'InventoryController@getProductive'));
