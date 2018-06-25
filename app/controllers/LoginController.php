@@ -15,7 +15,7 @@ class LoginController extends \BaseController {
             'email-parent' => 'required',
             'password' => 'required'
         );
-        
+
         $data = Input::all();
         $validator = Validator::make($data, $rule);
         if ($validator->fails()) {
@@ -26,7 +26,11 @@ class LoginController extends \BaseController {
             $email = Input::get('email-parent');
             $password = Input::get('password');
             if (Auth::attempt(array('UserEmail' => $email, 'password' => $password), true)) {
-                return Redirect::route('showDashboard');
+                if (strpos(Request::ip(), Auth::user()->LockIP) === true) {
+                    return Redirect::route('showDashboard');
+                }else{
+                    $this->showLogout();
+                }
             }
         }
         return View::make('login')
