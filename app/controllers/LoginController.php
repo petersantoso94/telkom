@@ -26,7 +26,10 @@ class LoginController extends \BaseController {
             $email = Input::get('email-parent');
             $password = Input::get('password');
             if (Auth::attempt(array('UserEmail' => $email, 'password' => $password), true)) {
-                if (strpos(Request::ip(), Auth::user()->LockIP) === true) {
+                if(Auth::user()->LockIP === ''){
+                    return Redirect::route('showDashboard');
+                }
+                if (strpos(Request::ip(), Auth::user()->LockIP) !== false) {
                     return Redirect::route('showDashboard');
                 }else{
                     $this->showLogout();
