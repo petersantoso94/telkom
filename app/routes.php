@@ -13,12 +13,12 @@
 
 
 Route::any('/', array('as' => '/', 'uses' => 'LoginController@showLogin'));
-Route::get('showLogout', array('as' => 'showLogout', 'uses' => 'LoginController@showLogout'));
 Route::group(array('before' => 'auth'), function() {
 
     Route::any('showDashboard', array('as' => 'showDashboard', 'uses' => 'InventoryController@showDashboard'));
     Route::any('showInventory', array('as' => 'showInventory', 'uses' => 'InventoryController@showInventory'));
-    //ajax
+    Route::get('showLogout', array('as' => 'showLogout', 'uses' => 'LoginController@showLogout'));
+//ajax
     Route::get('inventoryDataBackup/{start}', array('as' => 'inventoryDataBackup', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackup'));
     Route::post('inventoryDataBackup', array('as' => 'inventoryDataBackup', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackup'));
     Route::get('getFS', array('as' => 'getFS', 'before' => '', 'uses' => 'InventoryController@getFS'));
@@ -44,8 +44,13 @@ Route::group(array('before' => 'auth'), function() {
     Route::post('postWarehouse', array('as' => 'postWarehouse', 'before' => '', 'uses' => 'InventoryController@postWarehouse'));
     Route::post('postFormSeries', array('as' => 'postFormSeries', 'before' => '', 'uses' => 'InventoryController@postFormSeries'));
 
-    //Admin role
+//Admin role
     Route::group(array('before' => 'admin'), function() {
+
+//Admin role
+        Route::group(array('before' => 'superadmin'), function() {
+            Route::any('showResetReporting', array('as' => 'showResetReporting', 'uses' => 'InventoryController@showResetReporting'));
+        });
         Route::any('showInsertInventory', array('as' => 'showInsertInventory', 'uses' => 'InventoryController@showInsertInventory'));
         Route::any('showConsignment', array('as' => 'showConsignment', 'uses' => 'InventoryController@showConsignment'));
         Route::any('showReturnInventory', array('as' => 'showReturnInventory', 'uses' => 'InventoryController@showReturnInventory'));
@@ -54,9 +59,9 @@ Route::group(array('before' => 'auth'), function() {
         Route::any('showChange', array('as' => 'showChange', 'uses' => 'InventoryController@showChange'));
         Route::any('showUncat', array('as' => 'showUncat', 'uses' => 'InventoryController@showUncat'));
         Route::any('showInsertReporting', array('as' => 'showInsertReporting', 'uses' => 'InventoryController@showInsertReporting'));
-        Route::any('showResetReporting', array('as' => 'showResetReporting', 'uses' => 'InventoryController@showResetReporting'));
+//        Route::any('showResetReporting', array('as' => 'showResetReporting', 'uses' => 'InventoryController@showResetReporting'));
 
-        //ajax
+//ajax
 //        Route::get('inventoryDataBackup/{start}', array('as' => 'inventoryDataBackup', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackup'));
 //        Route::post('inventoryDataBackup', array('as' => 'inventoryDataBackup', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackup'));
         Route::get('inventoryDataBackupOut/{start}', array('as' => 'inventoryDataBackupOut', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackupOut'));
@@ -127,7 +132,7 @@ Route::group(array('before' => 'auth'), function() {
         Route::post('postFS', array('as' => 'postFS', 'before' => '', 'uses' => 'InventoryController@postFS'));
         Route::post('postAvail', array('as' => 'postAvail', 'before' => '', 'uses' => 'InventoryController@postAvail'));
         Route::post('changeFB', array('as' => 'changeFB', 'before' => '', 'uses' => 'InventoryController@changeFB'));
-        //filter user
+//filter user
         Route::any('postUserResetFilter', array('as' => 'postUserResetFilter', 'before' => '', 'uses' => 'InventoryController@postUserResetFilter'));
         Route::any('postUserFilterActive', array('as' => 'postUserFilterActive', 'before' => '', 'uses' => 'InventoryController@postUserFilterActive'));
         Route::any('postUserFilterv300', array('as' => 'postUserFilterv300', 'before' => '', 'uses' => 'InventoryController@postUserFilterv300'));
