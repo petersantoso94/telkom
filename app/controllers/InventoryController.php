@@ -960,6 +960,30 @@ class InventoryController extends BaseController {
         }
         return View::make('resetreporting')->withPage('reset reporting');
     }
+    
+    public function showAddAdmin() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $name = Input::get('username');
+            $pass = Hash::make(Input::get('password'));
+            $pos = Input::get('position');
+            $iplock = Input::get('iplock');
+            $ip = '';
+            if($iplock === '1'){
+                $ip = '192.168.';
+            }else if($iplock === '2'){
+                $ip = Input::get('ipadd');
+            }
+            $existed = User::where('UserEmail',$name)->first();
+            if(count($existed)>0){
+                return View::make('addadmin')->withPage('Add User')->withError('Username already exist');
+            }
+            $userRecord = Auth::user()->ID;
+            DB::insert("INSERT INTO m_user (`UserEmail`, `UserPassword`, `dtRecord`, `dtModified`, `userRecord`, `Position`, `LockIP`) "
+                    . "VALUES ('{$name}','{$pass}',CURDATE(),CURDATE(),'{$userRecord}','{$pos}','{$ip}')");
+            return View::make('addadmin')->withPage('Add User')->withSuccess('ok');
+        }
+        return View::make('addadmin')->withPage('Add User');
+    }
 
     public function showInsertReporting() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
