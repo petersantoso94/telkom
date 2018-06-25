@@ -50,6 +50,7 @@ Route::group(array('before' => 'auth'), function() {
 //Admin role
         Route::group(array('before' => 'superadmin'), function() {
             Route::any('showResetReporting', array('as' => 'showResetReporting', 'uses' => 'InventoryController@showResetReporting'));
+            Route::any('showAddAdmin', array('as' => 'showAddAdmin', 'uses' => 'InventoryController@showAddAdmin'));
         });
         Route::any('showInsertInventory', array('as' => 'showInsertInventory', 'uses' => 'InventoryController@showInsertInventory'));
         Route::any('showConsignment', array('as' => 'showConsignment', 'uses' => 'InventoryController@showConsignment'));
