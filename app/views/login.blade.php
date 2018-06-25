@@ -61,7 +61,8 @@
                 </div>
                 @endif
             @endif
-            
+            <!--{{Hash::make('admintelkom123!')}}-->
+            <!--{{Request::ip();}}-->
             <div class="clearfix">
                 <div class="col-xs-20 col-xs-offset-2 col-sm-12 col-sm-offset-6 col-md-8 col-md-offset-8">
                     <div class="white-pane padd15" id="form-wrapper">
