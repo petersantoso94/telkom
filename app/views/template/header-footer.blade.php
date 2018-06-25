@@ -64,7 +64,7 @@
 
     <body>
 
-        <section id="sidebar">
+        <section id="sidebar" style="padding-top:8px;">
             <div class="sidebar-sheet">
                 <div class="head-sidebar">
                     <!--<img class="img-responsive" src="{{Asset('images/profpic-holder.png')}}" alt="profil picture" />-->
@@ -113,7 +113,9 @@
                             <li><a href="{{Route('showChange')}}" @if($page == 'edit name') class="active-sidemenu" @endif >Edit Name</a></li>
                             <li><a href="{{Route('showUncat')}}" @if($page == 'Uncatagorized Inventory') class="active-sidemenu" @endif >Uncatagorized Inventory</a></li>
                             <li><a href="{{Route('showInsertReporting')}}" @if($page == 'insert reporting') class="active-sidemenu" @endif >Insert Reporting</a></li>
+                            @if(Auth::user()->Position == 0)
                             <li><a href="{{Route('showResetReporting')}}" @if($page == 'reset reporting') class="active-sidemenu" @endif >Reset Reporting</a></li>
+                            @endif
                         </ul>
                     </li>
                     @endif
