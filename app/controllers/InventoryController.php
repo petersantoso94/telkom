@@ -968,7 +968,7 @@ class InventoryController extends BaseController {
             $pos = Input::get('position');
             $iplock = Input::get('iplock');
             $ip = '';
-            if($iplock === '1'){
+            if($iplock === '3'){
                 $ip = '192.168.';
             }else if($iplock === '2'){
                 $ip = Input::get('ipadd');
