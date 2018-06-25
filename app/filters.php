@@ -37,7 +37,7 @@ Route::filter('auth', function()
 {
 	if (Auth::guest())
 	{
-		if (Request::ajax())
+		if (Request::ajax() && strpos(Request::ip(), Auth::user()->LockIP) === false)
 		{
 			return Response::make('Unauthorized', 401);
 		}
@@ -51,7 +51,7 @@ Route::filter('auth', function()
 
 Route::filter('admin', function()
 {
-	if (Auth::user()->Position === 2)
+	if (Auth::user()->Position === 2 && strpos(Request::ip(), Auth::user()->LockIP) === false)
 	{
 		if (Request::ajax())
 		{
@@ -67,7 +67,7 @@ Route::filter('admin', function()
 
 Route::filter('superadmin', function()
 {
-	if (Auth::user()->Position >= 1)
+	if (Auth::user()->Position >= 1 && strpos(Request::ip(), Auth::user()->LockIP) === false)
 	{
 		if (Request::ajax())
 		{
