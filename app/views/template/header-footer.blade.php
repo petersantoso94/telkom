@@ -115,6 +115,7 @@
                             <li><a href="{{Route('showInsertReporting')}}" @if($page == 'insert reporting') class="active-sidemenu" @endif >Insert Reporting</a></li>
                             @if(Auth::user()->Position == 0)
                             <li><a href="{{Route('showResetReporting')}}" @if($page == 'reset reporting') class="active-sidemenu" @endif >Reset Reporting</a></li>
+                            <li><a href="{{Route('showAddAdmin')}}" @if($page == 'Add User') class="active-sidemenu" @endif >Add User</a></li>
                             @endif
                         </ul>
                     </li>
