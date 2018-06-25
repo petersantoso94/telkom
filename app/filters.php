@@ -65,6 +65,22 @@ Route::filter('admin', function()
 	}
 });
 
+Route::filter('superadmin', function()
+{
+	if (Auth::user()->Position >= 1)
+	{
+		if (Request::ajax())
+		{
+			return Response::make('Unauthorized', 401);
+		}
+		else
+		{
+			return Redirect::guest('/')
+                                    ->withMessages('belumLogin');
+		}
+	}
+});
+
 
 Route::filter('auth.basic', function()
 {
