@@ -2004,7 +2004,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 foreach ($data as $key => $a) {
-                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
@@ -2110,7 +2110,7 @@ class InventoryController extends BaseController {
                 }
                 foreach ($data as $datas)
                     foreach ($datas as $key => $a) {
-                        $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                        $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                         $writer->addRow($myArr); // add a row at a time
                     }
             }
@@ -2170,7 +2170,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 foreach ($data as $key => $a) {
-                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
@@ -2238,6 +2238,12 @@ class InventoryController extends BaseController {
                     foreach ($act as $ivr) {
                         if (!isset($data2["Not Productive Subscriber"][$ivr->Channel]))
                             $data2["Not Productive Subscriber"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        if (!isset($data2["Subscriber"][$ivr->Channel]))
+                            $data2["Subscriber"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        if (!isset($data2["Percentage Productive"][$ivr->Channel]))
+                            $data2["Percentage Productive"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data2["Percentage Productive"][$ivr->Channel][($ivr->Month - 1)] = ($data2["Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)]/$ivr->Counter)*100;
+                        $data2["Subscriber"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter;
                         $data2["Not Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter - $data2["Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)];
                     }
                 }
@@ -2248,7 +2254,7 @@ class InventoryController extends BaseController {
                     $myArr = array("Channel", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                     $writer->addRow($myArr); // add a row at a time
                     foreach ($abc as $key2 => $a) {
-                        $myArr = array($key2, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                        $myArr = array($key2, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                         $writer->addRow($myArr); // add a row at a time
                     }
                 }
@@ -2318,6 +2324,12 @@ class InventoryController extends BaseController {
                     foreach ($act as $ivr) {
                         if (!isset($data2["Not Productive Churn"][$ivr->Channel]))
                             $data2["Not Productive Churn"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        if (!isset($data2["Churn"][$ivr->Channel]))
+                            $data2["Churn"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        if (!isset($data2["Percentage Productive"][$ivr->Channel]))
+                            $data2["Percentage Productive"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data2["Percentage Productive"][$ivr->Channel][($ivr->Month - 1)] = ($data2["Productive Churn"][$ivr->Channel][($ivr->Month - 1)]/$ivr->Counter)*100;
+                        $data2["Churn"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter;
                         $data2["Not Productive Churn"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter - $data["Productive Churn"][$ivr->Channel][($ivr->Month - 1)];
                     }
                 }
@@ -2328,7 +2340,7 @@ class InventoryController extends BaseController {
                     $myArr = array("Channel", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                     $writer->addRow($myArr); // add a row at a time
                     foreach ($abc as $key2 => $a) {
-                        $myArr = array($key2, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                        $myArr = array($key2, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                         $writer->addRow($myArr); // add a row at a time
                     }
                 }
@@ -2394,7 +2406,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 foreach ($data as $key => $a) {
-                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
@@ -2490,7 +2502,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 foreach ($data as $key => $a) {
-                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
@@ -2583,7 +2595,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 foreach ($data as $key => $a) {
-                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
@@ -2648,7 +2660,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 foreach ($data as $key => $a) {
-                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
@@ -2798,7 +2810,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 foreach ($data as $key => $a) {
-                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
@@ -2894,7 +2906,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 foreach ($data as $key => $a) {
-                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
@@ -2967,7 +2979,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 foreach ($data as $key => $a) {
-                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
@@ -3091,7 +3103,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 foreach ($data as $key => $a) {
-                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
@@ -3177,7 +3189,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 foreach ($data as $key => $a) {
-                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
@@ -3259,7 +3271,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 foreach ($data as $key => $a) {
-                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
@@ -3314,7 +3326,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 foreach ($data as $key => $a) {
-                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
@@ -3398,7 +3410,7 @@ class InventoryController extends BaseController {
                     }
                 }
                 foreach ($data as $key => $a) {
-                    $myArr = array($key, $a[0], $a[1], $a[2], $a[3], $a[4], $a[5], $a[6], $a[7], $a[8], $a[9], $a[10], $a[11]);
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
                 }
             }
