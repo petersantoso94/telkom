@@ -150,7 +150,7 @@
                                    
                         ?>
                         <option value="{{$subagent}}">
-                            {{$subagentt}}
+                            {{$subagent}}
                         </option>
                         @endif
                         @endforeach
