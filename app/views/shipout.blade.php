@@ -154,14 +154,14 @@
                         </option>
                         @endif
                         @endforeach
-                        <option value="TOKO">TOKO</option>
+<!--                        <option value="TOKO">TOKO</option>
                         <option value="ASPROF">ASPROF</option>
                         <option value="ASPROT">ASPROT</option>
                         <option value="DIRECT">DIRECT</option>
                         <option value="INDEX">INDEX</option>
                         <option value="PRE-EMPTIVE">PRE-EMPTIVE</option>
                         <option value="COLUMBIA">COLUMBIA</option>
-                        <option value="ASIA LIFE">ASIA LIFE</option>
+                        <option value="ASIA LIFE">ASIA LIFE</option>-->
                     </select>
                 </div>
                 <div class="col-xs-3" style="margin-left: 10px;">
