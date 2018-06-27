@@ -135,34 +135,33 @@
                 <div class="col-xs-2">
                     <label class="fw300" style="margin-top: 7px;">Shipout to: </label>
                 </div>
+                <?php // dd(DB::table('m_historymovement')->selectRaw('DISTINCT(SUBSTRING_INDEX(SubAgent, " ", 1)) as "Agent"')->get()); ?>
                 <div class="col-xs-3" style="margin-top: 5px;">
                     <select data-placeholder="Choose a destination..." class="chosen-select" style="width: 100%" name="shipout" id="shipoutto">
                         <option></option>
-                        @foreach(DB::table('m_historymovement')->selectRaw('DISTINCT(SUBSTRING_INDEX(SubAgent, " ", 0)) as "Agent"')->get() as $agent)
+                        @foreach(DB::table('m_historymovement')->selectRaw('DISTINCT(SUBSTRING_INDEX(SubAgent, " ", 1)) as "Agent"')->get() as $agent)
                         @if($agent->Agent != '' && $agent->Agent != '-')
-                        <?php  
-                            dd(DB::table('m_historymovement')->selectRaw('DISTINCT(SUBSTRING_INDEX(SubAgent, " ", 0)) as "Agent"')->get());
-                            $subagent = $agent->Agent;
-                            if(strtolower($subagent) === "asia"){
-                                $subagent = "ASIA LIFE";
-                            } else {
-                                $subagent = strtoupper($subagent);
-                            }
-                                   
+                        <?php
+                        $subagent = $agent->Agent;
+                        if (strtolower($subagent) === "asia") {
+                            $subagent = "ASIA LIFE";
+                        } else {
+                            $subagent = strtoupper($subagent);
+                        }
                         ?>
                         <option value="{{$subagent}}">
                             {{$subagent}}
                         </option>
                         @endif
                         @endforeach
-<!--                        <option value="TOKO">TOKO</option>
-                        <option value="ASPROF">ASPROF</option>
-                        <option value="ASPROT">ASPROT</option>
-                        <option value="DIRECT">DIRECT</option>
-                        <option value="INDEX">INDEX</option>
-                        <option value="PRE-EMPTIVE">PRE-EMPTIVE</option>
-                        <option value="COLUMBIA">COLUMBIA</option>
-                        <option value="ASIA LIFE">ASIA LIFE</option>-->
+                        <!--                        <option value="TOKO">TOKO</option>
+                                                <option value="ASPROF">ASPROF</option>
+                                                <option value="ASPROT">ASPROT</option>
+                                                <option value="DIRECT">DIRECT</option>
+                                                <option value="INDEX">INDEX</option>
+                                                <option value="PRE-EMPTIVE">PRE-EMPTIVE</option>
+                                                <option value="COLUMBIA">COLUMBIA</option>
+                                                <option value="ASIA LIFE">ASIA LIFE</option>-->
                     </select>
                 </div>
                 <div class="col-xs-3" style="margin-left: 10px;">
@@ -410,7 +409,9 @@
                     };
 
                     $('#btn_reset').on('click', function (e) {
-                        $.post(delInv, function (data) {console.log(data);});
+                        $.post(delInv, function (data) {
+                            console.log(data);
+                        });
                         if ($.fn.dataTable.isDataTable('#example')) {
                             table.fnDestroy();
                             table2.fnDestroy();
