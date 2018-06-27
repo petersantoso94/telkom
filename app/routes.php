@@ -16,7 +16,6 @@ Route::any('/', array('as' => '/', 'uses' => 'LoginController@showLogin'));
 Route::group(array('before' => 'auth'), function() {
 
     Route::any('showDashboard', array('as' => 'showDashboard', 'uses' => 'InventoryController@showDashboard'));
-    Route::any('showInventory', array('as' => 'showInventory', 'uses' => 'InventoryController@showInventory'));
     Route::get('showLogout', array('as' => 'showLogout', 'uses' => 'LoginController@showLogout'));
 //ajax
     Route::get('inventoryDataBackup/{start}', array('as' => 'inventoryDataBackup', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackup'));
@@ -52,6 +51,7 @@ Route::group(array('before' => 'auth'), function() {
             Route::any('showResetReporting', array('as' => 'showResetReporting', 'uses' => 'InventoryController@showResetReporting'));
             Route::any('showAddAdmin', array('as' => 'showAddAdmin', 'uses' => 'InventoryController@showAddAdmin'));
         });
+        Route::any('showInventory', array('as' => 'showInventory', 'uses' => 'InventoryController@showInventory'));
         Route::any('showInsertInventory', array('as' => 'showInsertInventory', 'uses' => 'InventoryController@showInsertInventory'));
         Route::any('showConsignment', array('as' => 'showConsignment', 'uses' => 'InventoryController@showConsignment'));
         Route::any('showReturnInventory', array('as' => 'showReturnInventory', 'uses' => 'InventoryController@showReturnInventory'));
@@ -61,7 +61,6 @@ Route::group(array('before' => 'auth'), function() {
         Route::any('showUncat', array('as' => 'showUncat', 'uses' => 'InventoryController@showUncat'));
         Route::any('showInsertReporting', array('as' => 'showInsertReporting', 'uses' => 'InventoryController@showInsertReporting'));
 //        Route::any('showResetReporting', array('as' => 'showResetReporting', 'uses' => 'InventoryController@showResetReporting'));
-
 //ajax
 //        Route::get('inventoryDataBackup/{start}', array('as' => 'inventoryDataBackup', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackup'));
 //        Route::post('inventoryDataBackup', array('as' => 'inventoryDataBackup', 'before' => '', 'uses' => 'InventoryController@inventoryDataBackup'));
