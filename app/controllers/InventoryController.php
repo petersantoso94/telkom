@@ -4862,7 +4862,8 @@ class InventoryController extends BaseController {
                     $simshipout = DB::table('m_inventory')
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                     ->whereRaw('m_inventory.Type IN ("1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+                                    ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')
+                            ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')
                                     ->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
@@ -4899,7 +4900,8 @@ class InventoryController extends BaseController {
                     $simshipout = DB::table('m_inventory')
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                     ->whereRaw('m_inventory.Type IN ("4")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')
+                                    ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')
+                            ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')
                                     ->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
@@ -4937,7 +4939,7 @@ class InventoryController extends BaseController {
                     $vocshipout = DB::table('m_inventory')
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                     ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', 'LIKE', "%KR0250%")
+                                    ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', 'LIKE', "%KR0250%")
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
@@ -4977,7 +4979,7 @@ class InventoryController extends BaseController {
                     $vocshipout = DB::table('m_inventory')
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                     ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR0150%")
+                                    ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR0150%")
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
@@ -5017,7 +5019,7 @@ class InventoryController extends BaseController {
                     $vocshipout = DB::table('m_inventory')
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                     ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR0450%")
+                                    ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR0450%")
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
@@ -5057,7 +5059,7 @@ class InventoryController extends BaseController {
                     $vocshipout = DB::table('m_inventory')
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                     ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR0350%")
+                                    ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR0350%")
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
@@ -5094,7 +5096,7 @@ class InventoryController extends BaseController {
                     $vocshipout = DB::table('m_inventory')
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                     ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->where('m_historymovement.Status', '2')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR1850%")
+                                    ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR1850%")
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
