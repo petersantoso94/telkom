@@ -48,7 +48,7 @@
             }
             .legend ul li{list-style:none;float:left;margin-right:8px;display:inline-block;padding-bottom:10px;padding-left :10px;padding-right :10px;}
             .legend ul li:nth-child(6n){
-                
+
             }
 
             .legend ul li:nth-child(6n+1){
@@ -83,7 +83,9 @@
                         </a>
                         <ul class="treeview-menu list-sidebar-menu" style="display: none;">
                             <li><a href="{{Route('showDashboard')}}" @if($page == 'dashboard') class="active-sidemenu" @endif >Dashboard</a></li>
+                            @if(Auth::user()->Position <= 1)
                             <li><a href="{{Route('showInventory')}}" @if($page == 'inventory') class="active-sidemenu" @endif >View Inventory</a></li>
+                            @endif
                         </ul>
                     </li>
                     @if(Auth::user()->Position <= 1)
