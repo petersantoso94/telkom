@@ -2260,10 +2260,11 @@ class InventoryController extends BaseController {
                     $writer->addRow($myArr); // add a row at a time
                     foreach ($abc as $key2 => $a) {
                         if ($name === 'Percentage Productive')
-                            $myArr = array($key2, number_format($a[0], 2, '.', ''), number_format($a[1], 2, '.', ''), number_format($a[2], 2, '.', ''),
-                                number_format($a[3], 2, '.', ''), number_format($a[4], 2, '.', ''), number_format($a[5], 2, '.', ''), number_format($a[6], 2, '.', ''),
-                                number_format($a[7], 2, '.', ''), number_format($a[8], 2, '.', ''),
-                                number_format($a[9], 2, '.', ''), number_format($a[10], 2, '.', ''), number_format($a[11], 2, '.', ''));
+                            $myArr = array($key2, number_format($a[0], 2, '.', '').'%', number_format($a[1], 2, '.', '').'%', number_format($a[2], 2, '.', '').'%',
+                                number_format($a[3], 2, '.', '').'%', number_format($a[4], 2, '.', '').'%', number_format($a[5], 2, '.', '').'%', 
+                                number_format($a[6], 2, '.', '').'%',
+                                number_format($a[7], 2, '.', '').'%', number_format($a[8], 2, '.', '').'%',
+                                number_format($a[9], 2, '.', '').'%', number_format($a[10], 2, '.', '').'%', number_format($a[11], 2, '.', '').'%');
                         else
                             $myArr = array($key2, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                         $writer->addRow($myArr); // add a row at a time
@@ -2357,10 +2358,11 @@ class InventoryController extends BaseController {
                     $writer->addRow($myArr); // add a row at a time
                     foreach ($abc as $key2 => $a) {
                         if ($name === 'Percentage Churn')
-                            $myArr = array($key2, number_format($a[0], 2, '.', ''), number_format($a[1], 2, '.', ''), number_format($a[2], 2, '.', ''),
-                                number_format($a[3], 2, '.', ''), number_format($a[4], 2, '.', ''), number_format($a[5], 2, '.', ''), number_format($a[6], 2, '.', ''),
-                                number_format($a[7], 2, '.', ''), number_format($a[8], 2, '.', ''),
-                                number_format($a[9], 2, '.', ''), number_format($a[10], 2, '.', ''), number_format($a[11], 2, '.', ''));
+                            $myArr = array($key2, number_format($a[0], 2, '.', '').'%', number_format($a[1], 2, '.', '').'%', number_format($a[2], 2, '.', '').'%',
+                                number_format($a[3], 2, '.', '').'%', number_format($a[4], 2, '.', '').'%', number_format($a[5], 2, '.', '').'%'
+                                , number_format($a[6], 2, '.', '').'%',
+                                number_format($a[7], 2, '.', '').'%', number_format($a[8], 2, '.', '').'%',
+                                number_format($a[9], 2, '.', '').'%', number_format($a[10], 2, '.', '').'%', number_format($a[11], 2, '.', '').'%');
                         else
                             $myArr = array($key2, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                         $writer->addRow($myArr); // add a row at a time
