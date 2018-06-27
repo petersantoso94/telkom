@@ -953,14 +953,14 @@ class InventoryController extends BaseController {
             } else if (Input::get('jenis') == 'reset_sip') {
                 DB::update('UPDATE `m_inventory` SET `ActivationName`= NULL,`ActivationStore`= NULL WHERE 1');
                 return View::make('resetreporting')->withPage('reset reporting')->withSuccesssip('ok');
-            }else if (Input::get('jenis') == 'reset_today_prod') {
+            } else if (Input::get('jenis') == 'reset_today_prod') {
                 DB::delete('DELETE FROM `m_productive` WHERE DATE(dtRecord)= CURDATE()');
                 return View::make('resetreporting')->withPage('reset reporting')->withSuccesstoday('ok');
             }
         }
         return View::make('resetreporting')->withPage('reset reporting');
     }
-    
+
     public function showAddAdmin() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $name = Input::get('username');
@@ -968,13 +968,13 @@ class InventoryController extends BaseController {
             $pos = Input::get('position');
             $iplock = Input::get('iplock');
             $ip = '';
-            if($iplock === '3'){
+            if ($iplock === '3') {
                 $ip = '192.168.';
-            }else if($iplock === '2'){
+            } else if ($iplock === '2') {
                 $ip = Input::get('ipadd');
             }
-            $existed = User::where('UserEmail',$name)->first();
-            if(count($existed)>0){
+            $existed = User::where('UserEmail', $name)->first();
+            if (count($existed) > 0) {
                 return View::make('addadmin')->withPage('Add User')->withError('Username already exist');
             }
             $userRecord = Auth::user()->ID;
@@ -1734,7 +1734,7 @@ class InventoryController extends BaseController {
                             $date_temp = $real_filename;
                             $date_temp = explode("_", $date_temp)[2];
                             $month_temp = substr($date_temp, 4, 2);
-                            $month_temp = (int) $month_temp ;
+                            $month_temp = (int) $month_temp;
                             if (strlen($month_temp) === 1) {
                                 $month_temp = "0" . $month_temp;
                             }
@@ -2227,6 +2227,14 @@ class InventoryController extends BaseController {
                                 ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
                                 ->groupBy(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1), YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)"))
                                 ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
+
+                if (count($act) > 0) {
+                    foreach ($act as $ivr) {
+                        if (!isset($data2["Subscriber"][$ivr->Channel]))
+                            $data2["Subscriber"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data2["Subscriber"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter;
+                    }
+                }
                 if (count($act_prod) > 0) {
                     foreach ($act_prod as $ivr) {
                         if (!isset($data2["Productive Subscriber"][$ivr->Channel]))
@@ -2238,12 +2246,9 @@ class InventoryController extends BaseController {
                     foreach ($act as $ivr) {
                         if (!isset($data2["Not Productive Subscriber"][$ivr->Channel]))
                             $data2["Not Productive Subscriber"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        if (!isset($data2["Subscriber"][$ivr->Channel]))
-                            $data2["Subscriber"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                         if (!isset($data2["Percentage Productive"][$ivr->Channel]))
                             $data2["Percentage Productive"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        $data2["Percentage Productive"][$ivr->Channel][($ivr->Month - 1)] = ($data2["Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)]/$ivr->Counter)*100;
-                        $data2["Subscriber"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter;
+                        $data2["Percentage Productive"][$ivr->Channel][($ivr->Month - 1)] = float($data2["Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)] / $ivr->Counter) * 100;
                         $data2["Not Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter - $data2["Productive Subscriber"][$ivr->Channel][($ivr->Month - 1)];
                     }
                 }
@@ -2254,7 +2259,10 @@ class InventoryController extends BaseController {
                     $myArr = array("Channel", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                     $writer->addRow($myArr); // add a row at a time
                     foreach ($abc as $key2 => $a) {
-                        $myArr = array($key2, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
+                        $myArr = array($key2, number_format($a[0], 2, '.', ''), number_format($a[1], 2, '.', ''), number_format($a[2], 2, '.', ''), 
+                            number_format($a[3], 2, '.', ''), number_format($a[4], 2, '.', ''), number_format($a[5], 2, '.', ''), number_format($a[6], 2, '.', ''), 
+                            number_format($a[7], 2, '.', ''), number_format($a[8], 2, '.', ''), 
+                            number_format($a[9], 2, '.', ''), number_format($a[10], 2, '.', ''), number_format($a[11]), 2, '.', '');
                         $writer->addRow($myArr); // add a row at a time
                     }
                 }
@@ -2313,6 +2321,14 @@ class InventoryController extends BaseController {
                                 ->join('m_historymovement as hist1', 'hist1.ID', '=', 'inv1.LastStatusID')
                                 ->groupBy(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1), YEAR(inv1.ChurnDate), MONTH(inv1.ChurnDate)"))
                                 ->select(DB::raw("SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'Channel', COUNT(inv1.MSISDN) as 'Counter', YEAR(inv1.ChurnDate) as 'Year', MONTH(inv1.ChurnDate) as 'Month'"))->get();
+                
+                if (count($act) > 0) {
+                    foreach ($act as $ivr) {
+                        if (!isset($data2["Churn"][$ivr->Channel]))
+                            $data2["Churn"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data2["Churn"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter;
+                    }
+                }
                 if (count($act_prod) > 0) {
                     foreach ($act_prod as $ivr) {
                         if (!isset($data2["Productive Churn"][$ivr->Channel]))
@@ -2324,12 +2340,9 @@ class InventoryController extends BaseController {
                     foreach ($act as $ivr) {
                         if (!isset($data2["Not Productive Churn"][$ivr->Channel]))
                             $data2["Not Productive Churn"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        if (!isset($data2["Churn"][$ivr->Channel]))
-                            $data2["Churn"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                         if (!isset($data2["Percentage Productive"][$ivr->Channel]))
                             $data2["Percentage Productive"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                        $data2["Percentage Productive"][$ivr->Channel][($ivr->Month - 1)] = ($data2["Productive Churn"][$ivr->Channel][($ivr->Month - 1)]/$ivr->Counter)*100;
-                        $data2["Churn"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter;
+                        $data2["Percentage Productive"][$ivr->Channel][($ivr->Month - 1)] = ($data2["Productive Churn"][$ivr->Channel][($ivr->Month - 1)] / $ivr->Counter) * 100;
                         $data2["Not Productive Churn"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter - $data["Productive Churn"][$ivr->Channel][($ivr->Month - 1)];
                     }
                 }
@@ -2340,7 +2353,10 @@ class InventoryController extends BaseController {
                     $myArr = array("Channel", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                     $writer->addRow($myArr); // add a row at a time
                     foreach ($abc as $key2 => $a) {
-                        $myArr = array($key2, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
+                        $myArr = array($key2, number_format($a[0], 2, '.', ''), number_format($a[1], 2, '.', ''), number_format($a[2], 2, '.', ''),
+                            number_format($a[3], 2, '.', ''), number_format($a[4], 2, '.', ''), number_format($a[5], 2, '.', ''), number_format($a[6], 2, '.', ''), 
+                            number_format($a[7], 2, '.', ''), number_format($a[8], 2, '.', ''), 
+                            number_format($a[9], 2, '.', ''), number_format($a[10], 2, '.', ''), number_format($a[11]), 2, '.', '');
                         $writer->addRow($myArr); // add a row at a time
                     }
                 }
