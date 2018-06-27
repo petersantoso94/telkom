@@ -138,6 +138,22 @@
                 <div class="col-xs-3" style="margin-top: 5px;">
                     <select data-placeholder="Choose a destination..." class="chosen-select" style="width: 100%" name="shipout" id="shipoutto">
                         <option></option>
+                        @foreach(DB::table('m_historymovement')->select('SubAgent')->distinct()->get() as $agent)
+                        @if($agent->SubAgent != '' && $agent->SubAgent != '-')
+                        <?php  
+                            $subagent = explode(' ',$agent->SubAgent);
+                            if(strtolower($subagent[0]) === "asia"){
+                                $subagent = "ASIA LIFE";
+                            } else {
+                                $subagent = strtoupper($subagent[0]);
+                            }
+                                   
+                        ?>
+                        <option value="{{$subagent}}">
+                            {{$subagentt}}
+                        </option>
+                        @endif
+                        @endforeach
                         <option value="TOKO">TOKO</option>
                         <option value="ASPROF">ASPROF</option>
                         <option value="ASPROT">ASPROT</option>
@@ -145,6 +161,7 @@
                         <option value="INDEX">INDEX</option>
                         <option value="PRE-EMPTIVE">PRE-EMPTIVE</option>
                         <option value="COLUMBIA">COLUMBIA</option>
+                        <option value="ASIA LIFE">ASIA LIFE</option>
                     </select>
                 </div>
                 <div class="col-xs-3" style="margin-left: 10px;">
