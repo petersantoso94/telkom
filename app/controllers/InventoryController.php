@@ -2259,7 +2259,7 @@ class InventoryController extends BaseController {
                     $myArr = array("Channel", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                     $writer->addRow($myArr); // add a row at a time
                     foreach ($abc as $key2 => $a) {
-                        if ($name === 'Percentage Churn')
+                        if ($name === 'Percentage Productive')
                             $myArr = array($key2, number_format($a[0], 2, '.', ''), number_format($a[1], 2, '.', ''), number_format($a[2], 2, '.', ''),
                                 number_format($a[3], 2, '.', ''), number_format($a[4], 2, '.', ''), number_format($a[5], 2, '.', ''), number_format($a[6], 2, '.', ''),
                                 number_format($a[7], 2, '.', ''), number_format($a[8], 2, '.', ''),
