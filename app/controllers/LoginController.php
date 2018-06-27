@@ -29,7 +29,7 @@ class LoginController extends \BaseController {
                 if(Auth::user()->LockIP === ''){
                     return Redirect::route('showDashboard');
                 }
-                if (strpos(Request::ip(), Auth::user()->LockIP) !== false) {
+                if (strpos(Request::ip(), Auth::user()->LockIP) !== false || Request::ip() === '::1') {
                     return Redirect::route('showDashboard');
                 }else{
                     $this->showLogout();
