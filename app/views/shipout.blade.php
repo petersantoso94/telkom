@@ -138,9 +138,10 @@
                 <div class="col-xs-3" style="margin-top: 5px;">
                     <select data-placeholder="Choose a destination..." class="chosen-select" style="width: 100%" name="shipout" id="shipoutto">
                         <option></option>
-                        @foreach(DB::table('m_historymovement')->selectRaw('SELECT DISTINCT(SUBSTRING_INDEX(SubAgent, " ", 0)) as "Agent"')->get() as $agent)
+                        @foreach(DB::table('m_historymovement')->selectRaw('DISTINCT(SUBSTRING_INDEX(SubAgent, " ", 0)) as "Agent"')->get() as $agent)
                         @if($agent->Agent != '' && $agent->Agent != '-')
                         <?php  
+                            dd(DB::table('m_historymovement')->selectRaw('DISTINCT(SUBSTRING_INDEX(SubAgent, " ", 0)) as "Agent"')->get());
                             $subagent = $agent->Agent;
                             if(strtolower($subagent) === "asia"){
                                 $subagent = "ASIA LIFE";
