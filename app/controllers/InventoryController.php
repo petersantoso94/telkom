@@ -407,7 +407,7 @@ class InventoryController extends BaseController {
         return View::make('insertinventory')->withPage('insert inventory');
     }
 
-    public function showInsertInventory33() { // find missing msisdn
+    public function showInsertInventory() { // find missing msisdn
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
@@ -426,7 +426,7 @@ class InventoryController extends BaseController {
                     foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
                         if ($sheetIndex == 1)
                             foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                if ($rowNumber > 2) {
+//                                if ($rowNumber > 2) {
                                     // do stuff with the row
                                     $msisdn = (string) $value[0];
 
@@ -437,14 +437,14 @@ class InventoryController extends BaseController {
                                         }
                                         array_push($arr_msisdn, $msisdn);
                                     }
-                                }
+//                                }
                             }
                     }
                     $reader->close();
                     $check_msisdn = [];
                     $ids = $arr_msisdn;
                     $ids = implode("','", $ids);
-                    $right_msisdn = DB::select("SELECT SerialNumber FROM `m_inventory`");
+                    $right_msisdn = DB::select("SELECT MSISDN FROM `m_inventory` WHERE ActivationDate LIKE '%2017-09%'");
                     foreach ($right_msisdn as $msisdn) {
                         $check_msisdn[] = $msisdn->MSISDN;
                     }
@@ -457,7 +457,7 @@ class InventoryController extends BaseController {
         return View::make('insertinventory')->withPage('insert inventory');
     }
 
-    public function showInsertInventory() {
+    public function showInsertInventory33() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
