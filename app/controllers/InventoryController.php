@@ -2445,7 +2445,7 @@ class InventoryController extends BaseController {
         $type = '';
         if (Input::get('type'))
             $type = Input::get('type');
-        $year = '2017';
+//        $year = '2017';
         $data = [];
 //        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%services%\'')->get();
         $all_ivr = DB::table('m_productive as prod1')
