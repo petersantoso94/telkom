@@ -2261,11 +2261,11 @@ class InventoryController extends BaseController {
                     $writer->addRow($myArr); // add a row at a time
                     foreach ($abc as $key2 => $a) {
                         if ($name === 'Percentage Productive')
-                            $myArr = array($key2, number_format($a[0], 2, '.', '').'%', number_format($a[1], 2, '.', '').'%', number_format($a[2], 2, '.', '').'%',
-                                number_format($a[3], 2, '.', '').'%', number_format($a[4], 2, '.', '').'%', number_format($a[5], 2, '.', '').'%', 
-                                number_format($a[6], 2, '.', '').'%',
-                                number_format($a[7], 2, '.', '').'%', number_format($a[8], 2, '.', '').'%',
-                                number_format($a[9], 2, '.', '').'%', number_format($a[10], 2, '.', '').'%', number_format($a[11], 2, '.', '').'%');
+                            $myArr = array($key2, number_format($a[0], 2, '.', '') . '%', number_format($a[1], 2, '.', '') . '%', number_format($a[2], 2, '.', '') . '%',
+                                number_format($a[3], 2, '.', '') . '%', number_format($a[4], 2, '.', '') . '%', number_format($a[5], 2, '.', '') . '%',
+                                number_format($a[6], 2, '.', '') . '%',
+                                number_format($a[7], 2, '.', '') . '%', number_format($a[8], 2, '.', '') . '%',
+                                number_format($a[9], 2, '.', '') . '%', number_format($a[10], 2, '.', '') . '%', number_format($a[11], 2, '.', '') . '%');
                         else
                             $myArr = array($key2, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                         $writer->addRow($myArr); // add a row at a time
@@ -2359,11 +2359,11 @@ class InventoryController extends BaseController {
                     $writer->addRow($myArr); // add a row at a time
                     foreach ($abc as $key2 => $a) {
                         if ($name === 'Percentage Churn')
-                            $myArr = array($key2, number_format($a[0], 2, '.', '').'%', number_format($a[1], 2, '.', '').'%', number_format($a[2], 2, '.', '').'%',
-                                number_format($a[3], 2, '.', '').'%', number_format($a[4], 2, '.', '').'%', number_format($a[5], 2, '.', '').'%'
-                                , number_format($a[6], 2, '.', '').'%',
-                                number_format($a[7], 2, '.', '').'%', number_format($a[8], 2, '.', '').'%',
-                                number_format($a[9], 2, '.', '').'%', number_format($a[10], 2, '.', '').'%', number_format($a[11], 2, '.', '').'%');
+                            $myArr = array($key2, number_format($a[0], 2, '.', '') . '%', number_format($a[1], 2, '.', '') . '%', number_format($a[2], 2, '.', '') . '%',
+                                number_format($a[3], 2, '.', '') . '%', number_format($a[4], 2, '.', '') . '%', number_format($a[5], 2, '.', '') . '%'
+                                , number_format($a[6], 2, '.', '') . '%',
+                                number_format($a[7], 2, '.', '') . '%', number_format($a[8], 2, '.', '') . '%',
+                                number_format($a[9], 2, '.', '') . '%', number_format($a[10], 2, '.', '') . '%', number_format($a[11], 2, '.', '') . '%');
                         else
                             $myArr = array($key2, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                         $writer->addRow($myArr); // add a row at a time
@@ -2445,9 +2445,14 @@ class InventoryController extends BaseController {
         $type = '';
         if (Input::get('type'))
             $type = Input::get('type');
-//        $year = '2017';
+        $year = '2017';
         $data = [];
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%services%\'')->get();
+//        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%services%\'')->get();
+        $all_ivr = DB::table('m_productive as prod1')
+                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year}'")
+                        ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month, `prod1`.Service'))
+                        ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod`1.Year, `prod1`.Month, `prod1`.Service"))->get();
+        dd($all_ivr);
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2456,7 +2461,7 @@ class InventoryController extends BaseController {
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
                 $stats = 'no service';
-                $temp_stat = $ivr->Status;
+                $temp_stat = $ivr->Service;
                 if (substr($temp_stat, 0, 1) == '1') {
                     $stats = 'Voice only';
                 } else if (substr($temp_stat, 0, 1) == '2') {
@@ -2492,7 +2497,11 @@ class InventoryController extends BaseController {
                 $writer->addRow($myArr); // add a row at a time
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
-                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%services%\'')->get();
+                $all_ivr = DB::table('m_productive as prod1')
+                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year}'")
+                        ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month, `prod1`.Service'))
+                        ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod`1.Year, `prod1`.Month, `prod1`.Service"))->get();
+//                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%services%\'')->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2501,7 +2510,7 @@ class InventoryController extends BaseController {
                 if ($all_ivr != null) {
                     foreach ($all_ivr as $ivr) {
                         $stats = 'no service';
-                        $temp_stat = $ivr->Status;
+                        $temp_stat = $ivr->Service;
                         if (substr($temp_stat, 0, 1) == '1') {
                             $stats = 'Voice only';
                         } else if (substr($temp_stat, 0, 1) == '2') {
@@ -4864,7 +4873,7 @@ class InventoryController extends BaseController {
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                     ->whereRaw('m_inventory.Type IN ("1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')
-                            ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')
+                                    ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')
                                     ->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
@@ -4902,7 +4911,7 @@ class InventoryController extends BaseController {
                                     ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                     ->whereRaw('m_inventory.Type IN ("4")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $channel->channel . '%')
-                            ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')
+                                    ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')
                                     ->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
                                     ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
