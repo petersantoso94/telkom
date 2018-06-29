@@ -444,7 +444,8 @@ class InventoryController extends BaseController {
                     $check_msisdn = [];
                     $ids = $arr_msisdn;
                     $ids = implode("','", $ids);
-                    $right_msisdn = DB::select("SELECT MSISDN FROM `m_inventory` WHERE MSISDN IN ('{$ids}')");
+                    $right_msisdn = DB::select("SELECT m_productive.MSISDN,m_inventory.ChurnDate FROM `m_inventory` INNER JOIN m_productive ON m_productive.MSISDN = m_inventory.MSISDN WHERE m_productive.MSISDN IN ('{$ids}')");
+                    dd($right_msisdn);
                     foreach ($right_msisdn as $msisdn) {
                         $check_msisdn[] = $msisdn->MSISDN;
                     }
