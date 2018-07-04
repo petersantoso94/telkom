@@ -407,7 +407,7 @@ class InventoryController extends BaseController {
         return View::make('insertinventory')->withPage('insert inventory');
     }
 
-    public function showInsertInventory() { // find missing msisdn
+    public function showInsertInventory33() { // find missing msisdn
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
@@ -458,7 +458,7 @@ class InventoryController extends BaseController {
         return View::make('insertinventory')->withPage('insert inventory');
     }
 
-    public function showInsertInventory33() {
+    public function showInsertInventory() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
             if ($input != '') {
@@ -2649,7 +2649,8 @@ class InventoryController extends BaseController {
             $type = Input::get('type');
 //        $year = '2017';
         $data = [];
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%internet_sum%\'')->get();
+//        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%internet_sum%\'')->get();
+        $all_ivr = DB::select("SELECT SUM(Internet) as 'Counter' FROM m_productive WHERE Year = '{$year}'")->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2678,7 +2679,7 @@ class InventoryController extends BaseController {
                 $writer->addRow($myArr); // add a row at a time
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
-                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%internet_sum%\'')->get();
+                $all_ivr = DB::select("SELECT SUM(Internet) as 'Counter' FROM m_productive WHERE Year = '{$year->Year}'")->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2716,7 +2717,7 @@ class InventoryController extends BaseController {
         $data = [];
         $sum_internet = [];
         $count_internet = [];
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%internet_sum%\'')->get();
+        $all_ivr = DB::select("SELECT SUM(Internet) as 'Counter' FROM m_productive WHERE Year = '{$year}'")->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2788,7 +2789,7 @@ class InventoryController extends BaseController {
                 $writer->addRow($myArr); // add a row at a time
                 $sum_internet = [];
                 $count_internet = [];
-                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%internet_sum%\'')->get();
+                $all_ivr = DB::select("SELECT SUM(Internet) as 'Counter' FROM m_productive WHERE Year = '{$year->Year}'")->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
