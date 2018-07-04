@@ -2650,7 +2650,7 @@ class InventoryController extends BaseController {
 //        $year = '2017';
         $data = [];
 //        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%internet_sum%\'')->get();
-        $all_ivr = DB::select("SELECT SUM(Internet) as 'Counter', Month FROM m_productive WHERE Year = '{$year}' GROUP BY Month")->get();
+        $all_ivr = DB::select("SELECT SUM(Internet) as 'Counter', Month FROM m_productive WHERE Year = '{$year}' GROUP BY Month");
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2679,7 +2679,7 @@ class InventoryController extends BaseController {
                 $writer->addRow($myArr); // add a row at a time
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
-                $all_ivr = DB::select("SELECT SUM(Internet), Month as 'Counter' FROM m_productive WHERE Year = '{$year->Year}' GROUP BY Month")->get();
+                $all_ivr = DB::select("SELECT SUM(Internet), Month as 'Counter' FROM m_productive WHERE Year = '{$year->Year}' GROUP BY Month");
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2717,7 +2717,7 @@ class InventoryController extends BaseController {
         $data = [];
         $sum_internet = [];
         $count_internet = [];
-        $all_ivr = DB::select("SELECT SUM(Internet) as 'Counter', Month FROM m_productive WHERE Year = '{$year}' GROUP BY Month")->get();
+        $all_ivr = DB::select("SELECT SUM(Internet) as 'Counter', Month FROM m_productive WHERE Year = '{$year}' GROUP BY Month");
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2789,7 +2789,7 @@ class InventoryController extends BaseController {
                 $writer->addRow($myArr); // add a row at a time
                 $sum_internet = [];
                 $count_internet = [];
-                $all_ivr = DB::select("SELECT SUM(Internet) as 'Counter', Month FROM m_productive WHERE Year = '{$year->Year}' GROUP BY Month")->get();
+                $all_ivr = DB::select("SELECT SUM(Internet) as 'Counter', Month FROM m_productive WHERE Year = '{$year->Year}' GROUP BY Month");
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
