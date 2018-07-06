@@ -1429,7 +1429,7 @@ class InventoryController extends BaseController {
                         }
                         $cases1 = implode(' ', $cases1);
                         $cases2 = implode(' ', $cases2);
-                        DB::update("UPDATE `{$table}` SET `ChurnDate` = CASE `MSISDN` {$cases2} END, `ActivationDate` = CASE `MSISDN` {$cases1} END WHERE `MSISDN` in ({$ids})");
+                        DB::update("UPDATE `{$table}` SET `ChurnDate` = CASE `MSISDN` {$cases2} END WHERE `MSISDN` in ({$ids})");
 
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberch($counter);
                     }
