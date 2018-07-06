@@ -3955,7 +3955,7 @@ class InventoryController extends BaseController {
 
     static function exportExcelWeeklyDashboard() {
         $date = Input::get("argyear");
-//        $date = "2018-04-1";
+//        $date = "2018-01-12";
         $year = explode("-", $date)[0];
         $month = explode("-", $date)[1];
         $day = explode("-", $date)[2];
@@ -4004,7 +4004,7 @@ class InventoryController extends BaseController {
         else {
             $data['churn'][0] = 1;
         }
-        $all_ivr = Inventory::whereRaw("ChurnDate IS NOT NULL AND YEAR(ChurnDate) LIKE '{$year}' AND MONTH(ChurnDate) LIKE '{$last_month}' AND DAY(ChurnDate) >= '1' AND DAY(ChurnDate) <= '{$day}'")->select(DB::raw("COUNT(MSISDN) as Counter"))->get();
+        $all_ivr = Inventory::whereRaw("ChurnDate IS NOT NULL AND YEAR(ChurnDate) LIKE '{$last_year}' AND MONTH(ChurnDate) LIKE '{$last_month}' AND DAY(ChurnDate) >= '1' AND DAY(ChurnDate) <= '{$day}'")->select(DB::raw("COUNT(MSISDN) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['churn'][1] = $all_ivr[0]->Counter;
         else {
@@ -4016,7 +4016,7 @@ class InventoryController extends BaseController {
         else {
             $data['act'][0] = 1;
         }
-        $all_ivr = Inventory::whereRaw("ActivationDate IS NOT NULL AND YEAR(ActivationDate) LIKE '{$year}' AND MONTH(ActivationDate) LIKE '{$last_month}' AND DAY(ActivationDate) >= '1' AND DAY(ActivationDate) <= '{$day}'")->select(DB::raw("COUNT(MSISDN) as Counter"))->get();
+        $all_ivr = Inventory::whereRaw("ActivationDate IS NOT NULL AND YEAR(ActivationDate) LIKE '{$last_year}' AND MONTH(ActivationDate) LIKE '{$last_month}' AND DAY(ActivationDate) >= '1' AND DAY(ActivationDate) <= '{$day}'")->select(DB::raw("COUNT(MSISDN) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['act'][1] = $all_ivr[0]->Counter;
         else {
@@ -4054,11 +4054,11 @@ class InventoryController extends BaseController {
         if (count($all_ivr) > 0)
             $data['PH300'][0] = $all_ivr[0]->Counter;
 
-        $all_ivr = Inventory::whereRaw("TopUpDate IS NOT NULL AND YEAR(TopUpDate) LIKE '{$year}' AND MONTH(TopUpDate) LIKE '{$last_month}' AND DAY(TopUpDate) >= '1' AND DAY(TopUpDate) <= '{$day}' AND (`SerialNumber` LIKE '%KR1850%')")->select(DB::raw("COUNT(SerialNumber) as Counter"))->get();
+        $all_ivr = Inventory::whereRaw("TopUpDate IS NOT NULL AND YEAR(TopUpDate) LIKE '{$last_year}' AND MONTH(TopUpDate) LIKE '{$last_month}' AND DAY(TopUpDate) >= '1' AND DAY(TopUpDate) <= '{$day}' AND (`SerialNumber` LIKE '%KR1850%')")->select(DB::raw("COUNT(SerialNumber) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['PH300'][1] = $all_ivr[0]->Counter;
 
-        $all_ivr = Inventory::whereRaw("TopUpDate IS NOT NULL AND YEAR(TopUpDate) LIKE '{$year}' AND MONTH(TopUpDate) LIKE '{$last_month}' AND DAY(TopUpDate) >= '1' AND DAY(TopUpDate) <= '{$day}' AND (`SerialNumber` LIKE '%KR0250%')")->select(DB::raw("COUNT(SerialNumber) as Counter"))->get();
+        $all_ivr = Inventory::whereRaw("TopUpDate IS NOT NULL AND YEAR(TopUpDate) LIKE '{$last_year}' AND MONTH(TopUpDate) LIKE '{$last_month}' AND DAY(TopUpDate) >= '1' AND DAY(TopUpDate) <= '{$day}' AND (`SerialNumber` LIKE '%KR0250%')")->select(DB::raw("COUNT(SerialNumber) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['E300'][1] = $all_ivr[0]->Counter;
         //total process
@@ -4103,19 +4103,19 @@ class InventoryController extends BaseController {
         if (count($all_ivr) > 0)
             $data['30DAY'][0] = $all_ivr[0]->Counter;
 
-        $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
+        $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$last_year}' AND MONTH(Date) LIKE "
                                 . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '180'")
                         ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['1GB'][1] = $all_ivr[0]->Counter;
 
-        $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
+        $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$last_year}' AND MONTH(Date) LIKE "
                                 . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '300'")
                         ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['2GB'][1] = $all_ivr[0]->Counter;
 
-        $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
+        $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$last_year}' AND MONTH(Date) LIKE "
                                 . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300")
                         ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
         if (count($all_ivr) > 0)
@@ -4141,10 +4141,16 @@ class InventoryController extends BaseController {
         $writer->addRow(['']);
 
         $tempmonth = $month;
+        $tempday = $day;
         if (strlen($month) === 1) {
             $tempmonth = "0" . $month;
         }
-        $all_ivr = Stats::where('Year', $year)->where('Month', $tempmonth)->whereRaw('Status LIKE \'%_sum%\'')->get();
+        if (strlen($day) === 1) {
+            $tempday = "0" . $day;
+        }
+        $all_ivr = DB::select("SELECT SUM(MO) as 'mo', SUM(MT) as 'mt',SUM(Internet) as 'internet',SUM(Sms) as 'sms' FROM m_productive "
+                        . "WHERE Day >= '1' AND Day <= '{$tempday}' AND Month = '{$tempmonth}' AND Year = '{$year}'");
+//        $all_ivr = Stats::where('Year', $year)->where('Month', $tempmonth)->whereRaw('Status LIKE \'%_sum%\'')->get();
         $data = array();
         $data['MT'][0] = 1;
         $data['MO'][0] = 1;
@@ -4155,47 +4161,65 @@ class InventoryController extends BaseController {
         $data['IT'][1] = 1;
         $data['SMS'][1] = 1;
         if ($all_ivr != null) {
-            foreach ($all_ivr as $ivr) {
-                $temp_stat = $ivr->Status;
-                $temp_counter = $ivr->Counter;
-                if (explode('_', $temp_stat)[0] == 'mt') {
-                    $temp_counter = round(ceil($temp_counter / 60), 1);
-                    $data['MT'][0] = $temp_counter;
-                } else if (explode('_', $temp_stat)[0] == 'mo') {
-                    $temp_counter = round(ceil($temp_counter / 60), 1);
-                    $data['MO'][0] = $temp_counter;
-                } else if (explode('_', $temp_stat)[0] == 'internet') {
-                    $temp_counter = round($temp_counter, 1);
-                    $data['IT'][0] = $temp_counter;
-                } else if (explode('_', $temp_stat)[0] == 'sms') {
-                    $temp_counter = round($temp_counter, 1);
-                    $data['SMS'][0] = $temp_counter;
-                }
-            }
+            $temp_counter = round(ceil($all_ivr[0]->mt / 60), 1);
+            $data['MT'][0] = $temp_counter;
+            $temp_counter = round(ceil($all_ivr[0]->mo / 60), 1);
+            $data['MO'][0] = $temp_counter;
+            $temp_counter = round($all_ivr[0]->internet, 1);
+            $data['IT'][0] = $temp_counter;
+            $temp_counter = round($all_ivr[0]->sms, 1);
+            $data['SMS'][0] = $temp_counter;
+//            foreach ($all_ivr as $ivr) {
+//                $temp_stat = $ivr->Status;
+//                $temp_counter = $ivr->Counter;
+//                if (explode('_', $temp_stat)[0] == 'mt') {
+//                    $temp_counter = round(ceil($temp_counter / 60), 1);
+//                    $data['MT'][0] = $temp_counter;
+//                } else if (explode('_', $temp_stat)[0] == 'mo') {
+//                    $temp_counter = round(ceil($temp_counter / 60), 1);
+//                    $data['MO'][0] = $temp_counter;
+//                } else if (explode('_', $temp_stat)[0] == 'internet') {
+//                    $temp_counter = round($temp_counter, 1);
+//                    $data['IT'][0] = $temp_counter;
+//                } else if (explode('_', $temp_stat)[0] == 'sms') {
+//                    $temp_counter = round($temp_counter, 1);
+//                    $data['SMS'][0] = $temp_counter;
+//                }
+//            }
         }
         $tempmonth = $last_month;
         if (strlen($last_month) === 1) {
             $tempmonth = "0" . $last_month;
         }
-        $all_ivr = Stats::where('Year', $year)->where('Month', $tempmonth)->whereRaw('Status LIKE \'%_sum%\'')->get();
+        $all_ivr = DB::select("SELECT SUM(MO) as 'mo', SUM(MT) as 'mt',SUM(Internet) as 'internet',SUM(Sms) as 'sms' FROM m_productive "
+                        . "WHERE Day >= '1' AND Day <= '{$tempday}' AND Month = '{$tempmonth}' AND Year = '{$last_year}'");
+//        $all_ivr = Stats::where('Year', $year)->where('Month', $tempmonth)->whereRaw('Status LIKE \'%_sum%\'')->get();
         if ($all_ivr != null) {
-            foreach ($all_ivr as $ivr) {
-                $temp_stat = $ivr->Status;
-                $temp_counter = $ivr->Counter;
-                if (explode('_', $temp_stat)[0] == 'mt') {
-                    $temp_counter = round(ceil($temp_counter / 60), 1);
-                    $data['MT'][1] = $temp_counter;
-                } else if (explode('_', $temp_stat)[0] == 'mo') {
-                    $temp_counter = round(ceil($temp_counter / 60), 1);
-                    $data['MO'][1] = $temp_counter;
-                } else if (explode('_', $temp_stat)[0] == 'internet') {
-                    $temp_counter = round($temp_counter, 1);
-                    $data['IT'][1] = $temp_counter;
-                } else if (explode('_', $temp_stat)[0] == 'sms') {
-                    $temp_counter = round($temp_counter, 1);
-                    $data['SMS'][1] = $temp_counter;
-                }
-            }
+            $temp_counter = round(ceil($all_ivr[0]->mt / 60), 1);
+            $data['MT'][1] = $temp_counter;
+            $temp_counter = round(ceil($all_ivr[0]->mo / 60), 1);
+            $data['MO'][1] = $temp_counter;
+            $temp_counter = round($all_ivr[0]->internet, 1);
+            $data['IT'][1] = $temp_counter;
+            $temp_counter = round($all_ivr[0]->sms, 1);
+            $data['SMS'][1] = $temp_counter;
+//            foreach ($all_ivr as $ivr) {
+//                $temp_stat = $ivr->Status;
+//                $temp_counter = $ivr->Counter;
+//                if (explode('_', $temp_stat)[0] == 'mt') {
+//                    $temp_counter = round(ceil($temp_counter / 60), 1);
+//                    $data['MT'][1] = $temp_counter;
+//                } else if (explode('_', $temp_stat)[0] == 'mo') {
+//                    $temp_counter = round(ceil($temp_counter / 60), 1);
+//                    $data['MO'][1] = $temp_counter;
+//                } else if (explode('_', $temp_stat)[0] == 'internet') {
+//                    $temp_counter = round($temp_counter, 1);
+//                    $data['IT'][1] = $temp_counter;
+//                } else if (explode('_', $temp_stat)[0] == 'sms') {
+//                    $temp_counter = round($temp_counter, 1);
+//                    $data['SMS'][1] = $temp_counter;
+//                }
+//            }
         }
         //total process
         $data['MT'][2] = round((($data['MT'][0] - $data['MT'][1]) / $data['MT'][0]) * 100, 2);
