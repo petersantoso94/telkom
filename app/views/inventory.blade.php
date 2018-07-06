@@ -35,7 +35,7 @@
             </div>
             <div class="row" id="shipoutto-container"  style="display: none;">
                 Sub Agent: 
-                <select data-placeholder="Choose a destination..."  style="width: 100%" name="shipout" id="shipoutto">
+                <select data-placeholder="Choose a destination..." class="chosen-select" style="width: 100%" name="shipout" id="shipoutto">
                     <option></option>
                     @foreach(DB::table('m_historymovement')->select('SubAgent')->distinct()->get() as $agent)
                     @if($agent->SubAgent != '')
