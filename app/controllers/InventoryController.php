@@ -3955,7 +3955,7 @@ class InventoryController extends BaseController {
 
     static function exportExcelWeeklyDashboard() {
         $date = Input::get("argyear");
-//        $date = "2018-01-12";
+        $date = "2018-07-12";
         $year = explode("-", $date)[0];
         $month = explode("-", $date)[1];
         $day = explode("-", $date)[2];
@@ -4022,6 +4022,12 @@ class InventoryController extends BaseController {
         else {
             $data['act'][1] = 1;
         }
+        
+        if($data['churn'][0] === '0')
+            $data['churn'][0] = 1;
+        if($data['act'][0] === '0')
+            $data['act'][0] = 1;
+        
         //total process
         $data['churn'][2] = round((($data['churn'][0] - $data['churn'][1]) / $data['churn'][0]) * 100, 2);
         $data['act'][2] = round((($data['act'][0] - $data['act'][1]) / $data['act'][0]) * 100, 2);
@@ -4061,12 +4067,19 @@ class InventoryController extends BaseController {
         $all_ivr = Inventory::whereRaw("TopUpDate IS NOT NULL AND YEAR(TopUpDate) LIKE '{$last_year}' AND MONTH(TopUpDate) LIKE '{$last_month}' AND DAY(TopUpDate) >= '1' AND DAY(TopUpDate) <= '{$day}' AND (`SerialNumber` LIKE '%KR0250%')")->select(DB::raw("COUNT(SerialNumber) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['E300'][1] = $all_ivr[0]->Counter;
+        
+        if($data['PH300'][0] === '0')
+            $data['PH300'][0] = 1;
+        if($data['E300'][0] === '0')
+            $data['E300'][0] = 1;
         //total process
         $data['PH300'][2] = round((($data['PH300'][0] - $data['PH300'][1]) / $data['PH300'][0]) * 100, 2);
         $data['E300'][2] = round((($data['E300'][0] - $data['E300'][1]) / $data['E300'][0]) * 100, 2);
 
         $data["300NT"][0] = $data['PH300'][0] + $data['E300'][0];
         $data["300NT"][1] = $data['PH300'][1] + $data['E300'][1];
+        if($data['300NT'][0] === '0')
+            $data['300NT'][0] = 1;
         $data['300NT'][2] = round((($data['300NT'][0] - $data['300NT'][1]) / $data['300NT'][0]) * 100, 2);
 
         $myArr = array("VOUCHERS 300NT", "CARDS", $data["300NT"][0], $data["300NT"][1], $data["300NT"][2] . '%');
@@ -4120,7 +4133,14 @@ class InventoryController extends BaseController {
                         ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['30DAY'][1] = $all_ivr[0]->Counter;
-
+        
+        if($data['1GB'][0] === '0')
+            $data['1GB'][0] = 1;
+        if($data['2GB'][0] === '0')
+            $data['2GB'][0] = 1;
+        if($data['30DAY'][0] === '0')
+            $data['30DAY'][0] = 1;
+        
         //total process
         $data['1GB'][2] = round((($data['1GB'][0] - $data['1GB'][1]) / $data['1GB'][0]) * 100, 2);
         $data['2GB'][2] = round((($data['2GB'][0] - $data['2GB'][1]) / $data['2GB'][0]) * 100, 2);
@@ -4128,6 +4148,8 @@ class InventoryController extends BaseController {
 
         $data["INTERNET"][0] = $data['1GB'][0] + $data['2GB'][0] + $data['30DAY'][0];
         $data["INTERNET"][1] = $data['1GB'][1] + $data['2GB'][1] + $data['30DAY'][1];
+        if($data['INTERNET'][0] === '0')
+            $data['INTERNET'][0] = 1;
         $data['INTERNET'][2] = round((($data['INTERNET'][0] - $data['INTERNET'][1]) / $data['INTERNET'][0]) * 100, 2);
 
         $myArr = array("INTERNET", "SUBS", number_format($data["INTERNET"][0]), number_format($data["INTERNET"][1]), $data["INTERNET"][2] . '%');
@@ -4221,6 +4243,14 @@ class InventoryController extends BaseController {
 //                }
 //            }
         }
+        if($data['MT'][0] === '0')
+            $data['MT'][0] = 1;
+        if($data['MO'][0] === '0')
+            $data['MO'][0] = 1;
+        if($data['IT'][0] === '0')
+            $data['IT'][0] = 1;
+        if($data['SMS'][0] === '0')
+            $data['SMS'][0] = 1;
         //total process
         $data['MT'][2] = round((($data['MT'][0] - $data['MT'][1]) / $data['MT'][0]) * 100, 2);
         $data['MO'][2] = round((($data['MO'][0] - $data['MO'][1]) / $data['MO'][0]) * 100, 2);
@@ -4229,6 +4259,8 @@ class InventoryController extends BaseController {
 
         $data["MVNO_CALL"][0] = $data['MT'][0] + $data['MO'][0];
         $data["MVNO_CALL"][1] = $data['MT'][1] + $data['MO'][1];
+        if($data['MVNO_CALL'][0] === '0')
+            $data['MVNO_CALL'][0] = 1;
         $data['MVNO_CALL'][2] = round((($data['MVNO_CALL'][0] - $data['MVNO_CALL'][1]) / $data['MVNO_CALL'][0]) * 100, 2);
 
         $myArr = array("MVNO CALL", "MINS", number_format($data["MVNO_CALL"][0]), number_format($data["MVNO_CALL"][1]), $data["MVNO_CALL"][2] . '%');
