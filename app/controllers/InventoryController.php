@@ -4024,19 +4024,19 @@ class InventoryController extends BaseController {
         }
 
         //total process
-        if ($data['churn'][0] != 0)
-            $data['churn'][2] = round((($data['churn'][0] - $data['churn'][1]) / $data['churn'][0]) * 100, 2);
+        if ($data['churn'][1] != 0)
+            $data['churn'][2] = round((($data['churn'][0] - $data['churn'][1]) / $data['churn'][1]) * 100, 2);
         else
             $data['churn'][2] = round((($data['churn'][0] - $data['churn'][1]) / 1) * 100, 2);
-        if ($data['act'][0] != 0)
-            $data['act'][2] = round((($data['act'][0] - $data['act'][1]) / $data['act'][0]) * 100, 2);
+        if ($data['act'][1] != 0)
+            $data['act'][2] = round((($data['act'][0] - $data['act'][1]) / $data['act'][1]) * 100, 2);
         else
             $data['act'][2] = round((($data['act'][0] - $data['act'][1]) / 1) * 100, 2);
 
         $data["net"][0] = $data['act'][0] - $data['churn'][0];
         $data["net"][1] = $data['act'][1] - $data['churn'][1];
-        if ($data['net'][0] !== 0)
-            $data['net'][2] = round((($data['net'][0] - $data['net'][1]) / $data['net'][0]) * 100, 2);
+        if ($data['net'][1] !== 0)
+            $data['net'][2] = round((($data['net'][0] - $data['net'][1]) / $data['net'][1]) * 100, 2);
         else
             $data['net'][2] = round((($data['net'][0] - $data['net'][1]) / 1) * 100, 2);
 
@@ -4072,19 +4072,19 @@ class InventoryController extends BaseController {
             $data['E300'][1] = $all_ivr[0]->Counter;
 
         //total process
-        if ($data['PH300'][0] != 0)
-            $data['PH300'][2] = round((($data['PH300'][0] - $data['PH300'][1]) / $data['PH300'][0]) * 100, 2);
+        if ($data['PH300'][1] != 0)
+            $data['PH300'][2] = round((($data['PH300'][0] - $data['PH300'][1]) / $data['PH300'][1]) * 100, 2);
         else
             $data['PH300'][2] = round((($data['PH300'][0] - $data['PH300'][1]) / 1) * 100, 2);
-        if ($data['E300'][0] != 0)
-            $data['E300'][2] = round((($data['E300'][0] - $data['E300'][1]) / $data['E300'][0]) * 100, 2);
+        if ($data['E300'][1] != 0)
+            $data['E300'][2] = round((($data['E300'][0] - $data['E300'][1]) / $data['E300'][1]) * 100, 2);
         else
             $data['E300'][2] = round((($data['E300'][0] - $data['E300'][1]) / 1) * 100, 2);
 
         $data["300NT"][0] = $data['PH300'][0] + $data['E300'][0];
         $data["300NT"][1] = $data['PH300'][1] + $data['E300'][1];
-        if ($data['300NT'][0] != 0)
-            $data['300NT'][2] = round((($data['300NT'][0] - $data['300NT'][1]) / $data['300NT'][0]) * 100, 2);
+        if ($data['300NT'][1] != 0)
+            $data['300NT'][2] = round((($data['300NT'][0] - $data['300NT'][1]) / $data['300NT'][1]) * 100, 2);
         else
             $data['300NT'][2] = round((($data['300NT'][0] - $data['300NT'][1]) / 1) * 100, 2);
 
@@ -4142,24 +4142,24 @@ class InventoryController extends BaseController {
             $data['30DAY'][1] = $all_ivr[0]->Counter;
 
         //total process
-        if ($data['1GB'][0] != 0)
-            $data['1GB'][2] = round((($data['1GB'][0] - $data['1GB'][1]) / $data['1GB'][0]) * 100, 2);
+        if ($data['1GB'][1] != 0)
+            $data['1GB'][2] = round((($data['1GB'][0] - $data['1GB'][1]) / $data['1GB'][1]) * 100, 2);
         else
             $data['1GB'][2] = round((($data['1GB'][0] - $data['1GB'][1]) / 1) * 100, 2);
-        if ($data['2GB'][0] != 0)
-            $data['2GB'][2] = round((($data['2GB'][0] - $data['2GB'][1]) / $data['2GB'][0]) * 100, 2);
+        if ($data['2GB'][1] != 0)
+            $data['2GB'][2] = round((($data['2GB'][0] - $data['2GB'][1]) / $data['2GB'][1]) * 100, 2);
         else
             $data['2GB'][2] = round((($data['2GB'][0] - $data['2GB'][1]) / 1) * 100, 2);
-        if ($data['30DAY'][0] != 0)
-            $data['30DAY'][2] = round((($data['30DAY'][0] - $data['30DAY'][1]) / $data['30DAY'][0]) * 100, 2);
+        if ($data['30DAY'][1] != 0)
+            $data['30DAY'][2] = round((($data['30DAY'][0] - $data['30DAY'][1]) / $data['30DAY'][1]) * 100, 2);
         else
             $data['30DAY'][2] = round((($data['30DAY'][0] - $data['30DAY'][1]) / 1) * 100, 2);
 
         $data["INTERNET"][0] = $data['1GB'][0] + $data['2GB'][0] + $data['30DAY'][0];
         $data["INTERNET"][1] = $data['1GB'][1] + $data['2GB'][1] + $data['30DAY'][1];
 
-        if ($data['INTERNET'][0] != 0)
-            $data['INTERNET'][2] = round((($data['INTERNET'][0] - $data['INTERNET'][1]) / $data['INTERNET'][0]) * 100, 2);
+        if ($data['INTERNET'][1] != 0)
+            $data['INTERNET'][2] = round((($data['INTERNET'][0] - $data['INTERNET'][1]) / $data['INTERNET'][1]) * 100, 2);
         else
             $data['INTERNET'][2] = round((($data['INTERNET'][0] - $data['INTERNET'][1]) / 1) * 100, 2);
 
@@ -4256,27 +4256,27 @@ class InventoryController extends BaseController {
         }
 
         //total process
-        if ($data['MT'][0] != 0)
-            $data['MT'][2] = round((($data['MT'][0] - $data['MT'][1]) / $data['MT'][0]) * 100, 2);
+        if ($data['MT'][1] != 0)
+            $data['MT'][2] = round((($data['MT'][0] - $data['MT'][1]) / $data['MT'][1]) * 100, 2);
         else
             $data['MT'][2] = round((($data['MT'][0] - $data['MT'][1]) / 1) * 100, 2);
-        if ($data['MO'][0] != 0)
-            $data['MO'][2] = round((($data['MO'][0] - $data['MO'][1]) / $data['MO'][0]) * 100, 2);
+        if ($data['MO'][1] != 0)
+            $data['MO'][2] = round((($data['MO'][0] - $data['MO'][1]) / $data['MO'][1]) * 100, 2);
         else
             $data['MO'][2] = round((($data['MO'][0] - $data['MO'][1]) / 1) * 100, 2);
-        if ($data['IT'][0] != 0)
-            $data['IT'][2] = round((($data['IT'][0] - $data['IT'][1]) / $data['IT'][0]) * 100, 2);
+        if ($data['IT'][1] != 0)
+            $data['IT'][2] = round((($data['IT'][0] - $data['IT'][1]) / $data['IT'][1]) * 100, 2);
         else
             $data['IT'][2] = round((($data['IT'][0] - $data['IT'][1]) / 1) * 100, 2);
-        if ($data['SMS'][0] != 0)
-            $data['SMS'][2] = round((($data['SMS'][0] - $data['SMS'][1]) / $data['SMS'][0]) * 100, 2);
+        if ($data['SMS'][1] != 0)
+            $data['SMS'][2] = round((($data['SMS'][0] - $data['SMS'][1]) / $data['SMS'][1]) * 100, 2);
         else
             $data['SMS'][2] = round((($data['SMS'][0] - $data['SMS'][1]) / 1) * 100, 2);
 
         $data["MVNO_CALL"][0] = $data['MT'][0] + $data['MO'][0];
         $data["MVNO_CALL"][1] = $data['MT'][1] + $data['MO'][1];
-        if ($data['MVNO_CALL'][0] != 0)
-            $data['MVNO_CALL'][2] = round((($data['MVNO_CALL'][0] - $data['MVNO_CALL'][1]) / $data['MVNO_CALL'][0]) * 100, 2);
+        if ($data['MVNO_CALL'][1] != 0)
+            $data['MVNO_CALL'][2] = round((($data['MVNO_CALL'][0] - $data['MVNO_CALL'][1]) / $data['MVNO_CALL'][1]) * 100, 2);
         else
             $data['MVNO_CALL'][2] = round((($data['MVNO_CALL'][0] - $data['MVNO_CALL'][1]) / 1) * 100, 2);
 
