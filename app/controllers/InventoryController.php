@@ -4182,7 +4182,7 @@ class InventoryController extends BaseController {
             $tempday = "0" . $day;
         }
         $all_ivr = DB::select("SELECT SUM(MO) as 'mo', SUM(MT) as 'mt',SUM(Internet) as 'internet',SUM(Sms) as 'sms' FROM m_productive "
-                        . "WHERE Day >= '1' AND Day <= '{$tempday}' AND Month = '{$tempmonth}' AND Year = '{$year}'");
+                        . "WHERE Day >= '1' AND Day <= '{$tempday}' AND Month LIKE '{$tempmonth}' AND Year LIKE '{$year}'");
 //        $all_ivr = Stats::where('Year', $year)->where('Month', $tempmonth)->whereRaw('Status LIKE \'%_sum%\'')->get();
         $data = array();
         $data['MT'][0] = 1;
@@ -4225,7 +4225,7 @@ class InventoryController extends BaseController {
             $tempmonth = "0" . $last_month;
         }
         $all_ivr = DB::select("SELECT SUM(MO) as 'mo', SUM(MT) as 'mt',SUM(Internet) as 'internet',SUM(Sms) as 'sms' FROM m_productive "
-                        . "WHERE Day >= '1' AND Day <= '{$tempday}' AND Month = '{$tempmonth}' AND Year = '{$last_year}'");
+                        . "WHERE Day >= '1' AND Day <= '{$tempday}' AND Month LIKE '{$tempmonth}' AND Year LIKE '{$last_year}'");
 //        $all_ivr = Stats::where('Year', $year)->where('Month', $tempmonth)->whereRaw('Status LIKE \'%_sum%\'')->get();
         if ($all_ivr != null) {
             $temp_counter = round(ceil($all_ivr[0]->mt / 60), 1);
