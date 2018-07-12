@@ -3955,7 +3955,7 @@ class InventoryController extends BaseController {
 
     static function exportExcelWeeklyDashboard() {
         $date = Input::get("argyear");
-//        $date = "2018-07-12";
+//        $date = "2017-07-12";
         $year = explode("-", $date)[0];
         $month = explode("-", $date)[1];
         $day = explode("-", $date)[2];
@@ -4177,9 +4177,6 @@ class InventoryController extends BaseController {
         $tempday = $day;
         if (strlen($month) === 1) {
             $tempmonth = "0" . $month;
-        }
-        if (strlen($day) === 1) {
-            $tempday = "0" . $day;
         }
         $all_ivr = DB::select("SELECT SUM(MO) as 'mo', SUM(MT) as 'mt',SUM(Internet) as 'internet',SUM(Sms) as 'sms' FROM m_productive "
                         . "WHERE Day >= '1' AND Day <= '{$tempday}' AND Month LIKE '{$tempmonth}' AND Year LIKE '{$year}'");
