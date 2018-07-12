@@ -3195,7 +3195,6 @@
                         subagent = $("#" + id_concate + "_subagent").val();
                     if ($("#" + id_concate + "_wh"))
                         wh = $("#" + id_concate + "_wh").val();
-
                     document.getElementById("loading-animation" + loading_number).style.display = "block";
                     if (id_concate == 'sim2')
                         exportExcelLink = '<?php echo Route('exportExcelDashboard') ?>';
