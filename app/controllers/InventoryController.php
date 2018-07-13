@@ -3572,7 +3572,7 @@ class InventoryController extends BaseController {
         $type = '0';
         $filenames = 'all';
         $statussym = '>=';
-        $status = '0';
+        $status = array('0','1','2','3','4');
         $fs = '';
         $wh = '';
         $st = '';
@@ -3603,13 +3603,15 @@ class InventoryController extends BaseController {
         }
         if (isset($filter[1])) {
             $statussym = '=';
-            $status = $filter[1];
+            $status = array($filter[1]);
             if ($filter[1] == '0') {
                 $filenames .= '_shipin';
             } else if ($filter[1] == '1') {
                 $filenames .= '_return';
             } else if ($filter[1] == '2') {
-                $filenames .= '_shipout';
+//                $statussym = 'IN';
+                $status = array('2','4');
+                $filenames .= '_shipout_cons';
             } else if ($filter[1] == '3') {
                 $filenames .= '_warehouse';
             } else if ($filter[1] == '4') {
@@ -3627,7 +3629,7 @@ class InventoryController extends BaseController {
             $invs = DB::table('m_inventory as inv1')
                             ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
                             ->where('inv1.Type', $typesym, $type)
-                            ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type,inv1.ActivationDate,inv1.TopUpDate, m_historymovement.Status,'
+                            ->whereIn('m_historymovement.Status',  $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type,inv1.ActivationDate,inv1.TopUpDate, m_historymovement.Status,'
                                     . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                     . '(SELECT SubAgent FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                     . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
@@ -3641,7 +3643,7 @@ class InventoryController extends BaseController {
                 $invs = DB::table('m_inventory as inv1')
                                 ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
                                 ->where('inv1.Type', $typesym, $type)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
-                                ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
+                                ->whereIn('m_historymovement.Status',  $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                         . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                         . '(SELECT SubAgent FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                         . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
@@ -3655,7 +3657,7 @@ class InventoryController extends BaseController {
                                     ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
                                     ->where('inv1.Type', $typesym, $type)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
-                                    ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
+                                    ->whereIn('m_historymovement.Status',  $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                             . '(SELECT SubAgent FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                             . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
@@ -3671,7 +3673,7 @@ class InventoryController extends BaseController {
                                     ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                                     ->where('m_inventory.Type', $typesym, $type)
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
-                                    ->where('m_historymovement.Status', $statussym, $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
+                                    ->whereIn('m_historymovement.Status',  $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                             . '(SELECT SubAgent FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                             . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
@@ -3700,7 +3702,7 @@ class InventoryController extends BaseController {
                 $invs = DB::table('m_inventory as inv1')
                                 ->join('m_historymovement', 'inv1.SerialNumber', '=', 'm_historymovement.SN')
                                 ->where('inv1.Type', $typesym, $type)
-                                ->where('m_historymovement.Status', $statussym, $status)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
+                                ->whereIn('m_historymovement.Status',  $status)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                 ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
                                         . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                         . '(SELECT SubAgent FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
@@ -3714,7 +3716,7 @@ class InventoryController extends BaseController {
                     $invs = DB::table('m_inventory as inv1')
                                     ->join('m_historymovement', 'inv1.SerialNumber', '=', 'm_historymovement.SN')
                                     ->where('inv1.Type', $typesym, $type)
-                                    ->where('m_historymovement.Status', $statussym, $status)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
+                                    ->whereIn('m_historymovement.Status',  $status)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
                                     ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
@@ -3731,7 +3733,7 @@ class InventoryController extends BaseController {
                     $invs = DB::table('m_inventory as inv1')
                                     ->join('m_historymovement', 'inv1.SerialNumber', '=', 'm_historymovement.SN')
                                     ->where('inv1.Type', $typesym, $type)
-                                    ->where('m_historymovement.Status', $statussym, $status)
+                                    ->whereIn('m_historymovement.Status',  $status)
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
                                     ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
