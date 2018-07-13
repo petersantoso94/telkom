@@ -33,7 +33,7 @@
                     <option value="con">CONSIGNMENT</option>
                 </select>
             </div>
-            <div class="row" id="shipoutto-container"  style="display: none;">
+            <div class="row" id="shipoutto-container">
                 Sub Agent: 
                 <select data-placeholder="Choose a destination..." class="chosen-select" style="width: 100%" name="shipout" id="shipoutto">
                     <option></option>
@@ -363,8 +363,8 @@
                     });
                     $('#invstatus').on('change', function (e) {
                         var temp_type = $(this).val();
-                        var x = document.getElementById('shipoutto-container');
-                        x.style.display = "none";
+//                        var x = document.getElementById('shipoutto-container');
+//                        x.style.display = "none";
                         $.post(delST, function (data) {
 
                         }).done(function () {
@@ -376,8 +376,9 @@
                                 concat += ',,,0';
                                 drawTable();
                             } else if (temp_type == 'out') {
-                                var x = document.getElementById('shipoutto-container');
-                                x.style.display = "block";
+//                                var x = document.getElementById('shipoutto-container');
+//                                x.style.display = "block";
+                                $("#shipoutto-container").show();
                                 concat = concat.split(',,,')[0];
                                 concat += ',,,2';
                                 drawTable();
@@ -398,6 +399,7 @@
                     });
                     $(document).ready(function () {
                         $(".chosen-select").chosen();
+                        $("#shipoutto-container").hide();
                     });
 </script>
 @stop
