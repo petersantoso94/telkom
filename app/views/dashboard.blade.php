@@ -130,7 +130,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -153,7 +153,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -176,7 +176,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -199,7 +199,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -250,7 +250,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -273,7 +273,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -324,7 +324,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -347,7 +347,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -434,7 +434,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -457,7 +457,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -480,7 +480,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -503,7 +503,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -526,7 +526,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -608,7 +608,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -631,7 +631,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -654,7 +654,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -677,7 +677,7 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="form-group col-md-2" style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
                                                 <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
                                                     <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
                                                 </button>
@@ -699,8 +699,8 @@
             </div>
             <!-- /.row -->
             <div class="row" 
-            style='<?php if(Auth::user()->Position > 1) echo "visibility:hidden;"?>'
-            >
+                 style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'
+                 >
                 <div class="col-md-24">
                     <div class="box">
                         <div class="box-header with-border">
@@ -2672,6 +2672,12 @@
                                     data: value
                                 });
                             });
+                            var tmp = barChartData8.datasets[3];
+                            var tmp2 = barChartData8.datasets[2]
+                            barChartData8.datasets[3] = barChartData8.datasets[4];
+                            barChartData8.datasets[2] = barChartData8.datasets[1];
+                            barChartData8.datasets[1] = tmp;
+                            barChartData8.datasets[4] = tmp2;
                             window.myBar8.update();
                             document.getElementById('legend8').innerHTML = myBar8.generateLegend();
                             if (scroll) {
