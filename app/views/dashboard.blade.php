@@ -53,6 +53,7 @@
                             <div class="nav-tabs-custom">
                                 <ul class="nav nav-tabs">
                                     <li class="active"><a href="#subs" data-toggle="tab" aria-expanded="true">Subscriber</a></li>
+                                    <li class=""><a href="#shipout" data-toggle="tab" aria-expanded="true">Shipout</a></li>
                                     <li class=""><a href="#churn" data-toggle="tab" aria-expanded="true">Churn</a></li>
                                     <li class=""><a href="#vocres" data-toggle="tab" aria-expanded="false">Voucher Recharge</a></li>
                                     <li class=""><a href="#intus" data-toggle="tab" aria-expanded="false">Internet Usage</a></li>
@@ -284,6 +285,80 @@
                                             <div class="chart">
                                                 <div id="legend17" class="legend" style="font-size: 80%"></div>
                                                 <canvas id="barChart_channel_churn" height="100"></canvas>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" id="shipout">
+                                        <div class="row">
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Sim Card</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_shipout_sim">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Vouchers</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_shipout_voc">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_shipout_sim" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="shipout_sim_year">
+                                                    @foreach($years as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend18" class="legend"></div>
+                                                <canvas id="barChart_shipout_sim" height="100"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_shipout_voc" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="shipout_voc_year">>
+                                                    @foreach($years as $year)
+                                                    @if($year->Year >0)
+                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
+                                                    @endif
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global"  style="display: none;"></div>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend19" class="legend"></div>
+                                                <canvas id="barChart_shipout_voc" height="100"></canvas>
                                             </div>
                                         </div>
                                     </div>
@@ -1161,6 +1236,8 @@
                 var getMSISDNTopUp = '<?php echo Route('getMSISDNTopUp') ?>';
                 var getChurnDetail = '<?php echo Route('getChurnDetail') ?>';
                 var getSubsriberTopUp = '<?php echo Route('getSubsriberTopUp') ?>';
+                var getShipoutSim = '<?php echo Route('getShipoutSim') ?>';
+                var getShipoutVoc = '<?php echo Route('getShipoutVoc') ?>';
                 var default_year = document.getElementById('ivr_year').value;
                 var ivr_year = document.getElementById('ivr_year').value;
                 var churn_year = document.getElementById('churn_year').value;
@@ -1178,6 +1255,8 @@
                 var detail_churn_year = document.getElementById('detail_churn_year').value;
                 var churn2_year = document.getElementById('churn2_year').value;
                 var subs2_year = document.getElementById('subs2_year').value;
+                var shipout_sim_year = document.getElementById('shipout_sim_year').value;
+                var shipout_voc_year = document.getElementById('shipout_voc_year').value;
                 var unique_subs_year = document.getElementById('unique_subs_year').value;
                 var colorNames = Object.keys(window.chartColors);
                 var scroll = true;
@@ -1190,6 +1269,16 @@
                 });
                 $('#ivr_year').on('change', function (e) {
                     ivr_year = document.getElementById('ivr_year').value;
+                    scroll = false;
+                    refreshBarChart();
+                });
+                $('#shipout_sim_year').on('change', function (e) {
+                    shipout_sim_year = document.getElementById('shipout_sim_year').value;
+                    scroll = false;
+                    refreshBarChart();
+                });
+                $('#shipout_voc_year').on('change', function (e) {
+                    shipout_voc_year = document.getElementById('shipout_voc_year').value;
                     scroll = false;
                     refreshBarChart();
                 });
@@ -1349,6 +1438,14 @@
                     labels: MONTHS,
                     datasets: []
                 };
+                var barChartData18 = {
+                    labels: MONTHS,
+                    datasets: []
+                };
+                var barChartData19 = {
+                    labels: MONTHS,
+                    datasets: []
+                };
 
                 // Define a plugin to provide data labels
                 Chart.plugins.register({
@@ -1448,7 +1545,7 @@
                                 write = true;
                                 str_write = 'Net';
                             }
-                            if (meta.controller.chart.canvas.id == 'barChart_prod') {
+                            if (meta.controller.chart.canvas.id == 'barChart_prod' || meta.controller.chart.canvas.id == 'barChart_shipout_voc' || meta.controller.chart.canvas.id == 'barChart_shipout_sim') {
                                 write = true;
                                 str_write = 'Total';
                             }
@@ -2359,6 +2456,108 @@
                             }
                         }
                     });
+                    
+                    var ctx18 = document.getElementById("barChart_shipout_sim").getContext("2d");
+                    window.myBar18 = new Chart(ctx18, {
+                        type: 'bar',
+                        data: barChartData18,
+                        options: {
+                            responsive: true,
+                            //                maintainAspectRatio: true,
+                            legend: {
+                                display: false
+                            },
+                            tooltips: {
+                                mode: 'index',
+                                callbacks: {
+                                    label: function (tooltipItem, data) {
+                                        var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+                                        var temp_arr = value.split('.');
+                                        if (temp_arr.length == 2) {
+                                            value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                            value += '.' + temp_arr[1];
+                                        } else {
+                                            value = value.toString();
+                                            value = value.split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                        }
+                                        return value;
+                                    }
+                                } // end callbacks:
+                            },
+                            title: {
+                                display: true,
+                                text: 'Monthly SIM CARD Shipout'
+                            }, scales: {
+                                xAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        },
+                                        stacked: true
+                                    }],
+                                yAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        }, ticks: {
+                                            display: false
+                                        },
+                                        stacked: true
+                                    }]
+                            }
+                        }
+                    });
+                    
+                    var ctx19 = document.getElementById("barChart_shipout_voc").getContext("2d");
+                    window.myBar19 = new Chart(ctx19, {
+                        type: 'bar',
+                        data: barChartData19,
+                        options: {
+                            responsive: true,
+                            //                maintainAspectRatio: true,
+                            legend: {
+                                display: false
+                            },
+                            tooltips: {
+                                mode: 'index',
+                                callbacks: {
+                                    label: function (tooltipItem, data) {
+                                        var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+                                        var temp_arr = value.split('.');
+                                        if (temp_arr.length == 2) {
+                                            value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                            value += '.' + temp_arr[1];
+                                        } else {
+                                            value = value.toString();
+                                            value = value.split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                        }
+                                        return value;
+                                    }
+                                } // end callbacks:
+                            },
+                            title: {
+                                display: true,
+                                text: 'Monthly Voucher Shipout'
+                            }, scales: {
+                                xAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        },
+                                        stacked: true
+                                    }],
+                                yAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        }, ticks: {
+                                            display: false
+                                        },
+                                        stacked: true
+                                    }]
+                            }
+                        }
+                    });
 
                     refreshBarChart();
                 };
@@ -2909,6 +3108,78 @@
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
                                 $("#channel_churn_year").val(default_year);
+                                excelbutton = false;
+                            }
+                        });
+                    }else if (chartID == 'info_shipout_sim') {
+                        $.post(getShipoutSim, {year: shipout_sim_year, type: arg_type}, function (data) {
+
+                        }).done(function (data) {
+                            barChartData18.datasets = [];
+                            $.each(data, function (index, value) {
+                                var colorName = colorNames[barChartData18.datasets.length % colorNames.length];
+                                var dsColor = window.chartColors[colorName];
+                                barChartData18.datasets.push({
+                                    label: index,
+                                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                                    borderColor: dsColor,
+                                    borderWidth: 1,
+                                    data: value
+                                });
+                            });
+                            window.myBar18.update();
+                            // Find the scale in the chart instance
+                            //var axis = myBar4.scales.A;
+                            //var max = axis.max;
+                            //var min = axis.min;
+                            //myBar4.options.scales.yAxes[1].ticks.min = min;
+                            //myBar4.options.scales.yAxes[1].ticks.max = max;
+                            //window.myBar4.update();
+                            document.getElementById('legend18').innerHTML = myBar18.generateLegend();
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#shipout_sim_year").val(default_year);
+                                excelbutton = false;
+                            }
+                        });
+                    }else if (chartID == 'info_shipout_voc') {
+                        $.post(getShipoutVoc, {year: shipout_voc_year, type: arg_type}, function (data) {
+
+                        }).done(function (data) {
+                            barChartData19.datasets = [];
+                            $.each(data, function (index, value) {
+                                var colorName = colorNames[barChartData19.datasets.length % colorNames.length];
+                                var dsColor = window.chartColors[colorName];
+                                barChartData19.datasets.push({
+                                    label: index,
+                                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                                    borderColor: dsColor,
+                                    borderWidth: 1,
+                                    data: value
+                                });
+                            });
+                            window.myBar19.update();
+                            // Find the scale in the chart instance
+                            //var axis = myBar4.scales.A;
+                            //var max = axis.max;
+                            //var min = axis.min;
+                            //myBar4.options.scales.yAxes[1].ticks.min = min;
+                            //myBar4.options.scales.yAxes[1].ticks.max = max;
+                            //window.myBar4.update();
+                            document.getElementById('legend19').innerHTML = myBar19.generateLegend();
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                $("#shipout_voc_year").val(default_year);
                                 excelbutton = false;
                             }
                         });
