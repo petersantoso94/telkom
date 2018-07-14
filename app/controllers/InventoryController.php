@@ -3240,6 +3240,202 @@ class InventoryController extends BaseController {
         return $data;
     }
 
+    static function getShipoutVoc() {
+        $year = Input::get('year');
+//        $year = '2016';
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
+
+        $data = [];
+        //1 -> evoucher; 2 -> phvoucher
+        $shipoutevoc = [];
+        $shipoutpvoc = [];
+        // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+        $shipoutevoc = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                        ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4')")
+                        ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+        $shipoutpvoc = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                        ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '3' AND m_inventory.LastStatusHist IN ('2','4')")
+                        ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+
+        if ($shipoutevoc != null) {
+            foreach ($shipoutevoc as $voc) {
+                if (!isset($data['EVoc']))
+                    $data['EVoc'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $voc->month - 1) {
+                        $data['EVoc'][$i] += $voc->Counter;
+                    }
+                }
+            }
+        }
+        if ($shipoutpvoc != null) {
+            foreach ($shipoutpvoc as $voc) {
+                if (!isset($data['PHVoc']))
+                    $data['PHVoc'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $voc->month - 1) {
+                        $data['PHVoc'][$i] += $voc->Counter;
+                    }
+                }
+            }
+        }
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
+                // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+                $shipoutevoc = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                                ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year->Year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4')")
+                                ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+                $shipoutpvoc = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                                ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year->Year}' AND m_inventory.Type = '3' AND m_inventory.LastStatusHist IN ('2','4')")
+                                ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+
+                if ($shipoutevoc != null) {
+                    foreach ($shipoutevoc as $voc) {
+                        if (!isset($data['EVoc']))
+                            $data['EVoc'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $voc->month - 1) {
+                                $data['EVoc'][$i] += $voc->Counter;
+                            }
+                        }
+                    }
+                }
+                if ($shipoutpvoc != null) {
+                    foreach ($shipoutpvoc as $voc) {
+                        if (!isset($data['PHVoc']))
+                            $data['PHVoc'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $voc->month - 1) {
+                                $data['PHVoc'][$i] += $voc->Counter;
+                            }
+                        }
+                    }
+                }
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
+        }
+
+
+
+        return $data;
+    }
+
+    static function getShipoutSim() {
+        $year = Input::get('year');
+//        $year = '2016';
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
+
+        $data = [];
+        //1 -> evoucher; 2 -> phvoucher
+        $shipout4g = [];
+        $shipout3g = [];
+        // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+        $shipout4g = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                        ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '4' AND m_inventory.LastStatusHist IN ('2','4')")
+                        ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+        $shipout3g = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                        ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '1' AND m_inventory.LastStatusHist IN ('2','4')")
+                        ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+
+        if ($shipout4g != null) {
+            foreach ($shipout4g as $voc) {
+                if (!isset($data['SIM 4G']))
+                    $data['SIM 4G'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $voc->month - 1) {
+                        $data['SIM 4G'][$i] += $voc->Counter;
+                    }
+                }
+            }
+        }
+        if ($shipout3g != null) {
+            foreach ($shipout3g as $voc) {
+                if (!isset($data['SIM 3G']))
+                    $data['SIM 3G'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $voc->month - 1) {
+                        $data['SIM 3G'][$i] += $voc->Counter;
+                    }
+                }
+            }
+        }
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
+                // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+                $shipout4g = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                                ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year->Year}' AND m_inventory.Type = '4' AND m_inventory.LastStatusHist IN ('2','4')")
+                                ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+                $shipout3g = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                                ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year->Year}' AND m_inventory.Type = '1' AND m_inventory.LastStatusHist IN ('2','4')")
+                                ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+
+                if ($shipout4g != null) {
+                    foreach ($shipout4g as $voc) {
+                        if (!isset($data['SIM 4G']))
+                            $data['SIM 4G'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $voc->month - 1) {
+                                $data['SIM 4G'][$i] += $voc->Counter;
+                            }
+                        }
+                    }
+                }
+                if ($shipout3g != null) {
+                    foreach ($shipout3g as $voc) {
+                        if (!isset($data['SIM 3G']))
+                            $data['SIM 3G'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $voc->month - 1) {
+                                $data['SIM 3G'][$i] += $voc->Counter;
+                            }
+                        }
+                    }
+                }
+                foreach ($data as $key => $a) {
+                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
+                    $writer->addRow($myArr); // add a row at a time
+                }
+            }
+            $writer->close();
+        }
+
+
+
+        return $data;
+    }
+
     static function geteVouchersTopUp() {
         $year = Input::get('year');
 //        $year = '2016';
@@ -3572,7 +3768,7 @@ class InventoryController extends BaseController {
         $type = '0';
         $filenames = 'all';
         $statussym = '>=';
-        $status = array('0','1','2','3','4');
+        $status = array('0', '1', '2', '3', '4');
         $fs = '';
         $wh = '';
         $st = '';
@@ -3610,7 +3806,7 @@ class InventoryController extends BaseController {
                 $filenames .= '_return';
             } else if ($filter[1] == '2') {
 //                $statussym = 'IN';
-                $status = array('2','4');
+                $status = array('2', '4');
                 $filenames .= '_shipout_cons';
             } else if ($filter[1] == '3') {
                 $filenames .= '_warehouse';
@@ -3629,7 +3825,7 @@ class InventoryController extends BaseController {
             $invs = DB::table('m_inventory as inv1')
                             ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
                             ->where('inv1.Type', $typesym, $type)
-                            ->whereIn('m_historymovement.Status',  $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type,inv1.ActivationDate,inv1.TopUpDate, m_historymovement.Status,'
+                            ->whereIn('m_historymovement.Status', $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type,inv1.ActivationDate,inv1.TopUpDate, m_historymovement.Status,'
                                     . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                     . '(SELECT SubAgent FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                     . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
@@ -3643,7 +3839,7 @@ class InventoryController extends BaseController {
                 $invs = DB::table('m_inventory as inv1')
                                 ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
                                 ->where('inv1.Type', $typesym, $type)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
-                                ->whereIn('m_historymovement.Status',  $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
+                                ->whereIn('m_historymovement.Status', $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                         . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                         . '(SELECT SubAgent FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                         . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
@@ -3657,7 +3853,7 @@ class InventoryController extends BaseController {
                                     ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
                                     ->where('inv1.Type', $typesym, $type)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
-                                    ->whereIn('m_historymovement.Status',  $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
+                                    ->whereIn('m_historymovement.Status', $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                             . '(SELECT SubAgent FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                             . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
@@ -3673,7 +3869,7 @@ class InventoryController extends BaseController {
                                     ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                                     ->where('m_inventory.Type', $typesym, $type)
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
-                                    ->whereIn('m_historymovement.Status',  $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
+                                    ->whereIn('m_historymovement.Status', $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                             . '(SELECT SubAgent FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
                                             . '(SELECT `ShipoutNumber` FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ShipoutNumber", '
@@ -3702,7 +3898,7 @@ class InventoryController extends BaseController {
                 $invs = DB::table('m_inventory as inv1')
                                 ->join('m_historymovement', 'inv1.SerialNumber', '=', 'm_historymovement.SN')
                                 ->where('inv1.Type', $typesym, $type)
-                                ->whereIn('m_historymovement.Status',  $status)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
+                                ->whereIn('m_historymovement.Status', $status)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                 ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type, m_historymovement.Status,'
                                         . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                         . '(SELECT SubAgent FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "SubAgent", '
@@ -3716,7 +3912,7 @@ class InventoryController extends BaseController {
                     $invs = DB::table('m_inventory as inv1')
                                     ->join('m_historymovement', 'inv1.SerialNumber', '=', 'm_historymovement.SN')
                                     ->where('inv1.Type', $typesym, $type)
-                                    ->whereIn('m_historymovement.Status',  $status)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
+                                    ->whereIn('m_historymovement.Status', $status)->where('inv1.LastWarehouse', 'LIKE', '%' . $wh . '%')
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
                                     ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
@@ -3733,7 +3929,7 @@ class InventoryController extends BaseController {
                     $invs = DB::table('m_inventory as inv1')
                                     ->join('m_historymovement', 'inv1.SerialNumber', '=', 'm_historymovement.SN')
                                     ->where('inv1.Type', $typesym, $type)
-                                    ->whereIn('m_historymovement.Status',  $status)
+                                    ->whereIn('m_historymovement.Status', $status)
                                     ->where('m_historymovement.SubAgent', 'LIKE', '%' . $st . '%')
                                     ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
