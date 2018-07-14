@@ -38,6 +38,8 @@ Route::group(array('before' => 'auth'), function() {
     Route::any('getChurnDetail', array('as' => 'getChurnDetail', 'before' => '', 'uses' => 'InventoryController@getChurnDetail'));
     Route::any('getChannel', array('as' => 'getChannel', 'before' => '', 'uses' => 'InventoryController@getChannel'));
     Route::any('getChannelChurn', array('as' => 'getChannelChurn', 'before' => '', 'uses' => 'InventoryController@getChannelChurn'));
+    Route::any('getShipoutSim', array('as' => 'getShipoutSim', 'before' => '', 'uses' => 'InventoryController@getShipoutSim'));
+    Route::any('getShipoutVoc', array('as' => 'getShipoutVoc', 'before' => '', 'uses' => 'InventoryController@getShipoutVoc'));
     Route::post('getSubAgent', array('as' => 'getSubAgent', 'before' => '', 'uses' => 'InventoryController@getSubAgent'));
     Route::post('delST', array('as' => 'delST', 'before' => '', 'uses' => 'InventoryController@delST'));
     Route::post('postWarehouse', array('as' => 'postWarehouse', 'before' => '', 'uses' => 'InventoryController@postWarehouse'));
