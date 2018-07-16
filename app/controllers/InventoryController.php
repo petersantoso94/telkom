@@ -1064,8 +1064,8 @@ class InventoryController extends BaseController {
                         }
                         $for_raw = '';
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
-//                            $unik = $arr_msisdn[$i] . '-' . $arr_buydate[$i] . '-' . $arr_buy[$i];
-                            $unik = $arr_id[$i];
+                            $unik = $arr_msisdn[$i] . '-' . $arr_buydate[$i] . '-' . $arr_buy[$i];
+//                            $unik = $arr_id[$i];
                             
                             if ($i == 0)
                                 $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_buydate[$i] . "','" . $unik . "','" . $arr_buy[$i] . "',CURDATE(),CURDATE(),'-','" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
