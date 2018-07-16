@@ -1936,7 +1936,7 @@ class InventoryController extends BaseController {
         if (Input::get('type'))
             $type = Input::get('type');
         $data = [];
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status >= 10')->get();
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status >= 100 AND Status <= 2000')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 //            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
