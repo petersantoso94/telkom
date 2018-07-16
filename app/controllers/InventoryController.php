@@ -1006,6 +1006,7 @@ class InventoryController extends BaseController {
                         $arr_msisdn = [];
                         $arr_buydate = [];
                         $arr_buy = [];
+                        $arr_id = [];
                         foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
                             if ($sheetIndex == 1)
                                 foreach ($sheet->getRowIterator() as $rowNumber => $value) {
@@ -1035,6 +1036,7 @@ class InventoryController extends BaseController {
                                             }
                                             array_push($arr_buydate, $date_return);
                                             array_push($arr_buy, $value[5]);
+                                            array_push($arr_id, $value[7]);
                                         }
                                     }
                                 }
@@ -1062,7 +1064,9 @@ class InventoryController extends BaseController {
                         }
                         $for_raw = '';
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
-                            $unik = $arr_msisdn[$i] . '-' . $arr_buydate[$i] . '-' . $arr_buy[$i];
+//                            $unik = $arr_msisdn[$i] . '-' . $arr_buydate[$i] . '-' . $arr_buy[$i];
+                            $unik = $arr_id[$i];
+                            
                             if ($i == 0)
                                 $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_buydate[$i] . "','" . $unik . "','" . $arr_buy[$i] . "',CURDATE(),CURDATE(),'-','" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                             else
