@@ -4157,7 +4157,7 @@ class InventoryController extends BaseController {
 
     static function exportExcelWeeklyDashboard() {
         $date = Input::get("argyear");
-        $date = "2018-07-17";
+        $date = "2018-07-1";
         $year = explode("-", $date)[0];
         $month = explode("-", $date)[1];
         $day = explode("-", $date)[2];
@@ -4315,14 +4315,8 @@ class InventoryController extends BaseController {
 
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
                                 . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '300'")
-                        ->select(DB::raw("Unik"))->get();
+                        ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
 
-        $writer->close();
-        $check_no = [];
-        foreach($all_ivr as $ivr){
-            $check_no[] = $ivr->Unik;
-        }
-        dd(implode(',',$check_no));
         if (count($all_ivr) > 0)
             $data['2GB'][0] = $all_ivr[0]->Counter;
 
@@ -4340,7 +4334,13 @@ class InventoryController extends BaseController {
 
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$last_year}' AND MONTH(Date) LIKE "
                                 . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '300'")
-                        ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+                        ->select(DB::raw("Unik"))->get();
+        $writer->close();
+        $check_no = [];
+        foreach ($all_ivr as $ivr) {
+            $check_no[] = $ivr->Unik;
+        }
+        dd(implode(',', $check_no));
         if (count($all_ivr) > 0)
             $data['2GB'][1] = $all_ivr[0]->Counter;
 
