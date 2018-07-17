@@ -4314,14 +4314,14 @@ class InventoryController extends BaseController {
             $data['1GB'][0] = $all_ivr[0]->Counter;
 
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
-                                . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '300'")
+                                . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND (PurchaseAmount LIKE '300' OR PurchaseAmount LIKE '600' OR PurchaseAmount LIKE '900')")
                         ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
 
         if (count($all_ivr) > 0)
             $data['2GB'][0] = $all_ivr[0]->Counter;
 
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
-                                . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300 AND PurchaseAmount != 360")
+                                . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300 AND PurchaseAmount != 360 AND PurchaseAmount != 600 AND PurchaseAmount != 900")
                         ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['30DAY'][0] = $all_ivr[0]->Counter;
@@ -4333,14 +4333,14 @@ class InventoryController extends BaseController {
             $data['1GB'][1] = $all_ivr[0]->Counter;
 
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$last_year}' AND MONTH(Date) LIKE "
-                                . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '300'")
+                                . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND (PurchaseAmount LIKE '300' OR PurchaseAmount LIKE '600' OR PurchaseAmount LIKE '900')")
                         ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
 
         if (count($all_ivr) > 0)
             $data['2GB'][1] = $all_ivr[0]->Counter;
 
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$last_year}' AND MONTH(Date) LIKE "
-                                . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300 AND PurchaseAmount != 360")
+                                . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300 AND PurchaseAmount != 360 AND PurchaseAmount != 600 AND PurchaseAmount != 900")
                         ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
 //        $writer->close();
 //        $check_no = [];
