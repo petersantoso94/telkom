@@ -4341,13 +4341,13 @@ class InventoryController extends BaseController {
 
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$last_year}' AND MONTH(Date) LIKE "
                                 . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300 AND PurchaseAmount != 360")
-                        ->select(DB::raw("Unik"))->get();
-        $writer->close();
-        $check_no = [];
-        foreach ($all_ivr as $ivr) {
-            $check_no[] = $ivr->Unik;
-        }
-        dd(implode(',', $check_no));
+                        ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+//        $writer->close();
+//        $check_no = [];
+//        foreach ($all_ivr as $ivr) {
+//            $check_no[] = $ivr->Unik;
+//        }
+//        dd(implode(',', $check_no));
         if (count($all_ivr) > 0)
             $data['30DAY'][1] = $all_ivr[0]->Counter;
 
