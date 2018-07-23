@@ -6543,10 +6543,12 @@ class InventoryController extends BaseController {
             $sn = Input::get('sn');
             $date = Input::get('date');
             $arr = Input::get('array_SN');
+            $rem = Input::get('remark');
 
             Session::put('sn_ret', $sn);
             Session::put('date_ret', $date);
             Session::put('arr_ret', $arr);
+            Session::put('arr_rem', $rem);
 
             return $arr;
         }
@@ -6823,7 +6825,7 @@ class InventoryController extends BaseController {
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">註</div>
-                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;">'.Session::get('arr_rem').'</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總計</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ -</div>
                     </div>
