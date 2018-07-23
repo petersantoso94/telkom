@@ -815,7 +815,7 @@ class InventoryController extends BaseController {
             $fn = Input::get('formSN', false);
             $remark = NULL;
             if (Input::get('remark')) {
-                $remark = Input::get('remark', false);
+                $remark = Input::get('remark');
             }
             $destination = base_path() . '/uploaded_file/';
             $extention = Input::file('sample_file')->getClientOriginalExtension();
@@ -831,7 +831,9 @@ class InventoryController extends BaseController {
             foreach ($reader->getSheetIterator() as $sheet) {
                 foreach ($sheet->getRowIterator() as $rowNumber => $value) {
                     if ($rowNumber > 1) {
-                        $inv = Inventory::where('SerialNumber', 'LIKE', '%' . $value[0] . '%')->orWhere('MSISDN', 'LIKE', '%' . $value[0] . '%')->first();
+                        $msisdn = $value[0];
+                        $msisdn = str_replace('\'', '', $msisdn);
+                        $inv = Inventory::where('SerialNumber', 'LIKE', '%' . $msisdn . '%')->orWhere('MSISDN', 'LIKE', '%' . $msisdn . '%')->first();
                         if ($inv != null) {
                             $lastmovement = $inv->LastStatusID;
                             //update history
@@ -854,8 +856,8 @@ class InventoryController extends BaseController {
                                 $hist2->SubAgent = $hist->SubAgent;
                                 $hist2->Warehouse = $inv->LastWarehouse;
                                 $hist2->LastStatus = 1;
-                                $hist2->Remark = Input::get('remark', false);
-                                $hist2->Date = Input::get('eventDate', false);
+                                $hist2->Remark = Input::get('remark');
+                                $hist2->Date = Input::get('eventDate');
                                 $hist2->userRecord = Auth::user()->ID;
                                 $hist2->userUpdate = Auth::user()->ID;
                                 $hist2->save();
@@ -5857,7 +5859,7 @@ class InventoryController extends BaseController {
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">發票號碼 :</div>
-                        <div style="width:430px; height:20px;float:left; display: inline-block;">' . Session::get('fabiao') . '</div>
+                        <div style="width:430px; height:20px;float:left; display: inline-block;"></div> 
                         <div style="width:200px; height:20px;float:left; display: inline-block;">倉 庫 別:' . $wh . ' (紅白電訊)</div>
                     </div>
                     <div style="width:102%; text-align:center;height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
@@ -5867,6 +5869,7 @@ class InventoryController extends BaseController {
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">訂價/單價</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block;">合計</div>
                     </div>';
+//        Session::get('fabiao')
         for ($i = 0; $i < count($all_start); $i++) {
             if ($all_start[$i] != '') {
                 $subtotal += round((($all_price[$i] / 1.05) * $all_qty[$i]), 0);
@@ -6217,7 +6220,7 @@ class InventoryController extends BaseController {
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">發票號碼 :</div>
-                        <div style="width:430px; height:20px;float:left; display: inline-block;">QS 48949608</div>
+                        <div style="width:430px; height:20px;float:left; display: inline-block;"></div>
                         <div style="width:200px; height:20px;float:left; display: inline-block;">倉 庫 別:' . $wh . ' (紅白電訊)</div>
                     </div>
                     <div style="width:102%; text-align:center;height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
@@ -6418,7 +6421,7 @@ class InventoryController extends BaseController {
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">發票號碼 :</div>
-                        <div style="width:430px; height:20px;float:left; display: inline-block;">' . $fabiao . '</div>
+                        <div style="width:430px; height:20px;float:left; display: inline-block;"></div>
                         <div style="width:200px; height:20px;float:left; display: inline-block;">倉 庫 別:' . $wh . ' (紅白電訊)</div>
                     </div>
                     <div style="width:102%; text-align:center;height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
@@ -6756,7 +6759,7 @@ class InventoryController extends BaseController {
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:70px;padding-left:3px height:20px;float:left; display: inline-block; ">發票號碼 :</div>
-                        <div style="width:430px; height:20px;float:left; display: inline-block;">QS 48949608</div>
+                        <div style="width:430px; height:20px;float:left; display: inline-block;"></div>
                         <div style="width:200px; height:20px;float:left; display: inline-block;">倉 庫 別:' . $wh . ' (紅白電訊)</div>
                     </div>
                     <div style="width:102%; text-align:center;height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
