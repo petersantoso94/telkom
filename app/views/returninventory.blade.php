@@ -121,7 +121,7 @@
                     <label class="fw300" style="margin-top: 7px;">Remark: </label>
                 </div>
                 <div class="col-sm-5">
-                    <input type="text" class="input-stretch" name="remark">
+                    <input type="text" class="input-stretch" name="remark" id='remark'>
                 </div>
             </div>
         </div>
@@ -170,8 +170,9 @@
                     window.printPrev = function (element) {
                         var shipout_date = document.getElementById('shipindate').value;
                         var shipout_SN = document.getElementById('formSN').value;
+                        var remark_inp = document.getElementById('remark').value;
                         $.post(getPDFret,
-                                {date: shipout_date, sn: shipout_SN, array_SN: semua_sn}
+                                {date: shipout_date, sn: shipout_SN, array_SN: semua_sn, remark:remark_inp}
                         , function (data) {
 
                         }).done(function (data) {
