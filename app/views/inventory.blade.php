@@ -47,7 +47,7 @@
                 </select>
             </div>
         </div>
-        <div class="col-xs-4">
+        <div class="col-xs-4" style="margin-left:10px;">
             <div class="row">
                 Warehouse: 
                 <select data-placeholder="Choose a warehouse..." class="chosen-select" style="width: 100%" id="wh">
