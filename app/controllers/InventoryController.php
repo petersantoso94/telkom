@@ -3772,6 +3772,7 @@ class InventoryController extends BaseController {
         $type = '0';
         $filenames = 'all';
         $statussym = '>=';
+        $conso = '';
         $status = array('0', '1', '2', '3', '4');
         $fs = '';
         $wh = '';
@@ -3973,6 +3974,7 @@ class InventoryController extends BaseController {
             } else if ($inv->Status == 3) {
                 $status = 'Warehouse';
             } else if ($inv->Status == 4) {
+                $shipoutdt = $inv->ShipoutDate;
                 $status = 'Consignment';
             }
 
