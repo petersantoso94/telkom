@@ -5134,7 +5134,7 @@ class InventoryController extends BaseController {
     }
 
     static function exportExcelShipoutDashboard() {
-//        $year = Input::get("argyear");
+        $year = Input::get("argyear");
 //        $year = "2017";
         $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
         $filePath = public_path() . "/shippout_report_allyears.xlsx";
@@ -5143,8 +5143,8 @@ class InventoryController extends BaseController {
         $myArr = array("All Channel Reporting");
         $writer->addRow($myArr); // add a row at a time
 
-        foreach (DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year) {
-            $year = $year->year;
+//        foreach (DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year) {
+//            $year = $year->year;
             $month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
             $totalsim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -5422,9 +5422,9 @@ class InventoryController extends BaseController {
             //$myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
             $writer->addRow($myArr); // add a row at a time
             $writer->addRow(['']);
-        }
+//        }
         $writer->close();
-        return "/shippout_report_allyears.xlsx";
+        return "/shippout_report_".$year.".xlsx";
     }
 
     static function exportExcelShipinDashboard() {
