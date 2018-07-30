@@ -5107,7 +5107,7 @@ class InventoryController extends BaseController {
                                         . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND inv2.`SerialNumber` LIKE '%KR0450%') as 'Voc50'"
                                         . ",(SELECT inv2.`TopUpDate` FROM `m_inventory` as inv2  WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN`  ORDER BY inv2.`TopUpDate` DESC LIMIT 1) as 'LastDatePurchasedVoucher' "
                                         . ",(SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) as 'ServiceUsed' "
-                                        . ",(SELECT CONCAT(prod.`Day`,prod.`Month`,prod.`Year`) FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Day`,prod.`Month`,prod.`Year`) DESC LIMIT 1) as 'LastDateUsedService'"
+                                        . ",(SELECT CONCAT(prod.`Day`,prod.`Month`,prod.`Year`) FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY prod.`Year` DESC, prod.`Month` DESC, prod.`Day` DESC LIMIT 1) as 'LastDateUsedService'"
                         ))->get();
         foreach ($simtopup as $data) {
             $stats = "no service";
