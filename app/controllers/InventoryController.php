@@ -1728,6 +1728,7 @@ class InventoryController extends BaseController {
                         $counter = 0;
                         $month_temp = 0;
                         $year_temp = 0;
+                        $service_temp = 0;
                         $arr_msisdn = [];
                         $arr_day = [];
                         $arr_month = [];
@@ -1755,6 +1756,11 @@ class InventoryController extends BaseController {
                                             $msisdn = (string) $value[0];
 
                                             if ($msisdn != '' && $msisdn != null) {
+                                                $cek_mo = true;
+                                                $cek_mt = true;
+                                                $cek_int = true;
+                                                $cek_sms = true;
+
                                                 $msisdn = str_replace('\'', '', $msisdn);
                                                 if (substr($msisdn, 0, 1) === '0') {
                                                     $msisdn = substr($msisdn, 1);
@@ -1767,7 +1773,45 @@ class InventoryController extends BaseController {
                                                 array_push($arr_mt, $value[5]);
                                                 array_push($arr_internet, $value[6]);
                                                 array_push($arr_sms, $value[7]);
-//                                            array_push($arr_services, $value[11]);
+
+                                                if ($value[4] === '0') {
+                                                    $cek_mo = FALSE;
+                                                }
+                                                if ($value[5] === '0') {
+                                                    $cek_mt = FALSE;
+                                                }
+                                                if ($value[6] === '0') {
+                                                    $cek_int = FALSE;
+                                                }
+                                                if ($value[7] === '0') {
+                                                    $cek_sms = FALSE;
+                                                }
+                                                
+                                                IF ($cek_sms == true && $cek_int == false && $cek_mo == false && $cek_mt == false)
+                                                    $service_temp = 5;
+
+                                                IF ($cek_sms == true && $cek_int == true && $cek_mo == false && $cek_mt == false)
+                                                    $service_temp = 7;
+
+                                                IF ($cek_sms == true && $cek_int == false && ($cek_mo == true || $cek_mt == true))
+                                                    $service_temp = 6;
+
+                                                IF ($cek_int == true && $cek_sms == false && $cek_mo == false && $cek_mt == false)
+                                                    $service_temp = 2;
+
+                                                IF ($cek_int == true && $cek_sms == false && ($cek_mo == true || $cek_mt == true))
+                                                    $service_temp = 3;
+
+                                                IF (($cek_mo == true || $cek_mt == true) && $cek_sms == false && $cek_int == false)
+                                                    $service_temp = 1;
+
+                                                IF (($cek_mo == true || $cek_mt == true) && $cek_sms == true && $cek_int == true)
+                                                    $service_temp = 8;
+
+                                                IF ($cek_mo == false && $cek_mt == false && $cek_sms == false && $cek_int == false)
+                                                    $service_temp = 0;
+
+                                                array_push($arr_services, $service_temp);
                                             }
                                         }
                                     }
@@ -1798,11 +1842,11 @@ class InventoryController extends BaseController {
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
                             $unik = $arr_msisdn[$i] . '-' . $arr_month[$i] . '-' . $arr_year[$i];
                             if ($i == 0)
-                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_day[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "',CURDATE(),CURDATE())";
+                                $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "','" . $arr_services[$i] . "',0,1,'" . $arr_day[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "',CURDATE(),CURDATE())";
                             else
-                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,0,1,'" . $arr_day[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "',CURDATE(),CURDATE())";
+                                $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "','" . $arr_services[$i] . "',0,1,'" . $arr_day[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "',CURDATE(),CURDATE())";
                         }
-                        DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Day=VALUES(Day),Month=VALUES(Month), Year=VALUES(Year), Unik=VALUES(Unik), MO=VALUES(MO), MT=VALUES(MT), Internet=VALUES(Internet), Sms=VALUES(Sms), DataFromTST=1, dtModified=CURDATE();");
+                        DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Day=VALUES(Day),Month=VALUES(Month),Service=VALUES(Service), Year=VALUES(Year), Unik=VALUES(Unik), MO=VALUES(MO), MT=VALUES(MT), Internet=VALUES(Internet), Sms=VALUES(Sms), DataFromTST=1, dtModified=CURDATE();");
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberprtst(count($arr_msisdn));
                     }
                 }
@@ -5142,289 +5186,288 @@ class InventoryController extends BaseController {
 
         $myArr = array("All Channel Reporting");
         $writer->addRow($myArr); // add a row at a time
-
 //        foreach (DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year) {
 //            $year = $year->year;
-            $month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            $totalsim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        $totalsim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-            $allchan = DB::table('m_historymovement')
-                            ->select(DB::raw(" DISTINCT SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'channel'"))->where('Status', 2)->get();
-            $myArr = array("SIM 3G SHIPOUT " . $year);
-            $writer->addRow($myArr); // add a row at a time
-            $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
-            $writer->addRow($myArr); // add a row at a time
-            foreach ($allchan as $channel) {
-                $idx1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                if ($channel->channel != '-' || $channel->channel != ' ') {
-                    $simshipout = DB::table('m_inventory')
-                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
-                                    ->whereRaw('m_inventory.Type IN ("1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->where('m_historymovement.SubAgent', 'LIKE', $channel->channel . '%')
-                                    ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')
-                                    ->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
-                                    ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+        $allchan = DB::table('m_historymovement')
+                        ->select(DB::raw(" DISTINCT SUBSTRING_INDEX(`SubAgent`, ' ', 1) as 'channel'"))->where('Status', 2)->get();
+        $myArr = array("SIM 3G SHIPOUT " . $year);
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
+        $writer->addRow($myArr); // add a row at a time
+        foreach ($allchan as $channel) {
+            $idx1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            if ($channel->channel != '-' || $channel->channel != ' ') {
+                $simshipout = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->whereRaw('m_inventory.Type IN ("1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                                ->where('m_historymovement.SubAgent', 'LIKE', $channel->channel . '%')
+                                ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')
+                                ->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
-                    for ($i = 0; $i < 12; $i++) {
-                        for ($j = 0; $j < 12; $j++) {
-                            if (isset($simshipout))
-                                if (isset($simshipout[$j]))
-                                    if ($simshipout[$j]->month - 1 == $i) {
-                                        $idx1[$i] = $simshipout[$j]->counter;
-                                        $totalsim[$i] += $simshipout[$j]->counter;
-                                    }
-                        }
+                for ($i = 0; $i < 12; $i++) {
+                    for ($j = 0; $j < 12; $j++) {
+                        if (isset($simshipout))
+                            if (isset($simshipout[$j]))
+                                if ($simshipout[$j]->month - 1 == $i) {
+                                    $idx1[$i] = $simshipout[$j]->counter;
+                                    $totalsim[$i] += $simshipout[$j]->counter;
+                                }
                     }
-                    $myArr = array($channel->channel, number_format($idx1[0]), number_format($idx1[1]), number_format($idx1[2]), number_format($idx1[3])
-                        , number_format($idx1[4]), number_format($idx1[5]), number_format($idx1[6]), number_format($idx1[7]), number_format($idx1[8])
-                        , number_format($idx1[9]), number_format($idx1[10]), number_format($idx1[11]));
-                    $writer->addRow($myArr); // add a row at a time
                 }
+                $myArr = array($channel->channel, number_format($idx1[0]), number_format($idx1[1]), number_format($idx1[2]), number_format($idx1[3])
+                    , number_format($idx1[4]), number_format($idx1[5]), number_format($idx1[6]), number_format($idx1[7]), number_format($idx1[8])
+                    , number_format($idx1[9]), number_format($idx1[10]), number_format($idx1[11]));
+                $writer->addRow($myArr); // add a row at a time
             }
-            $myArr = array("TOTAL", number_format($totalsim[0]), number_format($totalsim[1]), number_format($totalsim[2]), number_format($totalsim[3])
-                , number_format($totalsim[4]), number_format($totalsim[5]), number_format($totalsim[6]), number_format($totalsim[7]), number_format($totalsim[8])
-                , number_format($totalsim[9]), number_format($totalsim[10]), number_format($totalsim[11]));
+        }
+        $myArr = array("TOTAL", number_format($totalsim[0]), number_format($totalsim[1]), number_format($totalsim[2]), number_format($totalsim[3])
+            , number_format($totalsim[4]), number_format($totalsim[5]), number_format($totalsim[6]), number_format($totalsim[7]), number_format($totalsim[8])
+            , number_format($totalsim[9]), number_format($totalsim[10]), number_format($totalsim[11]));
 //            $myArr = array("TOTAL", $totalsim[0], $totalsim[1], $totalsim[2], $totalsim[3], $totalsim[4], $totalsim[5], $totalsim[6], $totalsim[7], $totalsim[8], $totalsim[9], $totalsim[10], $totalsim[11]);
-            $writer->addRow($myArr); // add a row at a time
-            $writer->addRow(['']);
-            $totalsim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            $myArr = array("SIM 4G SHIPOUT " . $year);
-            $writer->addRow($myArr); // add a row at a time
-            $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
-            $writer->addRow($myArr); // add a row at a time
-            foreach ($allchan as $channel) {
-                $idx1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                if ($channel->channel != '-' || $channel->channel != ' ') {
-                    $simshipout = DB::table('m_inventory')
-                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
-                                    ->whereRaw('m_inventory.Type IN ("4")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->where('m_historymovement.SubAgent', 'LIKE', $channel->channel . '%')
-                                    ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')
-                                    ->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
-                                    ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+        $writer->addRow($myArr); // add a row at a time
+        $writer->addRow(['']);
+        $totalsim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $myArr = array("SIM 4G SHIPOUT " . $year);
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
+        $writer->addRow($myArr); // add a row at a time
+        foreach ($allchan as $channel) {
+            $idx1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            if ($channel->channel != '-' || $channel->channel != ' ') {
+                $simshipout = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->whereRaw('m_inventory.Type IN ("4")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                                ->where('m_historymovement.SubAgent', 'LIKE', $channel->channel . '%')
+                                ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')
+                                ->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
-                    for ($i = 0; $i < 12; $i++) {
-                        for ($j = 0; $j < 12; $j++) {
-                            if (isset($simshipout))
-                                if (isset($simshipout[$j]))
-                                    if ($simshipout[$j]->month - 1 == $i) {
-                                        $idx1[$i] = $simshipout[$j]->counter;
-                                        $totalsim[$i] += $simshipout[$j]->counter;
-                                    }
-                        }
+                for ($i = 0; $i < 12; $i++) {
+                    for ($j = 0; $j < 12; $j++) {
+                        if (isset($simshipout))
+                            if (isset($simshipout[$j]))
+                                if ($simshipout[$j]->month - 1 == $i) {
+                                    $idx1[$i] = $simshipout[$j]->counter;
+                                    $totalsim[$i] += $simshipout[$j]->counter;
+                                }
                     }
-                    $myArr = array($channel->channel, number_format($idx1[0]), number_format($idx1[1]), number_format($idx1[2]), number_format($idx1[3])
-                        , number_format($idx1[4]), number_format($idx1[5]), number_format($idx1[6]), number_format($idx1[7]), number_format($idx1[8])
-                        , number_format($idx1[9]), number_format($idx1[10]), number_format($idx1[11]));
+                }
+                $myArr = array($channel->channel, number_format($idx1[0]), number_format($idx1[1]), number_format($idx1[2]), number_format($idx1[3])
+                    , number_format($idx1[4]), number_format($idx1[5]), number_format($idx1[6]), number_format($idx1[7]), number_format($idx1[8])
+                    , number_format($idx1[9]), number_format($idx1[10]), number_format($idx1[11]));
 //                    $myArr = array($channel->channel, $idx1[0], $idx1[1], $idx1[2], $idx1[3], $idx1[4], $idx1[5], $idx1[6], $idx1[7], $idx1[8], $idx1[9], $idx1[10], $idx1[11]);
-                    $writer->addRow($myArr); // add a row at a time
-                }
+                $writer->addRow($myArr); // add a row at a time
             }
-            $myArr = array("TOTAL", number_format($totalsim[0]), number_format($totalsim[1]), number_format($totalsim[2]), number_format($totalsim[3])
-                , number_format($totalsim[4]), number_format($totalsim[5]), number_format($totalsim[6]), number_format($totalsim[7]), number_format($totalsim[8])
-                , number_format($totalsim[9]), number_format($totalsim[10]), number_format($totalsim[11]));
-            $writer->addRow($myArr); // add a row at a time
-            $writer->addRow(['']);
-            $myArr = array("eVC 300 SHIPOUT " . $year);
-            $writer->addRow($myArr); // add a row at a time
-            $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
-            $writer->addRow($myArr); // add a row at a time
+        }
+        $myArr = array("TOTAL", number_format($totalsim[0]), number_format($totalsim[1]), number_format($totalsim[2]), number_format($totalsim[3])
+            , number_format($totalsim[4]), number_format($totalsim[5]), number_format($totalsim[6]), number_format($totalsim[7]), number_format($totalsim[8])
+            , number_format($totalsim[9]), number_format($totalsim[10]), number_format($totalsim[11]));
+        $writer->addRow($myArr); // add a row at a time
+        $writer->addRow(['']);
+        $myArr = array("eVC 300 SHIPOUT " . $year);
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
+        $writer->addRow($myArr); // add a row at a time
 
 
-            foreach ($allchan as $channel) {
-                $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                if ($channel != '-' || $channel != ' ') {
-                    $vocshipout = DB::table('m_inventory')
-                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
-                                    ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', 'LIKE', "%KR0250%")
-                                    ->where('m_historymovement.SubAgent', 'LIKE', $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
-                                    ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+        foreach ($allchan as $channel) {
+            $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            if ($channel != '-' || $channel != ' ') {
+                $vocshipout = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                                ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', 'LIKE', "%KR0250%")
+                                ->where('m_historymovement.SubAgent', 'LIKE', $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
-                    for ($i = 0; $i < 12; $i++) {
-                        for ($j = 0; $j < 12; $j++) {
-                            if (isset($vocshipout))
-                                if (isset($vocshipout[$j]))
-                                    if ($vocshipout[$j]->month - 1 == $i) {
-                                        $idx2[$i] = $vocshipout[$j]->counter;
-                                        $totalvoc[$i] += $vocshipout[$j]->counter;
-                                    }
-                        }
+                for ($i = 0; $i < 12; $i++) {
+                    for ($j = 0; $j < 12; $j++) {
+                        if (isset($vocshipout))
+                            if (isset($vocshipout[$j]))
+                                if ($vocshipout[$j]->month - 1 == $i) {
+                                    $idx2[$i] = $vocshipout[$j]->counter;
+                                    $totalvoc[$i] += $vocshipout[$j]->counter;
+                                }
                     }
-                    $myArr = array($channel->channel, number_format($idx2[0]), number_format($idx2[1]), number_format($idx2[2]), number_format($idx2[3])
-                        , number_format($idx2[4]), number_format($idx2[5]), number_format($idx2[6]), number_format($idx2[7]), number_format($idx2[8])
-                        , number_format($idx2[9]), number_format($idx2[10]), number_format($idx2[11]));
-//                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
-                    $writer->addRow($myArr); // add a row at a time
                 }
+                $myArr = array($channel->channel, number_format($idx2[0]), number_format($idx2[1]), number_format($idx2[2]), number_format($idx2[3])
+                    , number_format($idx2[4]), number_format($idx2[5]), number_format($idx2[6]), number_format($idx2[7]), number_format($idx2[8])
+                    , number_format($idx2[9]), number_format($idx2[10]), number_format($idx2[11]));
+//                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
+                $writer->addRow($myArr); // add a row at a time
             }
-            $myArr = array("TOTAL", number_format($totalvoc[0]), number_format($totalvoc[1]), number_format($totalvoc[2])
-                , number_format($totalvoc[3]), number_format($totalvoc[4]), number_format($totalvoc[5]), number_format($totalvoc[6])
-                , number_format($totalvoc[7]), number_format($totalvoc[8]), number_format($totalvoc[9]), number_format($totalvoc[10]), number_format($totalvoc[11]));
-            //$myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
-            $writer->addRow($myArr); // add a row at a time
-            $writer->addRow(['']);
-            $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            $myArr = array("eVC 100 SHIPOUT " . $year);
-            $writer->addRow($myArr); // add a row at a time
-            $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
-            $writer->addRow($myArr); // add a row at a time
+        }
+        $myArr = array("TOTAL", number_format($totalvoc[0]), number_format($totalvoc[1]), number_format($totalvoc[2])
+            , number_format($totalvoc[3]), number_format($totalvoc[4]), number_format($totalvoc[5]), number_format($totalvoc[6])
+            , number_format($totalvoc[7]), number_format($totalvoc[8]), number_format($totalvoc[9]), number_format($totalvoc[10]), number_format($totalvoc[11]));
+        //$myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+        $writer->addRow($myArr); // add a row at a time
+        $writer->addRow(['']);
+        $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $myArr = array("eVC 100 SHIPOUT " . $year);
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
+        $writer->addRow($myArr); // add a row at a time
 
 
-            foreach ($allchan as $channel) {
-                $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                if ($channel != '-' || $channel != ' ') {
-                    $vocshipout = DB::table('m_inventory')
-                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
-                                    ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR0150%")
-                                    ->where('m_historymovement.SubAgent', 'LIKE', $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
-                                    ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+        foreach ($allchan as $channel) {
+            $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            if ($channel != '-' || $channel != ' ') {
+                $vocshipout = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                                ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR0150%")
+                                ->where('m_historymovement.SubAgent', 'LIKE', $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
-                    for ($i = 0; $i < 12; $i++) {
-                        for ($j = 0; $j < 12; $j++) {
-                            if (isset($vocshipout))
-                                if (isset($vocshipout[$j]))
-                                    if ($vocshipout[$j]->month - 1 == $i) {
-                                        $idx2[$i] = $vocshipout[$j]->counter;
-                                        $totalvoc[$i] += $vocshipout[$j]->counter;
-                                    }
-                        }
+                for ($i = 0; $i < 12; $i++) {
+                    for ($j = 0; $j < 12; $j++) {
+                        if (isset($vocshipout))
+                            if (isset($vocshipout[$j]))
+                                if ($vocshipout[$j]->month - 1 == $i) {
+                                    $idx2[$i] = $vocshipout[$j]->counter;
+                                    $totalvoc[$i] += $vocshipout[$j]->counter;
+                                }
                     }
-                    $myArr = array($channel->channel, number_format($idx2[0]), number_format($idx2[1]), number_format($idx2[2]), number_format($idx2[3])
-                        , number_format($idx2[4]), number_format($idx2[5]), number_format($idx2[6]), number_format($idx2[7]), number_format($idx2[8])
-                        , number_format($idx2[9]), number_format($idx2[10]), number_format($idx2[11]));
-//                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
-                    $writer->addRow($myArr); // add a row at a time
                 }
+                $myArr = array($channel->channel, number_format($idx2[0]), number_format($idx2[1]), number_format($idx2[2]), number_format($idx2[3])
+                    , number_format($idx2[4]), number_format($idx2[5]), number_format($idx2[6]), number_format($idx2[7]), number_format($idx2[8])
+                    , number_format($idx2[9]), number_format($idx2[10]), number_format($idx2[11]));
+//                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
+                $writer->addRow($myArr); // add a row at a time
             }
-            $myArr = array("TOTAL", number_format($totalvoc[0]), number_format($totalvoc[1]), number_format($totalvoc[2])
-                , number_format($totalvoc[3]), number_format($totalvoc[4]), number_format($totalvoc[5]), number_format($totalvoc[6])
-                , number_format($totalvoc[7]), number_format($totalvoc[8]), number_format($totalvoc[9]), number_format($totalvoc[10]), number_format($totalvoc[11]));
-            //$myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
-            $writer->addRow($myArr); // add a row at a time
-            $writer->addRow(['']);
-            $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            $myArr = array("eVC 50 SHIPOUT " . $year);
-            $writer->addRow($myArr); // add a row at a time
-            $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
-            $writer->addRow($myArr); // add a row at a time
+        }
+        $myArr = array("TOTAL", number_format($totalvoc[0]), number_format($totalvoc[1]), number_format($totalvoc[2])
+            , number_format($totalvoc[3]), number_format($totalvoc[4]), number_format($totalvoc[5]), number_format($totalvoc[6])
+            , number_format($totalvoc[7]), number_format($totalvoc[8]), number_format($totalvoc[9]), number_format($totalvoc[10]), number_format($totalvoc[11]));
+        //$myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+        $writer->addRow($myArr); // add a row at a time
+        $writer->addRow(['']);
+        $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $myArr = array("eVC 50 SHIPOUT " . $year);
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
+        $writer->addRow($myArr); // add a row at a time
 
 
-            foreach ($allchan as $channel) {
-                $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                if ($channel != '-' || $channel != ' ') {
-                    $vocshipout = DB::table('m_inventory')
-                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
-                                    ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR0450%")
-                                    ->where('m_historymovement.SubAgent', 'LIKE', $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
-                                    ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+        foreach ($allchan as $channel) {
+            $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            if ($channel != '-' || $channel != ' ') {
+                $vocshipout = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                                ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR0450%")
+                                ->where('m_historymovement.SubAgent', 'LIKE', $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
-                    for ($i = 0; $i < 12; $i++) {
-                        for ($j = 0; $j < 12; $j++) {
-                            if (isset($vocshipout))
-                                if (isset($vocshipout[$j]))
-                                    if ($vocshipout[$j]->month - 1 == $i) {
-                                        $idx2[$i] = $vocshipout[$j]->counter;
-                                        $totalvoc[$i] += $vocshipout[$j]->counter;
-                                    }
-                        }
+                for ($i = 0; $i < 12; $i++) {
+                    for ($j = 0; $j < 12; $j++) {
+                        if (isset($vocshipout))
+                            if (isset($vocshipout[$j]))
+                                if ($vocshipout[$j]->month - 1 == $i) {
+                                    $idx2[$i] = $vocshipout[$j]->counter;
+                                    $totalvoc[$i] += $vocshipout[$j]->counter;
+                                }
                     }
-                    $myArr = array($channel->channel, number_format($idx2[0]), number_format($idx2[1]), number_format($idx2[2]), number_format($idx2[3])
-                        , number_format($idx2[4]), number_format($idx2[5]), number_format($idx2[6]), number_format($idx2[7]), number_format($idx2[8])
-                        , number_format($idx2[9]), number_format($idx2[10]), number_format($idx2[11]));
-//                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
-                    $writer->addRow($myArr); // add a row at a time
                 }
+                $myArr = array($channel->channel, number_format($idx2[0]), number_format($idx2[1]), number_format($idx2[2]), number_format($idx2[3])
+                    , number_format($idx2[4]), number_format($idx2[5]), number_format($idx2[6]), number_format($idx2[7]), number_format($idx2[8])
+                    , number_format($idx2[9]), number_format($idx2[10]), number_format($idx2[11]));
+//                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
+                $writer->addRow($myArr); // add a row at a time
             }
-            $myArr = array("TOTAL", number_format($totalvoc[0]), number_format($totalvoc[1]), number_format($totalvoc[2])
-                , number_format($totalvoc[3]), number_format($totalvoc[4]), number_format($totalvoc[5]), number_format($totalvoc[6])
-                , number_format($totalvoc[7]), number_format($totalvoc[8]), number_format($totalvoc[9]), number_format($totalvoc[10]), number_format($totalvoc[11]));
-            //$myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
-            $writer->addRow($myArr); // add a row at a time
-            $writer->addRow(['']);
-            $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            $myArr = array("phVC 100 SHIPOUT " . $year);
-            $writer->addRow($myArr); // add a row at a time
-            $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
-            $writer->addRow($myArr); // add a row at a time
+        }
+        $myArr = array("TOTAL", number_format($totalvoc[0]), number_format($totalvoc[1]), number_format($totalvoc[2])
+            , number_format($totalvoc[3]), number_format($totalvoc[4]), number_format($totalvoc[5]), number_format($totalvoc[6])
+            , number_format($totalvoc[7]), number_format($totalvoc[8]), number_format($totalvoc[9]), number_format($totalvoc[10]), number_format($totalvoc[11]));
+        //$myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+        $writer->addRow($myArr); // add a row at a time
+        $writer->addRow(['']);
+        $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $myArr = array("phVC 100 SHIPOUT " . $year);
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
+        $writer->addRow($myArr); // add a row at a time
 
 
-            foreach ($allchan as $channel) {
-                $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                if ($channel != '-' || $channel != ' ') {
-                    $vocshipout = DB::table('m_inventory')
-                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
-                                    ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR0350%")
-                                    ->where('m_historymovement.SubAgent', 'LIKE', $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
-                                    ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+        foreach ($allchan as $channel) {
+            $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            if ($channel != '-' || $channel != ' ') {
+                $vocshipout = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                                ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR0350%")
+                                ->where('m_historymovement.SubAgent', 'LIKE', $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
-                    for ($i = 0; $i < 12; $i++) {
-                        for ($j = 0; $j < 12; $j++) {
-                            if (isset($vocshipout))
-                                if (isset($vocshipout[$j]))
-                                    if ($vocshipout[$j]->month - 1 == $i) {
-                                        $idx2[$i] = $vocshipout[$j]->counter;
-                                        $totalvoc[$i] += $vocshipout[$j]->counter;
-                                    }
-                        }
+                for ($i = 0; $i < 12; $i++) {
+                    for ($j = 0; $j < 12; $j++) {
+                        if (isset($vocshipout))
+                            if (isset($vocshipout[$j]))
+                                if ($vocshipout[$j]->month - 1 == $i) {
+                                    $idx2[$i] = $vocshipout[$j]->counter;
+                                    $totalvoc[$i] += $vocshipout[$j]->counter;
+                                }
                     }
-                    $myArr = array($channel->channel, number_format($idx2[0]), number_format($idx2[1]), number_format($idx2[2]), number_format($idx2[3])
-                        , number_format($idx2[4]), number_format($idx2[5]), number_format($idx2[6]), number_format($idx2[7]), number_format($idx2[8])
-                        , number_format($idx2[9]), number_format($idx2[10]), number_format($idx2[11]));
-//                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
-                    $writer->addRow($myArr); // add a row at a time
                 }
+                $myArr = array($channel->channel, number_format($idx2[0]), number_format($idx2[1]), number_format($idx2[2]), number_format($idx2[3])
+                    , number_format($idx2[4]), number_format($idx2[5]), number_format($idx2[6]), number_format($idx2[7]), number_format($idx2[8])
+                    , number_format($idx2[9]), number_format($idx2[10]), number_format($idx2[11]));
+//                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
+                $writer->addRow($myArr); // add a row at a time
             }
-            $myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
-            $writer->addRow($myArr); // add a row at a time
-            $writer->addRow(['']);
-            $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            $myArr = array("phVC 300 SHIPOUT " . $year);
-            $writer->addRow($myArr); // add a row at a time
-            $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
-            $writer->addRow($myArr); // add a row at a time
+        }
+        $myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+        $writer->addRow($myArr); // add a row at a time
+        $writer->addRow(['']);
+        $totalvoc = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        $myArr = array("phVC 300 SHIPOUT " . $year);
+        $writer->addRow($myArr); // add a row at a time
+        $myArr = array("CHANNEL", "JANUARY " . $year, "FEBRUARY " . $year, "MARCH " . $year, "APRIL " . $year, "MAY " . $year, "JUNE " . $year, "JULY " . $year, "AUGUST " . $year, "SEPTEMBER " . $year, "OCTOBER " . $year, "NOVEMBER " . $year, "DECEMBER " . $year);
+        $writer->addRow($myArr); // add a row at a time
 
 
-            foreach ($allchan as $channel) {
-                $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                if ($channel != '-' || $channel != ' ') {
-                    $vocshipout = DB::table('m_inventory')
-                                    ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
-                                    ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
-                                    ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR1850%")
-                                    ->where('m_historymovement.SubAgent', 'LIKE', $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
-                                    ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
+        foreach ($allchan as $channel) {
+            $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            if ($channel != '-' || $channel != ' ') {
+                $vocshipout = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
+                                ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
+                                ->whereRaw('m_historymovement.Status IN ("2","4")')->where('m_historymovement.Deleted', '0')->where('m_inventory.SerialNumber', "LIKE", "%KR1850%")
+                                ->where('m_historymovement.SubAgent', 'LIKE', $channel->channel . '%')->groupBy(DB::raw('MONTH(m_historymovement.Date)'))
+                                ->select(DB::raw('count(m_inventory.SerialNumber) as counter, MONTH(m_historymovement.Date) as month'))->get();
 
-                    for ($i = 0; $i < 12; $i++) {
-                        for ($j = 0; $j < 12; $j++) {
-                            if (isset($vocshipout))
-                                if (isset($vocshipout[$j]))
-                                    if ($vocshipout[$j]->month - 1 == $i) {
-                                        $idx2[$i] = $vocshipout[$j]->counter;
-                                        $totalvoc[$i] += $vocshipout[$j]->counter;
-                                    }
-                        }
+                for ($i = 0; $i < 12; $i++) {
+                    for ($j = 0; $j < 12; $j++) {
+                        if (isset($vocshipout))
+                            if (isset($vocshipout[$j]))
+                                if ($vocshipout[$j]->month - 1 == $i) {
+                                    $idx2[$i] = $vocshipout[$j]->counter;
+                                    $totalvoc[$i] += $vocshipout[$j]->counter;
+                                }
                     }
-                    $myArr = array($channel->channel, number_format($idx2[0]), number_format($idx2[1]), number_format($idx2[2]), number_format($idx2[3])
-                        , number_format($idx2[4]), number_format($idx2[5]), number_format($idx2[6]), number_format($idx2[7]), number_format($idx2[8])
-                        , number_format($idx2[9]), number_format($idx2[10]), number_format($idx2[11]));
-//                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
-                    $writer->addRow($myArr); // add a row at a time
                 }
+                $myArr = array($channel->channel, number_format($idx2[0]), number_format($idx2[1]), number_format($idx2[2]), number_format($idx2[3])
+                    , number_format($idx2[4]), number_format($idx2[5]), number_format($idx2[6]), number_format($idx2[7]), number_format($idx2[8])
+                    , number_format($idx2[9]), number_format($idx2[10]), number_format($idx2[11]));
+//                    $myArr = array($channel->channel, $idx2[0], $idx2[1], $idx2[2], $idx2[3], $idx2[4], $idx2[5], $idx2[6], $idx2[7], $idx2[8], $idx2[9], $idx2[10], $idx2[11]);
+                $writer->addRow($myArr); // add a row at a time
             }
-            $myArr = array("TOTAL", number_format($totalvoc[0]), number_format($totalvoc[1]), number_format($totalvoc[2])
-                , number_format($totalvoc[3]), number_format($totalvoc[4]), number_format($totalvoc[5]), number_format($totalvoc[6])
-                , number_format($totalvoc[7]), number_format($totalvoc[8]), number_format($totalvoc[9]), number_format($totalvoc[10]), number_format($totalvoc[11]));
-            //$myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
-            $writer->addRow($myArr); // add a row at a time
-            $writer->addRow(['']);
+        }
+        $myArr = array("TOTAL", number_format($totalvoc[0]), number_format($totalvoc[1]), number_format($totalvoc[2])
+            , number_format($totalvoc[3]), number_format($totalvoc[4]), number_format($totalvoc[5]), number_format($totalvoc[6])
+            , number_format($totalvoc[7]), number_format($totalvoc[8]), number_format($totalvoc[9]), number_format($totalvoc[10]), number_format($totalvoc[11]));
+        //$myArr = array("TOTAL", $totalvoc[0], $totalvoc[1], $totalvoc[2], $totalvoc[3], $totalvoc[4], $totalvoc[5], $totalvoc[6], $totalvoc[7], $totalvoc[8], $totalvoc[9], $totalvoc[10], $totalvoc[11]);
+        $writer->addRow($myArr); // add a row at a time
+        $writer->addRow(['']);
 //        }
         $writer->close();
-        return "/shippout_report_".$year.".xlsx";
+        return "/shippout_report_" . $year . ".xlsx";
     }
 
     static function exportExcelShipinDashboard() {
@@ -6825,7 +6868,7 @@ class InventoryController extends BaseController {
                     </div>
                     <div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
                         <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">註</div>
-                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;">'.Session::get('arr_rem').'</div>
+                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;">' . Session::get('arr_rem') . '</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總計</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ -</div>
                     </div>
