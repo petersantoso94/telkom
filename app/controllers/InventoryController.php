@@ -3394,8 +3394,6 @@ class InventoryController extends BaseController {
                 $data = [];
                 $myArr = array($year->Year);
                 $writer->addRow($myArr); // add a row at a time
-                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
-                $writer->addRow($myArr); // add a row at a time
                 $year = $year->Year;
                 $shipoutevoc50 = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
@@ -3546,8 +3544,6 @@ class InventoryController extends BaseController {
             foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
                 $data = [];
                 $myArr = array($year->Year);
-                $writer->addRow($myArr); // add a row at a time
-                $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
                 // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
                 $year = $year->Year;
