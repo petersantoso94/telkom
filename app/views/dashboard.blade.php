@@ -50,6 +50,7 @@
                             </div>
                         </div>
                         <div class="box-body">
+                            <div class="loader" id="loading-animation-top" style="display:none;" style="position: absolute; left:50%; top: 40%;"></div>
                             <div class="nav-tabs-custom">
                                 <ul class="nav nav-tabs">
                                     <li class="active"><a href="#subs" data-toggle="tab" aria-expanded="true">Subscriber</a></li>
