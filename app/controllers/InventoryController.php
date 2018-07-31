@@ -1786,7 +1786,7 @@ class InventoryController extends BaseController {
                                                 if ($value[7] === '0') {
                                                     $cek_sms = FALSE;
                                                 }
-                                                
+
                                                 IF ($cek_sms == true && $cek_int == false && $cek_mo == false && $cek_mt == false)
                                                     $service_temp = 5;
 
@@ -2965,9 +2965,9 @@ class InventoryController extends BaseController {
                 $writer->addRow($myArr); // add a row at a time
 //                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%services%\'')->get();
                 $all_ivr = DB::table('m_productive as prod1')
-                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year->Year}'")
-                        ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month, `prod1`.Service'))
-                        ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month, `prod1`.Service"))->get();
+                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year->Year}'")
+                                ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month, `prod1`.Service'))
+                                ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month, `prod1`.Service"))->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3307,36 +3307,81 @@ class InventoryController extends BaseController {
 
         $data = [];
         //1 -> evoucher; 2 -> phvoucher
-        $shipoutevoc = [];
-        $shipoutpvoc = [];
         // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
-        $shipoutevoc = DB::table('m_inventory')
+        $shipoutevoc50 = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4')")
+                        ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR0450%'")
                         ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
-        $shipoutpvoc = DB::table('m_inventory')
+        $shipoutevoc100 = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '3' AND m_inventory.LastStatusHist IN ('2','4')")
+                        ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR0150%'")
+                        ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+        $shipoutevoc300 = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                        ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR0250%'")
                         ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
 
-        if ($shipoutevoc != null) {
-            foreach ($shipoutevoc as $voc) {
-                if (!isset($data['EVoc']))
-                    $data['EVoc'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+        $shipoutpvoc100 = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                        ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '3' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR0350%'")
+                        ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+        $shipoutpvoc300 = DB::table('m_inventory')
+                        ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                        ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '3' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR1850%'")
+                        ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+
+        if ($shipoutevoc50 != null) {
+            foreach ($shipoutevoc50 as $voc) {
+                if (!isset($data['eV50']))
+                    $data['eV50'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $voc->month - 1) {
-                        $data['EVoc'][$i] += $voc->Counter;
+                        $data['eV50'][$i] += $voc->Counter;
                     }
                 }
             }
         }
-        if ($shipoutpvoc != null) {
-            foreach ($shipoutpvoc as $voc) {
-                if (!isset($data['PHVoc']))
-                    $data['PHVoc'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        if ($shipoutevoc100 != null) {
+            foreach ($shipoutevoc100 as $voc) {
+                if (!isset($data['eV100']))
+                    $data['eV100'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $voc->month - 1) {
-                        $data['PHVoc'][$i] += $voc->Counter;
+                        $data['eV100'][$i] += $voc->Counter;
+                    }
+                }
+            }
+        }
+        if ($shipoutevoc300 != null) {
+            foreach ($shipoutevoc300 as $voc) {
+                if (!isset($data['eV300']))
+                    $data['eV300'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $voc->month - 1) {
+                        $data['eV300'][$i] += $voc->Counter;
+                    }
+                }
+            }
+        }
+        if ($shipoutpvoc100 != null) {
+            foreach ($shipoutpvoc100 as $voc) {
+                if (!isset($data['pV100']))
+                    $data['pV100'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $voc->month - 1) {
+                        $data['pV100'][$i] += $voc->Counter;
+                    }
+                }
+            }
+        }
+        if ($shipoutpvoc300 != null) {
+            foreach ($shipoutpvoc300 as $voc) {
+                if (!isset($data['pV300']))
+                    $data['pV300'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $voc->month - 1) {
+                        $data['pV300'][$i] += $voc->Counter;
                     }
                 }
             }
@@ -3351,34 +3396,81 @@ class InventoryController extends BaseController {
                 $writer->addRow($myArr); // add a row at a time
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
-                // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
-                $shipoutevoc = DB::table('m_inventory')
+                $year = $year->Year;
+                $shipoutevoc50 = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                                ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year->Year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4')")
+                                ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR0450%'")
                                 ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
-                $shipoutpvoc = DB::table('m_inventory')
+                $shipoutevoc100 = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                                ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year->Year}' AND m_inventory.Type = '3' AND m_inventory.LastStatusHist IN ('2','4')")
+                                ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR0150%'")
+                                ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+                $shipoutevoc300 = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                                ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR0250%'")
                                 ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
 
-                if ($shipoutevoc != null) {
-                    foreach ($shipoutevoc as $voc) {
-                        if (!isset($data['EVoc']))
-                            $data['EVoc'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+                $shipoutpvoc100 = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                                ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '3' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR0350%'")
+                                ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+                $shipoutpvoc300 = DB::table('m_inventory')
+                                ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                                ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '3' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR1850%'")
+                                ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+
+                if ($shipoutevoc50 != null) {
+                    foreach ($shipoutevoc50 as $voc) {
+                        if (!isset($data['eV50']))
+                            $data['eV50'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                         for ($i = 0; $i < 12; $i++) {
                             if ($i == $voc->month - 1) {
-                                $data['EVoc'][$i] += $voc->Counter;
+                                $data['eV50'][$i] += $voc->Counter;
                             }
                         }
                     }
                 }
-                if ($shipoutpvoc != null) {
-                    foreach ($shipoutpvoc as $voc) {
-                        if (!isset($data['PHVoc']))
-                            $data['PHVoc'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if ($shipoutevoc100 != null) {
+                    foreach ($shipoutevoc100 as $voc) {
+                        if (!isset($data['eV100']))
+                            $data['eV100'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                         for ($i = 0; $i < 12; $i++) {
                             if ($i == $voc->month - 1) {
-                                $data['PHVoc'][$i] += $voc->Counter;
+                                $data['eV100'][$i] += $voc->Counter;
+                            }
+                        }
+                    }
+                }
+                if ($shipoutevoc300 != null) {
+                    foreach ($shipoutevoc300 as $voc) {
+                        if (!isset($data['eV300']))
+                            $data['eV300'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $voc->month - 1) {
+                                $data['eV300'][$i] += $voc->Counter;
+                            }
+                        }
+                    }
+                }
+                if ($shipoutpvoc100 != null) {
+                    foreach ($shipoutpvoc100 as $voc) {
+                        if (!isset($data['pV100']))
+                            $data['pV100'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $voc->month - 1) {
+                                $data['pV100'][$i] += $voc->Counter;
+                            }
+                        }
+                    }
+                }
+                if ($shipoutpvoc300 != null) {
+                    foreach ($shipoutpvoc300 as $voc) {
+                        if (!isset($data['pV300']))
+                            $data['pV300'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $voc->month - 1) {
+                                $data['pV300'][$i] += $voc->Counter;
                             }
                         }
                     }
