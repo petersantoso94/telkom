@@ -3503,30 +3503,30 @@ class InventoryController extends BaseController {
         $shipout4g = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                         ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '4' AND m_inventory.LastStatusHist IN ('2','4')")
-                        ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+                        ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month' , m_inventory.LastWarehouse"))->groupBy(DB::raw("MONTH(m_historymovement.Date), m_inventory.LastWarehouse"))->get();
         $shipout3g = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                         ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '1' AND m_inventory.LastStatusHist IN ('2','4')")
-                        ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+                        ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month' , m_inventory.LastWarehouse"))->groupBy(DB::raw("MONTH(m_historymovement.Date), m_inventory.LastWarehouse"))->get();
 
         if ($shipout4g != null) {
             foreach ($shipout4g as $voc) {
-                if (!isset($data['SIM 4G']))
-                    $data['SIM 4G'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if (!isset($data[$voc->LastWarehouse]['SIM 4G']))
+                    $data[$voc->LastWarehouse]['SIM 4G'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $voc->month - 1) {
-                        $data['SIM 4G'][$i] += $voc->Counter;
+                        $data[$voc->LastWarehouse]['SIM 4G'][$i] += $voc->Counter;
                     }
                 }
             }
         }
         if ($shipout3g != null) {
             foreach ($shipout3g as $voc) {
-                if (!isset($data['SIM 3G']))
-                    $data['SIM 3G'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if (!isset($data[$voc->LastWarehouse]['SIM 3G']))
+                    $data[$voc->LastWarehouse]['SIM 3G'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $voc->month - 1) {
-                        $data['SIM 3G'][$i] += $voc->Counter;
+                        $data[$voc->LastWarehouse]['SIM 3G'][$i] += $voc->Counter;
                     }
                 }
             }
@@ -3542,40 +3542,49 @@ class InventoryController extends BaseController {
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
                 // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
+                $year = $year->Year;
                 $shipout4g = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                                ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year->Year}' AND m_inventory.Type = '4' AND m_inventory.LastStatusHist IN ('2','4')")
-                                ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+                                ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '4' AND m_inventory.LastStatusHist IN ('2','4')")
+                                ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month' , m_inventory.LastWarehouse"))->groupBy(DB::raw("MONTH(m_historymovement.Date), m_inventory.LastWarehouse"))->get();
                 $shipout3g = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                                ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year->Year}' AND m_inventory.Type = '1' AND m_inventory.LastStatusHist IN ('2','4')")
-                                ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month'"))->groupBy(DB::raw("MONTH(m_historymovement.Date)"))->get();
+                                ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '1' AND m_inventory.LastStatusHist IN ('2','4')")
+                                ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month' , m_inventory.LastWarehouse"))->groupBy(DB::raw("MONTH(m_historymovement.Date), m_inventory.LastWarehouse"))->get();
 
                 if ($shipout4g != null) {
                     foreach ($shipout4g as $voc) {
-                        if (!isset($data['SIM 4G']))
-                            $data['SIM 4G'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        if (!isset($data[$voc->LastWarehouse]['SIM 4G']))
+                            $data[$voc->LastWarehouse]['SIM 4G'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                         for ($i = 0; $i < 12; $i++) {
                             if ($i == $voc->month - 1) {
-                                $data['SIM 4G'][$i] += $voc->Counter;
+                                $data[$voc->LastWarehouse]['SIM 4G'][$i] += $voc->Counter;
                             }
                         }
                     }
                 }
                 if ($shipout3g != null) {
                     foreach ($shipout3g as $voc) {
-                        if (!isset($data['SIM 3G']))
-                            $data['SIM 3G'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        if (!isset($data[$voc->LastWarehouse]['SIM 3G']))
+                            $data[$voc->LastWarehouse]['SIM 3G'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                         for ($i = 0; $i < 12; $i++) {
                             if ($i == $voc->month - 1) {
-                                $data['SIM 3G'][$i] += $voc->Counter;
+                                $data[$voc->LastWarehouse]['SIM 3G'][$i] += $voc->Counter;
                             }
                         }
                     }
                 }
-                foreach ($data as $key => $a) {
-                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
+                foreach ($data as $key => $abc) {
+                    $name = $key;
+                    $myArr = array($name);
+                    $writer->addRow($myArr);
+                    $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                     $writer->addRow($myArr); // add a row at a time
+                    foreach ($abc as $key2 => $a) {
+                        $myArr = array($key2, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]),
+                            number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
+                        $writer->addRow($myArr); // add a row at a time
+                    }
                 }
             }
             $writer->close();
