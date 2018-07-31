@@ -13,6 +13,7 @@
 @stop
 
 @section('main-section')
+<div class="loader" id="loading-animation-top" style="position: absolute; left:50%; top: 40%;z-index: 99999;"></div>
 <div class="wrapper">          
     <!-- Content Wrapper. Contains page content -->
     <div>
@@ -50,7 +51,6 @@
                             </div>
                         </div>
                         <div class="box-body">
-                            <div class="loader" id="loading-animation-top" style="display:none;" style="position: absolute; left:50%; top: 40%;"></div>
                             <div class="nav-tabs-custom">
                                 <ul class="nav nav-tabs">
                                     <li class="active"><a href="#subs" data-toggle="tab" aria-expanded="true">Subscriber</a></li>
@@ -2457,7 +2457,7 @@
                             }
                         }
                     });
-                    
+
                     var ctx18 = document.getElementById("barChart_shipout_sim").getContext("2d");
                     window.myBar18 = new Chart(ctx18, {
                         type: 'bar',
@@ -2508,7 +2508,7 @@
                             }
                         }
                     });
-                    
+
                     var ctx19 = document.getElementById("barChart_shipout_voc").getContext("2d");
                     window.myBar19 = new Chart(ctx19, {
                         type: 'bar',
@@ -3112,7 +3112,7 @@
                                 excelbutton = false;
                             }
                         });
-                    }else if (chartID == 'info_shipout_sim') {
+                    } else if (chartID == 'info_shipout_sim') {
                         $.post(getShipoutSim, {year: shipout_sim_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
@@ -3148,7 +3148,7 @@
                                 excelbutton = false;
                             }
                         });
-                    }else if (chartID == 'info_shipout_voc') {
+                    } else if (chartID == 'info_shipout_voc') {
                         $.post(getShipoutVoc, {year: shipout_voc_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
