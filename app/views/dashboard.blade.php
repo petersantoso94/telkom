@@ -3130,7 +3130,7 @@
                                         borderWidth: 1,
                                         data: value2
                                     });
-                                })
+                                });
                             });
                             window.myBar18.update();
                             // Find the scale in the chart instance
@@ -3158,14 +3158,17 @@
                         }).done(function (data) {
                             barChartData19.datasets = [];
                             $.each(data, function (index, value) {
-                                var colorName = colorNames[barChartData19.datasets.length % colorNames.length];
-                                var dsColor = window.chartColors[colorName];
-                                barChartData19.datasets.push({
-                                    label: index,
-                                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
-                                    borderColor: dsColor,
-                                    borderWidth: 1,
-                                    data: value
+                                warehouse = index;
+                                $.each(value, function (index2, value2) {
+                                    var colorName = colorNames[barChartData19.datasets.length % colorNames.length];
+                                    var dsColor = window.chartColors[colorName];
+                                    barChartData19.datasets.push({
+                                        label: index2+" "+warehouse,
+                                        backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                                        borderColor: dsColor,
+                                        borderWidth: 1,
+                                        data: value2
+                                    });
                                 });
                             });
                             window.myBar19.update();
