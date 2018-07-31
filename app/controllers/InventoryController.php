@@ -3475,9 +3475,17 @@ class InventoryController extends BaseController {
                         }
                     }
                 }
-                foreach ($data as $key => $a) {
-                    $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
+                foreach ($data as $key => $abc) {
+                    $name = $key;
+                    $myArr = array($name);
+                    $writer->addRow($myArr);
+                    $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                     $writer->addRow($myArr); // add a row at a time
+                    foreach ($abc as $key2 => $a) {
+                        $myArr = array($key2, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]),
+                            number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
+                        $writer->addRow($myArr); // add a row at a time
+                    }
                 }
             }
             $writer->close();
