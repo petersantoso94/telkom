@@ -3117,16 +3117,20 @@
 
                         }).done(function (data) {
                             barChartData18.datasets = [];
+                            var warehouse = "";
                             $.each(data, function (index, value) {
-                                var colorName = colorNames[barChartData18.datasets.length % colorNames.length];
-                                var dsColor = window.chartColors[colorName];
-                                barChartData18.datasets.push({
-                                    label: index,
-                                    backgroundColor: color(dsColor).alpha(0.5).rgbString(),
-                                    borderColor: dsColor,
-                                    borderWidth: 1,
-                                    data: value
-                                });
+                                warehouse = index;
+                                $.each(value, function (index2, value2) {
+                                    var colorName = colorNames[barChartData18.datasets.length % colorNames.length];
+                                    var dsColor = window.chartColors[colorName];
+                                    barChartData18.datasets.push({
+                                        label: warehouse + " " + index2,
+                                        backgroundColor: color(dsColor).alpha(0.5).rgbString(),
+                                        borderColor: dsColor,
+                                        borderWidth: 1,
+                                        data: value2
+                                    });
+                                })
                             });
                             window.myBar18.update();
                             // Find the scale in the chart instance
