@@ -13,7 +13,7 @@
 @stop
 
 @section('main-section')
-<div class="loader" id="loading-animation-top" style="position: absolute; left:50%; top: 40%;z-index: 99999;"></div>
+<div class="loader" id="loading-animation-top" style="position: absolute; left:50%; top: 40%;z-index: 99999;width: 100px;"></div>
 <div class="wrapper">          
     <!-- Content Wrapper. Contains page content -->
     <div>
