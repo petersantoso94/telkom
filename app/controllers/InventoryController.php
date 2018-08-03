@@ -5332,7 +5332,7 @@ class InventoryController extends BaseController {
         $writer->addRow($myArr); // add a row at a time
         foreach ($allchan as $channel) {
             $idx1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            if ($channel->channel != '-' || $channel->channel != ' '  || $channel->channel != '') {
+            if ($channel->channel != '-' && $channel->channel != ' '  && $channel->channel != '') {
                 $simshipout = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                 ->whereRaw('m_inventory.Type IN ("1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
