@@ -1982,7 +1982,7 @@ class InventoryController extends BaseController {
         if (Input::get('type'))
             $type = Input::get('type');
         $data = [];
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status >= 100 AND Status <= 2000')->get();
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status >= 100 AND Status <= 10000')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 //            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -1999,7 +1999,7 @@ class InventoryController extends BaseController {
                 $stats = '2 GB';
             } else if ($ivr->Status == '200') {
                 $stats = '1 DAY 4G';
-            }else if ($ivr->Status == '400') {
+            } else if ($ivr->Status == '400') {
                 $stats = '1 DAY 4G';
             } else if ($ivr->Status == '699') {
                 $stats = 'Movies 4G';
@@ -2040,11 +2040,13 @@ class InventoryController extends BaseController {
                         $stats = '2 GB';
                     } else if ($ivr->Status == '200') {
                         $stats = '1 DAY 4G';
+                    } else if ($ivr->Status == '400') {
+                        $stats = '1 DAY 4G';
                     } else if ($ivr->Status == '699') {
                         $stats = 'Movies 4G';
-                    } else if ($ivr->Status == '630') {
+                    } else if ($ivr->Status == '630' || $ivr->Status >= 1000) {
                         $stats = 'Movies 3G';
-                    }
+                    }s
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     for ($i = 0; $i < 12; $i++) {
