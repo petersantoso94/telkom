@@ -5332,7 +5332,7 @@ class InventoryController extends BaseController {
         $writer->addRow($myArr); // add a row at a time
         foreach ($allchan as $channel) {
             $idx1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            if ($channel->channel != '-' || $channel->channel != ' ') {
+            if ($channel->channel != '-' || $channel->channel != ' '  || $channel->channel != '') {
                 $simshipout = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                 ->whereRaw('m_inventory.Type IN ("1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
@@ -5370,7 +5370,7 @@ class InventoryController extends BaseController {
         $writer->addRow($myArr); // add a row at a time
         foreach ($allchan as $channel) {
             $idx1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            if ($channel->channel != '-' || $channel->channel != ' ') {
+            if ($channel->channel != '-' || $channel->channel != ' ' || $channel->channel != '') {
                 $simshipout = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                 ->whereRaw('m_inventory.Type IN ("4")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
@@ -5409,7 +5409,7 @@ class InventoryController extends BaseController {
 
         foreach ($allchan as $channel) {
             $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            if ($channel != '-' || $channel != ' ') {
+            if ($channel->channel != '-' || $channel->channel != ' ' || $channel->channel != '') {
                 $vocshipout = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                 ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
@@ -5449,7 +5449,7 @@ class InventoryController extends BaseController {
 
         foreach ($allchan as $channel) {
             $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            if ($channel != '-' || $channel != ' ') {
+            if ($channel->channel != '-' || $channel->channel != ' ' || $channel->channel != '' ) {
                 $vocshipout = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                 ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
@@ -5489,7 +5489,7 @@ class InventoryController extends BaseController {
 
         foreach ($allchan as $channel) {
             $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            if ($channel != '-' || $channel != ' ') {
+            if ($channel->channel != '-' || $channel->channel != ' ' || $channel->channel != '') {
                 $vocshipout = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                 ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
@@ -5529,7 +5529,7 @@ class InventoryController extends BaseController {
 
         foreach ($allchan as $channel) {
             $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            if ($channel != '-' || $channel != ' ') {
+            if ($channel->channel != '-' || $channel->channel != ' ' || $channel->channel != '') {
                 $vocshipout = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                 ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
@@ -5566,7 +5566,7 @@ class InventoryController extends BaseController {
 
         foreach ($allchan as $channel) {
             $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            if ($channel != '-' || $channel != ' ') {
+            if ($channel->channel != '-' || $channel->channel != ' ' || $channel->channel != '') {
                 $vocshipout = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                 ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
