@@ -2046,7 +2046,7 @@ class InventoryController extends BaseController {
                         $stats = 'Movies 4G';
                     } else if ($ivr->Status == '630' || $ivr->Status >= 1000) {
                         $stats = 'Movies 3G';
-                    }s
+                    }
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     for ($i = 0; $i < 12; $i++) {
