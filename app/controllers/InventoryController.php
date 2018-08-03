@@ -2606,7 +2606,11 @@ class InventoryController extends BaseController {
             $type = Input::get('type');
 //        $year = '2017';
         $data = [];
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%_sum%\'')->get();
+        $all_ivr = DB::table('m_productive as prod1')
+                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year}'")
+                        ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
+                        ->select(DB::raw("SUM(`prod1`.MO) as 'mo_Counter',SUM(`prod1`.MT) as 'mt_Counter',SUM(`prod1`.Internet) as 'int_Counter',SUM(`prod1`.Sms) as 'sms_Counter', `prod1`.Year, `prod1`.Month"))->get();
+//        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%_sum%\'')->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2614,27 +2618,39 @@ class InventoryController extends BaseController {
 //        }
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
-                $stats = '';
-                $temp_stat = $ivr->Status;
-                $temp_counter = $ivr->Counter;
-                if (explode('_', $temp_stat)[0] == 'mt') {
-                    $stats = 'MT (/1000 mins)';
-                    $temp_counter = round(ceil($temp_counter / 60) / 1000, 1);
-                } else if (explode('_', $temp_stat)[0] == 'mo') {
-                    $stats = 'MO (/1000 mins)';
-                    $temp_counter = round(ceil($temp_counter / 60) / 1000, 1);
-                } else if (explode('_', $temp_stat)[0] == 'internet') {
-                    $stats = 'Internet (TB)';
-                    $temp_counter = round($temp_counter / 1000, 1);
-                } else if (explode('_', $temp_stat)[0] == 'sms') {
-                    $stats = 'SMS (/1000 sms)';
-                    $temp_counter = round($temp_counter / 1000, 1);
-                }
-                if (!isset($data[$stats]))
-                    $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//                $stats = '';
+//                $temp_stat = $ivr->Status;
+//                $temp_counter = $ivr->Counter;
+//                if (explode('_', $temp_stat)[0] == 'mt') {
+//                    $stats = 'MT (/1000 mins)';
+//                    $temp_counter = round(ceil($temp_counter / 60) / 1000, 1);
+//                } else if (explode('_', $temp_stat)[0] == 'mo') {
+//                    $stats = 'MO (/1000 mins)';
+//                    $temp_counter = round(ceil($temp_counter / 60) / 1000, 1);
+//                } else if (explode('_', $temp_stat)[0] == 'internet') {
+//                    $stats = 'Internet (TB)';
+//                    $temp_counter = round($temp_counter / 1000, 1);
+//                } else if (explode('_', $temp_stat)[0] == 'sms') {
+//                    $stats = 'SMS (/1000 sms)';
+//                    $temp_counter = round($temp_counter / 1000, 1);
+//                }
+
+
+
+                if (!isset($data['MT (/1000 mins)']))
+                    $data['MT (/1000 mins)'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if (!isset($data['MO (/1000 mins)']))
+                    $data['MO (/1000 mins)'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if (!isset($data['Internet (TB)']))
+                    $data['Internet (TB)'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                if (!isset($data['SMS (/1000 sms)']))
+                    $data['SMS (/1000 sms)'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $ivr->Month - 1) {
-                        $data[$stats][$i] = $temp_counter;
+                        $data['MT (/1000 mins)'][$i] = round(ceil($ivr->mt_Counter / 60) / 1000, 1);
+                        $data['MO (/1000 mins)'][$i] = round(ceil($ivr->mo_Counter / 60) / 1000, 1);
+                        $data['Internet (TB)'][$i] = round($ivr->int_Counter / 1000, 1);
+                        $data['SMS (/1000 sms)'][$i] = round($ivr->sms_Counter / 1000, 1);
                     }
                 }
             }
@@ -2649,35 +2665,34 @@ class InventoryController extends BaseController {
                 $writer->addRow($myArr); // add a row at a time
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
-                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%_sum%\'')->get();
+//                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%_sum%\'')->get();
+//                
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 //            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 //        }
+
+                $all_ivr = DB::table('m_productive as prod1')
+                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year->Year}'")
+                                ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
+                                ->select(DB::raw("SUM(`prod1`.MO) as 'mo_Counter',SUM(`prod1`.MT) as 'mt_Counter',SUM(`prod1`.Internet) as 'int_Counter',SUM(`prod1`.Sms) as 'sms_Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if ($all_ivr != null) {
                     foreach ($all_ivr as $ivr) {
-                        $stats = '';
-                        $temp_stat = $ivr->Status;
-                        $temp_counter = $ivr->Counter;
-                        if (explode('_', $temp_stat)[0] == 'mt') {
-                            $stats = 'MT (/1000 mins)';
-                            $temp_counter = round(ceil($temp_counter / 60) / 1000, 1);
-                        } else if (explode('_', $temp_stat)[0] == 'mo') {
-                            $stats = 'MO (/1000 mins)';
-                            $temp_counter = round(ceil($temp_counter / 60) / 1000, 1);
-                        } else if (explode('_', $temp_stat)[0] == 'internet') {
-                            $stats = 'Internet (TB)';
-                            $temp_counter = round($temp_counter / 1000, 1);
-                        } else if (explode('_', $temp_stat)[0] == 'sms') {
-                            $stats = 'SMS (/1000 sms)';
-                            $temp_counter = round($temp_counter / 1000, 1);
-                        }
-                        if (!isset($data[$stats]))
-                            $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        if (!isset($data['MT (/1000 mins)']))
+                            $data['MT (/1000 mins)'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        if (!isset($data['MO (/1000 mins)']))
+                            $data['MO (/1000 mins)'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        if (!isset($data['Internet (TB)']))
+                            $data['Internet (TB)'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        if (!isset($data['SMS (/1000 sms)']))
+                            $data['SMS (/1000 sms)'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                         for ($i = 0; $i < 12; $i++) {
                             if ($i == $ivr->Month - 1) {
-                                $data[$stats][$i] = $temp_counter;
+                                $data['MT (/1000 mins)'][$i] = round(ceil($ivr->mt_Counter / 60) / 1000, 1);
+                                $data['MO (/1000 mins)'][$i] = round(ceil($ivr->mo_Counter / 60) / 1000, 1);
+                                $data['Internet (TB)'][$i] = round($ivr->int_Counter / 1000, 1);
+                                $data['SMS (/1000 sms)'][$i] = round($ivr->sms_Counter / 1000, 1);
                             }
                         }
                     }
