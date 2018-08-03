@@ -5313,7 +5313,7 @@ class InventoryController extends BaseController {
         $year = Input::get("argyear");
 //        $year = "2017";
         $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
-        $filePath = public_path() . "/shippout_report_allyears.xlsx";
+        $filePath = public_path() . "/shippout_report_" . $year . ".xlsx";
         $writer->openToFile($filePath);
 
         $myArr = array("All Channel Reporting");
