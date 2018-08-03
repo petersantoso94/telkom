@@ -1999,6 +1999,8 @@ class InventoryController extends BaseController {
                 $stats = '2 GB';
             } else if ($ivr->Status == '200') {
                 $stats = '1 DAY 4G';
+            }else if ($ivr->Status == '400') {
+                $stats = '1 DAY 4G';
             } else if ($ivr->Status == '699') {
                 $stats = 'Movies 4G';
             } else if ($ivr->Status == '630' || $ivr->Status >= '1000') {
