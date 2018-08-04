@@ -7652,6 +7652,9 @@ class InventoryController extends BaseController {
         if ($serial == 0) {
             $serial = '';
         }
+        if($series == '' || $series == null){
+            $series = "THISISRANDOMSTRING";
+        }
         Session::put('snCons', $series);
         $table = 'm_inventory';
         $primaryKey = 'm_inventory`.`SerialNumber';
