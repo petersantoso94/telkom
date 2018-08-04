@@ -7619,7 +7619,7 @@ class InventoryController extends BaseController {
         $string_temp = '= 4';
         $string_miss = '= 0';
         if ($statusAvail == '0') {
-            $string_temp = '= 2';
+            $string_temp = '!= 4';
         } else if ($statusAvail == '2') {
             $statusAvail = 1;
             $string_temp = '= 4';
