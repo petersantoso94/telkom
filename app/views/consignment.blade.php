@@ -44,7 +44,7 @@
                 <div class="col-sm-5">
                     <select data-placeholder="Choose a form series number..." class="chosen-select2" style="width: 100%" name="seriesNumber" id="series">
                         <option></option>
-                        @foreach(DB::table('m_historymovement')->where('Status', 4)->select('ShipoutNumber')->distinct()->get() as $sn)
+                        @foreach(DB::table('m_historymovement')->where('LastStatus', 4)->select('ShipoutNumber')->distinct()->get() as $sn)
                         @if($sn->ShipoutNumber != '')
                         <option value="{{$sn->ShipoutNumber}}">
                             {{$sn->ShipoutNumber}}
