@@ -7634,14 +7634,14 @@ class InventoryController extends BaseController {
                 $msisdn = '';
             } else {
                 $inv = Inventory::where('MSISDN', 'like', '%' . $msisdn . '%')->first();
-                $hist = History::where('SN', $inv->SerialNumber)->where('LastStatus', 4)->orderBy('ID', 'desc')->first();
+                $hist = History::where('SN', $inv->SerialNumber)->where('LastStatus', 4)->where('Status', 4)->orderBy('ID', 'desc')->first();
                 if ($hist != null)
                     $series = $hist->ShipoutNumber;
             }
             if ($serial == '0') {
                 $serial = '';
             } else {
-                $hist = History::where('SN', 'like', '%' . $serial . '%')->where('LastStatus', 4)->orderBy('ID', 'desc')->first();
+                $hist = History::where('SN', 'like', '%' . $serial . '%')->where('LastStatus', 4)->where('Status', 4)->orderBy('ID', 'desc')->first();
                 if ($hist != null)
                     $series = $hist->ShipoutNumber;
             }
