@@ -1262,6 +1262,7 @@
                 var colorNames = Object.keys(window.chartColors);
                 var scroll = true;
                 var excelbutton = false;
+                $('.loading').hide();
                 $('.btn-save-data').on('click', function (e) {
                     $('.loading-animation-global').show();
                     scroll = false;
@@ -2568,6 +2569,7 @@
                 //- BAR CHART -
                 //-------------
                 var refreshBarChart = function () {
+                    $('.loading').show();
                     var datasetz = [];
                     var arg_type = '1';
                     if (excelbutton) {
@@ -2604,6 +2606,7 @@
                                 $("#ivr_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_churn_month') {
 
@@ -2637,6 +2640,7 @@
                                 $("#churn_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_churn2') {
 
@@ -2668,6 +2672,7 @@
                                 $("#churn2_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_subs_month') {
 
@@ -2699,6 +2704,7 @@
                                 $("#subs2_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_prod_month') {
                         $.post(getProductive, {year: prod_year, type: arg_type}, function (data) {
@@ -2730,6 +2736,7 @@
                                 $("#prod_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_sum_month') {
                         $.post(getSumService, {year: sum_year, type: arg_type}, function (data) {
@@ -2766,6 +2773,7 @@
                                 $("#sum_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_internet_payloads') {
                         $.post(getPayload, {year: internet_payload_year, type: arg_type}, function (data) {
@@ -2796,6 +2804,7 @@
                                 $("#internet_payload_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_internet_payloads_peruser') {
                         $.post(getPayloadPeruser, {year: payload_peruser_year, type: arg_type}, function (data) {
@@ -2825,6 +2834,7 @@
                                 $("#payload_peruser_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_internet_vs') {
                         $.post(getInternetVsNon, {year: vs_year, type: arg_type}, function (data) {
@@ -2855,6 +2865,7 @@
                                 $("#vs_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_voc_topup') {
                         $.post(getVouchersTopUp, {year: voc_topup_year, type: arg_type}, function (data) {
@@ -2890,6 +2901,7 @@
                                 $("#voc_topup_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_unique_subs_topup') {
                         $.post(getSubsriberTopUp, {year: unique_subs_year, type: arg_type}, function (data) {
@@ -2919,6 +2931,7 @@
                                 $("#unique_subs_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_voc_topup300') {
                         $.post(getVouchers300TopUp, {year: voc_topup300_year, type: arg_type}, function (data) {
@@ -2948,6 +2961,7 @@
                                 $("#voc_topup300_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_evoc_topup') {
                         $.post(geteVouchersTopUp, {year: evoc_topup_year, type: arg_type}, function (data) {
@@ -2977,6 +2991,7 @@
                                 $("#evoc_topup_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_subs_topup') {
                         $.post(getMSISDNTopUp, {year: subs_year, type: arg_type}, function (data) {
@@ -3006,6 +3021,7 @@
                                 $("#subs_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_detail_churn_month') {
                         $.post(getChurnDetail, {year: detail_churn_year, type: arg_type}, function (data) {
@@ -3035,6 +3051,7 @@
                                 window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_channel') {
                         $.post(getChannel, {year: channel_year, type: arg_type}, function (data) {
@@ -3073,6 +3090,7 @@
                                 $("#channel_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_channel_churn') {
                         $.post(getChannelChurn, {year: channel_year, type: arg_type}, function (data) {
@@ -3111,6 +3129,7 @@
                                 $("#channel_churn_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_shipout_sim') {
                         $.post(getShipoutSim, {year: shipout_sim_year, type: arg_type}, function (data) {
@@ -3151,6 +3170,7 @@
                                 $("#shipout_sim_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     } else if (chartID == 'info_shipout_voc') {
                         $.post(getShipoutVoc, {year: shipout_voc_year, type: arg_type}, function (data) {
@@ -3190,6 +3210,7 @@
                                 $("#shipout_voc_year").val(default_year);
                                 excelbutton = false;
                             }
+                            $('.loading').hide();
                         });
                     }
                     $('.loading-animation-global').hide();
