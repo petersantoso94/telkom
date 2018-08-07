@@ -2561,7 +2561,7 @@
                         }
                     });
 
-                    refreshBarChart();
+//                    refreshBarChart();
                 };
 
 
@@ -2569,7 +2569,7 @@
                 //- BAR CHART -
                 //-------------
                 var refreshBarChart = function () {
-//                    $('.loading').show();
+                    $('.loading').show();
                     var datasetz = [];
                     var arg_type = '1';
                     if (excelbutton) {
