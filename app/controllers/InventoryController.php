@@ -2031,11 +2031,11 @@ class InventoryController extends BaseController {
             $writer->close();
             return $data;
         }
-        $all_ivr = DB::table('m_ivr as ivr1')
-                                ->join('m_inventory as inv1', 'ivr1.MSISDN_', '=', 'inv1.MSISDN')->whereRaw("YEAR(`ivr1`.Date) = '{$year}'")
-                                ->groupBy(DB::raw('YEAR(`ivr1`.Date), MONTH(`ivr1`.Date), `ivr1`.PurchaseAmount'))
-                                ->select(DB::raw("COUNT(`ivr1`.MSISDN_) as 'Counter',YEAR(`ivr1`.Date) as 'Year', MONTH(`ivr1`.Date) as 'Month', `ivr1`.PurchaseAmount as 'Status'"))->get();
-//        $all_ivr = Stats::where('Year', $year)->whereRaw('Status >= 10')->get();
+//        $all_ivr = DB::table('m_ivr as ivr1')
+//                                ->join('m_inventory as inv1', 'ivr1.MSISDN_', '=', 'inv1.MSISDN')->whereRaw("YEAR(`ivr1`.Date) = '{$year}'")
+//                                ->groupBy(DB::raw('YEAR(`ivr1`.Date), MONTH(`ivr1`.Date), `ivr1`.PurchaseAmount'))
+//                                ->select(DB::raw("COUNT(`ivr1`.MSISDN_) as 'Counter',YEAR(`ivr1`.Date) as 'Year', MONTH(`ivr1`.Date) as 'Month', `ivr1`.PurchaseAmount as 'Status'"))->get();
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status >= 10')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 //            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
