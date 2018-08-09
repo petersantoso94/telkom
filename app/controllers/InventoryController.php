@@ -2013,9 +2013,9 @@ class InventoryController extends BaseController {
                     } else if ($ivr->Status == '600') {
                         $stats = '2 GB';
                     } else if ($ivr->Status == '200') {
-                        $stats = '1 DAY 4G';
+                        $stats = '2 DAYS 4G + Movies 30';
                     } else if ($ivr->Status == '400') {
-                        $stats = '1 DAY 4G';
+                        $stats = '2 DAYS 4G + Movies 30';
                     } else if ($ivr->Status == '699') {
                         $stats = 'Movies 4G';
                     } else if ($ivr->Status == '630' || $ivr->Status >= 1000) {
@@ -2064,9 +2064,9 @@ class InventoryController extends BaseController {
             } else if ($ivr->Status == '600') {
                 $stats = '2 GB';
             } else if ($ivr->Status == '200') {
-                $stats = '1 DAY 4G';
+                $stats = '2 DAYS 4G + Movies 30';
             } else if ($ivr->Status == '400') {
-                $stats = '1 DAY 4G';
+                $stats = '2 DAYS 4G + Movies 30';
             } else if ($ivr->Status == '699') {
                 $stats = 'Movies 4G';
             } else if ($ivr->Status == '630' || $ivr->Status >= 1000) {
