@@ -1670,8 +1670,10 @@
                                             value += '.' + temp_arr[1];
                                         } else {
                                             value = value.toString();
-                                            value = value.split(/(?=(?:...)*$)/);
-                                            value = value.join(',');
+                                            if (value.length > 3) {
+                                                value = value.split(/(?=(?:...)*$)/);
+                                                value = value.join(',');
+                                            }
                                         }
                                         return value;
                                     }
@@ -2129,8 +2131,10 @@
                                             value += '.' + temp_arr[1];
                                         } else {
                                             value = value.toString();
-                                            value = value.split(/(?=(?:...)*$)/);
-                                            value = value.join(',');
+                                            if (value.length > 3) {
+                                                value = value.split(/(?=(?:...)*$)/);
+                                                value = value.join(',');
+                                            }
                                         }
                                         return value;
                                     }
@@ -3183,7 +3187,7 @@
                                     var colorName = colorNames[barChartData19.datasets.length % colorNames.length];
                                     var dsColor = window.chartColors[colorName];
                                     barChartData19.datasets.push({
-                                        label: index2+" "+warehouse,
+                                        label: index2 + " " + warehouse,
                                         backgroundColor: color(dsColor).alpha(0.5).rgbString(),
                                         borderColor: dsColor,
                                         borderWidth: 1,
