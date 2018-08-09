@@ -2595,10 +2595,8 @@
                         }).done(function (data) {
                             barChartData.datasets = [];
                             $.each(data, function (index, value) {
-                                var colors = ["#0000FF", "#FF0000", "#00FF00", "#f2b6b6", "#dff0d9", "#dff0d8"];
-                                var colorName = colorNames[barChartData.datasets.length % colorNames.length];
-                                //                                var dsColor = window.chartColors[colorName];
-                                var dsColor = colorName[barChartData.datasets.length % colorNames.length];
+                                var colorName = colorNames[barChartData3.datasets.length % colorNames.length];
+                                var dsColor = window.chartColors[colorName];
                                 barChartData.datasets.push({
                                     label: index,
                                     fill: false,
