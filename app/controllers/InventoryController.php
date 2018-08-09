@@ -2501,49 +2501,12 @@ class InventoryController extends BaseController {
 
     static function getProductive() {
         $year = Input::get('year');
-        $type = '';
+        $type = '2';
         if (Input::get('type'))
             $type = Input::get('type');
 //        $year = '2017';
         $data = [];
-//        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%services%\'')->get();
-        $all_ivr = DB::table('m_productive as prod1')
-                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year}'")
-                        ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month, `prod1`.Service'))
-                        ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month, `prod1`.Service"))->get();
-//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
-//        if(!count($all_ivr)){
-//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-//        }
-        if ($all_ivr != null) {
-            foreach ($all_ivr as $ivr) {
-                $stats = 'no service';
-                $temp_stat = $ivr->Service;
-                if (substr($temp_stat, 0, 1) == '1') {
-                    $stats = 'Voice only';
-                } else if (substr($temp_stat, 0, 1) == '2') {
-                    $stats = 'Internet only';
-                } else if (substr($temp_stat, 0, 1) == '3') {
-                    $stats = 'Voice + Internet';
-                } else if (substr($temp_stat, 0, 1) == '5') {
-                    $stats = 'SMS only';
-                } else if (substr($temp_stat, 0, 1) == '6') {
-                    $stats = 'Voice + SMS';
-                } else if (substr($temp_stat, 0, 1) == '7') {
-                    $stats = 'Internet + SMS';
-                } else if (substr($temp_stat, 0, 1) == '8') {
-                    $stats = 'All';
-                }
-                if (!isset($data[$stats]))
-                    $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                for ($i = 0; $i < 12; $i++) {
-                    if ($i == $ivr->Month - 1) {
-                        $data[$stats][$i] = $ivr->Counter;
-                    }
-                }
-            }
-        }
+
 
         if ($type === '2') {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
@@ -2556,7 +2519,7 @@ class InventoryController extends BaseController {
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
                 $all_ivr = DB::table('m_productive as prod1')
-                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year}'")
+                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year->Year}'")
                                 ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month, `prod1`.Service'))
                                 ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month, `prod1`.Service"))->get();
 //                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%services%\'')->get();
@@ -2599,6 +2562,45 @@ class InventoryController extends BaseController {
                 }
             }
             $writer->close();
+            return $data;
+        }
+//        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%services%\'')->get();
+        $all_ivr = DB::table('m_productive as prod1')
+                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year}'")
+                        ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month, `prod1`.Service'))
+                        ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month, `prod1`.Service"))->get();
+//        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
+//        if(!count($all_ivr)){
+//            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+//        }
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $stats = 'no service';
+                $temp_stat = $ivr->Service;
+                if (substr($temp_stat, 0, 1) == '1') {
+                    $stats = 'Voice only';
+                } else if (substr($temp_stat, 0, 1) == '2') {
+                    $stats = 'Internet only';
+                } else if (substr($temp_stat, 0, 1) == '3') {
+                    $stats = 'Voice + Internet';
+                } else if (substr($temp_stat, 0, 1) == '5') {
+                    $stats = 'SMS only';
+                } else if (substr($temp_stat, 0, 1) == '6') {
+                    $stats = 'Voice + SMS';
+                } else if (substr($temp_stat, 0, 1) == '7') {
+                    $stats = 'Internet + SMS';
+                } else if (substr($temp_stat, 0, 1) == '8') {
+                    $stats = 'All';
+                }
+                if (!isset($data[$stats]))
+                    $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data[$stats][$i] = $ivr->Counter;
+                    }
+                }
+            }
         }
         return $data;
     }
@@ -5332,7 +5334,7 @@ class InventoryController extends BaseController {
         $writer->addRow($myArr); // add a row at a time
         foreach ($allchan as $channel) {
             $idx1 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            if ($channel->channel != '-' && $channel->channel != ' '  && $channel->channel != '') {
+            if ($channel->channel != '-' && $channel->channel != ' ' && $channel->channel != '') {
                 $simshipout = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                 ->whereRaw('m_inventory.Type IN ("1")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
@@ -5449,7 +5451,7 @@ class InventoryController extends BaseController {
 
         foreach ($allchan as $channel) {
             $idx2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-            if ($channel->channel != '-' && $channel->channel != ' ' && $channel->channel != '' ) {
+            if ($channel->channel != '-' && $channel->channel != ' ' && $channel->channel != '') {
                 $vocshipout = DB::table('m_inventory')
                                 ->join('m_historymovement', 'm_inventory.SerialNumber', '=', 'm_historymovement.SN')
                                 ->whereRaw('m_inventory.Type IN ("2","3")')->whereRaw('YEAR(m_historymovement.Date) = ' . $year)
@@ -7652,7 +7654,7 @@ class InventoryController extends BaseController {
         if ($serial == 0) {
             $serial = '';
         }
-        if($series == '' || $series == null){
+        if ($series == '' || $series == null) {
             $series = "THISISRANDOMSTRING";
         }
         Session::put('snCons', $series);
