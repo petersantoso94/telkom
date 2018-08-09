@@ -2131,10 +2131,14 @@
                                             value += '.' + temp_arr[1];
                                         } else {
                                             value = value.toString();
-                                            if (value.length > 3) {
-                                                value = value.split(/(?=(?:...)*$)/);
-                                                value = value.join(',');
+                                            var minus = '';
+                                            if (value[0] == '-'){
+                                                value = value.substring(1);
+                                                minus = '-';
                                             }
+                                            value = value.split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                            value = minus + value;
                                         }
                                         return value;
                                     }
