@@ -1514,8 +1514,14 @@
                                         dataString = dataString.join(',');
                                         dataString += '.' + temp_arr[1];
                                     } else {
+                                        var minus = '';
+                                        if (dataString.indexOf('-') > -1) {
+                                            dataString = dataString.substring(1);
+                                            minus = '-';
+                                        }
                                         dataString = dataString.split(/(?=(?:...)*$)/);
                                         dataString = dataString.join(',');
+                                        dataString = minus + dataString;
                                     }
 
                                     // Make sure alignment settings are correct
@@ -2132,7 +2138,7 @@
                                         } else {
                                             value = value.toString();
                                             var minus = '';
-                                            if (value.indexOf('-') > -1){
+                                            if (value.indexOf('-') > -1) {
                                                 value = value.substring(1);
                                                 minus = '-';
                                             }
