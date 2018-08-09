@@ -2031,7 +2031,7 @@ class InventoryController extends BaseController {
             $writer->close();
             return $data;
         }
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status >= 100 AND Status <= 10000')->get();
+        $all_ivr = Stats::where('Year', $year)->whereRaw('Status >= 10')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 //            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
