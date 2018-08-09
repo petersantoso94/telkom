@@ -2002,6 +2002,8 @@ class InventoryController extends BaseController {
                     $stats = '30 days';
                     if ($ivr->Status == '180') {
                         $stats = '1 GB';
+                    } else if ($ivr->Status == '88') {
+                        $stats = '1 DAY 4G';
                     } else if ($ivr->Status == '300') {
                         $stats = '2 GB';
                     } else if ($ivr->Status == '360') {
@@ -2051,6 +2053,8 @@ class InventoryController extends BaseController {
             $stats = '30 days';
             if ($ivr->Status == '180') {
                 $stats = '1 GB';
+            } else if ($ivr->Status == '88') {
+                $stats = '1 DAY 4G';
             } else if ($ivr->Status == '300') {
                 $stats = '2 GB';
             } else if ($ivr->Status == '360') {
