@@ -2595,7 +2595,7 @@
                         }).done(function (data) {
                             barChartData.datasets = [];
                             $.each(data, function (index, value) {
-                                var colorName = colorNames[barChartData1.datasets.length % colorNames.length];
+                                var colorName = colorNames[barChartData.datasets.length % colorNames.length];
                                 var dsColor = window.chartColors[colorName];
                                 barChartData.datasets.push({
                                     label: index,
