@@ -2132,7 +2132,7 @@
                                         } else {
                                             value = value.toString();
                                             var minus = '';
-                                            if (value[0] == '-'){
+                                            if (value.indexOf('-') > -1){
                                                 value = value.substring(1);
                                                 minus = '-';
                                             }
