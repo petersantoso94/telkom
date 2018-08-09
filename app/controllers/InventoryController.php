@@ -2979,7 +2979,7 @@ class InventoryController extends BaseController {
                 if ($all_ivr != null) {
                     foreach ($all_ivr as $ivr) {
                         $stats = 'Non-Internet';
-                        $temp_stat = $ivr->Status;
+                        $temp_stat = $ivr->Service;
                         if (substr($temp_stat, 0, 1) == '1') {
                             $stats = 'Non-Internet';
                         } else if (substr($temp_stat, 0, 1) == '2') {
