@@ -6466,10 +6466,12 @@ class InventoryController extends BaseController {
                         <div style="width:115px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:15px;float:left; display: inline-block;"></div>
                     </div>
-                    <div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ">';
+                    <div style="width:102%; height:15px; padding-top:-2px; border-left: 1px solid;  border-right: 1px solid; ';
             }
+            if ($i == count($type) - 1)
+                $html .= '';
             if ($type[$i] != '') {
-                $html .= '
+                $html .= '">
                         <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;">' . $first[$i] . ' - ' . $last[$i] . '</div>
                         <div style="width:70px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
@@ -6486,7 +6488,7 @@ class InventoryController extends BaseController {
                     </div>';
             }
         }
-        for ($i = 0; $i < (6 - count($type)); $i++) {
+        for ($i = 0; $i < (7 - count($type)); $i++) {
             $html .= '<div style="width:102%; height:15px; border-left: 1px solid;  border-right: 1px solid;">
                         <div style="width:100px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:300px; height:15px;float:left; display: inline-block; border-right: 1px solid;"></div>
@@ -6495,8 +6497,8 @@ class InventoryController extends BaseController {
                         <div style="width:115px; height:15px;float:left; display: inline-block;"></div>
                     </div>';
         }
-        $html .= '<div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid;border-top: 1px solid; ">
-                        <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-top: 1px solid;">備</div>
+        $html .= '<div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-top: 1px solid;">
+                        <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">備</div>
                         <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總額</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . $subtotal . '</div>
