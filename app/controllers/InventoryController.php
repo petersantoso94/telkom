@@ -6284,7 +6284,10 @@ class InventoryController extends BaseController {
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'asc')
                             ->first();
-                    $first[$temp_count] = $firstid->SerialNumber;
+                    if (count($firstid) > 0)
+                        $first[$temp_count] = $firstid->SerialNumber;
+                    else
+                        $first[$temp_count] = ' ';
                     $lastid = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                             ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
@@ -6292,7 +6295,11 @@ class InventoryController extends BaseController {
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'desc')
                             ->first();
-                    $last[$temp_count] = $lastid->SerialNumber;
+                    if (count($firstid) > 0)
+                        $last[$temp_count] = $lastid->SerialNumber;
+                    else
+                        $last[$temp_count] = ' ';
+//                    $last[$temp_count] = $lastid->SerialNumber;
                     $temp_count++;
                 } else if ($types->Type == '2') {
                     $type[$temp_count] = 'E-VOUCHER';
@@ -6311,7 +6318,10 @@ class InventoryController extends BaseController {
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'asc')
                             ->first();
-                    $first[$temp_count] = $firstid->SerialNumber;
+                    if (count($firstid) > 0)
+                        $first[$temp_count] = $firstid->SerialNumber;
+                    else
+                        $first[$temp_count] = ' ';
                     $lastid = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                             ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
@@ -6319,7 +6329,10 @@ class InventoryController extends BaseController {
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'desc')
                             ->first();
-                    $last[$temp_count] = $lastid->SerialNumber;
+                    if (count($firstid) > 0)
+                        $last[$temp_count] = $lastid->SerialNumber;
+                    else
+                        $last[$temp_count] = ' ';
                     $temp_count++;
                 } else if ($types->Type == '3') {
                     $type[$temp_count] = 'PH-VOUCHER';
@@ -6338,7 +6351,10 @@ class InventoryController extends BaseController {
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'asc')
                             ->first();
-                    $first[$temp_count] = $firstid->SerialNumber;
+                    if (count($firstid) > 0)
+                        $first[$temp_count] = $firstid->SerialNumber;
+                    else
+                        $first[$temp_count] = ' ';
                     $lastid = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                             ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
@@ -6346,7 +6362,10 @@ class InventoryController extends BaseController {
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'desc')
                             ->first();
-                    $last[$temp_count] = $lastid->SerialNumber;
+                    if (count($firstid) > 0)
+                        $last[$temp_count] = $lastid->SerialNumber;
+                    else
+                        $last[$temp_count] = ' ';
                     $temp_count++;
                 } else if ($types->Type == '4') {
                     $type[$temp_count] = 'SIM 4G';
@@ -6365,7 +6384,10 @@ class InventoryController extends BaseController {
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'asc')
                             ->first();
-                    $first[$temp_count] = $firstid->SerialNumber;
+                    if (count($firstid) > 0)
+                        $first[$temp_count] = $firstid->SerialNumber;
+                    else
+                        $first[$temp_count] = ' ';
                     $lastid = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                             ->where('m_historymovement.Status', '!=', '2')->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('snCons') . '%')
@@ -6373,7 +6395,10 @@ class InventoryController extends BaseController {
                             ->select('m_inventory.SerialNumber', 'm_inventory.Type')
                             ->orderBy('m_inventory.SerialNumber', 'desc')
                             ->first();
-                    $last[$temp_count] = $lastid->SerialNumber;
+                    if (count($firstid) > 0)
+                        $last[$temp_count] = $lastid->SerialNumber;
+                    else
+                        $last[$temp_count] = ' ';
                     $temp_count++;
                 }
             }
