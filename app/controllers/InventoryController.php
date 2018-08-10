@@ -602,6 +602,7 @@ class InventoryController extends BaseController {
                     $hist->Warehouse = $moveto;
                     $hist->Status = 3;
                     $hist->SubAgent = '';
+                    $hist->Date = Input::get('eventDate');
                     $hist->Remark = Input::get('remark');
                     $hist->userRecord = Auth::user()->ID;
                     $hist->save();
