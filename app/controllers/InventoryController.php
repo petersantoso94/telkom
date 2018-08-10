@@ -1702,7 +1702,7 @@ class InventoryController extends BaseController {
                             else
                                 $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "',NULL,1,0,'" . $arr_day[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "',CURDATE(),CURDATE())";
                         }
-                        DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Month=VALUES(Month),Service=VALUES(Service), Year=VALUES(Year), Unik=VALUES(Unik), MO=CASE WHEN MO < VALUES(MO) 
+                        DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Month=VALUES(Month), Year=VALUES(Year), Unik=VALUES(Unik), MO=CASE WHEN MO < VALUES(MO) 
                                     THEN VALUES(MO) ELSE MO END, MT=CASE WHEN MT < VALUES(MT) 
                                     THEN VALUES(MT) ELSE MT END, Internet=CASE WHEN Internet < VALUES(Internet) 
                                     THEN VALUES(Internet) ELSE Internet END, Sms=CASE WHEN Sms < VALUES(Sms) 
