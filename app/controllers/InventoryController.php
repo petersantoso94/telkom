@@ -2012,6 +2012,8 @@ class InventoryController extends BaseController {
                         $stats = '1 GB';
                     } else if ($ivr->Status == '600') {
                         $stats = '2 GB';
+                    } else if ($ivr->Status == '900') {
+                        $stats = '2 GB';
                     } else if ($ivr->Status == '200') {
                         $stats = '2 DAYS 4G + Movies 30';
                     } else if ($ivr->Status == '400') {
@@ -2061,6 +2063,8 @@ class InventoryController extends BaseController {
                 $stats = '1 GB';
             } else if ($ivr->Status == '540') {
                 $stats = '1 GB';
+            } else if ($ivr->Status == '900') {
+                $stats = '2 GB';
             } else if ($ivr->Status == '600') {
                 $stats = '2 GB';
             } else if ($ivr->Status == '200') {
