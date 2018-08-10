@@ -457,19 +457,29 @@ $('#btn-submit-churn').on('click', function (e) {
 });
 $('#btn-submit-productive').on('click', function (e) {
     if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv') {
-        if (global_name.toLowerCase().includes('productive') && global_name.toLowerCase().includes('hk'))
-            document.getElementById("form-productive").submit();
-        else
-            alert('Please insert Productive file, containing "Productive HK" in its name');
+        var check_name = global_name.toLowerCase().split("_")[0];
+        if (check_name.length != 8) {
+            alert('Please insert Productive file, containing correct date in its name');
+        } else {
+            if (global_name.toLowerCase().includes('productive') && global_name.toLowerCase().includes('hk'))
+                document.getElementById("form-productive").submit();
+            else
+                alert('Please insert Productive file, containing "Productive HK" in its name');
+        }
     } else
         alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
 $('#btn-submit-productive-tst').on('click', function (e) {
     if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv') {
-        if (global_name.toLowerCase().includes('mkt'))
-            document.getElementById("form-productive-tst").submit();
-        else
-            alert('Please insert Productive file, containing "MKT" in its name');
+        var check_name = global_name.toLowerCase().split("_")[1];
+        if (check_name.length != 8) {
+            alert('Please insert Productive file, containing correct date in its name');
+        } else {
+            if (global_name.toLowerCase().includes('mkt'))
+                document.getElementById("form-productive-tst").submit();
+            else
+                alert('Please insert Productive file, containing "MKT" in its name');
+        }
     } else
         alert('Not supported file format, please insert an XLS, XLSX, or CSV file');
 });
