@@ -11,6 +11,14 @@
 @section('main-section')
 <div class='row'>
     <div class='col-xs-8'>
+        <?php if (isset($response)) { ?>
+            <?php if ($response == 'Failed') { ?>
+                <div class="alert alert-warning alert-dismissible" role="alert" style="width: 98%; margin: 1%">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    Failed inserting data.
+                </div>
+            <?php } ?>
+        <?php } ?>
         <form method="POST" accept-charset="UTF-8" enctype="multipart/form-data" id='form-ivr-purchase'>
             <div class="white-pane__bordered margbot20" style="height: 270px;">
                 <div class="row">
