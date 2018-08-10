@@ -457,7 +457,7 @@ $('#btn-submit-churn').on('click', function (e) {
 });
 $('#btn-submit-productive').on('click', function (e) {
     if (global_file_name === 'xls' || global_file_name === 'xlsx' || global_file_name === 'csv') {
-        var check_name = global_name.toLowerCase().split("_")[0];
+        var check_name = global_name.toLowerCase().split(" ")[0];
         if (check_name.length != 8) {
             alert('Please insert Productive file, containing correct date in its name');
         } else {
