@@ -1846,7 +1846,7 @@ class InventoryController extends BaseController {
                             else
                                 $for_raw .= ",('" . $arr_msisdn[$i] . "','" . $arr_mo[$i] . "','" . $arr_mt[$i] . "','" . $arr_internet[$i] . "','" . $arr_sms[$i] . "','" . $arr_services[$i] . "',0,1,'" . $arr_day[$i] . "','" . $arr_month[$i] . "','" . $arr_year[$i] . "','" . $unik . "',CURDATE(),CURDATE())";
                         }
-                        DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Day=VALUES(Day),Month=VALUES(Month),Service=VALUES(Service), Year=VALUES(Year), Unik=VALUES(Unik), MO=VALUES(MO), MT=VALUES(MT), Internet=VALUES(Internet), Sms=VALUES(Sms), DataFromTST=1, dtModified=CURDATE();");
+                        DB::insert("INSERT INTO m_productive VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE Month=VALUES(Month),Service=VALUES(Service), Year=VALUES(Year), Unik=VALUES(Unik), MO=VALUES(MO), MT=VALUES(MT), Internet=VALUES(Internet), Sms=VALUES(Sms), DataFromTST=1, dtModified=CURDATE();");
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberprtst(count($arr_msisdn));
                     }
                 }
