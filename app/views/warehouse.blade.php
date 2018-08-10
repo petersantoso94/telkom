@@ -109,6 +109,16 @@
             </div>
         </div>
         <div class="row margtop20">
+            <div class="form-group">
+                <div class="col-sm-2">
+                    <label class="fw300" style="margin-top: 7px;">Move Date: </label>
+                </div>
+                <div class="col-sm-5">
+                    <input type="date" class="input-stretch" id='shipindate' name="eventDate" data-validation="required" required>
+                </div>
+            </div>
+        </div>
+        <div class="row margtop20">
             <div class="col-xs-8">
                 <input type="submit" class="button btnblue btn-wide wide-h" style="background-color: #424242; color: white;">
             </div>
