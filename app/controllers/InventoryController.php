@@ -1640,10 +1640,6 @@ class InventoryController extends BaseController {
                         foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
                             $date_temp = $real_filename;
                             $date_temp = explode(" ", $date_temp)[0];
-                            if(strlen($date_temp) != 8){
-                                $reader->close();
-                                return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
-                            }
                             $month_temp = substr($date_temp, 4, 2);
                             $year_temp = substr($date_temp, 0, 4);
                             $day_temp = substr($date_temp, 6, 2);
@@ -1749,10 +1745,6 @@ class InventoryController extends BaseController {
                         foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
                             $date_temp = $real_filename;
                             $date_temp = explode("_", $date_temp)[2];
-                            if(strlen($date_temp) != 8){
-                                $reader->close();
-                                return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
-                            }
                             $month_temp = substr($date_temp, 4, 2);
                             $month_temp = (int) $month_temp;
                             if (strlen($month_temp) === 1) {
