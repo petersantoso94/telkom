@@ -6013,6 +6013,7 @@ class InventoryController extends BaseController {
         $temp_count = 0;
         $subtotal = 0;
         $temp_string = '';
+        $wh = '';
         if (Session::has('temp_inv_arr')) {
             $wh = DB::table('m_inventory')
                             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
