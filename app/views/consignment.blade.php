@@ -239,10 +239,20 @@
                     var newAgentName = '';
 
                     $('#btn-form-cons').on('click', function (e) {
-                        if (document.getElementById('soprice').value > 0)
-                            document.getElementById("form-cons").submit();
-                        else
-                            alert('0 value in price detected');
+
+                        document.getElementById("form-cons").submit();
+//                        if (document.getElementById('soprice').value > 0)
+//                            document.getElementById("form-cons").submit();
+//                        else
+//                            alert('0 value in price detected');
+                    });
+
+                    $("#soprice").keyup(function () {
+                        setTimeout(function () {
+                            if ($("#soprice").val().trim().length === 0) {
+                                $("#soprice").val(0);
+                            }
+                        }, 1000);
                     });
 
                     window.printPrev = function (element) {
