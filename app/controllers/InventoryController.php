@@ -5309,7 +5309,7 @@ class InventoryController extends BaseController {
 //
         $myArr = array("All User  Reporting");
         $writer->addRow($myArr); // add a row at a time
-        $myArr = array("MSISDN", "Name", "Activation Date", "Activation Store", "Churn Date", "Voc 300 TopUp", "Voc 100 TopUp", "Voc 50 TopUp", "Last Top Up Date", "Service Usage", "Last Service Usage Date");
+        $myArr = array("MSISDN", "Name", "Activation Date", "Activation Store", "Shipout to", "Churn Date", "Voc 300 TopUp", "Voc 100 TopUp", "Voc 50 TopUp", "Last Top Up Date", "Service Usage", "Last Service Usage Date");
         $writer->addRow($myArr); // add a row at a time
 
         $raw_where = '';
@@ -5352,6 +5352,7 @@ class InventoryController extends BaseController {
                                         . ",(SELECT inv2.`TopUpDate` FROM `m_inventory` as inv2  WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN`  ORDER BY inv2.`TopUpDate` DESC LIMIT 1) as 'LastDatePurchasedVoucher' "
                                         . ",(SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) as 'ServiceUsed' "
                                         . ",(SELECT CONCAT(prod.`Day`,prod.`Month`,prod.`Year`) FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` ORDER BY prod.`Year` DESC, prod.`Month` DESC, prod.`Day` DESC LIMIT 1) as 'LastDateUsedService'"
+                                        . ",(SELECT SubAgent FROM `m_historymovement` as hist  WHERE hist.`SN` = inv1.`SerialNumber` AND hist.Status IN ('2','4') ORDER BY hist.ID DESC LIMIT 1) as 'Shipoutto'"
                         ))->get();
         foreach ($simtopup as $data) {
             $stats = "no service";
@@ -5370,7 +5371,7 @@ class InventoryController extends BaseController {
             } else if ($data->ServiceUsed == '8') {
                 $stats = 'All';
             }
-            $myArr = array($data->MSISDN, $data->ActivationName, $data->ActivationDate, $data->ActivationStore, $data->ChurnDate, number_format($data->Voc300), number_format($data->Voc100), number_format($data->Voc50), $data->LastDatePurchasedVoucher, $stats, $data->LastDateUsedService);
+            $myArr = array($data->MSISDN, $data->ActivationName, $data->ActivationDate, $data->ActivationStore,$data->Shipoutto, $data->ChurnDate, number_format($data->Voc300), number_format($data->Voc100), number_format($data->Voc50), $data->LastDatePurchasedVoucher, $stats, $data->LastDateUsedService);
             $writer->addRow($myArr); // add a row at a time
         }
         $writer->close();
