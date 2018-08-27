@@ -6828,6 +6828,7 @@ class InventoryController extends BaseController {
         $last = ['', '', '', ''];
         $temp_count = 0;
         $subtotal = 0;
+        $wh = '';
         if (Session::has('arr_ret')) {
             $arr_sn = Session::get('arr_ret');
             $arr_sn = explode(',', $arr_sn);
@@ -6972,9 +6973,9 @@ class InventoryController extends BaseController {
                 }
             }
         }
-        if (Session::get('price') == 0) {
-            $wh = 'TELIN TAIWAN';
-        }
+//        if (Session::get('price') == 0) {
+//            $wh = 'TELIN TAIWAN';
+//        }
         $html = '
             <html>
                 <head>
