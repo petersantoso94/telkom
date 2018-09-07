@@ -2546,7 +2546,7 @@ class InventoryController extends BaseController {
         $type = '';
         if (Input::get('type'))
             $type = Input::get('type');
-        $year = '2018';
+//        $year = '2018';
         $data = [];
 
 
