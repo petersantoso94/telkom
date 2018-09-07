@@ -2570,8 +2570,8 @@ class InventoryController extends BaseController {
                 if (!isset($data[$stats]))
                     $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
-                    if ($i == $ivr->Month - 1) {
-                        $data[$stats][$i] = $ivr->Counter;
+                    if ($i == $all_ivr->Month - 1) {
+                        $data[$stats][$i] = $all_ivr->Counter;
                     }
                 }
 
@@ -2584,8 +2584,8 @@ class InventoryController extends BaseController {
                 if (!isset($data[$stats]))
                     $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
-                    if ($i == $ivr->Month - 1) {
-                        $data[$stats][$i] = $ivr->Counter;
+                    if ($i == $all_ivr->Month - 1) {
+                        $data[$stats][$i] = $all_ivr->Counter;
                     }
                 }
 
@@ -2598,8 +2598,8 @@ class InventoryController extends BaseController {
                 if (!isset($data[$stats]))
                     $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
-                    if ($i == $ivr->Month - 1) {
-                        $data[$stats][$i] = $ivr->Counter;
+                    if ($i == $all_ivr->Month - 1) {
+                        $data[$stats][$i] = $all_ivr->Counter;
                     }
                 }
 
@@ -2612,8 +2612,8 @@ class InventoryController extends BaseController {
                 if (!isset($data[$stats]))
                     $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
-                    if ($i == $ivr->Month - 1) {
-                        $data[$stats][$i] = $ivr->Counter;
+                    if ($i == $all_ivr->Month - 1) {
+                        $data[$stats][$i] = $all_ivr->Counter;
                     }
                 }
 
@@ -2626,8 +2626,8 @@ class InventoryController extends BaseController {
                 if (!isset($data[$stats]))
                     $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
-                    if ($i == $ivr->Month - 1) {
-                        $data[$stats][$i] = $ivr->Counter;
+                    if ($i == $all_ivr->Month - 1) {
+                        $data[$stats][$i] = $all_ivr->Counter;
                     }
                 }
 
@@ -2640,8 +2640,8 @@ class InventoryController extends BaseController {
                 if (!isset($data[$stats]))
                     $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
-                    if ($i == $ivr->Month - 1) {
-                        $data[$stats][$i] = $ivr->Counter;
+                    if ($i == $all_ivr->Month - 1) {
+                        $data[$stats][$i] = $all_ivr->Counter;
                     }
                 }
 
@@ -2654,8 +2654,8 @@ class InventoryController extends BaseController {
                 if (!isset($data[$stats]))
                     $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
-                    if ($i == $ivr->Month - 1) {
-                        $data[$stats][$i] = $ivr->Counter;
+                    if ($i == $all_ivr->Month - 1) {
+                        $data[$stats][$i] = $all_ivr->Counter;
                     }
                 }
 
@@ -2668,8 +2668,8 @@ class InventoryController extends BaseController {
                 if (!isset($data[$stats]))
                     $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
-                    if ($i == $ivr->Month - 1) {
-                        $data[$stats][$i] = $ivr->Counter;
+                    if ($i == $all_ivr->Month - 1) {
+                        $data[$stats][$i] = $all_ivr->Counter;
                     }
                 }
 
@@ -2681,7 +2681,7 @@ class InventoryController extends BaseController {
 //            $data['001'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 //        }
 //                if ($all_ivr != null) {
-//                    foreach ($all_ivr as $ivr) {
+//                    foreach ($all_ivr as $all_ivr) {
 //                        $stats = 'no service';
 //                        $temp_stat = $ivr->Service;
 //                        if (substr($temp_stat, 0, 1) == '1') {
@@ -2726,8 +2726,8 @@ class InventoryController extends BaseController {
         if (!isset($data[$stats]))
             $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         for ($i = 0; $i < 12; $i++) {
-            if ($i == $ivr->Month - 1) {
-                $data[$stats][$i] = $ivr->Counter;
+            if ($i == $all_ivr->Month - 1) {
+                $data[$stats][$i] = $all_ivr->Counter;
             }
         }
 
@@ -2740,8 +2740,8 @@ class InventoryController extends BaseController {
         if (!isset($data[$stats]))
             $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         for ($i = 0; $i < 12; $i++) {
-            if ($i == $ivr->Month - 1) {
-                $data[$stats][$i] = $ivr->Counter;
+            if ($i == $all_ivr->Month - 1) {
+                $data[$stats][$i] = $all_ivr->Counter;
             }
         }
 
@@ -2754,8 +2754,8 @@ class InventoryController extends BaseController {
         if (!isset($data[$stats]))
             $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         for ($i = 0; $i < 12; $i++) {
-            if ($i == $ivr->Month - 1) {
-                $data[$stats][$i] = $ivr->Counter;
+            if ($i == $all_ivr->Month - 1) {
+                $data[$stats][$i] = $all_ivr->Counter;
             }
         }
 
@@ -2768,8 +2768,8 @@ class InventoryController extends BaseController {
         if (!isset($data[$stats]))
             $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         for ($i = 0; $i < 12; $i++) {
-            if ($i == $ivr->Month - 1) {
-                $data[$stats][$i] = $ivr->Counter;
+            if ($i == $all_ivr->Month - 1) {
+                $data[$stats][$i] = $all_ivr->Counter;
             }
         }
 
@@ -2782,8 +2782,8 @@ class InventoryController extends BaseController {
         if (!isset($data[$stats]))
             $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         for ($i = 0; $i < 12; $i++) {
-            if ($i == $ivr->Month - 1) {
-                $data[$stats][$i] = $ivr->Counter;
+            if ($i == $all_ivr->Month - 1) {
+                $data[$stats][$i] = $all_ivr->Counter;
             }
         }
 
@@ -2796,8 +2796,8 @@ class InventoryController extends BaseController {
         if (!isset($data[$stats]))
             $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         for ($i = 0; $i < 12; $i++) {
-            if ($i == $ivr->Month - 1) {
-                $data[$stats][$i] = $ivr->Counter;
+            if ($i == $all_ivr->Month - 1) {
+                $data[$stats][$i] = $all_ivr->Counter;
             }
         }
 
@@ -2810,8 +2810,8 @@ class InventoryController extends BaseController {
         if (!isset($data[$stats]))
             $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         for ($i = 0; $i < 12; $i++) {
-            if ($i == $ivr->Month - 1) {
-                $data[$stats][$i] = $ivr->Counter;
+            if ($i == $all_ivr->Month - 1) {
+                $data[$stats][$i] = $all_ivr->Counter;
             }
         }
 
@@ -2824,8 +2824,8 @@ class InventoryController extends BaseController {
         if (!isset($data[$stats]))
             $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         for ($i = 0; $i < 12; $i++) {
-            if ($i == $ivr->Month - 1) {
-                $data[$stats][$i] = $ivr->Counter;
+            if ($i == $all_ivr->Month - 1) {
+                $data[$stats][$i] = $all_ivr->Counter;
             }
         }
         return $data;
