@@ -2580,121 +2580,121 @@ class InventoryController extends BaseController {
 
                 $stats = 'Voice only';
                 $all_ivr = DB::table('m_productive as prod1')
-                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year->Year}'")
-                                ->whereRaw('prod1.MO > 0 OR prod1.MT > 0')->where('prod1.Internet', '0')->where('prod1.Sms', '0')
+                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                                ->whereRaw("`prod1`.Year = '{$year->Year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet = 0 AND prod1.Sms = 0")
                                 ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
                                 ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if (count($all_ivr) > 0) {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     foreach ($all_ivr as $ivr)
-                    for ($i = 0; $i < 12; $i++) {
-                        if ($i == $ivr->Month - 1) {
-                            $data[$stats][$i] = $ivr->Counter;
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $data[$stats][$i] = $ivr->Counter;
+                            }
                         }
-                    }
                 }
 
                 $stats = 'Internet only';
                 $all_ivr = DB::table('m_productive as prod1')
-                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year->Year}'")
-                                ->where('prod1.MO', '0')->where('prod1.MT', '0')->where('prod1.Internet', '>', '0')->where('prod1.Sms', '0')
+                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                                ->whereRaw("`prod1`.Year = '{$year->Year}' AND prod1.MO = 0 AND prod1.MT = 0 AND prod1.Internet > 0 AND prod1.Sms = 0")
                                 ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
                                 ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if (count($all_ivr) > 0) {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     foreach ($all_ivr as $ivr)
-                    for ($i = 0; $i < 12; $i++) {
-                        if ($i == $ivr->Month - 1) {
-                            $data[$stats][$i] = $ivr->Counter;
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $data[$stats][$i] = $ivr->Counter;
+                            }
                         }
-                    }
                 }
 
                 $stats = 'Voice + Internet';
                 $all_ivr = DB::table('m_productive as prod1')
-                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year->Year}'")
-                                ->whereRaw('prod1.MO > 0 OR prod1.MT > 0')->where('prod1.Internet', '>', '0')->where('prod1.Sms', '0')
+                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                                ->whereRaw("`prod1`.Year = '{$year->Year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet > 0 AND prod1.Sms = 0")
                                 ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
                                 ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if (count($all_ivr) > 0) {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     foreach ($all_ivr as $ivr)
-                    for ($i = 0; $i < 12; $i++) {
-                        if ($i == $ivr->Month - 1) {
-                            $data[$stats][$i] = $ivr->Counter;
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $data[$stats][$i] = $ivr->Counter;
+                            }
                         }
-                    }
                 }
 
                 $stats = 'SMS only';
                 $all_ivr = DB::table('m_productive as prod1')
-                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year->Year}'")
-                                ->where('prod1.MO', '0')->where('prod1.MT', '0')->where('prod1.Internet', '0')->where('prod1.Sms', '>', '0')
+                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                                ->whereRaw("`prod1`.Year = '{$year->Year}' AND prod1.MO = 0 AND prod1.MT = 0 AND prod1.Internet = 0 AND prod1.Sms > 0")
                                 ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
                                 ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if (count($all_ivr) > 0) {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     foreach ($all_ivr as $ivr)
-                    for ($i = 0; $i < 12; $i++) {
-                        if ($i == $ivr->Month - 1) {
-                            $data[$stats][$i] = $ivr->Counter;
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $data[$stats][$i] = $ivr->Counter;
+                            }
                         }
-                    }
                 }
 
                 $stats = 'Voice + SMS';
                 $all_ivr = DB::table('m_productive as prod1')
-                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year->Year}'")
-                                ->whereRaw('prod1.MO > 0 OR prod1.MT > 0')->where('prod1.Internet', '0')->where('prod1.Sms', '>', '0')
+                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                                ->whereRaw("`prod1`.Year = '{$year->Year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet = 0 AND prod1.Sms > 0")
                                 ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
                                 ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if (count($all_ivr) > 0) {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     foreach ($all_ivr as $ivr)
-                    for ($i = 0; $i < 12; $i++) {
-                        if ($i == $ivr->Month - 1) {
-                            $data[$stats][$i] = $ivr->Counter;
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $data[$stats][$i] = $ivr->Counter;
+                            }
                         }
-                    }
                 }
 
                 $stats = 'Internet + SMS';
                 $all_ivr = DB::table('m_productive as prod1')
-                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year->Year}'")
-                                ->where('prod1.MO', '0')->where('prod1.MT', '0')->where('prod1.Internet', '>', '0')->where('prod1.Sms', '>', '0')
+                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                                ->whereRaw("`prod1`.Year = '{$year->Year}' AND prod1.MO = 0 AND prod1.MT = 0 AND prod1.Internet > 0 AND prod1.Sms > 0")
                                 ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
                                 ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if (count($all_ivr) > 0) {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     foreach ($all_ivr as $ivr)
-                    for ($i = 0; $i < 12; $i++) {
-                        if ($i == $ivr->Month - 1) {
-                            $data[$stats][$i] = $ivr->Counter;
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $data[$stats][$i] = $ivr->Counter;
+                            }
                         }
-                    }
                 }
 
                 $stats = 'All';
                 $all_ivr = DB::table('m_productive as prod1')
-                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year->Year}'")
-                                ->whereRaw('prod1.MO > 0 OR prod1.MT > 0')->where('prod1.Internet', '>', '0')->where('prod1.Sms', '>', '0')
+                                ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                                ->whereRaw("`prod1`.Year = '{$year->Year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet > 0 AND prod1.Sms > 0")
                                 ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
                                 ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if (count($all_ivr) > 0) {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                     foreach ($all_ivr as $ivr)
-                    for ($i = 0; $i < 12; $i++) {
-                        if ($i == $ivr->Month - 1) {
-                            $data[$stats][$i] = $ivr->Counter;
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $ivr->Month - 1) {
+                                $data[$stats][$i] = $ivr->Counter;
+                            }
                         }
-                    }
                 }
 
 
@@ -2751,130 +2751,130 @@ class InventoryController extends BaseController {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             foreach ($all_ivr as $ivr)
-            for ($i = 0; $i < 12; $i++) {
-                if ($i == $ivr->Month - 1) {
-                    $data[$stats][$i] = $ivr->Counter;
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data[$stats][$i] = $ivr->Counter;
+                    }
                 }
-            }
         }
 
         $stats = 'Voice only';
         $all_ivr = DB::table('m_productive as prod1')
-                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year}'")
-                        ->whereRaw('prod1.MO > 0 OR prod1.MT > 0')->where('prod1.Internet', '0')->where('prod1.Sms', '0')
+                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                        ->whereRaw("`prod1`.Year = '{$year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet = 0 AND prod1.Sms = 0")
                         ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
                         ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
         if (count($all_ivr) > 0) {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             foreach ($all_ivr as $ivr)
-            for ($i = 0; $i < 12; $i++) {
-                if ($i == $ivr->Month - 1) {
-                    $data[$stats][$i] = $ivr->Counter;
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data[$stats][$i] = $ivr->Counter;
+                    }
                 }
-            }
         }
 
         $stats = 'Internet only';
         $all_ivr = DB::table('m_productive as prod1')
-                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year}'")
-                        ->where('prod1.MO', '0')->where('prod1.MT', '0')->where('prod1.Internet', '>', '0')->where('prod1.Sms', '0')
+                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                        ->whereRaw("`prod1`.Year = '{$year}' AND prod1.MO = 0 AND prod1.MT = 0 AND prod1.Internet > 0 AND prod1.Sms = 0")
                         ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
                         ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
         if (count($all_ivr) > 0) {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             foreach ($all_ivr as $ivr)
-            for ($i = 0; $i < 12; $i++) {
-                if ($i == $ivr->Month - 1) {
-                    $data[$stats][$i] = $ivr->Counter;
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data[$stats][$i] = $ivr->Counter;
+                    }
                 }
-            }
         }
 
         $stats = 'Voice + Internet';
         $all_ivr = DB::table('m_productive as prod1')
-                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year}'")
-                        ->whereRaw('prod1.MO > 0 OR prod1.MT > 0')->where('prod1.Internet', '>', '0')->where('prod1.Sms', '0')
+                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                        ->whereRaw("`prod1`.Year = '{$year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet > 0 AND prod1.Sms = 0")
                         ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
                         ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
         if (count($all_ivr) > 0) {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             foreach ($all_ivr as $ivr)
-            for ($i = 0; $i < 12; $i++) {
-                if ($i == $ivr->Month - 1) {
-                    $data[$stats][$i] = $ivr->Counter;
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data[$stats][$i] = $ivr->Counter;
+                    }
                 }
-            }
         }
 
         $stats = 'SMS only';
         $all_ivr = DB::table('m_productive as prod1')
-                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year}'")
-                        ->where('prod1.MO', '0')->where('prod1.MT', '0')->where('prod1.Internet', '0')->where('prod1.Sms', '>', '0')
+                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                        ->whereRaw("`prod1`.Year = '{$year}' AND prod1.MO = 0 AND prod1.MT = 0 AND prod1.Internet = 0 AND prod1.Sms > 0")
                         ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
                         ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
         if (count($all_ivr) > 0) {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             foreach ($all_ivr as $ivr)
-            for ($i = 0; $i < 12; $i++) {
-                if ($i == $ivr->Month - 1) {
-                    $data[$stats][$i] = $ivr->Counter;
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data[$stats][$i] = $ivr->Counter;
+                    }
                 }
-            }
         }
 
         $stats = 'Voice + SMS';
         $all_ivr = DB::table('m_productive as prod1')
-                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year}'")
-                        ->whereRaw('prod1.MO > 0 OR prod1.MT > 0')->where('prod1.Internet', '0')->where('prod1.Sms', '>', '0')
+                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                        ->whereRaw("`prod1`.Year = '{$year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet = 0 AND prod1.Sms > 0")
                         ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
                         ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
         if (count($all_ivr) > 0) {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             foreach ($all_ivr as $ivr)
-            for ($i = 0; $i < 12; $i++) {
-                if ($i == $ivr->Month - 1) {
-                    $data[$stats][$i] = $ivr->Counter;
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data[$stats][$i] = $ivr->Counter;
+                    }
                 }
-            }
         }
 
         $stats = 'Internet + SMS';
         $all_ivr = DB::table('m_productive as prod1')
-                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year}'")
-                        ->where('prod1.MO', '0')->where('prod1.MT', '0')->where('prod1.Internet', '>', '0')->where('prod1.Sms', '>', '0')
+                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                        ->whereRaw("`prod1`.Year = '{$year}' AND prod1.MO = 0 AND prod1.MT = 0 AND prod1.Internet > 0 AND prod1.Sms > 0")
                         ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
                         ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
         if (count($all_ivr) > 0) {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             foreach ($all_ivr as $ivr)
-            for ($i = 0; $i < 12; $i++) {
-                if ($i == $ivr->Month - 1) {
-                    $data[$stats][$i] = $ivr->Counter;
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data[$stats][$i] = $ivr->Counter;
+                    }
                 }
-            }
         }
 
         $stats = 'All';
         $all_ivr = DB::table('m_productive as prod1')
-                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year}'")
-                        ->whereRaw('prod1.MO > 0 OR prod1.MT > 0')->where('prod1.Internet', '>', '0')->where('prod1.Sms', '>', '0')
+                        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                        ->whereRaw("`prod1`.Year = '{$year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet > 0 AND prod1.Sms > 0")
                         ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
                         ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
         if (count($all_ivr) > 0) {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             foreach ($all_ivr as $ivr)
-            for ($i = 0; $i < 12; $i++) {
-                if ($i == $ivr->Month - 1) {
-                    $data[$stats][$i] = $ivr->Counter;
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $ivr->Month - 1) {
+                        $data[$stats][$i] = $ivr->Counter;
+                    }
                 }
-            }
         }
         return $data;
     }
