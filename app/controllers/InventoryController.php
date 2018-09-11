@@ -2542,6 +2542,25 @@ class InventoryController extends BaseController {
     }
 
     static function getProductive() {
+        $check_msisdn =[];
+        $arr_msisdn =[];
+        $all_ivr = DB::table('m_productive')
+                        ->whereRaw("(`MO` > 0 OR `MT` > 0) AND `Internet` > 0 AND `Sms` = 0 AND `Month` LIKE '09' AND `Year` LIKE '2018' AND (`m_productive`.`MSISDN` IN (SELECT m_inventory.MSISDN FROM m_inventory))")
+                        ->select(DB::raw("MSISDN"))->get();
+        foreach ($all_ivr as $msisdn) {
+            $check_msisdn[] = $msisdn->MSISDN;
+        }
+        
+        $all_ivr = DB::table('m_productive')
+                        ->whereRaw("(`MO` > 0 OR `MT` > 0) AND `Internet` > 0 AND `Sms` = 0 AND `Month` LIKE '09' AND `Year` LIKE '2018'")
+                        ->select(DB::raw("MSISDN"))->get();
+        foreach ($all_ivr as $msisdn) {
+            $arr_msisdn[] = $msisdn->MSISDN;
+        }
+        $not_found = array_diff($arr_msisdn, $check_msisdn);
+        $not_found = implode(",", $not_found);
+        dd($not_found);
+
         $year = Input::get('year');
         $type = '';
         if (Input::get('type'))
