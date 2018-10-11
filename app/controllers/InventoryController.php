@@ -6493,14 +6493,7 @@ class InventoryController extends BaseController {
                         <div style="width:230px; height:60px;float:left; display: inline-block;">' . Auth::user()->UserEmail . '</div>
                     </div>
                     <div style="width:102%; height:10px;"></div>
-                    <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;border-top: 1px solid;">
-                        <div style="width:350px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
-                        <div style="width:350px; height:20px;float:left; display: inline-block;">承辦人</div>
-                    </div>
-                    <div style="width:102%;text-align:center; height:392px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:350px; height:392px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:350px; height:392px;float:left; display: inline-block;"></div>
-                    </div>
+                    
                 </body>
             </html>';
         return PDF ::load($html, 'F4', 'portrait')->show(Session::get('sn'));
@@ -6833,14 +6826,8 @@ class InventoryController extends BaseController {
                         <div style="width:230px; height:60px;float:left; display: inline-block;">' . Auth::user()->UserEmail . '</div>
                     </div>
                     <div style="width:102%; height:10px;"></div>
-                    <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;border-top: 1px solid;">
-                        <div style="width:350px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
-                        <div style="width:350px; height:20px;float:left; display: inline-block;">承辦人</div>
-                    </div>
-                    <div style="width:102%;text-align:center; height:392px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:350px; height:392px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:350px; height:392px;float:left; display: inline-block;"></div>
-                    </div>
+                    
+                    
                 </body>
             </html>';
         return PDF ::load($html, 'F4', 'portrait')->show(Session::get('sn'));
@@ -7047,14 +7034,7 @@ class InventoryController extends BaseController {
                         <div style="width:230px; height:60px;float:left; display: inline-block;">' . Auth::user()->UserEmail . '</div>
                     </div>
                     <div style="width:102%; height:10px;"></div>
-                    <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;border-top: 1px solid;">
-                        <div style="width:350px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
-                        <div style="width:350px; height:20px;float:left; display: inline-block;">承辦人</div>
-                    </div>
-                    <div style="width:102%;text-align:center; height:392px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:350px; height:392px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:350px; height:392px;float:left; display: inline-block;"></div>
-                    </div>
+                    
                 </body>
             </html>';
         return PDF ::load($html, 'F4', 'portrait')->show(Session::get('sn'));
@@ -7365,14 +7345,8 @@ class InventoryController extends BaseController {
                         <div style="width:230px; height:60px;float:left; display: inline-block;">' . Auth::user()->UserEmail . '</div>
                     </div>
                     <div style="width:102%; height:10px;"></div>
-                    <div style="width:102%;text-align:center; height:20px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;border-top: 1px solid;">
-                        <div style="width:350px; height:20px;float:left; display: inline-block; border-right: 1px solid;">客戶簽章</div>
-                        <div style="width:350px; height:20px;float:left; display: inline-block;">承辦人</div>
-                    </div>
-                    <div style="width:102%;text-align:center; height:392px; border-left: 1px solid;  border-right: 1px solid; border-bottom: 1px solid;">
-                        <div style="width:350px; height:392px;float:left; display: inline-block; border-right: 1px solid;"></div>
-                        <div style="width:350px; height:392px;float:left; display: inline-block;"></div>
-                    </div>
+                    
+                    
                 </body>
             </html>';
         return PDF ::load($html, 'F4', 'portrait')->show(Session::get('sn'));
