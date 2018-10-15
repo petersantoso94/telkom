@@ -3081,7 +3081,7 @@ class InventoryController extends BaseController {
         $type = '';
         if (Input::get('type'))
             $type = Input::get('type');
-//        $year = '2017';
+        $year = '2018';
         $data = [];
         $sum_internet = [];
         $count_internet = [];
@@ -3217,6 +3217,7 @@ class InventoryController extends BaseController {
                 }
             }
         }
+        dd($sum_internet+" "+$count_internet);
         $data['PayLoad Per User'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         for ($i = 0; $i < 12; $i++) {
             if ($count_internet['Internet'][$i] == 0) {
