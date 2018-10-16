@@ -3145,7 +3145,7 @@ class InventoryController extends BaseController
 
                 $internet_user = DB::table('m_productive as prod1')
                     ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
-                    ->whereRaw("`prod1`.Year = '{$year->Year}' prod1.Internet > 0")
+                    ->whereRaw("`prod1`.Year = '{$year->Year}' AND prod1.Internet > 0")
                     ->groupBy(DB::raw('`prod1`.Month'))
                     ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Month"))->get();
                 $count_internet = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3160,7 +3160,7 @@ class InventoryController extends BaseController
                 }
                 $data['PayLoad Per User'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 for ($i = 0; $i < 12; $i++) {
-                    if ($count_internet['Internet'][$i] == 0) {
+                    if ($count_internet[$i] == 0) {
                         $data['PayLoad Per User'][$i] = 0;
                     } else {
                         $data['PayLoad Per User'][$i] = round($sum_internet['Internet (TB)'][$i] / $count_internet[$i], 2);
@@ -3198,7 +3198,7 @@ class InventoryController extends BaseController
 
         $internet_user = DB::table('m_productive as prod1')
             ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
-            ->whereRaw("`prod1`.Year = '{$year}' prod1.Internet > 0")
+            ->whereRaw("`prod1`.Year = '{$year}' AND prod1.Internet > 0")
             ->groupBy(DB::raw('`prod1`.Month'))
             ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Month"))->get();
         $count_internet = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3213,7 +3213,7 @@ class InventoryController extends BaseController
         }
         $data['PayLoad Per User'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         for ($i = 0; $i < 12; $i++) {
-            if ($count_internet['Internet'][$i] == 0) {
+            if ($count_internet[$i] == 0) {
                 $data['PayLoad Per User'][$i] = 0;
             } else {
                 $data['PayLoad Per User'][$i] = round($sum_internet['Internet (TB)'][$i] / $count_internet[$i], 2);
