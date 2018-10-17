@@ -2895,12 +2895,14 @@
                                     data: value
                                 });
                             });
-                            var tmp = barChartData8.datasets[3];
-                            var tmp2 = barChartData8.datasets[2]
-                            barChartData8.datasets[3] = barChartData8.datasets[4];
-                            barChartData8.datasets[2] = barChartData8.datasets[1];
-                            barChartData8.datasets[1] = tmp;
-                            barChartData8.datasets[4] = tmp2;
+                            if(barChartData8.datasets.length >4) {
+                                var tmp = barChartData8.datasets[3];
+                                var tmp2 = barChartData8.datasets[2]
+                                barChartData8.datasets[3] = barChartData8.datasets[4];
+                                barChartData8.datasets[2] = barChartData8.datasets[1];
+                                barChartData8.datasets[1] = tmp;
+                                barChartData8.datasets[4] = tmp2;
+                            }
                             window.myBar8.update();
                             document.getElementById('legend8').innerHTML = myBar8.generateLegend();
                             if (scroll) {
