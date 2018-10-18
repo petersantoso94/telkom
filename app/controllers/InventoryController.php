@@ -3049,7 +3049,7 @@ class InventoryController extends BaseController
                 $writer->addRow($myArr); // add a row at a time
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
-                $all_ivr = DB::select("SELECT SUM(Internet), Month as 'Counter' FROM m_productive WHERE Year = '{$year->Year}' GROUP BY Month");
+                $all_ivr = DB::select("SELECT SUM(Internet) as 'Counter', Month  FROM m_productive WHERE Year = '{$year->Year}' GROUP BY Month");
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
