@@ -3107,7 +3107,7 @@
                             $('.loading').hide();
                         });
                     } else if (chartID == 'info_channel_churn') {
-                        $.post(getChannelChurn, {year: channel_year, type: arg_type}, function (data) {
+                        $.post(getChannelChurn, {year: channel_churn_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {
                             barChartData17.datasets = [];
