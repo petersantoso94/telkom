@@ -2442,7 +2442,7 @@ class InventoryController extends BaseController
                         if (!isset($data2["Percentage Churn"][$ivr->Channel]))
                             $data2["Percentage Churn"][$ivr->Channel] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                         $data2["Percentage Churn"][$ivr->Channel][($ivr->Month - 1)] = (float)($data2["Productive Churn"][$ivr->Channel][($ivr->Month - 1)] / $ivr->Counter) * 100;
-                        $data2["Not Productive Churn"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter - $data["Productive Churn"][$ivr->Channel][($ivr->Month - 1)];
+                        $data2["Not Productive Churn"][$ivr->Channel][($ivr->Month - 1)] = $ivr->Counter - $data2["Productive Churn"][$ivr->Channel][($ivr->Month - 1)];
                     }
                 }
                 foreach ($data2 as $key => $abc) {
