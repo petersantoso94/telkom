@@ -477,7 +477,7 @@ class InventoryController extends BaseController
                     $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
                     $reader->open($filePath);
                     $counter = 0;
-                    $arr_msisdn = [];
+                    $arr_id = [];
                     $arr_subagent = [];
                     foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
                         foreach ($sheet->getRowIterator() as $rowNumber => $value) {
@@ -488,38 +488,35 @@ class InventoryController extends BaseController
                                 if($value[16] == 'LAIN') {
                                     $invs = DB::table('m_inventory as inv1')
                                         ->join('m_historymovement', 'inv1.LastStatusID', '=', 'm_historymovement.ID')
-                                        ->where('inv1.MSISDN', $act_msisdn)
-                                        ->whereIn('m_historymovement.Status', $status)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type,inv1.ActivationDate,inv1.TopUpDate, m_historymovement.Status,'
+                                        ->where('inv1.MSISDN', $act_msisdn)->select(DB::raw('inv1.SerialNumber, inv1.MSISDN, inv1.Type,inv1.ActivationDate,inv1.TopUpDate, m_historymovement.Status,'
                                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                                             . '(SELECT ID FROM m_historymovement WHERE (Status = "2" OR Status = "4") AND m_historymovement.SN = inv1.SerialNumber ORDER BY m_historymovement.ID DESC LIMIT 1) as "ID"'))->get();
-                                    $reader->close();
-                                    dd($invs);
-                                    array_push($arr_msisdn, $invs[0]->ID);
+                                    array_push($arr_id, $invs[0]->ID);
                                     array_push($arr_subagent, $value[14]);
                                 }
                             }
                         }
                     }
                     $reader->close();
-                    dd();
+                    dd($arr_id);
                     $table = Inventory::getModel()->getTable();
                     $cases1 = [];
                     $cases2 = [];
                     $ids = [];
                     $params = [];
-                    $counter = count($arr_msisdn);
+//                    $counter = count($arr_msisdn);
 
                     for ($i = 0; $i < count($arr_msisdn); $i++) {
-                        $id = $arr_msisdn[$i];
-                        $cases2[] = "WHEN '{$id}' then '{$arr_return[$i]}'";
-                        $cases1[] = "WHEN '{$id}' then '{$arr_act[$i]}'";
+                        $id = $arr_id[$i];
+                        $cases2[] = "WHEN '{$id}' then '{$arr_subagent[$i]}'";
+//                        $cases1[] = "WHEN '{$id}' then '{$arr_act[$i]}'";
                         $ids[] = '\'' . $id . '\'';
                     }
 
                     $ids = implode(',', $ids);
                     $cases1 = implode(' ', $cases1);
                     $cases2 = implode(' ', $cases2);
-                    DB::update("UPDATE `m_historymovement` SET `ChurnDate` = CASE `MSISDN` {$cases2} END, `TopUpDate` = CASE `SerialNumber` {$cases2} END WHERE `MSISDN` in ({$ids})");
+                    DB::update("UPDATE `m_historymovement` SET `SubAgent` = CASE `ID` {$cases2} END WHERE `ID` in ({$ids})");
                 }
             }
         }
