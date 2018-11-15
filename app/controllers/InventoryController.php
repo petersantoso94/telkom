@@ -763,7 +763,7 @@ class InventoryController extends BaseController
 
             $for_raw = '';
             for ($i = 0; $i < count($arr_id_hist); $i++) {
-                $remark_temp = mysqli_real_escape_string($arr_remark_hist[$i]);
+                $remark_temp = mysqli_escape_string($arr_remark_hist[$i]);
                 if ($i == 0)
                     $for_raw .= "('" . $arr_id_hist[$i] . "','" . $arr_sn_hist[$i] . "','" . $arr_subagent_hist[$i] . "','" . $arr_wh_hist[$i] . "','" . $arr_price_hist[$i] . "','" . $arr_shipoutnumber_hist[$i] . "','{$fabiaoNumber}','" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $remark_temp . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                 else
