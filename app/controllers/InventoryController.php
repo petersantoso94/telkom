@@ -6944,6 +6944,7 @@ class InventoryController extends BaseController
         $temp_count = 0;
         $subtotal = 0;
         $date_item = '';
+        $remark_item = '';
         $shipout_item = '';
         $alltype = '';
         $wh = '';
@@ -6955,6 +6956,7 @@ class InventoryController extends BaseController
             ->where('m_historymovement.ShipoutNumber', 'LIKE', '%' . Session::get('FormSeriesInv') . '%')->first();
         if ($inv_item) {
             $date_item = $inv_item->Date;
+            $remark_item = $inv_item->Remark;
             $shipout_item = $inv_item->SubAgent;
             $wh = $inv_item->Warehouse;
             $fabiao = $inv_item->FabiaoNumber;
@@ -7108,7 +7110,7 @@ class InventoryController extends BaseController
         }
         $html .= '<div style="width:102%; height:20px; border-left: 1px solid;  border-right: 1px solid; border-top: 1px solid; ">
                         <div style="width:100px; text-align:center; height:20px;float:left; display: inline-block; border-right: 1px solid;">備</div>
-                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;"></div>
+                        <div style="width:377px; height:20px;float:left; display: inline-block; border-right: 1px solid;">'.$remark_item.'</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block; border-right: 1px solid;">總額</div>
                         <div style="width:115px; height:20px;float:left; display: inline-block;">NT$ ' . $subtotal . '</div>
                     </div>
