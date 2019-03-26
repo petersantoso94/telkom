@@ -6,6 +6,8 @@ class LoginController extends \BaseController {
         if ($_SERVER["REQUEST_METHOD"] === "POST") {
             return $this->login();
         }
+        // dd(extension_loaded('zip'));
+        // dd(phpinfo());
         return View::make('login')->withPage('login');
     }
 

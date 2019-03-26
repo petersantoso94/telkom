@@ -241,7 +241,7 @@
 
                         }).done(function (data) {
                             document.getElementById("loading-animation").style.display = "none";
-                            window.location.href = "<?php echo url() ?>" + '/public' + data;
+                            window.location.href = "<?php echo url() ?>" + data;
                         });
                     };
 

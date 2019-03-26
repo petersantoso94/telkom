@@ -1,6 +1,10 @@
 vendor/
 node_modules/
 npm-debug.log
+*.xls
+*.xlsx
+public/*.xls
+public/*.xlsx
 
 # Laravel 4 specific
 bootstrap/compiled.php

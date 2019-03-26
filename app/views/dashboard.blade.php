@@ -2614,7 +2614,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#ivr_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -2648,7 +2648,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#churn_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -2680,7 +2680,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#churn2_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -2712,7 +2712,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#subs2_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -2744,7 +2744,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#prod_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -2781,7 +2781,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#sum_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -2812,7 +2812,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#internet_payload_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -2842,7 +2842,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#payload_peruser_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -2873,7 +2873,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#vs_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -2911,7 +2911,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#voc_topup_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -2941,7 +2941,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#unique_subs_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -2971,7 +2971,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#voc_topup300_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -3001,7 +3001,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#evoc_topup_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -3031,7 +3031,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#subs_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -3062,7 +3062,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 excelbutton = false;
                             }
                             $('.loading').hide();
@@ -3100,7 +3100,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#channel_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -3139,7 +3139,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#channel_churn_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -3180,7 +3180,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#shipout_sim_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -3220,7 +3220,7 @@
                                 scroll = true;
                             }
                             if (excelbutton) {
-                                window.location.href = "<?php echo url() ?>" + '/public/data_chart.xlsx';
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#shipout_voc_year").val(default_year);
                                 excelbutton = false;
                             }
@@ -3535,7 +3535,7 @@
 
                     }).done(function (data) {
                         document.getElementById("loading-animation" + loading_number).style.display = "none";
-                        window.location.href = "<?php echo url() ?>" + '/public' + data;
+                        window.location.href = "<?php echo url() ?>" + data;
                     });
                 };
                 var exportExcel2 = function (elem) {
@@ -3551,7 +3551,7 @@
 
                     }).done(function (data) {
                         document.getElementById("loading-animation" + loading_number).style.display = "none";
-                        window.location.href = "<?php echo url() ?>" + '/public' + data;
+                        window.location.href = "<?php echo url() ?>" + data;
                     });
                 };
                 $(document).ready(function () {
