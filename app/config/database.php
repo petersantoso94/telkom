@@ -54,10 +54,10 @@ return array(
 
 		'mysql' => array(
 			'driver'    => 'mysql',
-			'host'      => 'localhost',
+			'host'      => 'database',
 			'database'  => 'telkom',
-			'username'  => 'root',
-			'password'  => '',
+			'username'  => 'telkom',
+			'password'  => 'akatsuki7',
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',

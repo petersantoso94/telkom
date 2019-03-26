@@ -134,8 +134,8 @@
 
 @section('js-content')
 <script type="text/javascript" src="{{Asset('lib/bootstrap/js/jquery.dataTables.min.js')}}"></script>
-<script src="{{Asset('jquery-validation/form-validator/jquery.form-validator.js')}}"></script>
-<script type="text/javascript" src="{{Asset('js/chosen.jquery.min.js')}}"></script>
+<script src="{{URL::asset('jquery-validation/form-validator/jquery.form-validator.js')}}"></script>
+<script type="text/javascript" src="{{URL::asset('js/chosen.jquery.min.js')}}"></script>
 <script>
                     var table = '';
                     var inventoryDataBackup = '<?php echo Route('inventoryDataBackup') ?>';

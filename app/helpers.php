@@ -2,10 +2,10 @@
 
 function getConnection() {
     return array(
-        'user' => 'root',
-        'pass' => 'telin123',
+        'user' => 'telkom',
+        'pass' => 'akatsuki7',
         'db' => 'telkom',
-        'host' => 'localhost'
+        'host' => 'database'
     );
 }
 

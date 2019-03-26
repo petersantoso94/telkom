@@ -11,9 +11,9 @@
 
         <title>Telkom Indonesia</title>
         <link href='https://fonts.googleapis.com/css?family=Roboto:100,400,300' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" href="{{Asset('lib/css/bootstrap.min.css')}}" />
-        <link rel="stylesheet" href="{{Asset('css/dist/template/header-footer.css')}}" />
-        <link rel="stylesheet" href="{{Asset('css/dist/login.css')}}" />
+        <link rel="stylesheet" href="{{URL::asset('lib/css/bootstrap.min.css')}}" />
+        <link rel="stylesheet" href="{{URL::asset('css/dist/template/header-footer.css')}}" />
+        <link rel="stylesheet" href="{{URL::asset('css/dist/login.css')}}" />
     </head>
 
     <body>

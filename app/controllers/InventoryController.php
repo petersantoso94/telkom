@@ -1,5 +1,7 @@
 <?php
 
+require dirname(__DIR__) . '/ssp.class.php';
+
 class InventoryController extends BaseController
 {
 
@@ -7635,7 +7637,7 @@ class InventoryController extends BaseController
 
             $sql_details = getConnection();
 
-            require('ssp.class.php');
+            //require(URL::asset('ssp.class.php'));
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
             $extraCondition = "m_inventory.Type " . $type;
             $extraCondition .= " && m_inventory.LastStatusHist " . $status;
@@ -7714,7 +7716,7 @@ class InventoryController extends BaseController
 
             $sql_details = getConnection();
 
-            require('ssp.class.php');
+            //require(URL::asset('ssp.class.php'));
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
             $extraCondition = "m_inventory.Type " . $type;
             $extraCondition .= " && m_historymovement.Status " . $status;
@@ -7746,7 +7748,7 @@ class InventoryController extends BaseController
 
         $sql_details = getConnection();
 
-        require('ssp.class.php');
+        //require(URL::asset('ssp.class.php'));
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
         $extraCondition = "";
         $join = '';
@@ -7772,7 +7774,7 @@ class InventoryController extends BaseController
 
         $sql_details = getConnection();
 
-        require('ssp.class.php');
+        //require(URL::asset('ssp.class.php'));
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
         $extraCondition = "";
         $join = '';
@@ -7991,7 +7993,7 @@ class InventoryController extends BaseController
 
         $sql_details = getConnection();
 
-        require('ssp.class.php');
+        //require(URL::asset('ssp.class.php'));
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
         $extraCondition = "m_inventory.`SerialNumber` IN (" . Session::get('temp_inv_arr') . ")";
         $extraCondition .= " && m_historymovement.Status " . $string_temp;
@@ -8040,7 +8042,7 @@ class InventoryController extends BaseController
 
         $sql_details = getConnection();
 
-        require('ssp.class.php');
+        //require(URL::asset('ssp.class.php'));
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
         $extraCondition = "";
         $join = '';
@@ -8160,7 +8162,7 @@ class InventoryController extends BaseController
         );
 
         $sql_details = getConnection();
-        require('ssp.class.php');
+        //require(URL::asset('ssp.class.php'));
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
         $extraCondition = "m_historymovement.Status " . $string_temp;
         $extraCondition .= " && m_historymovement.ShipoutNumber LIKE '%" . $series . "%'";
@@ -8224,7 +8226,7 @@ class InventoryController extends BaseController
 
         $sql_details = getConnection();
 
-        require('ssp.class.php');
+        //require(URL::asset('ssp.class.php'));
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
         $extraCondition = "m_inventory.`SerialNumber` >= '" . $startid . "' && " . "m_inventory.`SerialNumber` <= '" . $endid . "'";
         $extraCondition .= " && m_historymovement.Status " . $string_temp;
@@ -8285,7 +8287,7 @@ class InventoryController extends BaseController
 
         $sql_details = getConnection();
 
-        require('ssp.class.php');
+        //require(URL::asset('ssp.class.php'));
 //        $ID_CLIENT_VALUE = Auth::user()->CompanyInternalID;
         $extraCondition = "(m_inventory.`SerialNumber` IN ('" . $array . "')";
         $extraCondition .= " OR m_inventory.`MSISDN` IN ('" . $array . "'))";
