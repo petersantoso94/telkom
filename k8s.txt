@@ -1,0 +1,3 @@
+kubectl run telkom-web --image=petersantoso/peter:telkom_web_final --port=80
+kubectl run telkom-db --image=petersantoso/peter:telkom_db_final --port=3306
+kubectl run telkom-app --image=petersantoso/peter:telkom_app_final --port=3000
