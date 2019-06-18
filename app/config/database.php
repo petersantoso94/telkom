@@ -57,7 +57,7 @@ return array(
 			'host'      => 'database',
 			'database'  => 'telkom',
 			'username'  => 'telkom',
-			'password'  => 'akatsuki7',
+			'password'  => 'asdf1234',
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',

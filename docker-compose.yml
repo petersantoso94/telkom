@@ -35,8 +35,8 @@ services:
     environment:
       - "MYSQL_DATABASE=telkom"
       - "MYSQL_USER=telkom"
-      - "MYSQL_PASSWORD=akatsuki7"
-      - "MYSQL_ROOT_PASSWORD=akatsuki7"
+      - "MYSQL_PASSWORD=asdf1234"
+      - "MYSQL_ROOT_PASSWORD=asdf1234"
     ports:
         - "33061:3306"
 

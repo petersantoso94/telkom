@@ -3,7 +3,7 @@
 function getConnection() {
     return array(
         'user' => 'telkom',
-        'pass' => 'akatsuki7',
+        'pass' => 'asdf1234',
         'db' => 'telkom',
         'host' => 'database'
     );
