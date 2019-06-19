@@ -6410,7 +6410,7 @@ class InventoryController extends BaseController
                     <style>
                         @font-face {
                             font-family:traditional;
-                            src:url("public/fonts/traditional.ttf");
+                            src:url("fonts/traditional.ttf");
                         }
                         body{
                             font-size: 12px;
@@ -6790,7 +6790,7 @@ class InventoryController extends BaseController
                     <style>
                         @font-face {
                             font-family:traditional;
-                            src:url("public/fonts/traditional.ttf");
+                            src:url("fonts/traditional.ttf");
                         }
                         body{
                             font-size: 12px;
@@ -6988,7 +6988,7 @@ class InventoryController extends BaseController
                     <style>
                         @font-face {
                             font-family:traditional;
-                            src:url("public/fonts/traditional.ttf");
+                            src:url("fonts/traditional.ttf");
                         }
                         body{
                             font-size: 12px;
@@ -7323,7 +7323,7 @@ class InventoryController extends BaseController
                     <style>
                         @font-face {
                             font-family:traditional;
-                            src:url("public/fonts/traditional.ttf");
+                            src:url("fonts/traditional.ttf");
                         }
                         body{
                             font-size: 12px;

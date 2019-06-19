@@ -7,7 +7,6 @@ public/*.xlsx
 
 # Laravel 4 specific
 bootstrap/compiled.php
-app/storage/
 app/config/database.php
 app/helpers.php
 
