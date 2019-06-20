@@ -9,6 +9,7 @@ public/*.xlsx
 bootstrap/compiled.php
 app/config/database.php
 app/helpers.php
+app/storage/*
 
 # Laravel 5 & Lumen specific
 public/storage

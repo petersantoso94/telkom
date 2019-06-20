@@ -1246,7 +1246,7 @@ class InventoryController extends BaseController
                         }
                         $ids = implode(',', $ids);
                         $cases = implode(' ', $cases);
-                        DB::update("UPDATE `{$table}` SET `ApfDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
+                        DB::update("UPDATE `{$table}` SET `ApfDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids}) AND `ChurnDate` IS NULL", $params);
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberapf($counter);
                     }
                 }
@@ -1326,7 +1326,7 @@ class InventoryController extends BaseController
                                 }
                                 $ids = implode(',', $ids);
                                 $cases = implode(' ', $cases);
-                                DB::update("UPDATE `{$table}` SET `ActivationStore` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})", $params);
+                                DB::update("UPDATE `{$table}` SET `ActivationStore` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids}) AND `ChurnDate` IS NULL", $params);
                             }
 
                             return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting');
@@ -1414,7 +1414,7 @@ class InventoryController extends BaseController
                                 }
                                 $ids = implode(',', $ids);
                                 $cases = implode(' ', $cases);
-                                DB::update("UPDATE `{$table}` SET `ActivationDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids})");
+                                DB::update("UPDATE `{$table}` SET `ActivationDate` = CASE `MSISDN` {$cases} END WHERE `MSISDN` in ({$ids}) AND `ChurnDate` IS NULL");
                             }
                             return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberac($counter);
                         }
@@ -1516,7 +1516,7 @@ class InventoryController extends BaseController
                         }
                         $cases1 = implode(' ', $cases1);
                         $cases2 = implode(' ', $cases2);
-                        DB::update("UPDATE `{$table}` SET `ChurnDate` = CASE `MSISDN` {$cases2} END WHERE `MSISDN` in ({$ids})");
+                        DB::update("UPDATE `{$table}` SET `ChurnDate` = CASE `MSISDN` {$cases2} END WHERE `MSISDN` in ({$ids}) AND `ChurnDate` IS NULL");
 
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumberch($counter);
                     }
@@ -1616,7 +1616,7 @@ class InventoryController extends BaseController
                             $ids = implode(',', $ids);
                             $cases1 = implode(' ', $cases1);
                             $cases2 = implode(' ', $cases2);
-                            DB::update("UPDATE `{$table}` SET `TopUpMSISDN` = CASE `SerialNumber` {$cases1} END, `TopUpDate` = CASE `SerialNumber` {$cases2} END WHERE `SerialNumber` in ({$ids})");
+                            DB::update("UPDATE `{$table}` SET `TopUpMSISDN` = CASE `SerialNumber` {$cases1} END, `TopUpDate` = CASE `SerialNumber` {$cases2} END WHERE `SerialNumber` in ({$ids}) AND `ChurnDate` IS NULL");
                         }
                         return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting')->withNumbertop($counter);
                     }
@@ -2019,7 +2019,7 @@ class InventoryController extends BaseController
                             $ids = implode(',', $ids);
                             $cases1 = implode(' ', $cases1);
                             $cases2 = implode(' ', $cases2);
-                            DB::update("UPDATE `{$table}` SET `ActivationStore` = CASE `MSISDN` {$cases1} END, `ActivationName` = CASE `MSISDN` {$cases2} END WHERE `MSISDN` in ({$ids})");
+                            DB::update("UPDATE `{$table}` SET `ActivationStore` = CASE `MSISDN` {$cases1} END, `ActivationName` = CASE `MSISDN` {$cases2} END WHERE `MSISDN` in ({$ids}) AND `ChurnDate` IS NULL");
 
                             $check_msisdn = [];
                             $ids = $arr_msisdn;
