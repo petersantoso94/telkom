@@ -40,5 +40,10 @@ services:
     ports:
         - "33061:3306"
 
+  adminer:
+    image: dockette/adminer:full-php5
+    ports:
+      - 81:8080
+
 volumes:
   dbdata:
