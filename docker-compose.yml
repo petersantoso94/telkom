@@ -43,7 +43,7 @@ services:
   adminer:
     image: dockette/adminer:full-php5
     ports:
-      - 81:8080
+      - 8181:8080
 
 volumes:
   dbdata:
