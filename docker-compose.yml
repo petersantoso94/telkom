@@ -43,7 +43,7 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     links:
-      - db
+      - database
     ports:
       - 8181:80
     environment:
