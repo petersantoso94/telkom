@@ -2108,8 +2108,10 @@ class InventoryController extends BaseController
                         $stats = '2 DAYS 4G + Movies 30';
                     } else if ($ivr->Status == '699') {
                         $stats = 'Movies 4G';
-                    } else if ($ivr->Status == '630' || $ivr->Status >= 1000) {
+                    } else if ($ivr->Status == '630') {
                         $stats = 'Movies 3G';
+                    } else if ($ivr->Status == '1199') {
+                        $stats = '90 DAYS';
                     }
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2161,8 +2163,10 @@ class InventoryController extends BaseController
                 $stats = '2 DAYS 4G + Movies 30';
             } else if ($ivr->Status == '699') {
                 $stats = 'Movies 4G';
-            } else if ($ivr->Status == '630' || $ivr->Status >= 1000) {
+            } else if ($ivr->Status == '630' ) {
                 $stats = 'Movies 3G';
+            } else if ($ivr->Status == '1199') {
+                $stats = '90 DAYS';
             }
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
