@@ -40,10 +40,18 @@ services:
     ports:
         - "33061:3306"
 
-  adminer:
-    image: dockette/adminer:full-php5
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    links:
+      - database
     ports:
-      - 8181:8080
+      - 8181:80
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_USER=telkom
+      - PMA_PASSWORD=asdf1234
+      - PMA_HOST=database
+      - PMA_PORT=3306
 
 volumes:
   dbdata:

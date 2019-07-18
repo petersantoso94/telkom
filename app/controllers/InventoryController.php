@@ -1331,7 +1331,7 @@ class InventoryController extends BaseController
 
                             return View::make('insertreporting')->withResponse('Success')->withPage('insert reporting');
                         } else {
-                            $inputFileName = './uploaded_file/temp.' . $extention;
+                            $inputFileName = base_path().'/uploaded_file/temp.' . $extention;
                             /** Load $inputFileName to a Spreadsheet Object  * */
 //                            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
 //                            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
@@ -1796,11 +1796,11 @@ class InventoryController extends BaseController
                         $real_filename = $_FILES['sample_file']['name'];
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
-                        $inputFileName = './uploaded_file/temp.' . $extention;
+                        $inputFileName = base_path().'/uploaded_file/temp.' . $extention;
                         /** Load $inputFileName to a Spreadsheet Object  * */
-                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
-                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-                        $writer->save('./uploaded_file/' . 'temp.xlsx');
+                        $spreadsheet = PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+                        $writer = new PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                        $writer->save(base_path().'/uploaded_file/' . 'temp.xlsx');
 
                         $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
