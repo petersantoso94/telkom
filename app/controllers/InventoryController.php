@@ -10,7 +10,7 @@ class InventoryController extends BaseController
         return sprintf("%'.19d\n", $num);
     }
 
-    public function showInsertInventory22()
+    public function showInsertInventory()
     { #sim
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
@@ -21,6 +21,7 @@ class InventoryController extends BaseController
                     $filename = 'temp.' . $extention;
                     Input::file('sample_file')->move($destination, $filename);
                     $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                    // $filePath = base_path() . '\uploaded_file\\' . 'temp.' . $extention;
                     $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
 //$reader = ReaderFactory::create(Type::CSV); // for CSV files
 //$reader = ReaderFactory::create(Type::ODS); // for ODS files
@@ -48,35 +49,36 @@ class InventoryController extends BaseController
                     $arr_status_hist = [];
                     $arr_laststatus_hist = [];
                     $arr_wh_hist = [];
-                    $check_counter = History::select('ID')->orderBy('ID', 'DESC')->first();
-                    if ($check_counter == null)
+                    // $check_counter = History::select('ID')->orderBy('ID', 'DESC')->first();
+                    $check_counter = DB::table('m_historymovement')->select(DB::raw('ID'))->orderBy('ID', 'DESC')->first();
+                    if (!$check_counter)
                         $id_counter = 1;
                     else
                         $id_counter = $check_counter->ID + 1;
                     foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
                         if ($sheetIndex == 1)
                             foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                if ($rowNumber > 1) {
-                                    if ($value[1] != null && $value[1] != '') {
+                                // if ($rowNumber > 1) {
+                                    if ($value[0] != null && $value[0] != '') {
                                         // do stuff with the row
                                         $type = 1;
                                         $wh = 'TELIN TAIWAN';
-                                        $sn = (string)$value[1];
+                                        $sn = (string)$value[0];
                                         $sn = strtoupper($sn);
-                                        $remark_obj = $value[9];
+                                        $remark_obj = $value[11];
 
                                         if (is_object($remark_obj)) {
                                             $remark_obj = $remark_obj->format('Y-m-d');
                                         }
                                         array_push($arr_sn, $sn);
                                         array_push($arr_msisdn, $value[2]);
-                                        array_push($arr_shipinprice, $value[12]);
-                                        if (strtolower($value[11]) == '4g') {
+                                        array_push($arr_shipinprice, $value[14]);
+                                        if (strtolower((string)$value[16]) == '4g') {
                                             $type = 4;
                                         }
                                         array_push($arr_type, $type);
-                                        if ($value[4] != null && $value[4] != '') {
-                                            $wh = $value[4];
+                                        if ($value[6] != null && $value[6] != '') {
+                                            $wh = $value[6];
                                         }
                                         array_push($arr_lastwarehouse, $wh);
                                         array_push($arr_remark, $remark_obj);
@@ -85,7 +87,7 @@ class InventoryController extends BaseController
                                         $status = 0;
                                         array_push($arr_sn_hist, $sn);
                                         array_push($arr_id_hist, $id_counter);
-                                        $date_shipin = $value[3];
+                                        $date_shipin = $value[5];
                                         if (is_object($date_shipin)) {
                                             $date_shipin = $date_shipin->format('Y-m-d');
                                         } else {
@@ -93,7 +95,7 @@ class InventoryController extends BaseController
                                             $date_shipin = date('Y-m-d', $date_shipin);
                                         }
                                         array_push($arr_hist_date, $date_shipin);
-                                        array_push($arr_price_hist, $value[12]);
+                                        array_push($arr_price_hist, $value[14]);
                                         array_push($arr_remark_hist, $remark_obj);
                                         $shipinNumber = $date_shipin . '/SI/TST001';
                                         array_push($arr_shipoutnumber_hist, $shipinNumber);
@@ -102,12 +104,12 @@ class InventoryController extends BaseController
                                         array_push($arr_wh_hist, $wh);
 
                                         //there is warehouse
-                                        if ($value[5] != null && $value[5] != '') {
+                                        if ($value[7] != null && $value[7] != '') {
                                             $id_counter++;
                                             $status = 3;
                                             array_push($arr_sn_hist, $sn);
                                             array_push($arr_id_hist, $id_counter);
-                                            $date_shipin = $value[5];
+                                            $date_shipin = $value[7];
                                             if (is_object($date_shipin)) {
                                                 $date_shipin = $date_shipin->format('Y-m-d');
                                             } else {
@@ -127,18 +129,18 @@ class InventoryController extends BaseController
 
 
                                         //there is shipout
-                                        if ($value[7] != null && $value[7] != '') {
+                                        if ($value[9] != null && $value[9] != '') {
                                             $id_counter++;
                                             $status = 2;
                                             $tempSA = '';
                                             $tempSN = '/SO/';
-                                            if (strtolower($value[14]) === 'consignment') {
+                                            if (strtolower($value[13]) === 'consignment') {
                                                 $status = 4;
                                                 $tempSN = '/CO/';
                                             }
-                                            $subagent = $value[6];
+                                            $subagent = $value[8];
                                             if ($subagent != null && $subagent != '') {
-                                                $temp_sub = $value[8];
+                                                $temp_sub = $value[10];
                                                 if ($temp_sub != null && $temp_sub != '') {
                                                     $temp_sub2 = explode(' ', $temp_sub)[0];
                                                     if (strtolower($subagent) != strtolower($temp_sub2)) {
@@ -160,8 +162,8 @@ class InventoryController extends BaseController
                                             array_push($arr_status_hist, $status);
                                             array_push($arr_laststatus_hist, $status);
                                             array_push($arr_id_hist, $id_counter);
-                                            array_push($arr_price_hist, $value[13]);
-                                            $date_shipout = $value[7];
+                                            array_push($arr_price_hist, $value[15]);
+                                            $date_shipout = $value[9];
                                             if (is_object($date_shipout)) {
                                                 $date_shipout = $date_shipout->format('Y-m-d');
                                             } else {
@@ -182,7 +184,7 @@ class InventoryController extends BaseController
                                         array_push($arr_laststatusid, $id_counter);
                                         $id_counter++;
                                     }
-                                }
+                                // }
                             }
                     }
                     $reader->close();
@@ -525,7 +527,7 @@ class InventoryController extends BaseController
         return View::make('insertinventory')->withPage('insert inventory');
     }
 
-    public function showInsertInventory()
+    public function showInsertInventory443()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
