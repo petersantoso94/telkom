@@ -10,7 +10,7 @@ class InventoryController extends BaseController
         return sprintf("%'.19d\n", $num);
     }
 
-    public function showInsertInventory()
+    public function showInsertInventory123()
     { #sim
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
@@ -58,7 +58,7 @@ class InventoryController extends BaseController
                     foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
                         if ($sheetIndex == 1)
                             foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                // if ($rowNumber > 1) {
+                                 if ($rowNumber > 1) {
                                     if ($value[0] != null && $value[0] != '') {
                                         // do stuff with the row
                                         $type = 1;
@@ -69,6 +69,8 @@ class InventoryController extends BaseController
 
                                         if (is_object($remark_obj)) {
                                             $remark_obj = $remark_obj->format('Y-m-d');
+                                        }else{
+                                            $remark_obj = str_replace('\'', " ", $remark_obj);
                                         }
                                         array_push($arr_sn, $sn);
                                         array_push($arr_msisdn, $value[2]);
@@ -184,7 +186,7 @@ class InventoryController extends BaseController
                                         array_push($arr_laststatusid, $id_counter);
                                         $id_counter++;
                                     }
-                                // }
+                                 }
                             }
                     }
                     $reader->close();
@@ -271,6 +273,8 @@ class InventoryController extends BaseController
 
                                         if (is_object($remark_obj)) {
                                             $remark_obj = $remark_obj->format('Y-m-d');
+                                        }else{
+                                            $remark_obj = str_replace('\'', " ", $remark_obj);
                                         }
                                         array_push($arr_sn, $sn);
                                         array_push($arr_shipinprice, $value[11]);
@@ -527,7 +531,7 @@ class InventoryController extends BaseController
         return View::make('insertinventory')->withPage('insert inventory');
     }
 
-    public function showInsertInventory443()
+    public function showInsertInventory()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
