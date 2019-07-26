@@ -439,9 +439,9 @@ class InventoryController extends BaseController
                     foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
                         if ($sheetIndex == 1)
                             foreach ($sheet->getRowIterator() as $rowNumber => $value) {
-                                if ($rowNumber > 1) {
+                                if ($rowNumber > 2) {
                                     // do stuff with the row
-                                    $msisdn = (string)$value[0];
+                                    $msisdn = (string)$value[3];
 
                                     if ($msisdn != '' && $msisdn != null) {
                                         $msisdn = str_replace('\'', '', $msisdn);
@@ -2222,9 +2222,11 @@ class InventoryController extends BaseController
                 $data['act']['Active MSISDN'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 $sum_bef = 0;
                 $sum_churn_bef = 0;
-                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Churn%\'')->get();
+                $all_ivr = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ChurnDate) = '{$year->Year}'")->groupBy(DB::raw('YEAR(inv1.ChurnDate), MONTH(inv1.ChurnDate)'))
+                ->select(DB::raw("COUNT(DISTINCT inv1.MSISDN) as 'Counter', YEAR(inv1.ChurnDate) as 'Year', MONTH(inv1.ChurnDate) as 'Month'"))->get();
                 $all_act = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Activation%\'')->orderBy('Month', 'ASC')->get();
-                $churn_year_before = Stats::where('Year', '<', $year->Year)->whereRaw('Status LIKE \'%Churn%\'')->orderBy('Month', 'ASC')->get();
+                $churn_year_before = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ChurnDate) < '{$year->Year}'")->groupBy(DB::raw('YEAR(inv1.ChurnDate), MONTH(inv1.ChurnDate)'))
+                ->select(DB::raw("COUNT(DISTINCT inv1.MSISDN) as 'Counter', YEAR(inv1.ChurnDate) as 'Year', MONTH(inv1.ChurnDate) as 'Month'"))->orderBy('Month', 'ASC')->get();
                 $act_year_before = Stats::where('Year', '<', $year->Year)->whereRaw('Status LIKE \'%Activation%\'')->orderBy('Month', 'ASC')->get();
                 if ($act_year_before != null) {
                     foreach ($act_year_before as $act) {
@@ -2263,9 +2265,11 @@ class InventoryController extends BaseController
             $writer->close();
             return $data;
         }
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Churn%\'')->get();
+        $all_ivr = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ChurnDate) = '{$year}'")->groupBy(DB::raw('YEAR(inv1.ChurnDate), MONTH(inv1.ChurnDate)'))
+        ->select(DB::raw("COUNT(DISTINCT inv1.MSISDN) as 'Counter', YEAR(inv1.ChurnDate) as 'Year', MONTH(inv1.ChurnDate) as 'Month'"))->get();
         $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Activation%\'')->orderBy('Month', 'ASC')->get();
-        $churn_year_before = Stats::where('Year', '<', $year)->whereRaw('Status LIKE \'%Churn%\'')->orderBy('Month', 'ASC')->get();
+        $churn_year_before = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ChurnDate) < '{$year}'")->groupBy(DB::raw('YEAR(inv1.ChurnDate), MONTH(inv1.ChurnDate)'))
+        ->select(DB::raw("COUNT(DISTINCT inv1.MSISDN) as 'Counter', YEAR(inv1.ChurnDate) as 'Year', MONTH(inv1.ChurnDate) as 'Month'"))->orderBy('Month', 'ASC')->get();
         $act_year_before = Stats::where('Year', '<', $year)->whereRaw('Status LIKE \'%Activation%\'')->orderBy('Month', 'ASC')->get();
         if ($act_year_before != null) {
             foreach ($act_year_before as $act) {
