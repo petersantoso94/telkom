@@ -1459,6 +1459,7 @@
                         var x_axis = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                         var y_axis = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                         var write = false;
+                        var activation = false;
                         var str_write = 'Total';
                         chart.data.datasets.forEach(function (dataset, i) {
                             var meta = chart.getDatasetMeta(i);
@@ -1468,7 +1469,7 @@
                                 meta.data.forEach(function (element, index) { //jalan ke kanan bukan ke atas
                                     // Draw the text in black, with the specified font
                                     ctx.fillStyle = 'rgb(0, 0, 0)';
-                                    var fontSize = 12;
+                                    var fontSize = 14;
                                     var fontStyle = 'normal';
                                     var fontFamily = 'Helvetica Neue';
                                     ctx.font = Chart.helpers.fontString(fontSize, fontStyle, fontFamily);
@@ -1563,6 +1564,7 @@
                             }
                             if (meta.controller.chart.canvas.id == 'barChart_churn' || meta.controller.chart.canvas.id == 'barChart_detail_churn') {
                                 write = true;
+                                activation = true;
                                 str_write = 'Activation';
                             }
                             if (meta.controller.chart.canvas.id == 'barChart_voc_topup' || meta.controller.chart.canvas.id == 'barChart_evoc_topup' || meta.controller.chart.canvas.id == 'barChart_voc300_topup') {
@@ -1583,7 +1585,13 @@
                                         dataString = dataString.split(/(?=(?:...)*$)/);
                                         dataString = dataString.join(',');
                                     }
-                                    ctx.fillText(str_write + ': ' + dataString, x_axis[i], y_axis[i]);
+                                    if(activation){
+                                        ctx.fillText(str_write + ': ' , x_axis[i], y_axis[i]-14);
+                                        ctx.fillText(dataString, x_axis[i], y_axis[i]);
+                                        if(i==11)
+                                        activation = false;
+                                    }else
+                                        ctx.fillText(str_write + ': ' + dataString, x_axis[i], y_axis[i]);
                                 }
 
                             }
@@ -1687,7 +1695,7 @@
                             },
                             title: {
                                 display: true,
-                                text: 'Subscriber and Churn'
+                                text: ''
                             }, scales: {
                                 xAxes: [{
                                         gridLines: {
@@ -2152,7 +2160,7 @@
                             },
                             title: {
                                 display: true,
-                                text: 'DetailChurn'
+                                text: 'DetailChurn\r\n'
                             }, scales: {
                                 xAxes: [{
                                         gridLines: {
