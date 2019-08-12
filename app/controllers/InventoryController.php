@@ -2143,7 +2143,7 @@ class InventoryController extends BaseController
                     } else if ($ivr->Status == '630') {
                         $stats = 'Movies 3G';
                     } else if ($ivr->Status == '1199') {
-                        $stats = '90 DAYS';
+                        $stats = '90 days';
                     }
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2198,7 +2198,7 @@ class InventoryController extends BaseController
             } else if ($ivr->Status == '630' ) {
                 $stats = 'Movies 3G';
             } else if ($ivr->Status == '1199') {
-                $stats = '90 DAYS';
+                $stats = '90 days';
             }
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -4924,9 +4924,11 @@ static function exportExcel($filter)
         $data['1GB'][0] = 1;
         $data['2GB'][0] = 1;
         $data['30DAY'][0] = 1;
+        $data['90DAY'][0] = 1;
         $data['1GB'][1] = 1;
         $data['2GB'][1] = 1;
         $data['30DAY'][1] = 1;
+        $data['90DAY'][1] = 1;
 
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
             . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND (PurchaseAmount LIKE '180' OR PurchaseAmount LIKE '360' OR PurchaseAmount LIKE '540')")
@@ -4942,10 +4944,16 @@ static function exportExcel($filter)
             $data['2GB'][0] = $all_ivr[0]->Counter;
 
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
-            . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300 AND PurchaseAmount != 360 AND PurchaseAmount != 540 AND PurchaseAmount != 600 AND PurchaseAmount != 900")
+            . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300 AND PurchaseAmount != 360 AND PurchaseAmount != 540 AND PurchaseAmount != 600 AND PurchaseAmount != 900 AND PurchaseAmount != 1199")
             ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
         if (count($all_ivr) > 0)
             $data['30DAY'][0] = $all_ivr[0]->Counter;
+
+        $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$year}' AND MONTH(Date) LIKE "
+            . "'{$month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '1199'")
+            ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+        if (count($all_ivr) > 0)
+            $data['90DAY'][0] = $all_ivr[0]->Counter;
 
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$last_year}' AND MONTH(Date) LIKE "
             . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND (PurchaseAmount LIKE '180' OR PurchaseAmount LIKE '360' OR PurchaseAmount LIKE '540')")
@@ -4961,16 +4969,16 @@ static function exportExcel($filter)
             $data['2GB'][1] = $all_ivr[0]->Counter;
 
         $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$last_year}' AND MONTH(Date) LIKE "
-            . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300 AND PurchaseAmount != 360 AND PurchaseAmount != 540 AND PurchaseAmount != 600 AND PurchaseAmount != 900")
+            . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount > 300 AND PurchaseAmount != 360 AND PurchaseAmount != 540 AND PurchaseAmount != 600 AND PurchaseAmount != 1199 AND PurchaseAmount != 900")
             ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
-//        $writer->close();
-//        $check_no = [];
-//        foreach ($all_ivr as $ivr) {
-//            $check_no[] = $ivr->Unik;
-//        }
-//        dd(implode(',', $check_no));
         if (count($all_ivr) > 0)
             $data['30DAY'][1] = $all_ivr[0]->Counter;
+
+        $all_ivr = DB::table("m_ivr")->whereRaw("Date IS NOT NULL AND YEAR(Date) LIKE '{$last_year}' AND MONTH(Date) LIKE "
+            . "'{$last_month}' AND DAY(Date) >= '1' AND DAY(Date) <= '{$day}' AND PurchaseAmount LIKE '1199'")
+            ->select(DB::raw("COUNT(MSISDN_) as Counter"))->get();
+        if (count($all_ivr) > 0)
+            $data['90DAY'][1] = $all_ivr[0]->Counter;
 
         //total process
         if ($data['1GB'][1] != 0)
@@ -4986,8 +4994,13 @@ static function exportExcel($filter)
         else
             $data['30DAY'][2] = round((($data['30DAY'][0] - $data['30DAY'][1]) / 1) * 100, 2);
 
-        $data["INTERNET"][0] = $data['1GB'][0] + $data['2GB'][0] + $data['30DAY'][0];
-        $data["INTERNET"][1] = $data['1GB'][1] + $data['2GB'][1] + $data['30DAY'][1];
+        if ($data['90DAY'][1] != 0)
+            $data['90DAY'][2] = round((($data['90DAY'][0] - $data['90DAY'][1]) / $data['90DAY'][1]) * 100, 2);
+        else
+            $data['90DAY'][2] = round((($data['90DAY'][0] - $data['90DAY'][1]) / 1) * 100, 2);
+
+        $data["INTERNET"][0] = $data['1GB'][0] + $data['2GB'][0] + $data['30DAY'][0]+ $data['90DAY'][0];
+        $data["INTERNET"][1] = $data['1GB'][1] + $data['2GB'][1] + $data['30DAY'][1]+ $data['90DAY'][1];
 
         if ($data['INTERNET'][1] != 0)
             $data['INTERNET'][2] = round((($data['INTERNET'][0] - $data['INTERNET'][1]) / $data['INTERNET'][1]) * 100, 2);
@@ -5001,6 +5014,8 @@ static function exportExcel($filter)
         $myArr = array("2GB", "SUBS", number_format($data["2GB"][0]), number_format($data["2GB"][1]), $data["2GB"][2] . '%');
         $writer->addRow($myArr);
         $myArr = array("30 DAYS", "SUBS", number_format($data["30DAY"][0]), number_format($data["30DAY"][1]), $data["30DAY"][2] . '%');
+        $writer->addRow($myArr);
+        $myArr = array("90 DAYS", "SUBS", number_format($data["90DAY"][0]), number_format($data["90DAY"][1]), $data["90DAY"][2] . '%');
         $writer->addRow($myArr);
         $writer->addRow(['']);
 
