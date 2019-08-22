@@ -471,6 +471,7 @@ class InventoryController extends BaseController
         return View::make('insertinventory')->withPage('insert inventory');
     }
 
+
     public function showInsertInventory44()
     { // change inventory data
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -525,6 +526,37 @@ class InventoryController extends BaseController
                     $cases1 = implode(' ', $cases1);
                     $cases2 = implode(' ', $cases2);
                     DB::update("UPDATE `m_historymovement` SET `SubAgent` = CASE `ID` {$cases2} END WHERE `ID` in ({$ids})");
+                }
+            }
+        }
+        return View::make('insertinventory')->withPage('insert inventory');
+    }
+    
+    public function showInsertInventory333()
+    { // change inventory data
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = Input::file('sample_file');
+            if ($input != '') {
+                if (Input::hasFile('sample_file')) {
+                    $destination = base_path() . '/uploaded_file/';
+                    $extention = Input::file('sample_file')->getClientOriginalExtension();
+                    $filename = 'temp.' . $extention;
+                    Input::file('sample_file')->move($destination, $filename);
+                    $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                    $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+                    $reader->open($filePath);
+                    foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
+                        foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                            if ($rowNumber > 1) {
+                                // do stuff with the row
+                                $act_serial_number = (string)$value[0];
+                                $subagent = (string)$value[6];
+                                DB::update("UPDATE `m_inventory` SET `LastSubAgent`= '". $subagent ."' WHERE `SerialNumber` LIKE '%".$act_serial_number."%'");
+                                DB::update("UPDATE `m_historymovement` SET `SubAgent`= '". $subagent ."' WHERE `SN` LIKE '%".$act_serial_number."%' AND (`Status` = '2' OR `Status` = '4')");
+                            }
+                        }
+                    }
+                    $reader->close();
                 }
             }
         }
@@ -4382,7 +4414,7 @@ class InventoryController extends BaseController
 
 static function exportExcel($filter)
     {
-        ini_set('memory_limit', '3000M');
+        ini_set('memory_limit', '6000M');
         $invs = '';
         $filter = explode(',,,', $filter);
         $typesym = '>=';
@@ -7228,19 +7260,20 @@ static function exportExcel($filter)
         $temp_count = 0;
         $subtotal = 0;
         $wh = '';
+        $status = ['2','4'];
         if (Session::has('arr_ret')) {
             $arr_sn = Session::get('arr_ret');
             $arr_sn = explode(',', $arr_sn);
 //            $arr_sn = str_replace(',', "','", $arr_sn);
             $alltype = DB::table('m_inventory')
                 ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                ->where('m_historymovement.Status', '2')
+                ->whereIn('m_historymovement.Status', $status)
                 ->where('m_inventory.Missing', '0')->whereIn('m_inventory.SerialNumber', $arr_sn)->orWhereIn('m_inventory.MSISDN', $arr_sn)
                 ->select('m_inventory.Type')
                 ->distinct()->get();
             $wh = DB::table('m_inventory')
                 ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                ->where('m_historymovement.Status', '2')
+                ->whereIn('m_historymovement.Status', $status)
                 ->where('m_inventory.Missing', '0')->whereIn('m_inventory.SerialNumber', $arr_sn)->orWhereIn('m_inventory.MSISDN', $arr_sn)
                 ->select('m_inventory.LastWarehouse')
                 ->distinct()->first();
@@ -7254,7 +7287,7 @@ static function exportExcel($filter)
                     $type[$temp_count] = 'SIM 3G';
                     $counters = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
+                        ->whereIn('m_historymovement.Status', $status)
                         ->where('m_inventory.Missing', '0')
                         ->where('m_inventory.Type', '1')->whereIn('m_inventory.SerialNumber', $arr_sn)->orWhereIn('m_inventory.MSISDN', $arr_sn)
                         ->select('m_inventory.SerialNumber', 'm_inventory.Type')
@@ -7262,7 +7295,7 @@ static function exportExcel($filter)
                     $count[$temp_count] = $counters;
                     $firstid = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
+                        ->whereIn('m_historymovement.Status', $status)
                         ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '1')
                         ->whereIn('m_inventory.SerialNumber', $arr_sn)->orWhereIn('m_inventory.MSISDN', $arr_sn)
                         ->select('m_inventory.SerialNumber', 'm_inventory.Type')
@@ -7271,7 +7304,7 @@ static function exportExcel($filter)
                     $first[$temp_count] = $firstid->SerialNumber;
                     $lastid = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
+                        ->whereIn('m_historymovement.Status', $status)
                         ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '1')
                         ->whereIn('m_inventory.SerialNumber', $arr_sn)->orWhereIn('m_inventory.MSISDN', $arr_sn)
                         ->select('m_inventory.SerialNumber', 'm_inventory.Type')
@@ -7283,7 +7316,7 @@ static function exportExcel($filter)
                     $type[$temp_count] = 'E-VOUCHER';
                     $counters = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
+                        ->whereIn('m_historymovement.Status', $status)
                         ->where('m_inventory.Missing', '0')
                         ->where('m_inventory.Type', '2')
                         ->whereIn('m_inventory.SerialNumber', $arr_sn)->orWhereIn('m_inventory.MSISDN', $arr_sn)
@@ -7292,7 +7325,7 @@ static function exportExcel($filter)
                     $count[$temp_count] = $counters;
                     $firstid = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
+                        ->whereIn('m_historymovement.Status', $status)
                         ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '2')
                         ->whereIn('m_inventory.SerialNumber', $arr_sn)->orWhereIn('m_inventory.MSISDN', $arr_sn)
                         ->select('m_inventory.SerialNumber', 'm_inventory.Type')
@@ -7301,7 +7334,7 @@ static function exportExcel($filter)
                     $first[$temp_count] = $firstid->SerialNumber;
                     $lastid = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
+                        ->whereIn('m_historymovement.Status', $status)
                         ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '2')
                         ->whereIn('m_inventory.SerialNumber', $arr_sn)->orWhereIn('m_inventory.MSISDN', $arr_sn)
                         ->select('m_inventory.SerialNumber', 'm_inventory.Type')
@@ -7313,7 +7346,7 @@ static function exportExcel($filter)
                     $type[$temp_count] = 'PH-VOUCHER';
                     $counters = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
+                        ->whereIn('m_historymovement.Status', $status)
                         ->where('m_inventory.Missing', '0')
                         ->where('m_inventory.Type', '3')
                         ->whereIn('m_inventory.SerialNumber', $arr_sn)->orWhereIn('m_inventory.MSISDN', $arr_sn)
@@ -7322,7 +7355,7 @@ static function exportExcel($filter)
                     $count[$temp_count] = $counters;
                     $firstid = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
+                        ->whereIn('m_historymovement.Status', $status)
                         ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '3')
                         ->whereIn('m_inventory.SerialNumber', $arr_sn)->orWhereIn('m_inventory.MSISDN', $arr_sn)
                         ->select('m_inventory.SerialNumber', 'm_inventory.Type')
@@ -7331,7 +7364,7 @@ static function exportExcel($filter)
                     $first[$temp_count] = $firstid->SerialNumber;
                     $lastid = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
+                        ->whereIn('m_historymovement.Status', $status)
                         ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '3')
                         ->whereIn('m_inventory.SerialNumber', $arr_sn)->orWhereIn('m_inventory.MSISDN', $arr_sn)
                         ->select('m_inventory.SerialNumber', 'm_inventory.Type')
@@ -7343,7 +7376,7 @@ static function exportExcel($filter)
                     $type[$temp_count] = 'SIM 4G';
                     $counters = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
+                        ->whereIn('m_historymovement.Status', $status)
                         ->where('m_inventory.Missing', '0')
                         ->where('m_inventory.Type', '4')
                         ->whereIn('m_inventory.SerialNumber', $arr_sn)->orWhereIn('m_inventory.MSISDN', $arr_sn)
@@ -7352,7 +7385,7 @@ static function exportExcel($filter)
                     $count[$temp_count] = $counters;
                     $firstid = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
+                        ->whereIn('m_historymovement.Status', $status)
                         ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '4')
                         ->whereIn('m_inventory.SerialNumber', $arr_sn)->orWhereIn('m_inventory.MSISDN', $arr_sn)
                         ->select('m_inventory.SerialNumber', 'm_inventory.Type')
@@ -7361,7 +7394,7 @@ static function exportExcel($filter)
                     $first[$temp_count] = $firstid->SerialNumber;
                     $lastid = DB::table('m_inventory')
                         ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                        ->where('m_historymovement.Status', '2')
+                        ->whereIn('m_historymovement.Status', $status)
                         ->where('m_inventory.Missing', '0')->where('m_inventory.Type', '4')
                         ->whereIn('m_inventory.SerialNumber', $arr_sn)->orWhereIn('m_inventory.MSISDN', $arr_sn)
                         ->select('m_inventory.SerialNumber', 'm_inventory.Type')
