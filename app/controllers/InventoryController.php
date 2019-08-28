@@ -4538,7 +4538,7 @@ static function exportExcel($filter)
             $invs = DB::table('m_inventory as inv1')
                 ->join('m_historymovement', 'inv1.SerialNumber', '=', 'm_historymovement.SN')
                 ->where('inv1.Type', $typesym, $type)
-                ->where('inv1.LastStatusHist', $statussym, $status)
+                ->whereIn('m_historymovement.Status', $status)
                 ->where('m_historymovement.ShipoutNumber', 'like', '%' . $fs . '%')->select(DB::raw('inv1.SerialNumber, inv1.MSISDN,inv1.ActivationDate,inv1.TopUpDate, inv1.Type, m_historymovement.Status,'
                     . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                     . ' inv1.LastSubAgent as "SubAgent", '
@@ -5056,8 +5056,8 @@ static function exportExcel($filter)
         if (strlen($month) === 1) {
             $tempmonth = "0" . $month;
         }
-        $all_ivr = DB::select("SELECT SUM(MO) as 'mo', SUM(MT) as 'mt',SUM(Internet) as 'internet',SUM(Sms) as 'sms' FROM m_productive "
-            . "WHERE Day >= 1 AND Day <= {$tempday} AND Month LIKE '{$tempmonth}' AND Year LIKE '{$year}'");
+        $all_ivr = DB::select("SELECT SUM(prod1.MO) as 'mo', SUM(prod1.MT) as 'mt',SUM(prod1.Internet) as 'internet',SUM(prod1.Sms) as 'sms' FROM m_productive prod1 INNER JOIN m_inventory as inv1 ON prod1.MSISDN = inv1.MSISDN "
+            . "WHERE prod1.Day >= 1 AND prod1.Day <= {$tempday} AND prod1.Month LIKE '{$tempmonth}' AND prod1.Year LIKE '{$year}'");
 //        $all_ivr = Stats::where('Year', $year)->where('Month', $tempmonth)->whereRaw('Status LIKE \'%_sum%\'')->get();
         $data = array();
         $data['MT'][0] = 1;
@@ -5099,8 +5099,8 @@ static function exportExcel($filter)
         if (strlen($last_month) === 1) {
             $tempmonth = "0" . $last_month;
         }
-        $all_ivr = DB::select("SELECT SUM(MO) as 'mo', SUM(MT) as 'mt',SUM(Internet) as 'internet',SUM(Sms) as 'sms' FROM m_productive "
-            . "WHERE Day >= 1 AND Day <= {$tempday} AND Month LIKE '{$tempmonth}' AND Year LIKE '{$last_year}'");
+        $all_ivr = DB::select("SELECT SUM(prod1.MO) as 'mo', SUM(prod1.MT) as 'mt',SUM(prod1.Internet) as 'internet',SUM(prod1.Sms) as 'sms' FROM m_productive prod1 INNER JOIN m_inventory as inv1 ON prod1.MSISDN = inv1.MSISDN "
+            . "WHERE prod1.Day >= 1 AND prod1.Day <= {$tempday} AND prod1.Month LIKE '{$tempmonth}' AND prod1.Year LIKE '{$last_year}'");
 //        $all_ivr = Stats::where('Year', $year)->where('Month', $tempmonth)->whereRaw('Status LIKE \'%_sum%\'')->get();
         if ($all_ivr != null) {
             $temp_counter = round(ceil($all_ivr[0]->mt / 60), 1);
