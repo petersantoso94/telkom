@@ -37,6 +37,8 @@ Route::group(array('before' => 'auth'), function() {
     Route::any('getSubsriber', array('as' => 'getSubsriber', 'before' => '', 'uses' => 'InventoryController@getSubsriber'));
     Route::any('getChurnDetail', array('as' => 'getChurnDetail', 'before' => '', 'uses' => 'InventoryController@getChurnDetail'));
     Route::any('getChannel', array('as' => 'getChannel', 'before' => '', 'uses' => 'InventoryController@getChannel'));
+    Route::any('getChannelShipoutSim', array('as' => 'getChannelShipoutSim', 'before' => '', 'uses' => 'InventoryController@getChannelShipoutSim'));
+    Route::any('getChannelShipoutVoc', array('as' => 'getChannelShipoutVoc', 'before' => '', 'uses' => 'InventoryController@getChannelShipoutVoc'));
     Route::any('getChannelChurn', array('as' => 'getChannelChurn', 'before' => '', 'uses' => 'InventoryController@getChannelChurn'));
     Route::any('getShipoutSim', array('as' => 'getShipoutSim', 'before' => '', 'uses' => 'InventoryController@getShipoutSim'));
     Route::any('getShipoutVoc', array('as' => 'getShipoutVoc', 'before' => '', 'uses' => 'InventoryController@getShipoutVoc'));

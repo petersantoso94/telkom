@@ -125,11 +125,7 @@
                                         <div class="row toogling" id="info_churn_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="churn_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                    {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -148,11 +144,7 @@
                                         <div class="row toogling" id="info_subs_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="subs2_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -171,11 +163,7 @@
                                         <div class="row toogling" id="info_prod_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="prod_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -194,11 +182,7 @@
                                         <div class="row toogling" id="info_sum_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="sum_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -245,11 +229,7 @@
                                         <div class="row toogling" id="info_channel" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="channel_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -268,11 +248,7 @@
                                         <div class="row toogling" id="info_channel_churn" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="channel_churn_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -308,6 +284,18 @@
                                                     <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
 
                                                     <div class="info-box-content">
+                                                        <span class="info-box-text">Sim Card per Channel</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_shipout_per_channel_sim">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
+
+                                                    <div class="info-box-content">
                                                         <span class="info-box-text">Vouchers</span>
                                                         <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_shipout_voc">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
                                                     </div>
@@ -315,15 +303,61 @@
                                                 </div>
                                                 <!-- /.info-box -->
                                             </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Vouchers per Channel</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_shipout_per_channel_voc">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_shipout_per_channel_sim" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="channel_shipout_sim_year">
+                                                {{$elements}}
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend20" class="legend" style="font-size: 80%"></div>
+                                                <canvas id="barChart_shipout_per_channel_sim" height="100"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_shipout_per_channel_voc" style="display: none;">
+                                            <div class="form-group col-md-2">
+                                                <select class="form-control" id="channel_shipout_voc_year">
+                                                {{$elements}}
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend21" class="legend" style="font-size: 80%"></div>
+                                                <canvas id="barChart_shipout_per_channel_voc" height="100"></canvas>
+                                            </div>
                                         </div>
                                         <div class="row toogling" id="info_shipout_sim" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="shipout_sim_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -342,11 +376,7 @@
                                         <div class="row toogling" id="info_shipout_voc" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="shipout_voc_year">>
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -393,11 +423,7 @@
                                         <div class="row toogling" id="info_detail_churn_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="detail_churn_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -416,11 +442,7 @@
                                         <div class="row toogling" id="info_churn2" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="churn2_year">>
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -503,11 +525,7 @@
                                         <div class="row toogling" id="info_voc_topup" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="voc_topup_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -526,11 +544,7 @@
                                         <div class="row toogling" id="info_unique_subs_topup" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="unique_subs_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -549,11 +563,7 @@
                                         <div class="row toogling" id="info_voc_topup300" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="voc_topup300_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -572,11 +582,7 @@
                                         <div class="row toogling" id="info_evoc_topup" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="evoc_topup_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -595,11 +601,7 @@
                                         <div class="row toogling" id="info_subs_topup" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="subs_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -677,11 +679,7 @@
                                         <div class="row toogling" id="info_ivr_month" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="ivr_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -700,11 +698,7 @@
                                         <div class="row toogling" id="info_internet_payloads" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="payload_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -723,11 +717,7 @@
                                         <div class="row toogling" id="info_internet_payloads_peruser" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="payload_peruser_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -746,11 +736,7 @@
                                         <div class="row toogling" id="info_internet_vs" style="display: none;">
                                             <div class="form-group col-md-2">
                                                 <select class="form-control" id="vs_year">
-                                                    @foreach($years as $year)
-                                                    @if($year->Year >0)
-                                                    <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                    @endif
-                                                    @endforeach
+                                                {{$elements}}
                                                 </select>
                                             </div>
                                             <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
@@ -832,11 +818,7 @@
                                                         <div class="col-xs-10">
                                                             Year
                                                             <select style="width: 100%" id="sim2_year" class="chosen-select">
-                                                                @foreach($years as $year)
-                                                                @if($year->Year >0)
-                                                                <option value="{{$year->Year}}">{{$year->Year}}</option>
-                                                                @endif
-                                                                @endforeach
+                                                            {{$elements}}
                                                             </select>
                                                         </div>
                                                         <div class="col-xs-10">
@@ -908,11 +890,7 @@
                                                         <div class="col-md-6">
                                                             Year:
                                                             <select style="width: 100%" id="shipout_year" class="chosen-select">
-                                                                @foreach(DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year)
-                                                                @if($year->year >0)
-                                                                <option value="{{$year->year}}">{{$year->year}}</option>
-                                                                @endif
-                                                                @endforeach
+                                                            {{$elements}}
                                                             </select>
                                                         </div>
                                                         <!--                                                        <div class="col-md-6">
@@ -979,11 +957,7 @@
                                                         <div class="col-md-6">
                                                             Year:
                                                             <select style="width: 100%" id="shipin_year" class="chosen-select">
-                                                                @foreach(DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year)
-                                                                @if($year->year >0)
-                                                                <option value="{{$year->year}}">{{$year->year}}</option>
-                                                                @endif
-                                                                @endforeach
+                                                            {{$elements}}
                                                             </select>
                                                         </div>
                                                     </div>
@@ -1035,11 +1009,7 @@
                                                         <div class="col-md-6">
                                                             Year:
                                                             <select style="width: 100%" id="usage_year" class="chosen-select">
-                                                                @foreach(DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year)
-                                                                @if($year->year >0)
-                                                                <option value="{{$year->year}}">{{$year->year}}</option>
-                                                                @endif
-                                                                @endforeach
+                                                            {{$elements}}
                                                             </select>
                                                         </div>
                                                     </div>
@@ -1091,11 +1061,7 @@
                                                         <div class="col-md-6">
                                                             Year:
                                                             <select style="width: 100%" id="subagent_year" class="chosen-select">
-                                                                @foreach(DB::table('m_historymovement')->select(DB::raw('YEAR(Date) as year'))->where('Status', 2)->orderBy('year', 'DESC')->distinct()->get() as $year)
-                                                                @if($year->year >0)
-                                                                <option value="{{$year->year}}">{{$year->year}}</option>
-                                                                @endif
-                                                                @endforeach
+                                                            {{$elements}}
                                                             </select>
                                                         </div>
                                                     </div>
@@ -1223,6 +1189,8 @@
                 var getIVR = '<?php echo Route('getIVR') ?>';
                 var getCHURN = '<?php echo Route('getCHURN') ?>';
                 var getChannel = '<?php echo Route('getChannel') ?>';
+                var getChannelShipoutSim = '<?php echo Route('getChannelShipoutSim') ?>';
+                var getChannelShipoutVoc = '<?php echo Route('getChannelShipoutVoc') ?>';
                 var getChannelChurn = '<?php echo Route('getChannelChurn') ?>';
                 var getCHURN2 = '<?php echo Route('getCHURN2') ?>';
                 var getSubsriber = '<?php echo Route('getSubsriber') ?>';
@@ -1248,6 +1216,8 @@
                 var payload_peruser_year = document.getElementById('payload_peruser_year').value;
                 var vs_year = document.getElementById('vs_year').value;
                 var channel_year = document.getElementById('channel_year').value;
+                var channel_shipout_sim_year = document.getElementById('channel_shipout_sim_year').value;
+                var channel_shipout_voc_year = document.getElementById('channel_shipout_voc_year').value;
                 var channel_churn_year = document.getElementById('channel_churn_year').value;
                 var voc_topup_year = document.getElementById('voc_topup_year').value;
                 var voc_topup300_year = document.getElementById('voc_topup300_year').value;
@@ -1286,6 +1256,16 @@
                 });
                 $('#channel_year').on('change', function (e) {
                     channel_year = document.getElementById('channel_year').value;
+                    scroll = false;
+                    refreshBarChart();
+                });
+                $('#channel_shipout_sim_year').on('change', function (e) {
+                    channel_shipout_sim_year = document.getElementById('channel_shipout_sim_year').value;
+                    scroll = false;
+                    refreshBarChart();
+                });
+                $('#channel_shipout_voc_year').on('change', function (e) {
+                    channel_shipout_voc_year = document.getElementById('channel_shipout_voc_year').value;
                     scroll = false;
                     refreshBarChart();
                 });
@@ -1445,6 +1425,14 @@
                     datasets: []
                 };
                 var barChartData19 = {
+                    labels: MONTHS,
+                    datasets: []
+                };
+                var barChartData20 = {
+                    labels: MONTHS,
+                    datasets: []
+                };
+                var barChartData21 = {
                     labels: MONTHS,
                     datasets: []
                 };
@@ -2583,6 +2571,107 @@
                         }
                     });
 
+                    var ctx20 = document.getElementById("barChart_shipout_per_channel_sim").getContext("2d");
+                    window.myBar20 = new Chart(ctx20, {
+                        type: 'bar',
+                        data: barChartData20,
+                        options: {
+                            responsive: true,
+                            //                maintainAspectRatio: true,
+                            legend: {
+                                display: false
+                            },
+                            tooltips: {
+                                mode: 'index',
+                                callbacks: {
+                                    label: function (tooltipItem, data) {
+                                        var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+                                        var temp_arr = value.split('.');
+                                        if (temp_arr.length == 2) {
+                                            value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                            value += '.' + temp_arr[1];
+                                        } else {
+                                            value = value.toString();
+                                            value = value.split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                        }
+                                        return value;
+                                    }
+                                } // end callbacks:
+                            },
+                            title: {
+                                display: true,
+                                text: 'Monthly Shipout SIM per Channel Report'
+                            }, scales: {
+                                xAxes: [{
+                                        stacked: true,
+                                        gridLines: {
+                                            display: false
+                                        }
+                                    }],
+                                yAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        }, ticks: {
+                                            display: false
+                                        },
+                                        stacked: true,
+                                    }]
+                            }
+                        }
+                    });
+                    var ctx21 = document.getElementById("barChart_shipout_per_channel_voc").getContext("2d");
+                    window.myBar21 = new Chart(ctx21, {
+                        type: 'bar',
+                        data: barChartData21,
+                        options: {
+                            responsive: true,
+                            //                maintainAspectRatio: true,
+                            legend: {
+                                display: false
+                            },
+                            tooltips: {
+                                mode: 'index',
+                                callbacks: {
+                                    label: function (tooltipItem, data) {
+                                        var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+                                        var temp_arr = value.split('.');
+                                        if (temp_arr.length == 2) {
+                                            value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                            value += '.' + temp_arr[1];
+                                        } else {
+                                            value = value.toString();
+                                            value = value.split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                        }
+                                        return value;
+                                    }
+                                } // end callbacks:
+                            },
+                            title: {
+                                display: true,
+                                text: 'Monthly Shipout VOC per Channel Report'
+                            }, scales: {
+                                xAxes: [{
+                                        stacked: true,
+                                        gridLines: {
+                                            display: false
+                                        }
+                                    }],
+                                yAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        }, ticks: {
+                                            display: false
+                                        },
+                                        stacked: true,
+                                    }]
+                            }
+                        }
+                    });
+
 //                    refreshBarChart();
                 };
 
@@ -3114,7 +3203,85 @@
                             }
                             $('.loading').hide();
                         });
-                    } else if (chartID == 'info_channel_churn') {
+                    } else if (chartID == 'info_shipout_per_channel_sim') {
+                        $.post(getChannelShipoutSim, {year: channel_shipout_sim_year, type: arg_type}, function (data) {
+
+                        }).done(function (data) {
+                            barChartData20.datasets = [];
+                            var idx = 1;
+                            var channel_name = "";
+                            $.each(data, function (index, value) {
+                                channel_name = index;
+                                $.each(value, function (index2, value2) {
+                                    var colorName = colorNames[barChartData20.datasets.length % colorNames.length];
+                                    var colors = ["#db4141", "#f2c9c9", "#ce9a29", "#f7e8c8", "#f9f939", "#fcfcbd", "#77bf35", "#cff7aa",
+                                        "#73e2ca", "#d5efe9", "#598ce0", "#d5dfef", "#ef4aec", "#f2d2f1"];
+                                    var dsColor = window.chartColors[colorName];
+                                    barChartData20.datasets.push({
+                                        label: channel_name + " " + index2,
+                                        stack: 'Stack ' + idx,
+                                        backgroundColor: colors[barChartData20.datasets.length % colors.length],
+                                        borderColor: colors[barChartData20.datasets.length % colors.length],
+                                        borderWidth: 1,
+                                        data: value2
+                                    });
+                                });
+                                idx++;
+                            });
+                            window.myBar20.update();
+                            document.getElementById('legend20').innerHTML = myBar20.generateLegend();
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
+                                $("#channel_shipout_sim_year").val(default_year);
+                                excelbutton = false;
+                            }
+                            $('.loading').hide();
+                        });
+                    } else if (chartID == 'info_shipout_per_channel_voc') {
+                        $.post(getChannelShipoutVoc, {year: channel_shipout_voc_year, type: arg_type}, function (data) {
+
+                        }).done(function (data) {
+                            barChartData21.datasets = [];
+                            var idx = 1;
+                            var channel_name = "";
+                            $.each(data, function (index, value) {
+                                channel_name = index;
+                                $.each(value, function (index2, value2) {
+                                    var colorName = colorNames[barChartData21.datasets.length % colorNames.length];
+                                    var colors = ["#db4141", "#f2c9c9", "#ce9a29", "#f7e8c8", "#f9f939", "#fcfcbd", "#77bf35", "#cff7aa",
+                                        "#73e2ca", "#d5efe9", "#598ce0", "#d5dfef", "#ef4aec", "#f2d2f1"];
+                                    var dsColor = window.chartColors[colorName];
+                                    barChartData21.datasets.push({
+                                        label: channel_name + " " + index2,
+                                        stack: 'Stack ' + idx,
+                                        backgroundColor: colors[barChartData21.datasets.length % colors.length],
+                                        borderColor: colors[barChartData21.datasets.length % colors.length],
+                                        borderWidth: 1,
+                                        data: value2
+                                    });
+                                });
+                                idx++;
+                            });
+                            window.myBar21.update();
+                            document.getElementById('legend21').innerHTML = myBar21.generateLegend();
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
+                                $("#channel_shipout_voc_year").val(default_year);
+                                excelbutton = false;
+                            }
+                            $('.loading').hide();
+                        });
+                    }else if (chartID == 'info_channel_churn') {
                         $.post(getChannelChurn, {year: channel_churn_year, type: arg_type}, function (data) {
 
                         }).done(function (data) {

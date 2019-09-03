@@ -2438,6 +2438,213 @@ class InventoryController extends BaseController
         return $data;
     }
 
+    static function getChannelShipoutSim()
+    {
+        $year = Input::get('year');
+        $type = '';
+//        $type = '2';
+        if (Input::get('type'))
+            $type = Input::get('type');
+//        $year = '2017';
+        $data = [];
+
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data2 = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Channel", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
+                #3g
+                $act_prod = DB::table('m_inventory')->whereRaw("LastShipoutDate IS NOT NULL AND LastSubAgent IS NOT NULL AND YEAR(LastShipoutDate) = '{$year->Year}' AND LastSubAgent != '-' AND (LastStatusHist = 2 OR LastStatusHist = 4) AND (Type = 1 OR Type = 4)")
+                ->groupBy(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1), YEAR(LastShipoutDate), MONTH(LastShipoutDate)"))
+                ->select(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1) as 'Channel', COUNT(SerialNumber) as 'Counter', YEAR(LastShipoutDate) as 'Year', MONTH(LastShipoutDate) as 'Month'"))->get();
+                #4g
+                // $act = DB::table('m_inventory')->whereRaw("LastShipoutDate IS NOT NULL AND LastSubAgent IS NOT NULL AND YEAR(LastShipoutDate) = '{$year->Year}' AND LastSubAgent != '-' AND (LastStatusHist = 2 OR LastStatusHist = 4) AND Type = 4")
+                // ->groupBy(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1), YEAR(LastShipoutDate), MONTH(LastShipoutDate)"))
+                // ->select(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1) as 'Channel', COUNT(SerialNumber) as 'Counter', YEAR(LastShipoutDate) as 'Year', MONTH(LastShipoutDate) as 'Month'"))->get();
+                if (count($act_prod) > 0) {
+                    foreach ($act_prod as $ivr) {
+                        if (!isset($data2[$ivr->Channel]["ALL"]))
+                            $data2[$ivr->Channel]["ALL"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data2[$ivr->Channel]["ALL"][($ivr->Month - 1)] = $ivr->Counter;
+                    }
+                }
+                // if (count($act) > 0) {
+                //     foreach ($act as $ivr) {
+                //         if (!isset($data2[$ivr->Channel]["3G"]))
+                //             $data2[$ivr->Channel]["3G"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                //         if (!isset($data2[$ivr->Channel]["4G"]))
+                //             $data2[$ivr->Channel]["4G"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                //         $data2[$ivr->Channel]["4G"][($ivr->Month - 1)] = $ivr->Counter + $data2[$ivr->Channel]["3G"][($ivr->Month - 1)];
+                //     }
+                // }
+                foreach ($data2 as $key => $abc) {
+                    $name = $key;
+                    
+                    foreach ($abc as $key2 => $a) {
+                        $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
+                        $writer->addRow($myArr); // add a row at a time
+                    }
+                }
+            }
+            $writer->close();
+             #3g
+            $act_prod = DB::table('m_inventory')->whereRaw("LastShipoutDate IS NOT NULL AND LastSubAgent IS NOT NULL AND YEAR(LastShipoutDate) = '{$year->Year}' AND LastSubAgent != '-' AND (LastStatusHist = 2 OR LastStatusHist = 4) AND Type = 1")
+            ->groupBy(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1), YEAR(LastShipoutDate), MONTH(LastShipoutDate)"))
+            ->select(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1) as 'Channel', COUNT(SerialNumber) as 'Counter', YEAR(LastShipoutDate) as 'Year', MONTH(LastShipoutDate) as 'Month'"))->get();
+            #4g
+            $act = DB::table('m_inventory')->whereRaw("LastShipoutDate IS NOT NULL AND LastSubAgent IS NOT NULL AND YEAR(LastShipoutDate) = '{$year->Year}' AND LastSubAgent != '-' AND (LastStatusHist = 2 OR LastStatusHist = 4) AND Type = 4")
+            ->groupBy(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1), YEAR(LastShipoutDate), MONTH(LastShipoutDate)"))
+            ->select(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1) as 'Channel', COUNT(SerialNumber) as 'Counter', YEAR(LastShipoutDate) as 'Year', MONTH(LastShipoutDate) as 'Month'"))->get();
+            if (count($act_prod) > 0) {
+                foreach ($act_prod as $ivr) {
+                    if (!isset($data[$ivr->Channel]["3G"]))
+                        $data[$ivr->Channel]["3G"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    $data[$ivr->Channel]["3G"][($ivr->Month - 1)] = $ivr->Counter;
+                }
+            }
+            if (count($act) > 0) {
+                foreach ($act as $ivr) {
+                    if (!isset($data[$ivr->Channel]["4G"]))
+                        $data[$ivr->Channel]["4G"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    $data[$ivr->Channel]["4G"][($ivr->Month - 1)] = $ivr->Counter;
+                }
+            }
+            return $data;
+        }
+        #3g
+        $act_prod = DB::table('m_inventory')->whereRaw("LastShipoutDate IS NOT NULL AND LastSubAgent IS NOT NULL AND YEAR(LastShipoutDate) = '{$year}' AND LastSubAgent != '-' AND (LastStatusHist = 2 OR LastStatusHist = 4) AND Type = 1")
+            ->groupBy(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1), YEAR(LastShipoutDate), MONTH(LastShipoutDate)"))
+            ->select(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1) as 'Channel', COUNT(SerialNumber) as 'Counter', YEAR(LastShipoutDate) as 'Year', MONTH(LastShipoutDate) as 'Month'"))->get();
+        #4g
+        $act = DB::table('m_inventory')->whereRaw("LastShipoutDate IS NOT NULL AND LastSubAgent IS NOT NULL AND YEAR(LastShipoutDate) = '{$year}' AND LastSubAgent != '-' AND (LastStatusHist = 2 OR LastStatusHist = 4) AND Type = 4")
+        ->groupBy(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1), YEAR(LastShipoutDate), MONTH(LastShipoutDate)"))
+        ->select(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1) as 'Channel', COUNT(SerialNumber) as 'Counter', YEAR(LastShipoutDate) as 'Year', MONTH(LastShipoutDate) as 'Month'"))->get();
+        if (count($act_prod) > 0) {
+            foreach ($act_prod as $ivr) {
+                if (!isset($data[$ivr->Channel]["3G"]))
+                    $data[$ivr->Channel]["3G"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $data[$ivr->Channel]["3G"][($ivr->Month - 1)] = $ivr->Counter;
+            }
+        }
+        if (count($act) > 0) {
+            foreach ($act as $ivr) {
+                if (!isset($data[$ivr->Channel]["4G"]))
+                    $data[$ivr->Channel]["4G"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $data[$ivr->Channel]["4G"][($ivr->Month - 1)] = $ivr->Counter;
+            }
+        }
+        return $data;
+    }
+
+
+    static function getChannelShipoutVoc()
+    {
+        $year = Input::get('year');
+        $type = '';
+//        $type = '2';
+        if (Input::get('type'))
+            $type = Input::get('type');
+//        $year = '2017';
+        $data = [];
+
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            foreach (DB::table('r_stats')->select('Year')->orderBy('Year', 'ASC')->distinct()->get() as $year) {
+                $data2 = [];
+                $myArr = array($year->Year);
+                $writer->addRow($myArr); // add a row at a time
+                $myArr = array("Channel", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+                $writer->addRow($myArr); // add a row at a time
+                #3g
+                $act_prod = DB::table('m_inventory')->whereRaw("LastShipoutDate IS NOT NULL AND LastSubAgent IS NOT NULL AND YEAR(LastShipoutDate) = '{$year->Year}' AND LastSubAgent != '-' AND (LastStatusHist = 2 OR LastStatusHist = 4) AND (Type = 2 OR Type = 3)")
+                ->groupBy(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1), YEAR(LastShipoutDate), MONTH(LastShipoutDate)"))
+                ->select(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1) as 'Channel', COUNT(SerialNumber) as 'Counter', YEAR(LastShipoutDate) as 'Year', MONTH(LastShipoutDate) as 'Month'"))->get();
+                #4g
+                // $act = DB::table('m_inventory')->whereRaw("LastShipoutDate IS NOT NULL AND LastSubAgent IS NOT NULL AND YEAR(LastShipoutDate) = '{$year->Year}' AND LastSubAgent != '-' AND (LastStatusHist = 2 OR LastStatusHist = 4) AND Type = 4")
+                // ->groupBy(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1), YEAR(LastShipoutDate), MONTH(LastShipoutDate)"))
+                // ->select(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1) as 'Channel', COUNT(SerialNumber) as 'Counter', YEAR(LastShipoutDate) as 'Year', MONTH(LastShipoutDate) as 'Month'"))->get();
+                if (count($act_prod) > 0) {
+                    foreach ($act_prod as $ivr) {
+                        if (!isset($data2[$ivr->Channel]["ALL"]))
+                            $data2[$ivr->Channel]["ALL"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        $data2[$ivr->Channel]["ALL"][($ivr->Month - 1)] = $ivr->Counter;
+                    }
+                }
+                // if (count($act) > 0) {
+                //     foreach ($act as $ivr) {
+                //         if (!isset($data2[$ivr->Channel]["3G"]))
+                //             $data2[$ivr->Channel]["3G"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                //         if (!isset($data2[$ivr->Channel]["4G"]))
+                //             $data2[$ivr->Channel]["4G"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                //         $data2[$ivr->Channel]["4G"][($ivr->Month - 1)] = $ivr->Counter + $data2[$ivr->Channel]["3G"][($ivr->Month - 1)];
+                //     }
+                // }
+                foreach ($data2 as $key => $abc) {
+                    $name = $key;
+                    
+                    foreach ($abc as $key2 => $a) {
+                        $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
+                        $writer->addRow($myArr); // add a row at a time
+                    }
+                }
+            }
+            $writer->close();
+             #evoc
+            $act_prod = DB::table('m_inventory')->whereRaw("LastShipoutDate IS NOT NULL AND LastSubAgent IS NOT NULL AND YEAR(LastShipoutDate) = '{$year->Year}' AND LastSubAgent != '-' AND (LastStatusHist = 2 OR LastStatusHist = 4) AND Type = 2")
+            ->groupBy(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1), YEAR(LastShipoutDate), MONTH(LastShipoutDate)"))
+            ->select(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1) as 'Channel', COUNT(SerialNumber) as 'Counter', YEAR(LastShipoutDate) as 'Year', MONTH(LastShipoutDate) as 'Month'"))->get();
+            #pvoc
+            $act = DB::table('m_inventory')->whereRaw("LastShipoutDate IS NOT NULL AND LastSubAgent IS NOT NULL AND YEAR(LastShipoutDate) = '{$year->Year}' AND LastSubAgent != '-' AND (LastStatusHist = 2 OR LastStatusHist = 4) AND Type = 3")
+            ->groupBy(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1), YEAR(LastShipoutDate), MONTH(LastShipoutDate)"))
+            ->select(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1) as 'Channel', COUNT(SerialNumber) as 'Counter', YEAR(LastShipoutDate) as 'Year', MONTH(LastShipoutDate) as 'Month'"))->get();
+            if (count($act_prod) > 0) {
+                foreach ($act_prod as $ivr) {
+                    if (!isset($data[$ivr->Channel]["eVoc"]))
+                        $data[$ivr->Channel]["eVoc"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    $data[$ivr->Channel]["eVoc"][($ivr->Month - 1)] = $ivr->Counter;
+                }
+            }
+            if (count($act) > 0) {
+                foreach ($act as $ivr) {
+                    if (!isset($data[$ivr->Channel]["pVoc"]))
+                        $data[$ivr->Channel]["pVoc"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    $data[$ivr->Channel]["pVoc"][($ivr->Month - 1)] = $ivr->Counter;
+                }
+            }
+            return $data;
+        }
+        #evoc
+        $act_prod = DB::table('m_inventory')->whereRaw("LastShipoutDate IS NOT NULL AND LastSubAgent IS NOT NULL AND YEAR(LastShipoutDate) = '{$year}' AND LastSubAgent != '-' AND (LastStatusHist = 2 OR LastStatusHist = 4) AND Type = 2")
+            ->groupBy(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1), YEAR(LastShipoutDate), MONTH(LastShipoutDate)"))
+            ->select(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1) as 'Channel', COUNT(SerialNumber) as 'Counter', YEAR(LastShipoutDate) as 'Year', MONTH(LastShipoutDate) as 'Month'"))->get();
+        #pvoc
+        $act = DB::table('m_inventory')->whereRaw("LastShipoutDate IS NOT NULL AND LastSubAgent IS NOT NULL AND YEAR(LastShipoutDate) = '{$year}' AND LastSubAgent != '-' AND (LastStatusHist = 2 OR LastStatusHist = 4) AND Type = 3")
+        ->groupBy(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1), YEAR(LastShipoutDate), MONTH(LastShipoutDate)"))
+        ->select(DB::raw("SUBSTRING_INDEX(`LastSubAgent`, ' ', 1) as 'Channel', COUNT(SerialNumber) as 'Counter', YEAR(LastShipoutDate) as 'Year', MONTH(LastShipoutDate) as 'Month'"))->get();
+        if (count($act_prod) > 0) {
+            foreach ($act_prod as $ivr) {
+                if (!isset($data[$ivr->Channel]["eVoc"]))
+                    $data[$ivr->Channel]["eVoc"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $data[$ivr->Channel]["eVoc"][($ivr->Month - 1)] = $ivr->Counter;
+            }
+        }
+        if (count($act) > 0) {
+            foreach ($act as $ivr) {
+                if (!isset($data[$ivr->Channel]["pVoc"]))
+                    $data[$ivr->Channel]["pVoc"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                $data[$ivr->Channel]["pVoc"][($ivr->Month - 1)] = $ivr->Counter;
+            }
+        }
+        return $data;
+    }
+
     static function getChannel()
     {
         $year = Input::get('year');
@@ -4241,8 +4448,11 @@ class InventoryController extends BaseController
                 $data['Churn'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 $data['Active MSISDN'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 //1 -> evoucher; 2 -> phvoucher
-                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Chact%\'')->get();
-                $all_act = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%Activation%\'')->get();
+                $all_ivr = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year->Year}'")
+                ->groupBy(DB::raw('YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)'))
+                ->select(DB::raw("COUNT(DISTINCT inv1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
+                $all_act = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year->Year}'")->groupBy(DB::raw('YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)'))
+                ->select(DB::raw("COUNT(DISTINCT inv1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -4275,8 +4485,11 @@ class InventoryController extends BaseController
             return $data;
         }
         //1 -> evoucher; 2 -> phvoucher
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Chact%\'')->get();
-        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Activation%\'')->get();
+        $all_ivr = DB::table('m_inventory as inv1')->whereRaw("inv1.ChurnDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")
+                ->groupBy(DB::raw('YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)'))
+                ->select(DB::raw("COUNT(DISTINCT inv1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
+                $all_act = DB::table('m_inventory as inv1')->whereRaw("inv1.ActivationDate IS NOT NULL AND YEAR(inv1.ActivationDate) = '{$year}'")->groupBy(DB::raw('YEAR(inv1.ActivationDate), MONTH(inv1.ActivationDate)'))
+                ->select(DB::raw("COUNT(DISTINCT inv1.MSISDN) as 'Counter', YEAR(inv1.ActivationDate) as 'Year', MONTH(inv1.ActivationDate) as 'Month'"))->get();
 //        $all_act = Stats::where('Year', $year)->whereRaw('Status LIKE \'%Act%\'')->get();
 //        if(!count($all_ivr)){
 //            $data['000'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
