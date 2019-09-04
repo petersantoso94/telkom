@@ -5,7 +5,8 @@ function getConnection() {
         'user' => 'telkom',
         'pass' => 'asdf1234',
         'db' => 'telkom',
-        'host' => 'database'
+        'host' => 'database',
+        'charset' => "utf8"
     );
 }
 

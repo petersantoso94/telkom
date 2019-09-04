@@ -199,6 +199,7 @@ class SSP {
     static function simple($request, $conn, $table, $primaryKey, $columns, $extraWhere, $join) {
         $bindings = array();
         $db = self::db($conn);
+        $db->exec("set names utf8");
         // Build the SQL query string from the request
         $limit = self::limit($request, $columns);
         $order = self::order($request, $columns);

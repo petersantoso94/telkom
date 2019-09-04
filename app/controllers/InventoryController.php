@@ -4853,8 +4853,11 @@ static function exportExcel($filter)
             $agent = '';
             $subagent = '';
             $tempcount = 0;
+            if(substr($inv->SubAgent, 0, 1) === ' '){
+                
+            }
             if ($inv->SubAgent != '') {
-                $shipout = explode(' ', $inv->SubAgent);
+                $shipout = explode(' ', ltrim($inv->SubAgent,' '));
                 //                foreach ($shipout as $word) {
                 //                    if ($tempcount > 0) {
                 //                        $subagent .= $word . ' ';
