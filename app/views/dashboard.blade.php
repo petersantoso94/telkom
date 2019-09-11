@@ -315,6 +315,18 @@
                                                 </div>
                                                 <!-- /.info-box -->
                                             </div>
+                                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                                <div class="info-box">
+                                                    <span class="info-box-icon bg-red"><i class="fa fa-bar-chart"></i></span>
+
+                                                    <div class="info-box-content">
+                                                        <span class="info-box-text">Remaining Inventory</span>
+                                                        <a href="#" class="small-box-footer" onclick="showChart(this)" data-id="info_remaining_inventory">Show Chart<i class="fa fa-arrow-circle-right"></i></a>
+                                                    </div>
+                                                    <!-- /.info-box-content -->
+                                                </div>
+                                                <!-- /.info-box -->
+                                            </div>
                                         </div>
                                         <div class="row toogling" id="info_shipout_per_channel_sim" style="display: none;">
                                             <div class="form-group col-md-2">
@@ -352,6 +364,20 @@
                                             <div class="chart">
                                                 <div id="legend21" class="legend" style="font-size: 80%"></div>
                                                 <canvas id="barChart_shipout_per_channel_voc" height="100"></canvas>
+                                            </div>
+                                        </div>
+                                        <div class="row toogling" id="info_remaining_inventory" style="display: none;">
+                                            <div class="form-group col-md-2" style='<?php if (Auth::user()->Position > 1) echo "visibility:hidden;" ?>'>
+                                                <button type="button" class="btn btn-default btn-save-data" aria-label="Left Align">
+                                                    <span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>
+                                                </button>
+                                            </div>
+                                            <div class="form-group col-md-2">
+                                                <div class="loader loading-animation-global" style="display: none;"></div>
+                                            </div>
+                                            <div class="chart">
+                                                <div id="legend22" class="legend" style="font-size: 80%"></div>
+                                                <canvas id="barChart_remaining_inventory" height="100"></canvas>
                                             </div>
                                         </div>
                                         <div class="row toogling" id="info_shipout_sim" style="display: none;">
@@ -1191,6 +1217,8 @@
                 var getChannel = '<?php echo Route('getChannel') ?>';
                 var getChannelShipoutSim = '<?php echo Route('getChannelShipoutSim') ?>';
                 var getChannelShipoutVoc = '<?php echo Route('getChannelShipoutVoc') ?>';
+                var getRemaining = '<?php echo Route('getRemaining') ?>';
+                var getRemainingWarehouse = '<?php echo Route('getRemainingWarehouse') ?>';
                 var getChannelChurn = '<?php echo Route('getChannelChurn') ?>';
                 var getCHURN2 = '<?php echo Route('getCHURN2') ?>';
                 var getSubsriber = '<?php echo Route('getSubsriber') ?>';
@@ -1434,6 +1462,10 @@
                 };
                 var barChartData21 = {
                     labels: MONTHS,
+                    datasets: []
+                };
+                var barChartData22 = {
+                    labels: ["TAIWAN STAR"],
                     datasets: []
                 };
 
@@ -2671,6 +2703,55 @@
                             }
                         }
                     });
+                    var ctx22 = document.getElementById("barChart_remaining_inventory").getContext("2d");
+                    window.myBar22 = new Chart(ctx22, {
+                        type: 'bar',
+                        data: barChartData22,
+                        options: {
+                            responsive: true,
+                            //                maintainAspectRatio: true,
+                            legend: {
+                                display: false
+                            },
+                            tooltips: {
+                                mode: 'index',
+                                callbacks: {
+                                    label: function (tooltipItem, data) {
+                                        var value = data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index].toString();
+                                        var temp_arr = value.split('.');
+                                        if (temp_arr.length == 2) {
+                                            value = temp_arr[0].split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                            value += '.' + temp_arr[1];
+                                        } else {
+                                            value = value.toString();
+                                            value = value.split(/(?=(?:...)*$)/);
+                                            value = value.join(',');
+                                        }
+                                        return value;
+                                    }
+                                } // end callbacks:
+                            },
+                            title: {
+                                display: true,
+                                text: 'Remaining Inventory Report'
+                            }, scales: {
+                                xAxes: [{
+                                        stacked: true,
+                                        gridLines: {
+                                            display: false
+                                        }
+                                    }],
+                                yAxes: [{
+                                        gridLines: {
+                                            display: false
+                                        }, ticks: {
+                                            display: false
+                                        },
+                                    }]
+                            }
+                        }
+                    });
 
 //                    refreshBarChart();
                 };
@@ -3277,6 +3358,46 @@
                             if (excelbutton) {
                                 window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 $("#channel_shipout_voc_year").val(default_year);
+                                excelbutton = false;
+                            }
+                            $('.loading').hide();
+                        });
+                    }else if (chartID == 'info_remaining_inventory') {
+                        var labels = [];
+                        $.get( getRemainingWarehouse, function( data ) {
+                            labels = data;
+                        });
+                        $.post(getRemaining, { type: arg_type}, function (data) {
+
+                        }).done(function (data) {
+                            barChartData22.datasets = [];
+                            barChartData22.labels = labels;
+                            var idx = 1;
+                            var channel_name = "";
+                            var colorName = colorNames[barChartData22.datasets.length % colorNames.length];
+                            var colors = ["#db4141", "#f2c9c9", "#ce9a29", "#f7e8c8", "#f9f939", "#fcfcbd", "#77bf35", "#cff7aa",
+                                "#73e2ca", "#d5efe9", "#598ce0", "#d5dfef", "#ef4aec", "#f2d2f1"];
+                            var dsColor = window.chartColors[colorName];
+                            $.each(data, function (index, value) {
+                                barChartData22.datasets.push({
+                                        label: index,
+                                        stack: 'Stack ' + idx,
+                                        backgroundColor: colors[barChartData22.datasets.length % colors.length],
+                                        borderColor: colors[barChartData22.datasets.length % colors.length],
+                                        borderWidth: 1,
+                                        data: value
+                                });
+                                idx++;
+                            });
+                            window.myBar22.update();
+                            document.getElementById('legend22').innerHTML = myBar22.generateLegend();
+                            if (scroll) {
+                                window.scrollBy(0, 200);
+                            } else {
+                                scroll = true;
+                            }
+                            if (excelbutton) {
+                                window.location.href = "<?php echo url() ?>" + '/data_chart.xlsx';
                                 excelbutton = false;
                             }
                             $('.loading').hide();

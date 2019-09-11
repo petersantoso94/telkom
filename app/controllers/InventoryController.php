@@ -654,18 +654,18 @@ class InventoryController extends BaseController
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_sn); $i++) {
                         if ($i == 0)
-                            $for_raw .= "('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_laststatus_hist[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= "('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_laststatus_hist[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,0,'" . $arr_hist_date[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                         else
-                            $for_raw .= ",('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_laststatus_hist[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= ",('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_laststatus_hist[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,0,'" . $arr_hist_date[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
                     DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_id_hist); $i++) {
                         if ($i == 0)
-                            $for_raw .= "('" . $arr_id_hist[$i] . "','" . $arr_sn_hist[$i] . "','" . $arr_subagent_hist[$i] . "','" . $arr_wh_hist[$i] . "',0,'" . $arr_shipoutnumber_hist[$i] . "',NULL,'" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= "('" . $arr_id_hist[$i] . "','" . $arr_sn_hist[$i] . "',NULL,'" . $arr_wh_hist[$i] . "',0,'" . $arr_shipoutnumber_hist[$i] . "',NULL,'" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                         else
-                            $for_raw .= ",('" . $arr_id_hist[$i] . "','" . $arr_sn_hist[$i] . "','" . $arr_subagent_hist[$i] . "','" . $arr_wh_hist[$i] . "',0,'" . $arr_shipoutnumber_hist[$i] . "',NULL,'" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= ",('" . $arr_id_hist[$i] . "','" . $arr_sn_hist[$i] . "',NULL,'" . $arr_wh_hist[$i] . "',0,'" . $arr_shipoutnumber_hist[$i] . "',NULL,'" . $arr_status_hist[$i] . "','" . $arr_laststatus_hist[$i] . "',0,'" . $arr_hist_date[$i] . "','" . $arr_remark_hist[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
                     DB::insert("INSERT INTO m_historymovement VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE ID=ID;");
 
@@ -2914,6 +2914,115 @@ class InventoryController extends BaseController
         return $data;
     }
 
+    static function getRemainingWarehouse(){
+        $data = [];
+        $wh = DB::table('m_inventory as inv1')->whereRaw("inv1.LastStatusHist IN (0,1,3)")->select(DB::raw("DISTINCT inv1.LastWarehouse as 'Warehouse'"))->get();
+        if ($wh != null && count($wh) > 0) {
+            foreach ($wh as $key => $value) {
+                # code...
+                $data[] = $value->Warehouse;
+            }
+        }
+        return $data;
+    }
+
+    static function getRemaining()
+    {
+        $type = '';
+        if (Input::get('type'))
+            $type = Input::get('type');
+//        $year = '2017';
+        $data = [];
+        $returnData = [];
+        $remainWH = [];
+        $wh_temp = DB::table('m_inventory as inv1')->whereRaw("inv1.LastStatusHist IN (0,1,3)")->select(DB::raw("DISTINCT inv1.LastWarehouse as 'Warehouse'"))->get();
+        if ($wh_temp != null && count($wh_temp) > 0) {
+            foreach ($wh_temp as $key => $value) {
+                # code...
+                $remainWH[] = $value->Warehouse;
+            }
+        }
+        $all_ivr = DB::table('m_inventory as inv1')->whereRaw("inv1.LastStatusHist IN (0,1,3)")
+            ->groupBy(DB::raw('inv1.LastWarehouse, inv1.Type, inv1.VocValue'))
+            ->select(DB::raw("COUNT(inv1.SerialNumber) as 'Counter', inv1.LastWarehouse as 'Warehouse', inv1.Type, inv1.VocValue as 'Value'"))->get();
+        if ($all_ivr != null && count($all_ivr) > 0) {
+            foreach ($all_ivr as $ivr) {
+                $wh = $ivr->Warehouse;
+                $type = $ivr->Type;
+                $value = $ivr->Value;
+                $typeString = "";
+                switch ($type) {
+                    case 1:
+                        # SIM3G
+                        $typeString = "SIM3G";
+                        break;
+                    case 2:
+                        # EVOC
+                        $typeString = "EVOC-".($value?$value:"");
+                        break;
+                    case 3:
+                        # PVOC
+                        $typeString = "PVOC-".($value?$value:"");
+                        break;
+                    case 4:
+                        $typeString = "SIM4G";
+                        # SIM4G
+                        break;
+                    default:
+                        # code...
+                        break;
+                }
+                if(!isset($data[$typeString])) $data[$typeString] =[];
+                $data[$typeString][$wh] = $ivr->Counter ;
+            }
+        }
+
+        $countWH = count($remainWH);
+        foreach ($data as $key => $value) {
+            if(!isset($returnData[$key])) $returnData[$key] = array_fill(0, $countWH, "0");
+            foreach ($value as $key2 => $value2) {
+                $found_idx = array_search($key2, $remainWH);
+                $returnData[$key][$found_idx] = isset($data[$key][$key2])?$data[$key][$key2]:"0";
+            }
+            
+        }
+
+        if ($type === '2') {
+            $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+            $filePath = public_path() . "/data_chart.xlsx";
+            $writer->openToFile($filePath);
+            $arrKeyString = [];
+            $arrWh = [];
+            $arr_temp = [];
+            $counter = 0;
+            foreach ($data as $key => $value) {
+                $arrKeyString[] = $key;
+                $counter++;
+            }
+            $counter2 = 0;
+            foreach ($data as $key => $value) {
+                foreach ($value as $key2 => $value2) {
+                    #  number_format($a[2])
+                    if(!isset($arr_temp[$key2])) $arr_temp[$key2] = array_fill(0, $counter, "0");;
+                    $arr_temp[$key2][$counter2] = isset($data[$key][$key2])?$data[$key][$key2]:"0";
+                }
+                $counter2++;
+            }
+            array_unshift($arrKeyString , 'Type');
+            $writer->addRow($arrKeyString); // add a row at a time
+            
+            foreach ($arr_temp as $key => $value) {
+                # code...
+                $tmp = [];
+                $tmp[] = $key;
+                $tmp = array_merge($tmp, $value); 
+                $writer->addRow($tmp);
+            }
+            $writer->close();
+        }
+        return $returnData;
+    }
+
     static function getProductive()
     {
 //        $check_msisdn =[];
@@ -2959,7 +3068,7 @@ class InventoryController extends BaseController
                     ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year->Year}'")
                     ->where('prod1.MO', '0')->where('prod1.MT', '0')->where('prod1.Internet', '0')->where('prod1.Sms', '0')
                     ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-                    ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+                    ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if (count($all_ivr) > 0) {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2976,7 +3085,7 @@ class InventoryController extends BaseController
                     ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                     ->whereRaw("`prod1`.Year = '{$year->Year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet = 0 AND prod1.Sms = 0")
                     ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-                    ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+                    ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if (count($all_ivr) > 0) {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -2993,7 +3102,7 @@ class InventoryController extends BaseController
                     ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                     ->whereRaw("`prod1`.Year = '{$year->Year}' AND prod1.MO = 0 AND prod1.MT = 0 AND prod1.Internet > 0 AND prod1.Sms = 0")
                     ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-                    ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+                    ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if (count($all_ivr) > 0) {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3010,7 +3119,7 @@ class InventoryController extends BaseController
                     ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                     ->whereRaw("`prod1`.Year = '{$year->Year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet > 0 AND prod1.Sms = 0")
                     ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-                    ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+                    ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if (count($all_ivr) > 0) {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3027,7 +3136,7 @@ class InventoryController extends BaseController
                     ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                     ->whereRaw("`prod1`.Year = '{$year->Year}' AND prod1.MO = 0 AND prod1.MT = 0 AND prod1.Internet = 0 AND prod1.Sms > 0")
                     ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-                    ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+                    ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if (count($all_ivr) > 0) {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3044,7 +3153,7 @@ class InventoryController extends BaseController
                     ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                     ->whereRaw("`prod1`.Year = '{$year->Year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet = 0 AND prod1.Sms > 0")
                     ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-                    ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+                    ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if (count($all_ivr) > 0) {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3061,7 +3170,7 @@ class InventoryController extends BaseController
                     ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                     ->whereRaw("`prod1`.Year = '{$year->Year}' AND prod1.MO = 0 AND prod1.MT = 0 AND prod1.Internet > 0 AND prod1.Sms > 0")
                     ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-                    ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+                    ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if (count($all_ivr) > 0) {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3078,7 +3187,7 @@ class InventoryController extends BaseController
                     ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
                     ->whereRaw("`prod1`.Year = '{$year->Year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet > 0 AND prod1.Sms > 0")
                     ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-                    ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+                    ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if (count($all_ivr) > 0) {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3139,7 +3248,7 @@ class InventoryController extends BaseController
             ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year}'")
             ->where('prod1.MO', '0')->where('prod1.MT', '0')->where('prod1.Internet', '0')->where('prod1.Sms', '0')
             ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-            ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+            ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
         if (count($all_ivr) > 0) {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3156,7 +3265,7 @@ class InventoryController extends BaseController
             ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
             ->whereRaw("`prod1`.Year = '{$year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet = 0 AND prod1.Sms = 0")
             ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-            ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+            ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
         if (count($all_ivr) > 0) {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3173,7 +3282,7 @@ class InventoryController extends BaseController
             ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
             ->whereRaw("`prod1`.Year = '{$year}' AND prod1.MO = 0 AND prod1.MT = 0 AND prod1.Internet > 0 AND prod1.Sms = 0")
             ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-            ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+            ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
         if (count($all_ivr) > 0) {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3190,7 +3299,7 @@ class InventoryController extends BaseController
             ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
             ->whereRaw("`prod1`.Year = '{$year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet > 0 AND prod1.Sms = 0")
             ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-            ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+            ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
         if (count($all_ivr) > 0) {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3207,7 +3316,7 @@ class InventoryController extends BaseController
             ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
             ->whereRaw("`prod1`.Year = '{$year}' AND prod1.MO = 0 AND prod1.MT = 0 AND prod1.Internet = 0 AND prod1.Sms > 0")
             ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-            ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+            ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
         if (count($all_ivr) > 0) {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3224,7 +3333,7 @@ class InventoryController extends BaseController
             ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
             ->whereRaw("`prod1`.Year = '{$year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet = 0 AND prod1.Sms > 0")
             ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-            ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+            ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
         if (count($all_ivr) > 0) {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3241,7 +3350,7 @@ class InventoryController extends BaseController
             ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
             ->whereRaw("`prod1`.Year = '{$year}' AND prod1.MO = 0 AND prod1.MT = 0 AND prod1.Internet > 0 AND prod1.Sms > 0")
             ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-            ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+            ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
         if (count($all_ivr) > 0) {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3258,7 +3367,7 @@ class InventoryController extends BaseController
             ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
             ->whereRaw("`prod1`.Year = '{$year}' AND (prod1.MO > 0 OR prod1.MT > 0) AND prod1.Internet > 0 AND prod1.Sms > 0")
             ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
-            ->select(DB::raw("COUNT(`prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
+            ->select(DB::raw("COUNT(DISTINCT `prod1`.MSISDN) as 'Counter', `prod1`.Year, `prod1`.Month"))->get();
         if (count($all_ivr) > 0) {
             if (!isset($data[$stats]))
                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3300,7 +3409,8 @@ class InventoryController extends BaseController
 //        }
 
                 $all_ivr = DB::table('m_productive as prod1')
-                    ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year->Year}'")
+                    // ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+                    ->whereRaw("`prod1`.Year = '{$year->Year}'")
                     ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
                     ->select(DB::raw("SUM(`prod1`.MO) as 'mo_Counter',SUM(`prod1`.MT) as 'mt_Counter',SUM(`prod1`.Internet) as 'int_Counter',SUM(`prod1`.Sms) as 'sms_Counter', `prod1`.Year, `prod1`.Month"))->get();
                 if ($all_ivr != null) {
@@ -3332,7 +3442,8 @@ class InventoryController extends BaseController
             return $data;
         }
         $all_ivr = DB::table('m_productive as prod1')
-            ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')->whereRaw("`prod1`.Year = '{$year}'")
+            // ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+            ->whereRaw("`prod1`.Year = '{$year}'")
             ->groupBy(DB::raw('`prod1`.Year, `prod1`.Month'))
             ->select(DB::raw("SUM(`prod1`.MO) as 'mo_Counter',SUM(`prod1`.MT) as 'mt_Counter',SUM(`prod1`.Internet) as 'int_Counter',SUM(`prod1`.Sms) as 'sms_Counter', `prod1`.Year, `prod1`.Month"))->get();
 //        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%_sum%\'')->get();
@@ -3402,7 +3513,7 @@ class InventoryController extends BaseController
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
                 $all_ivr = DB::table('m_productive as prod1')
-            ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+            // ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
             ->whereRaw("`prod1`.Year = '{$year->Year}' AND prod1.Internet > 0")
             ->groupBy(DB::raw('`prod1`.Month'))
             ->select(DB::raw(" SUM(Internet) as 'Counter', `prod1`.Month"))->get();
@@ -3434,7 +3545,7 @@ class InventoryController extends BaseController
             return $data;
         }
         $all_ivr = DB::table('m_productive as prod1')
-        ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
+        // ->join('m_inventory as inv1', 'prod1.MSISDN', '=', 'inv1.MSISDN')
         ->whereRaw("`prod1`.Year = '{$year}' AND prod1.Internet > 0")
         ->groupBy(DB::raw('`prod1`.Month'))
         ->select(DB::raw(" SUM(Internet) as 'Counter', `prod1`.Month"))->get();
@@ -5281,7 +5392,7 @@ static function exportExcel($filter)
         if (strlen($month) === 1) {
             $tempmonth = "0" . $month;
         }
-        $all_ivr = DB::select("SELECT SUM(prod1.MO) as 'mo', SUM(prod1.MT) as 'mt',SUM(prod1.Internet) as 'internet',SUM(prod1.Sms) as 'sms' FROM m_productive prod1 INNER JOIN m_inventory as inv1 ON prod1.MSISDN = inv1.MSISDN "
+        $all_ivr = DB::select("SELECT SUM(prod1.MO) as 'mo', SUM(prod1.MT) as 'mt',SUM(prod1.Internet) as 'internet',SUM(prod1.Sms) as 'sms' FROM m_productive prod1 " // INNER JOIN m_inventory as inv1 ON prod1.MSISDN = inv1.MSISDN
             . "WHERE prod1.Day >= 1 AND prod1.Day <= {$tempday} AND prod1.Month LIKE '{$tempmonth}' AND prod1.Year LIKE '{$year}'");
 //        $all_ivr = Stats::where('Year', $year)->where('Month', $tempmonth)->whereRaw('Status LIKE \'%_sum%\'')->get();
         $data = array();

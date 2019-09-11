@@ -23,6 +23,8 @@ Route::group(array('before' => 'auth'), function() {
     Route::get('getFS', array('as' => 'getFS', 'before' => '', 'uses' => 'InventoryController@getFS'));
     Route::any('getIVR', array('as' => 'getIVR', 'before' => '', 'uses' => 'InventoryController@getIVR'));
     Route::any('getProductive', array('as' => 'getProductive', 'before' => '', 'uses' => 'InventoryController@getProductive'));
+    Route::any('getRemaining', array('as' => 'getRemaining', 'before' => '', 'uses' => 'InventoryController@getRemaining'));
+    Route::any('getRemainingWarehouse', array('as' => 'getRemainingWarehouse', 'before' => '', 'uses' => 'InventoryController@getRemainingWarehouse'));
     Route::any('getSumService', array('as' => 'getSumService', 'before' => '', 'uses' => 'InventoryController@getSumService'));
     Route::any('getPayload', array('as' => 'getPayload', 'before' => '', 'uses' => 'InventoryController@getPayload'));
     Route::any('getInternetVsNon', array('as' => 'getInternetVsNon', 'before' => '', 'uses' => 'InventoryController@getInternetVsNon'));
