@@ -193,9 +193,9 @@ class InventoryController extends BaseController
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_sn); $i++) {
                         if ($i == 0)
-                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_hist_status[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_hist_status[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "',NULL,NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                         else
-                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_hist_status[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_hist_status[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "',NULL,NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
                     DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
@@ -395,9 +395,9 @@ class InventoryController extends BaseController
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_sn); $i++) {
                         if ($i == 0)
-                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_hist_status[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= "('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_hist_status[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_type[$i] . "',NULL,NULL,NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                         else
-                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_hist_status[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_type[$i] . "',NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= ",('" . $arr_sn[$i] . "','" . $arr_shipinprice[$i] . "',0,0,'" . $arr_laststatusid[$i] . "','" . $arr_hist_status[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_type[$i] . "',NULL,NULL,NULL'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
                     DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
@@ -550,9 +550,10 @@ class InventoryController extends BaseController
                             if ($rowNumber > 1) {
                                 // do stuff with the row
                                 $act_serial_number = (string)$value[0];
-                                $subagent = (string)$value[6];
-                                DB::update("UPDATE `m_inventory` SET `LastSubAgent`= '". $subagent ."' WHERE `SerialNumber` LIKE '%".$act_serial_number."%'");
-                                DB::update("UPDATE `m_historymovement` SET `SubAgent`= '". $subagent ."' WHERE `SN` LIKE '%".$act_serial_number."%' AND (`Status` = '2' OR `Status` = '4')");
+                                $msisdn = (string)$value[2];
+                                $batch = $value[3];
+                                DB::update("UPDATE `m_inventory` SET `MSISDN_TSEL`= '". $msisdn ."', `BATCH` = '".$batch."' WHERE `SerialNumber` LIKE '%".$act_serial_number."%'");
+                                //DB::update("UPDATE `m_historymovement` SET `SubAgent`= '". $subagent ."' WHERE `SN` LIKE '%".$act_serial_number."%' AND (`Status` = '2' OR `Status` = '4')");
                             }
                         }
                     }
@@ -654,9 +655,9 @@ class InventoryController extends BaseController
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_sn); $i++) {
                         if ($i == 0)
-                            $for_raw .= "('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_laststatus_hist[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,0,'" . $arr_hist_date[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= "('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_laststatus_hist[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,0,'" . $arr_hist_date[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "',NULL,NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                         else
-                            $for_raw .= ",('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_laststatus_hist[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,0,'" . $arr_hist_date[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= ",('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_laststatus_hist[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,0,'" . $arr_hist_date[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "',NULL,NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
                     DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
@@ -2932,6 +2933,7 @@ class InventoryController extends BaseController
         if (Input::get('type'))
             $type = Input::get('type');
 //        $year = '2017';
+        
         $data = [];
         $returnData = [];
         $remainWH = [];
@@ -2954,7 +2956,7 @@ class InventoryController extends BaseController
                 switch ($type) {
                     case 1:
                         # SIM3G
-                        $typeString = "SIM3G";
+                        $typeString = "SIM-3G";
                         break;
                     case 2:
                         # EVOC
@@ -2965,7 +2967,7 @@ class InventoryController extends BaseController
                         $typeString = "PVOC-".($value?$value:"");
                         break;
                     case 4:
-                        $typeString = "SIM4G";
+                        $typeString = "SIM-4G";
                         # SIM4G
                         break;
                     default:
@@ -2986,8 +2988,8 @@ class InventoryController extends BaseController
             }
             
         }
-
-        if ($type === '2') {
+        
+        if (true) {
             $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
             $filePath = public_path() . "/data_chart.xlsx";
             $writer->openToFile($filePath);
@@ -3004,7 +3006,7 @@ class InventoryController extends BaseController
                 foreach ($value as $key2 => $value2) {
                     #  number_format($a[2])
                     if(!isset($arr_temp[$key2])) $arr_temp[$key2] = array_fill(0, $counter, "0");;
-                    $arr_temp[$key2][$counter2] = isset($data[$key][$key2])?$data[$key][$key2]:"0";
+                    $arr_temp[$key2][$counter2] = isset($data[$key][$key2])?number_format($data[$key][$key2]):"0";
                 }
                 $counter2++;
             }
@@ -4641,7 +4643,7 @@ class InventoryController extends BaseController
         if ($msisdn != NULL)
             $type = '4';
 
-        $for_raw = "('{$sn}',0,0,0,'{$id_counter}','TELIN TAIWAN','{$type}','{$msisdn}','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'shipin from uncatagorized',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+        $for_raw = "('{$sn}',0,0,0,'{$id_counter}','TELIN TAIWAN','{$type}','{$msisdn}',NULL,NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'shipin from uncatagorized',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
         DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
         $for_raw = "('{$id_counter}','{$sn}','-','TELIN TAIWAN',0,CONCAT(CURDATE(),'/SI/TST001'),NULL,'0','{$id_counter}',0,CURDATE(),'shipin from uncatagorized',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
