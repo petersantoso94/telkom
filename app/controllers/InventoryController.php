@@ -545,6 +545,9 @@ class InventoryController extends BaseController
                     $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
                     $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
                     $reader->open($filePath);
+                    $arr_msisdn =  [];
+                    $arr_batch =  [];
+                    $arr_sn =  [];
                     foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
                         foreach ($sheet->getRowIterator() as $rowNumber => $value) {
                             if ($rowNumber > 1) {
@@ -552,12 +555,30 @@ class InventoryController extends BaseController
                                 $act_serial_number = (string)$value[0];
                                 $msisdn = (string)$value[2];
                                 $batch = $value[3];
-                                DB::update("UPDATE `m_inventory` SET `MSISDN_TSEL`= '". $msisdn ."', `BATCH` = '".$batch."' WHERE `SerialNumber` LIKE '%".$act_serial_number."%'");
+                                $arr_sn[] = $act_serial_number;
+                                $arr_batch[] = $batch;
+                                $arr_msisdn[] = $msisdn;
+
+                                // DB::update("UPDATE `m_inventory` SET `MSISDN_TSEL`= '". $msisdn ."', `BATCH` = '".$batch."' WHERE `SerialNumber` LIKE '%".$act_serial_number."%'");
                                 //DB::update("UPDATE `m_historymovement` SET `SubAgent`= '". $subagent ."' WHERE `SN` LIKE '%".$act_serial_number."%' AND (`Status` = '2' OR `Status` = '4')");
                             }
                         }
                     }
                     $reader->close();
+                    $cases1 = [];
+                    $cases2 = [];
+                    $ids = [];
+                    $params = [];
+                    for ($i = 0; $i < count($arr_sn); $i++) {
+                        $id = $arr_sn[$i];
+                        $cases2[] = "WHEN '{$id}' then '{$arr_batch[$i]}'";
+                        $cases1[] = "WHEN '{$id}' then '{$arr_msisdn[$i]}'";
+                        $ids[] = '\'' . $id . '\'';
+                    }
+                    $ids = implode(',', $ids);
+                    $cases1 = implode(' ', $cases1);
+                    $cases2 = implode(' ', $cases2);
+                    DB::update("UPDATE `m_inventory` SET `MSISDN_TSEL` = CASE `SerialNumber` {$cases1} END, `BATCH` = CASE `SerialNumber` {$cases2} END WHERE `SerialNumber` in ({$ids}) AND `ChurnDate` IS NULL");
                 }
             }
         }
@@ -4807,7 +4828,7 @@ static function exportExcel($filter)
         $writer = Box\Spout\Writer\WriterFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
         $filePath = public_path() . "/inventory_" . $filenames . ".xlsx";
         $writer->openToFile($filePath);
-        $myArr = array("SERIAL NUMBER", "MSISDN", "TYPE", "LAST STATUS", "SHIPOUT TO", "SUBAGENT", "FORM SERIES", "LAST WAREHOUSE", "WAREHOUSE DATE", "SHIPOUT DATE", "SHIPOUT PRICE", "SHIPIN DATE", "SHIPIN PRICE", "REMARK", "ACTIVATION/ TOPUP DATE");
+        $myArr = array("SERIAL NUMBER", "MSISDN", "MSISDN TSEL", "BATCH", "TYPE", "LAST STATUS", "SHIPOUT TO", "SUBAGENT", "FORM SERIES", "LAST WAREHOUSE", "WAREHOUSE DATE", "SHIPOUT DATE", "SHIPOUT PRICE", "SHIPIN DATE", "SHIPIN PRICE", "REMARK", "ACTIVATION/ TOPUP DATE");
         $writer->addRow($myArr); // add a row at a time
 
         if ($fs == '') {
@@ -4818,6 +4839,8 @@ static function exportExcel($filter)
                     . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                     . ' inv1.LastSubAgent as "SubAgent", '
                     . 'inv1.LastShipoutNumber as "ShipoutNumber", '
+                    . 'inv1.MSISDN_TSEL as "Tsel", '
+                    . 'inv1.BATCH as "Batch", '
                     . 'inv1.LastWarehouseDate as "WarehouseDate", '
                     . 'inv1.LastShipoutDate as "ShipoutDate", '
                     . 'inv1.LastShipoutPrice as "ShipoutPrice", '
@@ -4832,6 +4855,8 @@ static function exportExcel($filter)
                         . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                         . ' inv1.LastSubAgent as "SubAgent", '
                         . 'inv1.LastShipoutNumber as "ShipoutNumber", '
+                        . 'inv1.MSISDN_TSEL as "Tsel", '
+                        . 'inv1.BATCH as "Batch", '
                         . 'inv1.LastWarehouseDate as "WarehouseDate", '
                         . 'inv1.LastShipoutDate as "ShipoutDate", '
                         . 'inv1.LastShipoutPrice as "ShipoutPrice", '
@@ -4846,6 +4871,8 @@ static function exportExcel($filter)
                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                             . ' inv1.LastSubAgent as "SubAgent", '
                             . 'inv1.LastShipoutNumber as "ShipoutNumber", '
+                            . 'inv1.MSISDN_TSEL as "Tsel", '
+                            . 'inv1.BATCH as "Batch", '
                             . 'inv1.LastWarehouseDate as "WarehouseDate", '
                             . 'inv1.LastShipoutDate as "ShipoutDate", '
                             . 'inv1.LastShipoutPrice as "ShipoutPrice", '
@@ -4862,6 +4889,8 @@ static function exportExcel($filter)
                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                             . ' inv1.LastSubAgent as "SubAgent", '
                             . 'inv1.LastShipoutNumber as "ShipoutNumber", '
+                            . 'inv1.MSISDN_TSEL as "Tsel", '
+                            . 'inv1.BATCH as "Batch", '
                             . 'inv1.LastWarehouseDate as "WarehouseDate", '
                             . 'inv1.LastShipoutDate as "ShipoutDate", '
                             . 'inv1.LastShipoutPrice as "ShipoutPrice", '
@@ -4878,6 +4907,8 @@ static function exportExcel($filter)
                     . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                     . ' inv1.LastSubAgent as "SubAgent", '
                     . 'inv1.LastShipoutNumber as "ShipoutNumber", '
+                    . 'inv1.MSISDN_TSEL as "Tsel", '
+                    . 'inv1.BATCH as "Batch", '
                     . 'inv1.LastWarehouseDate as "WarehouseDate", '
                     . 'inv1.LastShipoutDate as "ShipoutDate", '
                     . 'inv1.LastShipoutPrice as "ShipoutPrice", '
@@ -4892,6 +4923,8 @@ static function exportExcel($filter)
                         . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                         . ' inv1.LastSubAgent as "SubAgent", '
                         . 'inv1.LastShipoutNumber as "ShipoutNumber", '
+                        . 'inv1.MSISDN_TSEL as "Tsel", '
+                        . 'inv1.BATCH as "Batch", '
                         . 'inv1.LastWarehouseDate as "WarehouseDate", '
                         . 'inv1.LastShipoutDate as "ShipoutDate", '
                         . 'inv1.LastShipoutPrice as "ShipoutPrice", '
@@ -4907,6 +4940,8 @@ static function exportExcel($filter)
                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                             . ' inv1.LastSubAgent as "SubAgent", '
                             . 'inv1.LastShipoutNumber as "ShipoutNumber", '
+                            . 'inv1.MSISDN_TSEL as "Tsel", '
+                            . 'inv1.BATCH as "Batch", '
                             . 'inv1.LastWarehouseDate as "WarehouseDate", '
                             . 'inv1.LastShipoutDate as "ShipoutDate", '
                             . 'inv1.LastShipoutPrice as "ShipoutPrice", '
@@ -4924,6 +4959,8 @@ static function exportExcel($filter)
                             . ' inv1.LastStatusHist,inv1.LastWarehouse, m_historymovement.Remark,'
                             . ' inv1.LastSubAgent as "SubAgent", '
                             . 'inv1.LastShipoutNumber as "ShipoutNumber", '
+                            . 'inv1.MSISDN_TSEL as "Tsel", '
+                            . 'inv1.BATCH as "Batch", '
                             . 'inv1.LastWarehouseDate as "WarehouseDate", '
                             . 'inv1.LastShipoutDate as "ShipoutDate", '
                             . 'inv1.LastShipoutPrice as "ShipoutPrice", '
@@ -4981,7 +5018,7 @@ static function exportExcel($filter)
             if ($shipout != '') {
                 $agent = $shipout[0];
             }
-            $myArr = array($inv->SerialNumber, $inv->MSISDN, $type, $status, $agent, $inv->SubAgent, $inv->ShipoutNumber, $inv->LastWarehouse, $inv->WarehouseDate, $shipoutdt, $shipoutprice, $shipindt, $inv->ShipinPrice, $inv->Remark, $lastDate);
+            $myArr = array($inv->SerialNumber, $inv->MSISDN, $inv->Tsel, $inv->Batch, $type, $status, $agent, $inv->SubAgent, $inv->ShipoutNumber, $inv->LastWarehouse, $inv->WarehouseDate, $shipoutdt, $shipoutprice, $shipindt, $inv->ShipinPrice, $inv->Remark, $lastDate);
             $writer->addRow($myArr);
         }
         $writer->close();
