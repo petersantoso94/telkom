@@ -846,6 +846,24 @@ class InventoryController extends BaseController
             }
             DB::insert("INSERT INTO m_historymovement VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE ID=ID;");
 
+            $cases1 = [];
+            $cases2 = [];
+            $ids = [];
+            $params = [];
+            for ($i = 0; $i < count($arr_sn_hist); $i++) {
+                $id = $arr_sn_hist[$i];
+                $cases4[] = "WHEN '{$id}' then '{$arr_subagent_hist[$i]}'";
+                $cases3[] = "WHEN '{$id}' then '{$arr_price_hist[$i]}'";
+                $cases2[] = "WHEN '{$id}' then '{$arr_hist_date[$i]}'";
+                $cases1[] = "WHEN '{$id}' then '{$arr_shipoutnumber_hist[$i]}'";
+                $ids[] = '\'' . $id . '\'';
+            }
+            $ids = implode(',', $ids);
+            $cases1 = implode(' ', $cases1);
+            $cases2 = implode(' ', $cases2);
+            $cases3 = implode(' ', $cases3);
+            $cases4 = implode(' ', $cases4);
+            DB::update("UPDATE `m_inventory` SET `LastShipoutNumber` = CASE `SerialNumber` {$cases1} END, `LastShipoutDate` = CASE `SerialNumber` {$cases2} END, `LastShipoutPrice` = CASE `SerialNumber` {$cases3} END, `LastSubAgent` = CASE `SerialNumber` {$cases4} END WHERE `SerialNumber` in ({$ids})");
 //            $table = Inventory::getModel()->getTable();
 //            $cases = [];
 //            $ids = [];
@@ -3839,16 +3857,26 @@ class InventoryController extends BaseController
                 $writer->addRow($myArr); // add a row at a time
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
-                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%topup%\'')->get();
+                $all_ivr = DB::select("SELECT Count(SerialNumber) as 'Counter', MONTH(TopUpDate) as Month FROM m_inventory WHERE YEAR(TopUpDate) = '{$year->Year}' AND TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR0250%' GROUP BY MONTH(TopUpDate)");
                 if ($all_ivr != null) {
                     foreach ($all_ivr as $ivr) {
-                        $stats = '';
-                        $temp_stat = $ivr->Status;
-                        if (substr($temp_stat, 0, 1) == '2') {
-                            $stats = 'pV300';
-                        } else if (substr($temp_stat, 0, 1) == '5') {
-                            $stats = 'eV300';
+                        $stats = 'eV300';
+                        if ($stats != '') {
+                            if (!isset($data[$stats]))
+                                $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                            for ($i = 0; $i < 12; $i++) {
+                                if ($i == $ivr->Month - 1) {
+                                    $data[$stats][$i] += $ivr->Counter;
+                                }
+                            }
                         }
+                    }
+                }
+                //pvoc
+                $all_ivr = DB::select("SELECT Count(SerialNumber) as 'Counter', MONTH(TopUpDate) as Month FROM m_inventory WHERE YEAR(TopUpDate) = '{$year->Year}' AND TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR1850%' GROUP BY MONTH(TopUpDate)");
+                if ($all_ivr != null) {
+                    foreach ($all_ivr as $ivr) {
+                        $stats = 'pV300';
                         if ($stats != '') {
                             if (!isset($data[$stats]))
                                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -3869,16 +3897,28 @@ class InventoryController extends BaseController
             return $data;
         }
         // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
+        //$all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
+        //evoc
+        $all_ivr = DB::select("SELECT Count(SerialNumber) as 'Counter', MONTH(TopUpDate) as Month FROM m_inventory WHERE YEAR(TopUpDate) = '{$year}' AND TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR0250%' GROUP BY MONTH(TopUpDate)");
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
-                $stats = '';
-                $temp_stat = $ivr->Status;
-                if (substr($temp_stat, 0, 1) == '2') {
-                    $stats = 'pV300';
-                } else if (substr($temp_stat, 0, 1) == '5') {
-                    $stats = 'eV300';
+                $stats = 'eV300';
+                if ($stats != '') {
+                    if (!isset($data[$stats]))
+                        $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    for ($i = 0; $i < 12; $i++) {
+                        if ($i == $ivr->Month - 1) {
+                            $data[$stats][$i] += $ivr->Counter;
+                        }
+                    }
                 }
+            }
+        }
+        //pvoc
+        $all_ivr = DB::select("SELECT Count(SerialNumber) as 'Counter', MONTH(TopUpDate) as Month FROM m_inventory WHERE YEAR(TopUpDate) = '{$year}' AND TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR1850%' GROUP BY MONTH(TopUpDate)");
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $stats = 'pV300';
                 if ($stats != '') {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -4024,7 +4064,7 @@ class InventoryController extends BaseController
     static function getVouchersTopUp()
     {
         $year = Input::get('year');
-//        $year = '2016';
+    //    $year = '2016';
         $type = '';
         if (Input::get('type'))
             $type = Input::get('type');
@@ -4044,22 +4084,21 @@ class InventoryController extends BaseController
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
                 // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
-                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%topup%\'')->get();
+                $all_ivr = DB::select("SELECT Count(SerialNumber) as 'Counter', MONTH(TopUpDate) as Month, SUBSTRING(SerialNumber, 1, 6) as 'vocType' FROM m_inventory WHERE YEAR(TopUpDate) = '{$year->Year}' AND TopUpMSISDN IS NOT NULL AND (Type = '2' OR Type = '3') GROUP BY MONTH(TopUpDate), SUBSTRING(SerialNumber, 1, 6)");
                 if ($all_ivr != null) {
                     foreach ($all_ivr as $ivr) {
                         $stats = '';
-                        $temp_stat = $ivr->Status;
-                        if (substr($temp_stat, 0, 1) == '1') {
-                            $stats = 'pV100';
-                        } else if (substr($temp_stat, 0, 1) == '2') {
-                            $stats = 'pV300';
-                        } else if (substr($temp_stat, 0, 1) == '3') {
-                            $stats = 'eV50';
-                        } else if (substr($temp_stat, 0, 1) == '4') {
-                            $stats = 'eV100';
-                        } else if (substr($temp_stat, 0, 1) == '5') {
+                        $key = $ivr->vocType;
+                        if (strtoupper($key) == 'KR0250')
                             $stats = 'eV300';
-                        }
+                        else if (strtoupper($key) == 'KR0150')
+                            $stats = 'eV100';
+                        else if (strtoupper($key) == 'KR0450' || strtoupper($key) == 'KR0950')
+                            $stats = 'eV50';
+                        else if (strtoupper($key) == 'KR0350')
+                            $stats = 'phV100';
+                        else if (strtoupper($key) == 'KR1850')
+                            $stats = 'phV300';
                         if ($stats != '') {
                             if (!isset($data[$stats]))
                                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -4071,6 +4110,34 @@ class InventoryController extends BaseController
                         }
                     }
                 }
+                
+                // $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%topup%\'')->get();
+                // if ($all_ivr != null) {
+                //     foreach ($all_ivr as $ivr) {
+                //         $stats = '';
+                //         $temp_stat = $ivr->Status;
+                //         if (substr($temp_stat, 0, 1) == '1') {
+                //             $stats = 'pV100';
+                //         } else if (substr($temp_stat, 0, 1) == '2') {
+                //             $stats = 'pV300';
+                //         } else if (substr($temp_stat, 0, 1) == '3') {
+                //             $stats = 'eV50';
+                //         } else if (substr($temp_stat, 0, 1) == '4') {
+                //             $stats = 'eV100';
+                //         } else if (substr($temp_stat, 0, 1) == '5') {
+                //             $stats = 'eV300';
+                //         }
+                //         if ($stats != '') {
+                //             if (!isset($data[$stats]))
+                //                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                //             for ($i = 0; $i < 12; $i++) {
+                //                 if ($i == $ivr->Month - 1) {
+                //                     $data[$stats][$i] += $ivr->Counter;
+                //                 }
+                //             }
+                //         }
+                //     }
+                // }
                 foreach ($data as $key => $a) {
                     $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
@@ -4080,22 +4147,21 @@ class InventoryController extends BaseController
             return $data;
         }
         // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
+        $all_ivr = DB::select("SELECT Count(SerialNumber) as 'Counter', MONTH(TopUpDate) as Month, SUBSTRING(SerialNumber, 1, 6) as 'vocType' FROM m_inventory WHERE YEAR(TopUpDate) = '{$year}' AND TopUpMSISDN IS NOT NULL AND (Type = '2' OR Type = '3') GROUP BY MONTH(TopUpDate), SUBSTRING(SerialNumber, 1, 6)");
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
                 $stats = '';
-                $temp_stat = $ivr->Status;
-                if (substr($temp_stat, 0, 1) == '1') {
-                    $stats = 'pV100';
-                } else if (substr($temp_stat, 0, 1) == '2') {
-                    $stats = 'pV300';
-                } else if (substr($temp_stat, 0, 1) == '3') {
-                    $stats = 'eV50';
-                } else if (substr($temp_stat, 0, 1) == '4') {
-                    $stats = 'eV100';
-                } else if (substr($temp_stat, 0, 1) == '5') {
+                $key = $ivr->vocType;
+                if (strtoupper($key) == 'KR0250')
                     $stats = 'eV300';
-                }
+                else if (strtoupper($key) == 'KR0150')
+                    $stats = 'eV100';
+                else if (strtoupper($key) == 'KR0450' || strtoupper($key) == 'KR0950')
+                    $stats = 'eV50';
+                else if (strtoupper($key) == 'KR0350')
+                    $stats = 'phV100';
+                else if (strtoupper($key) == 'KR1850')
+                    $stats = 'phV300';
                 if ($stats != '') {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -4107,6 +4173,33 @@ class InventoryController extends BaseController
                 }
             }
         }
+        // $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
+        // if ($all_ivr != null) {
+        //     foreach ($all_ivr as $ivr) {
+        //         $stats = '';
+        //         $temp_stat = $ivr->Status;
+        //         if (substr($temp_stat, 0, 1) == '1') {
+        //             $stats = 'pV100';
+        //         } else if (substr($temp_stat, 0, 1) == '2') {
+        //             $stats = 'pV300';
+        //         } else if (substr($temp_stat, 0, 1) == '3') {
+        //             $stats = 'eV50';
+        //         } else if (substr($temp_stat, 0, 1) == '4') {
+        //             $stats = 'eV100';
+        //         } else if (substr($temp_stat, 0, 1) == '5') {
+        //             $stats = 'eV300';
+        //         }
+        //         if ($stats != '') {
+        //             if (!isset($data[$stats]))
+        //                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        //             for ($i = 0; $i < 12; $i++) {
+        //                 if ($i == $ivr->Month - 1) {
+        //                     $data[$stats][$i] += $ivr->Counter;
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
 
         return $data;
@@ -4440,18 +4533,17 @@ class InventoryController extends BaseController
                 $myArr = array("Type", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
                 $writer->addRow($myArr); // add a row at a time
                 // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
-                $all_ivr = Stats::where('Year', $year->Year)->whereRaw('Status LIKE \'%topup%\'')->get();
+                $all_ivr = DB::select("SELECT Count(SerialNumber) as 'Counter', MONTH(TopUpDate) as Month, SUBSTRING(SerialNumber, 1, 6) as 'vocType' FROM m_inventory WHERE YEAR(TopUpDate) = '{$year->Year}' AND TopUpMSISDN IS NOT NULL AND (Type = '2' OR Type = '3') GROUP BY MONTH(TopUpDate), SUBSTRING(SerialNumber, 1, 6)");
                 if ($all_ivr != null) {
                     foreach ($all_ivr as $ivr) {
                         $stats = '';
-                        $temp_stat = $ivr->Status;
-                        if (substr($temp_stat, 0, 1) == '3') {
-                            $stats = 'eV50';
-                        } else if (substr($temp_stat, 0, 1) == '4') {
-                            $stats = 'eV100';
-                        } else if (substr($temp_stat, 0, 1) == '5') {
+                        $key = $ivr->vocType;
+                        if (strtoupper($key) == 'KR0250')
                             $stats = 'eV300';
-                        }
+                        else if (strtoupper($key) == 'KR0150')
+                            $stats = 'eV100';
+                        else if (strtoupper($key) == 'KR0450' || strtoupper($key) == 'KR0950')
+                            $stats = 'eV50';
                         if ($stats != '') {
                             if (!isset($data[$stats]))
                                 $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -4472,29 +4564,28 @@ class InventoryController extends BaseController
             return $data;
         }
         // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
-        $all_ivr = Stats::where('Year', $year)->whereRaw('Status LIKE \'%topup%\'')->get();
-        if ($all_ivr != null) {
-            foreach ($all_ivr as $ivr) {
-                $stats = '';
-                $temp_stat = $ivr->Status;
-                if (substr($temp_stat, 0, 1) == '3') {
-                    $stats = 'eV50';
-                } else if (substr($temp_stat, 0, 1) == '4') {
-                    $stats = 'eV100';
-                } else if (substr($temp_stat, 0, 1) == '5') {
-                    $stats = 'eV300';
-                }
-                if ($stats != '') {
-                    if (!isset($data[$stats]))
-                        $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-                    for ($i = 0; $i < 12; $i++) {
-                        if ($i == $ivr->Month - 1) {
-                            $data[$stats][$i] += $ivr->Counter;
+        $all_ivr = DB::select("SELECT Count(SerialNumber) as 'Counter', MONTH(TopUpDate) as Month, SUBSTRING(SerialNumber, 1, 6) as 'vocType' FROM m_inventory WHERE YEAR(TopUpDate) = '{$year}' AND TopUpMSISDN IS NOT NULL AND (Type = '2' OR Type = '3') GROUP BY MONTH(TopUpDate), SUBSTRING(SerialNumber, 1, 6)");
+                if ($all_ivr != null) {
+                    foreach ($all_ivr as $ivr) {
+                        $stats = '';
+                        $key = $ivr->vocType;
+                        if (strtoupper($key) == 'KR0250')
+                            $stats = 'eV300';
+                        else if (strtoupper($key) == 'KR0150')
+                            $stats = 'eV100';
+                        else if (strtoupper($key) == 'KR0450' || strtoupper($key) == 'KR0950')
+                            $stats = 'eV50';
+                        if ($stats != '') {
+                            if (!isset($data[$stats]))
+                                $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                            for ($i = 0; $i < 12; $i++) {
+                                if ($i == $ivr->Month - 1) {
+                                    $data[$stats][$i] += $ivr->Counter;
+                                }
+                            }
                         }
                     }
                 }
-            }
-        }
 
         return $data;
     }
