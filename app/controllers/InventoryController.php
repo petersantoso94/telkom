@@ -4097,6 +4097,8 @@ class InventoryController extends BaseController
                             $stats = 'eV50';
                         else if (strtoupper($key) == 'KR0350')
                             $stats = 'phV100';
+                        else if (strtoupper($key) == 'KR0550')
+                            $stats = 'phV499';
                         else if (strtoupper($key) == 'KR1850')
                             $stats = 'phV300';
                         if ($stats != '') {
@@ -4160,6 +4162,8 @@ class InventoryController extends BaseController
                     $stats = 'eV50';
                 else if (strtoupper($key) == 'KR0350')
                     $stats = 'phV100';
+                else if (strtoupper($key) == 'KR0550')
+                    $stats = 'phV499';
                 else if (strtoupper($key) == 'KR1850')
                     $stats = 'phV300';
                 if ($stats != '') {
@@ -6622,6 +6626,8 @@ static function exportExcel($filter)
                     $header = 'phVC 100';
                 else if (strtoupper($key) == 'KR1850')
                     $header = 'phVC 300';
+                 else if (strtoupper($key) == 'KR0550')
+                    $header = 'phV499';
                 if (!isset($data[$header])) {
                     $data[$header] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 }
@@ -6662,6 +6668,8 @@ static function exportExcel($filter)
                     $header = 'phVC 100';
                 else if (strtoupper($key) == 'KR1850')
                     $header = 'phVC 300';
+                else if (strtoupper($key) == 'KR0550')
+                       $header = 'phV499';
                 if (!isset($data[$header])) {
                     $data[$header] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 }
@@ -6728,6 +6736,8 @@ static function exportExcel($filter)
                     $header = 'phVC 100';
                 else if (strtoupper($key) == 'KR1850')
                     $header = 'phVC 300';
+                else if (strtoupper($key) == 'KR0550')
+                       $header = 'phV499';
                 if (!isset($data[$header])) {
                     $data[$header] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 }
@@ -6764,6 +6774,8 @@ static function exportExcel($filter)
                     $header = 'phVC 100';
                 else if (strtoupper($key) == 'KR1850')
                     $header = 'phVC 300';
+                else if (strtoupper($key) == 'KR0550')
+                       $header = 'phV499';
                 if (!isset($data[$header])) {
                     $data[$header] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
                 }
