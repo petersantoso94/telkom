@@ -627,6 +627,8 @@ class InventoryController extends BaseController
                     $arr_status_hist = [];
                     $arr_laststatus_hist = [];
                     $arr_wh_hist = [];
+                    $arr_batch = [];
+                    $arr_tsel =[];
                     $check_counter = History::select('ID')->orderBy('ID', 'DESC')->first();
                     if ($check_counter == null)
                         $id_counter = 1;
@@ -649,6 +651,8 @@ class InventoryController extends BaseController
                                     array_push($arr_sn, $sn);
                                     array_push($arr_type, $type);
                                     array_push($arr_msisdn, $value[1]);
+                                    array_push($arr_batch, $value[3]);
+                                    array_push($arr_tsel, $value[4]);
                                     array_push($arr_lastwarehouse, $wh);
                                     array_push($arr_remark, Input::get('remark', false));
 
@@ -676,9 +680,9 @@ class InventoryController extends BaseController
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_sn); $i++) {
                         if ($i == 0)
-                            $for_raw .= "('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_laststatus_hist[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,0,'" . $arr_hist_date[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "',NULL,NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= "('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_laststatus_hist[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,0,'" . $arr_hist_date[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','".arr_tsel[$i]."','".arr_batch[$i]."','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                         else
-                            $for_raw .= ",('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_laststatus_hist[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,0,'" . $arr_hist_date[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "',NULL,NULL,'TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
+                            $for_raw .= ",('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_laststatus_hist[$i] . "','" . $arr_lastwarehouse[$i] . "',NULL,NULL,NULL,NULL,NULL,0,'" . $arr_hist_date[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','".arr_tsel[$i]."','".arr_batch[$i]."','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
                     DB::insert("INSERT INTO m_inventory VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
 
@@ -4250,6 +4254,10 @@ class InventoryController extends BaseController
                     ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                     ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '3' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR1850%'")
                     ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month', m_inventory.LastWarehouse"))->groupBy(DB::raw("MONTH(m_historymovement.Date), m_inventory.LastWarehouse"))->get();
+                $shipoutpvoc499 = DB::table('m_inventory')
+                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                    ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '3' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR055%'")
+                    ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month', m_inventory.LastWarehouse"))->groupBy(DB::raw("MONTH(m_historymovement.Date), m_inventory.LastWarehouse"))->get();
 
                 if ($shipoutevoc50 != null) {
                     foreach ($shipoutevoc50 as $voc) {
@@ -4306,6 +4314,17 @@ class InventoryController extends BaseController
                         }
                     }
                 }
+                if ($shipoutpvoc499 != null) {
+                    foreach ($shipoutpvoc499 as $voc) {
+                        if (!isset($data[$voc->LastWarehouse]['pV499']))
+                            $data[$voc->LastWarehouse]['pV499'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $voc->month - 1) {
+                                $data[$voc->LastWarehouse]['pV499'][$i] += $voc->Counter;
+                            }
+                        }
+                    }
+                }
                 foreach ($data as $key => $abc) {
                     $name = $key;
                     $myArr = array($name);
@@ -4345,6 +4364,10 @@ class InventoryController extends BaseController
         $shipoutpvoc300 = DB::table('m_inventory')
             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
             ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '3' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR1850%'")
+            ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month', m_inventory.LastWarehouse"))->groupBy(DB::raw("MONTH(m_historymovement.Date), m_inventory.LastWarehouse"))->get();
+        $shipoutpvoc499 = DB::table('m_inventory')
+            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+            ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '3' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR055%'")
             ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month', m_inventory.LastWarehouse"))->groupBy(DB::raw("MONTH(m_historymovement.Date), m_inventory.LastWarehouse"))->get();
 
         if ($shipoutevoc50 != null) {
@@ -4398,6 +4421,17 @@ class InventoryController extends BaseController
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $voc->month - 1) {
                         $data[$voc->LastWarehouse]['pV300'][$i] += $voc->Counter;
+                    }
+                }
+            }
+        }
+        if ($shipoutpvoc499 != null) {
+            foreach ($shipoutpvoc499 as $voc) {
+                if (!isset($data[$voc->LastWarehouse]['pV499']))
+                    $data[$voc->LastWarehouse]['pV499'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $voc->month - 1) {
+                        $data[$voc->LastWarehouse]['pV499'][$i] += $voc->Counter;
                     }
                 }
             }
@@ -6250,7 +6284,7 @@ static function exportExcel($filter)
             ->select(DB::raw("inv1.`ActivationDate`,inv1.`ActivationName`,inv1.`MSISDN`,inv1.`ChurnDate`,inv1.`ActivationStore`"
                 . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0250%' OR inv2.`SerialNumber` LIKE '%KR1850%')) as 'Voc300'"
                 . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0150%' OR inv2.`SerialNumber` LIKE '%KR0350%')) as 'Voc100'"
-                . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND inv2.`SerialNumber` LIKE '%KR0450%') as 'Voc50'"
+                . ",(SELECT COUNT(inv2.`SerialNumber`) FROM `m_inventory` as inv2 WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND inv2.`SerialNumber` LIKE '%KR0450% OR inv2.`SerialNumber` LIKE '%KR095%') as 'Voc50'"
                 . ",(SELECT inv2.`TopUpDate` FROM `m_inventory` as inv2  WHERE inv2.`TopUpMSISDN` = inv1.`MSISDN` AND (inv2.`SerialNumber` LIKE '%KR0250%' OR inv2.`SerialNumber` LIKE '%KR1850%') AND (YEAR(inv2.`TopUpDate`) <= YEAR(inv1.ChurnDate) OR (MONTH(inv2.`TopUpDate`) <= MONTH(inv1.ChurnDate) AND YEAR(inv2.`TopUpDate`) = YEAR(inv1.ChurnDate)) OR inv1.ChurnDate IS NULL) AND (YEAR(inv2.`TopUpDate`) >= YEAR(inv1.ActivationDate) OR (MONTH(inv2.`TopUpDate`) >= MONTH(inv1.ActivationDate) AND YEAR(inv2.`TopUpDate`) = YEAR(inv1.ActivationDate))) ORDER BY inv2.`TopUpDate` DESC LIMIT 1) as 'LastDatePurchasedVoucher' "
                 . ",(SELECT prod.`Service` FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` AND (prod.`Year` <= YEAR(inv1.ChurnDate) OR (prod.`Month` <= MONTH(inv1.ChurnDate) AND prod.`Year` = YEAR(inv1.ChurnDate)) OR inv1.ChurnDate IS NULL) AND (prod.`Year` >= YEAR(inv1.ActivationDate) OR (prod.`Month` >= MONTH(inv1.ActivationDate) AND prod.`Year` = YEAR(inv1.ActivationDate))) ORDER BY CONCAT(prod.`Month`,prod.`Year`) DESC LIMIT 1) as 'ServiceUsed' "
                 . ",(SELECT CONCAT(prod.`Day`,prod.`Month`,prod.`Year`) FROM `m_productive` as prod  WHERE prod.`MSISDN` = inv1.`MSISDN` AND (prod.`Year` <= YEAR(inv1.ChurnDate) OR (prod.`Month` <= MONTH(inv1.ChurnDate) AND prod.`Year` = YEAR(inv1.ChurnDate)) OR inv1.ChurnDate IS NULL) AND (prod.`Year` >= YEAR(inv1.ActivationDate) OR (prod.`Month` >= MONTH(inv1.ActivationDate) AND prod.`Year` = YEAR(inv1.ActivationDate))) ORDER BY prod.`Year` DESC, prod.`Month` DESC, prod.`Day` DESC LIMIT 1) as 'LastDateUsedService'"
