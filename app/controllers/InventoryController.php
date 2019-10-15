@@ -856,6 +856,8 @@ class InventoryController extends BaseController
             $params = [];
             for ($i = 0; $i < count($arr_sn_hist); $i++) {
                 $id = $arr_sn_hist[$i];
+                $cases6[] = "WHEN '{$id}' then '{$arr_status_hist[$i]}'";
+                $cases5[] = "WHEN '{$id}' then '{$arr_id_hist[$i]}'";
                 $cases4[] = "WHEN '{$id}' then '{$arr_subagent_hist[$i]}'";
                 $cases3[] = "WHEN '{$id}' then '{$arr_price_hist[$i]}'";
                 $cases2[] = "WHEN '{$id}' then '{$arr_hist_date[$i]}'";
@@ -867,7 +869,9 @@ class InventoryController extends BaseController
             $cases2 = implode(' ', $cases2);
             $cases3 = implode(' ', $cases3);
             $cases4 = implode(' ', $cases4);
-            DB::update("UPDATE `m_inventory` SET `LastShipoutNumber` = CASE `SerialNumber` {$cases1} END, `LastShipoutDate` = CASE `SerialNumber` {$cases2} END, `LastShipoutPrice` = CASE `SerialNumber` {$cases3} END, `LastSubAgent` = CASE `SerialNumber` {$cases4} END WHERE `SerialNumber` in ({$ids})");
+            $cases5 = implode(' ', $cases5);
+            $cases6 = implode(' ', $cases6);
+            DB::update("UPDATE `m_inventory` SET `LastStatusHist` = CASE `SerialNumber` {$cases6} END, `LastStatusID` = CASE `SerialNumber` {$cases5} END, `LastShipoutNumber` = CASE `SerialNumber` {$cases1} END, `LastShipoutDate` = CASE `SerialNumber` {$cases2} END, `LastShipoutPrice` = CASE `SerialNumber` {$cases3} END, `LastSubAgent` = CASE `SerialNumber` {$cases4} END WHERE `SerialNumber` in ({$ids})");
 //            $table = Inventory::getModel()->getTable();
 //            $cases = [];
 //            $ids = [];
