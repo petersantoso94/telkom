@@ -1180,8 +1180,6 @@ class InventoryController extends BaseController
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
-//$reader = ReaderFactory::create(Type::CSV); // for CSV files
-//$reader = ReaderFactory::create(Type::ODS); // for ODS files
 
                         $reader->open($filePath);
                         $counter = 0;
@@ -1247,7 +1245,6 @@ class InventoryController extends BaseController
                         $for_raw = '';
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
                             $unik = $arr_msisdn[$i] . '-' . $arr_buydate[$i] . '-' . $arr_buy[$i];
-//                            $unik = $arr_id[$i];
 
                             if ($i == 0)
                                 $for_raw .= "('" . $arr_msisdn[$i] . "','" . $arr_buydate[$i] . "','" . $unik . "','" . $arr_buy[$i] . "',CURDATE(),CURDATE(),'-','" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
@@ -1432,9 +1429,9 @@ class InventoryController extends BaseController
                         } else {
                             $inputFileName = base_path().'/uploaded_file/temp.' . $extention;
                             /** Load $inputFileName to a Spreadsheet Object  * */
-//                            $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
-//                            $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-//                            $writer->save('./uploaded_file/' . 'temp.xlsx');
+                            // $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+                            // $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                            // $writer->save('./uploaded_file/' . 'temp.xlsx');
 
                             $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                             $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
@@ -1630,13 +1627,13 @@ class InventoryController extends BaseController
                         $filename = 'temp.' . $extention;
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
-//                        $inputFileName = './uploaded_file/temp.' . $extention;
-//                        /** Load $inputFileName to a Spreadsheet Object  * */
-//                        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
-//                        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
-//                        $writer->save('./uploaded_file/' . 'temp.xlsx');
-//
-//                        $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
+                    //    $inputFileName = './uploaded_file/temp.' . $extention;
+                    //    /** Load $inputFileName to a Spreadsheet Object  * */
+                    //    $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load($inputFileName);
+                    //    $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+                    //    $writer->save('./uploaded_file/' . 'temp.xlsx');
+
+                    //    $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX);
                         $reader->setShouldFormatDates(true);
                         $counter = 0;
@@ -1659,42 +1656,15 @@ class InventoryController extends BaseController
                                             array_push($arr_voc, $voc);
                                             array_push($arr_msisdn, $msisdn);
                                             $date_return = $value[2];
-                                            $date_return = strtotime($date_return);
-                                            $date_return = date('Y-m-d', $date_return);
-                                            if (substr($date_return, 0, 4) === '1970') {
-                                                $date_return = $value[2];
-                                                $date_return = explode('/', $date_return);
-                                                $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
-                                                $date_return = strtotime($date_return);
-                                                $date_return = date('Y-m-d', $date_return);
-                                            }
                                             array_push($arr_return, $date_return);
                                         }
                                     }
                                 }
                         }
                         $reader->close();
-                        // dd($arr_msisdn);
                         $check_msisdn = [];
                         $ids = $arr_voc;
                         $ids = implode("','", $ids);
-                        // $right_msisdn = DB::select("SELECT `SerialNumber` FROM `m_inventory` WHERE `SerialNumber` in ('{$ids}')");
-                        // foreach ($right_msisdn as $msisdn) {
-                        //     $check_msisdn[] = $msisdn->SerialNumber;
-                        // }
-                        // $not_found = array_diff($arr_voc, $check_msisdn);
-                        // $not_found = implode(",", $not_found);
-                        // $not_found = explode(",", $not_found);
-                        // if (count($not_found) > 0) {
-                        //     $for_raw = '';
-                        //     for ($i = 0; $i < count($not_found); $i++) {
-                        //         if ($i == 0)
-                        //             $for_raw .= "('{$not_found[$i]}',NULL,CURDATE(),CURDATE(),'unfound from recharge file')";
-                        //         else
-                        //             $for_raw .= ",('{$not_found[$i]}',NULL,CURDATE(),CURDATE(),'unfound from recharge file')";
-                        //     }
-                        //     DB::insert("INSERT INTO m_uncatagorized VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
-                        // }
                         $table = Inventory::getModel()->getTable();
                         $counter = count($arr_msisdn);
                         $block = 40000;
@@ -1706,7 +1676,17 @@ class InventoryController extends BaseController
                             for ($i = 0 + (($j - 1) * $block); $i < $j * $block; $i++) {
                                 if ($i < $counter) {
                                     $id = $arr_voc[$i];
-                                    $cases2[] = "WHEN '{$id}' then '{$arr_return[$i]}'";
+                                    $date_return = $arr_return[$i];
+                                    $date_return = strtotime($date_return);
+                                    $date_return = date('Y-m-d', $date_return);
+                                    if (substr($date_return, 0, 4) === '1970') {
+                                        $date_return = $arr_return[$i];
+                                        $date_return = explode('/', $date_return);
+                                        $date_return = $date_return[1] . '/' . $date_return[0] . '/' . $date_return[2];
+                                        $date_return = strtotime($date_return);
+                                        $date_return = date('Y-m-d', $date_return);
+                                    }
+                                    $cases2[] = "WHEN '{$id}' then '{$date_return}'";
                                     $cases1[] = "WHEN '{$id}' then '{$arr_msisdn[$i]}'";
                                     $ids[] = '\'' . $id . '\'';
                                 } else {
@@ -1789,7 +1769,8 @@ class InventoryController extends BaseController
               }
               }
               return View::make('insertreporting')->withResponse('Failed')->withPage('insert reporting');
-              } */ else if (Input::get('jenis') == 'productive') {
+              } */ 
+              else if (Input::get('jenis') == 'productive') {
                 $input = Input::file('sample_file');
                 if ($input != '') {
                     if (Input::hasFile('sample_file')) {
@@ -1800,8 +1781,8 @@ class InventoryController extends BaseController
                         Input::file('sample_file')->move($destination, $filename);
                         $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::CSV); // for XLSX files
-//$reader = ReaderFactory::create(Type::CSV); // for CSV files
-//$reader = ReaderFactory::create(Type::ODS); // for ODS files
+                        // $reader = ReaderFactory::create(Type::CSV); // for CSV files
+                        // $reader = ReaderFactory::create(Type::ODS); // for ODS files
 
                         $reader->open($filePath);
                         $counter = 0;
@@ -1843,7 +1824,7 @@ class InventoryController extends BaseController
                                                 array_push($arr_mt, $value[6]);
                                                 array_push($arr_internet, 0);
                                                 array_push($arr_sms, $value[8]);
-//                                            array_push($arr_services, $value[11]);
+                                        //    array_push($arr_services, $value[11]);
                                             }
                                         }
                                     }
@@ -1904,8 +1885,8 @@ class InventoryController extends BaseController
 
                         $filePath = base_path() . '/uploaded_file/' . 'temp.xlsx';
                         $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
-//$reader = ReaderFactory::create(Type::CSV); // for CSV files
-//$reader = ReaderFactory::create(Type::ODS); // for ODS files
+                        //$reader = ReaderFactory::create(Type::CSV); // for CSV files
+                        //$reader = ReaderFactory::create(Type::ODS); // for ODS files
 
                         $reader->open($filePath);
                         $counter = 0;
