@@ -1227,23 +1227,23 @@ class InventoryController extends BaseController
                         $check_msisdn = [];
                         $ids = $arr_msisdn;
                         $ids = implode("','", $ids);
-                        $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE `MSISDN` in ('{$ids}')");
-                        foreach ($right_msisdn as $msisdn) {
-                            $check_msisdn[] = $msisdn->MSISDN;
-                        }
-                        $not_found = array_diff($arr_msisdn, $check_msisdn);
-                        $not_found = implode(",", $not_found);
-                        $not_found = explode(",", $not_found);
-                        if (count($not_found) > 0) {
-                            $for_raw = '';
-                            for ($i = 0; $i < count($not_found); $i++) {
-                                if ($i == 0)
-                                    $for_raw .= "(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from ivr file')";
-                                else
-                                    $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from ivr file')";
-                            }
-                            DB::insert("INSERT INTO m_uncatagorized VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
-                        }
+                        // $right_msisdn = DB::select("SELECT `MSISDN` FROM `m_inventory` WHERE `MSISDN` in ('{$ids}')");
+                        // foreach ($right_msisdn as $msisdn) {
+                        //     $check_msisdn[] = $msisdn->MSISDN;
+                        // }
+                        // $not_found = array_diff($arr_msisdn, $check_msisdn);
+                        // $not_found = implode(",", $not_found);
+                        // $not_found = explode(",", $not_found);
+                        // if (count($not_found) > 0) {
+                        //     $for_raw = '';
+                        //     for ($i = 0; $i < count($not_found); $i++) {
+                        //         if ($i == 0)
+                        //             $for_raw .= "(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from ivr file')";
+                        //         else
+                        //             $for_raw .= ",(NULL,'{$not_found[$i]}',CURDATE(),CURDATE(),'not found from ivr file')";
+                        //     }
+                        //     DB::insert("INSERT INTO m_uncatagorized VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE MSISDN=MSISDN;");
+                        // }
                         $for_raw = '';
                         for ($i = 0; $i < count($arr_msisdn); $i++) {
                             $unik = $arr_msisdn[$i] . '-' . $arr_buydate[$i] . '-' . $arr_buy[$i];
@@ -1674,26 +1674,27 @@ class InventoryController extends BaseController
                                 }
                         }
                         $reader->close();
+                        // dd($arr_msisdn);
                         $check_msisdn = [];
                         $ids = $arr_voc;
                         $ids = implode("','", $ids);
-                        $right_msisdn = DB::select("SELECT `SerialNumber` FROM `m_inventory` WHERE `SerialNumber` in ('{$ids}')");
-                        foreach ($right_msisdn as $msisdn) {
-                            $check_msisdn[] = $msisdn->SerialNumber;
-                        }
-                        $not_found = array_diff($arr_voc, $check_msisdn);
-                        $not_found = implode(",", $not_found);
-                        $not_found = explode(",", $not_found);
-                        if (count($not_found) > 0) {
-                            $for_raw = '';
-                            for ($i = 0; $i < count($not_found); $i++) {
-                                if ($i == 0)
-                                    $for_raw .= "('{$not_found[$i]}',NULL,CURDATE(),CURDATE(),'unfound from recharge file')";
-                                else
-                                    $for_raw .= ",('{$not_found[$i]}',NULL,CURDATE(),CURDATE(),'unfound from recharge file')";
-                            }
-                            DB::insert("INSERT INTO m_uncatagorized VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
-                        }
+                        // $right_msisdn = DB::select("SELECT `SerialNumber` FROM `m_inventory` WHERE `SerialNumber` in ('{$ids}')");
+                        // foreach ($right_msisdn as $msisdn) {
+                        //     $check_msisdn[] = $msisdn->SerialNumber;
+                        // }
+                        // $not_found = array_diff($arr_voc, $check_msisdn);
+                        // $not_found = implode(",", $not_found);
+                        // $not_found = explode(",", $not_found);
+                        // if (count($not_found) > 0) {
+                        //     $for_raw = '';
+                        //     for ($i = 0; $i < count($not_found); $i++) {
+                        //         if ($i == 0)
+                        //             $for_raw .= "('{$not_found[$i]}',NULL,CURDATE(),CURDATE(),'unfound from recharge file')";
+                        //         else
+                        //             $for_raw .= ",('{$not_found[$i]}',NULL,CURDATE(),CURDATE(),'unfound from recharge file')";
+                        //     }
+                        //     DB::insert("INSERT INTO m_uncatagorized VALUES " . $for_raw . " ON DUPLICATE KEY UPDATE SerialNumber=SerialNumber;");
+                        // }
                         $table = Inventory::getModel()->getTable();
                         $counter = count($arr_msisdn);
                         $block = 40000;

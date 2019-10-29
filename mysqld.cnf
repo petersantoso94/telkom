@@ -11,7 +11,7 @@ skip-grant-tables
 performance_schema = 0
 key_buffer = 500M
 key_buffer_size = 1000M
-max_allowed_packet = 500M
+max_allowed_packet = 5000M
 table_open_cache = 1024
 sort_buffer_size = 2M
 read_buffer_size = 2M
