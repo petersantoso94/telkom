@@ -1649,10 +1649,7 @@ class InventoryController extends BaseController
                                         $msisdn = (string)$value[4];
                                         $voc = (string)$value[12];
                                         if ($msisdn != '' && $msisdn != null) {
-                                            $msisdn = str_replace('\'', '', $msisdn);
-                                            if (substr($msisdn, 0, 1) === '0') {
-                                                $msisdn = substr($msisdn, 1);
-                                            }
+                                            
                                             array_push($arr_voc, $voc);
                                             array_push($arr_msisdn, $msisdn);
                                             $date_return = $value[2];
@@ -1662,6 +1659,7 @@ class InventoryController extends BaseController
                                 }
                         }
                         $reader->close();
+                        dd($arr_msisdn);
                         $check_msisdn = [];
                         $ids = $arr_voc;
                         $ids = implode("','", $ids);
@@ -1676,6 +1674,11 @@ class InventoryController extends BaseController
                             for ($i = 0 + (($j - 1) * $block); $i < $j * $block; $i++) {
                                 if ($i < $counter) {
                                     $id = $arr_voc[$i];
+                                    $msisdn = str_replace('\'', '', $arr_msisdn[$i]);
+                                            if (substr($msisdn, 0, 1) === '0') {
+                                                $msisdn = substr($msisdn, 1);
+                                            }
+
                                     $date_return = $arr_return[$i];
                                     $date_return = strtotime($date_return);
                                     $date_return = date('Y-m-d', $date_return);
@@ -1687,7 +1690,7 @@ class InventoryController extends BaseController
                                         $date_return = date('Y-m-d', $date_return);
                                     }
                                     $cases2[] = "WHEN '{$id}' then '{$date_return}'";
-                                    $cases1[] = "WHEN '{$id}' then '{$arr_msisdn[$i]}'";
+                                    $cases1[] = "WHEN '{$id}' then '{$msisdn}'";
                                     $ids[] = '\'' . $id . '\'';
                                 } else {
                                     break;
