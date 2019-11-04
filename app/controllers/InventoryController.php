@@ -1659,13 +1659,13 @@ class InventoryController extends BaseController
                                 }
                         }
                         $reader->close();
-                        dd($arr_msisdn);
+                        // dd($arr_msisdn);
                         $check_msisdn = [];
                         $ids = $arr_voc;
                         $ids = implode("','", $ids);
                         $table = Inventory::getModel()->getTable();
                         $counter = count($arr_msisdn);
-                        $block = 40000;
+                        $block = 50000;
                         for ($j = 1; $j <= ceil($counter / $block); $j++) {
                             $cases1 = [];
                             $cases2 = [];
@@ -3937,6 +3937,7 @@ class InventoryController extends BaseController
 
         $data = [];
         //1 -> evoucher; 2 -> phvoucher
+        $simtopup499 = [];
         $simtopup300 = [];
         $simtopup100 = [];
         $simtopup50 = [];
@@ -3952,6 +3953,7 @@ class InventoryController extends BaseController
                 $writer->addRow($myArr); // add a row at a time
                 $data = [];
                 //1 -> evoucher; 2 -> phvoucher
+                $simtopup499 = [];
                 $simtopup300 = [];
                 $simtopup100 = [];
                 $simtopup50 = [];
@@ -3965,7 +3967,21 @@ class InventoryController extends BaseController
                 $simtopup50 = DB::table('m_inventory')
                     ->whereRaw("TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR0450%' AND YEAR(TopUpDate) = '{$year->Year}'")
                     ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate)  as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
+                $simtopup499 = DB::table('m_inventory')
+                    ->whereRaw("TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR055%' AND YEAR(TopUpDate) = '{$year->Year}'")
+                    ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate)  as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
 
+                if ($simtopup499 != null) {
+                    foreach ($simtopup499 as $sim) {
+                        if (!isset($data['Voc499']))
+                            $data['Voc499'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $sim->month - 1) {
+                                $data['Voc499'][$i] += $sim->Counter;
+                            }
+                        }
+                    }
+                }
                 if ($simtopup50 != null) {
                     foreach ($simtopup50 as $sim) {
                         if (!isset($data['Voc50']))
@@ -4018,6 +4034,21 @@ class InventoryController extends BaseController
             ->whereRaw("TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR0450%' AND YEAR(TopUpDate) = '{$year}'")
             ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate)  as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
 
+        $simtopup499 = DB::table('m_inventory')
+                ->whereRaw("TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR055%' AND YEAR(TopUpDate) = '{$year}'")
+                ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate)  as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
+
+        if ($simtopup499 != null) {
+            foreach ($simtopup499 as $sim) {
+                if (!isset($data['Voc499']))
+                    $data['Voc499'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $sim->month - 1) {
+                        $data['Voc499'][$i] += $sim->Counter;
+                    }
+                }
+            }
+        }
         if ($simtopup50 != null) {
             foreach ($simtopup50 as $sim) {
                 if (!isset($data['Voc50']))
