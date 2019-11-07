@@ -4254,7 +4254,7 @@ class InventoryController extends BaseController
                 $year = $year->Year;
                 $shipoutevoc50 = DB::table('m_inventory')
                     ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-                    ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR0450%'")
+                    ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4') AND (m_inventory.SerialNumber LIKE '%KR0450%' OR m_inventory.SerialNumber LIKE '%KR095%')")
                     ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month', m_inventory.LastWarehouse"))->groupBy(DB::raw("MONTH(m_historymovement.Date), m_inventory.LastWarehouse"))->get();
                 $shipoutevoc100 = DB::table('m_inventory')
                     ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
@@ -4365,7 +4365,7 @@ class InventoryController extends BaseController
         // 1-ph100, 2-ph300, 3-ev50, 4-ev100, 5-ev300
         $shipoutevoc50 = DB::table('m_inventory')
             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
-            ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR0450%'")
+            ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4') AND (m_inventory.SerialNumber LIKE '%KR0450%' OR m_inventory.SerialNumber LIKE '%KR095%')")
             ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month', m_inventory.LastWarehouse"))->groupBy(DB::raw("MONTH(m_historymovement.Date), m_inventory.LastWarehouse"))->get();
         $shipoutevoc100 = DB::table('m_inventory')
             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
