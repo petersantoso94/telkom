@@ -532,7 +532,7 @@ class InventoryController extends BaseController
         return View::make('insertinventory')->withPage('insert inventory');
     }
     
-    public function showInsertInventory()
+    public function showInsertInventory333()
     { // change inventory data
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
@@ -548,6 +548,7 @@ class InventoryController extends BaseController
                     $arr_msisdn =  [];
                     $arr_batch =  [];
                     $arr_sn =  [];
+                    $arr_type =  [];
                     foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
                         foreach ($sheet->getRowIterator() as $rowNumber => $value) {
                             if ($rowNumber > 1) {
@@ -556,40 +557,42 @@ class InventoryController extends BaseController
                                 $type = (string)$value[1];
                                 // $msisdn = (string)$value[2];
                                 // $batch = $value[3];
-                                // $arr_sn[] = $act_serial_number;
+                                $arr_sn[] = $act_serial_number;
                                 // $arr_batch[] = $batch;
                                 // $arr_msisdn[] = $msisdn;
 
                                 // DB::update("UPDATE `m_inventory` SET `MSISDN_TSEL`= '". $msisdn ."', `BATCH` = '".$batch."' WHERE `SerialNumber` LIKE '%".$act_serial_number."%'");
                                 //DB::update("UPDATE `m_historymovement` SET `SubAgent`= '". $subagent ."' WHERE `SN` LIKE '%".$act_serial_number."%' AND (`Status` = '2' OR `Status` = '4')");
 
-                                DB::update("UPDATE `m_inventory` SET `Type`= '". $type ."' WHERE `SerialNumber` LIKE '%".$act_serial_number."%'");
+                                // DB::update("UPDATE `m_inventory` SET `Type`= '". $type ."' WHERE `SerialNumber` LIKE '%".$act_serial_number."%'");
                             }
                         }
                     }
                     $reader->close();
-                    dd("Success");
+                    // dd("Success");
                     $cases1 = [];
                     $cases2 = [];
                     $ids = [];
                     $params = [];
                     for ($i = 0; $i < count($arr_sn); $i++) {
                         $id = $arr_sn[$i];
-                        $cases2[] = "WHEN '{$id}' then '{$arr_batch[$i]}'";
-                        $cases1[] = "WHEN '{$id}' then '{$arr_msisdn[$i]}'";
+                        // $cases2[] = "WHEN '{$id}' then '{$arr_batch[$i]}'";
+                        // $cases1[] = "WHEN '{$id}' then '{$arr_msisdn[$i]}'";
+                        $cases1[] = "WHEN '{$id}' then '{$arr_type[$i]}'";
                         $ids[] = '\'' . $id . '\'';
                     }
                     $ids = implode(',', $ids);
                     $cases1 = implode(' ', $cases1);
-                    $cases2 = implode(' ', $cases2);
-                    DB::update("UPDATE `m_inventory` SET `MSISDN_TSEL` = CASE `SerialNumber` {$cases1} END, `BATCH` = CASE `SerialNumber` {$cases2} END WHERE `SerialNumber` in ({$ids}) AND `ChurnDate` IS NULL");
+                    // $cases2 = implode(' ', $cases2);
+                    // DB::update("UPDATE `m_inventory` SET `MSISDN_TSEL` = CASE `SerialNumber` {$cases1} END, `BATCH` = CASE `SerialNumber` {$cases2} END WHERE `SerialNumber` in ({$ids}) AND `ChurnDate` IS NULL");
+                    DB::update("UPDATE `m_inventory` SET `Type` = CASE `SerialNumber` {$cases1} END WHERE `SerialNumber` in ({$ids})");
                 }
             }
         }
         return View::make('insertinventory')->withPage('insert inventory');
     }
 
-    public function showInsertInventory333()
+    public function showInsertInventory()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
