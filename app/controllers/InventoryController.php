@@ -532,7 +532,7 @@ class InventoryController extends BaseController
         return View::make('insertinventory')->withPage('insert inventory');
     }
     
-    public function showInsertInventory333()
+    public function showInsertInventory()
     { // change inventory data
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
@@ -553,18 +553,22 @@ class InventoryController extends BaseController
                             if ($rowNumber > 1) {
                                 // do stuff with the row
                                 $act_serial_number = (string)$value[0];
-                                $msisdn = (string)$value[2];
-                                $batch = $value[3];
-                                $arr_sn[] = $act_serial_number;
-                                $arr_batch[] = $batch;
-                                $arr_msisdn[] = $msisdn;
+                                $type = (string)$value[1];
+                                // $msisdn = (string)$value[2];
+                                // $batch = $value[3];
+                                // $arr_sn[] = $act_serial_number;
+                                // $arr_batch[] = $batch;
+                                // $arr_msisdn[] = $msisdn;
 
                                 // DB::update("UPDATE `m_inventory` SET `MSISDN_TSEL`= '". $msisdn ."', `BATCH` = '".$batch."' WHERE `SerialNumber` LIKE '%".$act_serial_number."%'");
                                 //DB::update("UPDATE `m_historymovement` SET `SubAgent`= '". $subagent ."' WHERE `SN` LIKE '%".$act_serial_number."%' AND (`Status` = '2' OR `Status` = '4')");
+
+                                DB::update("UPDATE `m_inventory` SET `Type`= '". $type ."' WHERE `SerialNumber` LIKE '%".$act_serial_number."%'");
                             }
                         }
                     }
                     $reader->close();
+                    dd("Success");
                     $cases1 = [];
                     $cases2 = [];
                     $ids = [];
@@ -585,7 +589,7 @@ class InventoryController extends BaseController
         return View::make('insertinventory')->withPage('insert inventory');
     }
 
-    public function showInsertInventory()
+    public function showInsertInventory333()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
