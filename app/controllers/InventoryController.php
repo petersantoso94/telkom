@@ -558,6 +558,7 @@ class InventoryController extends BaseController
                                 // $msisdn = (string)$value[2];
                                 // $batch = $value[3];
                                 $arr_sn[] = $act_serial_number;
+                                $arr_sn[] = $type;
                                 // $arr_batch[] = $batch;
                                 // $arr_msisdn[] = $msisdn;
 
