@@ -2331,7 +2331,7 @@
                             },
                             title: {
                                 display: true,
-                                text: 'Monthly Voucher 300NT Topup'
+                                text: 'Monthly Voucher 300NT and 499NT Topup'
                             }, scales: {xAxes: [{
                                         gridLines: {
                                             display: false

@@ -3889,6 +3889,23 @@ class InventoryController extends BaseController
                         }
                     }
                 }
+                
+                //pvoc 499
+                $all_ivr = DB::select("SELECT Count(SerialNumber) as 'Counter', MONTH(TopUpDate) as Month FROM m_inventory WHERE YEAR(TopUpDate) = '{$year->Year}' AND TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR0550%' GROUP BY MONTH(TopUpDate)");
+                if ($all_ivr != null) {
+                    foreach ($all_ivr as $ivr) {
+                        $stats = 'pV499';
+                        if ($stats != '') {
+                            if (!isset($data[$stats]))
+                                $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                            for ($i = 0; $i < 12; $i++) {
+                                if ($i == $ivr->Month - 1) {
+                                    $data[$stats][$i] += $ivr->Counter;
+                                }
+                            }
+                        }
+                    }
+                }
                 foreach ($data as $key => $a) {
                     $myArr = array($key, number_format($a[0]), number_format($a[1]), number_format($a[2]), number_format($a[3]), number_format($a[4]), number_format($a[5]), number_format($a[6]), number_format($a[7]), number_format($a[8]), number_format($a[9]), number_format($a[10]), number_format($a[11]));
                     $writer->addRow($myArr); // add a row at a time
@@ -3920,6 +3937,22 @@ class InventoryController extends BaseController
         if ($all_ivr != null) {
             foreach ($all_ivr as $ivr) {
                 $stats = 'pV300';
+                if ($stats != '') {
+                    if (!isset($data[$stats]))
+                        $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                    for ($i = 0; $i < 12; $i++) {
+                        if ($i == $ivr->Month - 1) {
+                            $data[$stats][$i] += $ivr->Counter;
+                        }
+                    }
+                }
+            }
+        }
+        //pvoc 499
+        $all_ivr = DB::select("SELECT Count(SerialNumber) as 'Counter', MONTH(TopUpDate) as Month FROM m_inventory WHERE YEAR(TopUpDate) = '{$year}' AND TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR0550%' GROUP BY MONTH(TopUpDate)");
+        if ($all_ivr != null) {
+            foreach ($all_ivr as $ivr) {
+                $stats = 'pV499';
                 if ($stats != '') {
                     if (!isset($data[$stats]))
                         $data[$stats] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
