@@ -778,7 +778,13 @@ class InventoryController extends BaseController
     public function getSubAgent()
     {
         $shipto = Input::get('ship');
-        return History::where('SubAgent', 'like', '%' . $shipto . '%')->select('SubAgent')->distinct()->get();
+        $resp = History::where('SubAgent', 'like', '%' . $shipto . '%')->select('SubAgent')->distinct()->get();
+        if( $shipto === "SUSIN"){
+            $object = new stdClass();
+            $object->SubAgent = "SUSIN";
+            $resp[] = $object;
+        }
+        return $resp;
     }
 
     public function showInventoryShipout()
