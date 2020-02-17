@@ -594,6 +594,47 @@ class InventoryController extends BaseController
     }
 
     public function showInsertInventory()
+    { // delete inventory data
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = Input::file('sample_file');
+            if ($input != '') {
+                if (Input::hasFile('sample_file')) {
+                    $destination = base_path() . '/uploaded_file/';
+                    $extention = Input::file('sample_file')->getClientOriginalExtension();
+                    $filename = 'temp.' . $extention;
+                    Input::file('sample_file')->move($destination, $filename);
+                    $filePath = base_path() . '/uploaded_file/' . 'temp.' . $extention;
+                    $reader = Box\Spout\Reader\ReaderFactory::create(Box\Spout\Common\Type::XLSX); // for XLSX files
+                    $reader->open($filePath);
+                    $arr_sn =  [];
+                    foreach ($reader->getSheetIterator() as $sheetIndex => $sheet) {
+                        foreach ($sheet->getRowIterator() as $rowNumber => $value) {
+                            if ($rowNumber > 1) {
+                                // do stuff with the row
+                                $act_serial_number = (string)$value[0];
+                                $arr_sn[] = $act_serial_number;
+                            }
+                        }
+                    }
+                    $reader->close();
+                    $cases1 = [];
+                    $cases2 = [];
+                    $ids = [];
+                    $params = [];
+                    for ($i = 0; $i < count($arr_sn); $i++) {
+                        $id = $arr_sn[$i];
+                        $ids[] = '\'' . $id . '\'';
+                    }
+                    $ids = implode(',', $ids);
+                    dd($ids);
+                    // DB::update("UPDATE `m_inventory` SET `Type` = CASE `SerialNumber` {$cases1} END WHERE `SerialNumber` in ({$ids})");
+                }
+            }
+        }
+        return View::make('insertinventory')->withPage('insert inventory');
+    }
+
+    public function showInsertInventory31222()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = Input::file('sample_file');
