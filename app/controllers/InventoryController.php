@@ -626,8 +626,8 @@ class InventoryController extends BaseController
                         $ids[] = '\'' . $id . '\'';
                     }
                     $ids = implode(',', $ids);
-                    dd($ids);
-                    // DB::update("UPDATE `m_inventory` SET `Type` = CASE `SerialNumber` {$cases1} END WHERE `SerialNumber` in ({$ids})");
+                    DB::update("DELETE `m_inventory` WHERE `SerialNumber` in ({$ids})");
+                    DB::update("DELETE `m_historymovement` WHERE `SN` in ({$ids})");
                 }
             }
         }
