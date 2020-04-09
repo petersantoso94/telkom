@@ -4056,7 +4056,7 @@ class InventoryController extends BaseController
                     ->whereRaw("TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR0450%' AND YEAR(TopUpDate) = '{$year->Year}'")
                     ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate)  as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
                 $simtopup499 = DB::table('m_inventory')
-                    ->whereRaw("TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR055%' AND YEAR(TopUpDate) = '{$year->Year}'")
+                    ->whereRaw("TopUpMSISDN IS NOT NULL AND (`SerialNumber` LIKE '%KR055%' OR `SerialNumber` LIKE '%KR065%') AND YEAR(TopUpDate) = '{$year->Year}'")
                     ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate)  as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
 
                 if ($simtopup499 != null) {
@@ -4123,7 +4123,7 @@ class InventoryController extends BaseController
             ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate)  as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
 
         $simtopup499 = DB::table('m_inventory')
-                ->whereRaw("TopUpMSISDN IS NOT NULL AND `SerialNumber` LIKE '%KR055%' AND YEAR(TopUpDate) = '{$year}'")
+                ->whereRaw("TopUpMSISDN IS NOT NULL AND (`SerialNumber` LIKE '%KR055%' OR `SerialNumber` LIKE '%KR065%') AND YEAR(TopUpDate) = '{$year}'")
                 ->select(DB::raw("COUNT(DISTINCT `TopUpMSISDN`) as 'Counter',MONTH(TopUpDate)  as 'month'"))->groupBy(DB::raw("MONTH(TopUpDate)"))->get();
 
         if ($simtopup499 != null) {
@@ -4203,6 +4203,8 @@ class InventoryController extends BaseController
                         $key = $ivr->vocType;
                         if (strtoupper($key) == 'KR0250')
                             $stats = 'eV300';
+                        else if (strtoupper($key) == 'KR065')
+                            $stats = 'eV499';
                         else if (strtoupper($key) == 'KR0150')
                             $stats = 'eV100';
                         else if (strtoupper($key) == 'KR0450' || strtoupper($key) == 'KR0950')
@@ -4268,6 +4270,8 @@ class InventoryController extends BaseController
                 $key = $ivr->vocType;
                 if (strtoupper($key) == 'KR0250')
                     $stats = 'eV300';
+                else if (strtoupper($key) == 'KR065')
+                    $stats = 'eV499';
                 else if (strtoupper($key) == 'KR0150')
                     $stats = 'eV100';
                 else if (strtoupper($key) == 'KR0450' || strtoupper($key) == 'KR0950')
@@ -4352,6 +4356,10 @@ class InventoryController extends BaseController
                     ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
                     ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR0250%'")
                     ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month', m_inventory.LastWarehouse"))->groupBy(DB::raw("MONTH(m_historymovement.Date), m_inventory.LastWarehouse"))->get();
+                $shipoutevoc499 = DB::table('m_inventory')
+                    ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+                    ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR065%'")
+                    ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month', m_inventory.LastWarehouse"))->groupBy(DB::raw("MONTH(m_historymovement.Date), m_inventory.LastWarehouse"))->get();
 
 
                 $shipoutpvoc100 = DB::table('m_inventory')
@@ -4396,6 +4404,17 @@ class InventoryController extends BaseController
                         for ($i = 0; $i < 12; $i++) {
                             if ($i == $voc->month - 1) {
                                 $data[$voc->LastWarehouse]['eV300'][$i] += $voc->Counter;
+                            }
+                        }
+                    }
+                }
+                if ($shipoutevoc499 != null) {
+                    foreach ($shipoutevoc499 as $voc) {
+                        if (!isset($data[$voc->LastWarehouse]['eV499']))
+                            $data[$voc->LastWarehouse]['eV499'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                        for ($i = 0; $i < 12; $i++) {
+                            if ($i == $voc->month - 1) {
+                                $data[$voc->LastWarehouse]['eV499'][$i] += $voc->Counter;
                             }
                         }
                     }
@@ -4463,6 +4482,10 @@ class InventoryController extends BaseController
             ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
             ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR0250%'")
             ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month', m_inventory.LastWarehouse"))->groupBy(DB::raw("MONTH(m_historymovement.Date), m_inventory.LastWarehouse"))->get();
+        $shipoutevoc499 = DB::table('m_inventory')
+            ->join('m_historymovement', 'm_inventory.LastStatusID', '=', 'm_historymovement.ID')
+            ->whereRaw("m_historymovement.Date IS NOT NULL AND YEAR(m_historymovement.Date) = '{$year}' AND m_inventory.Type = '2' AND m_inventory.LastStatusHist IN ('2','4') AND m_inventory.SerialNumber LIKE '%KR065%'")
+            ->select(DB::raw("COUNT(m_inventory.`SerialNumber`) as 'Counter', MONTH(m_historymovement.Date) as 'month', m_inventory.LastWarehouse"))->groupBy(DB::raw("MONTH(m_historymovement.Date), m_inventory.LastWarehouse"))->get();
 
 
         $shipoutpvoc100 = DB::table('m_inventory')
@@ -4507,6 +4530,17 @@ class InventoryController extends BaseController
                 for ($i = 0; $i < 12; $i++) {
                     if ($i == $voc->month - 1) {
                         $data[$voc->LastWarehouse]['eV300'][$i] += $voc->Counter;
+                    }
+                }
+            }
+        }
+        if ($shipoutevoc499 != null) {
+            foreach ($shipoutevoc499 as $voc) {
+                if (!isset($data[$voc->LastWarehouse]['eV499']))
+                    $data[$voc->LastWarehouse]['eV499'] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+                for ($i = 0; $i < 12; $i++) {
+                    if ($i == $voc->month - 1) {
+                        $data[$voc->LastWarehouse]['eV499'][$i] += $voc->Counter;
                     }
                 }
             }
@@ -6760,6 +6794,8 @@ static function exportExcel($filter)
                     $header = 'SIM 4G';
                 else if (strtoupper($key) == 'KR0250')
                     $header = 'eVC 300';
+                else if (strtoupper($key) == 'KR065')
+                    $header = 'eVC 499';
                 else if (strtoupper($key) == 'KR0150')
                     $header = 'eVC 100';
                 else if (strtoupper($key) == 'KR0450')
@@ -6802,6 +6838,8 @@ static function exportExcel($filter)
                     $header = 'SIM 4G';
                 else if (strtoupper($key) == 'KR0250')
                     $header = 'eVC 300';
+                else if (strtoupper($key) == 'KR065')
+                    $header = 'eVC 499';
                 else if (strtoupper($key) == 'KR0150')
                     $header = 'eVC 100';
                 else if (strtoupper($key) == 'KR0450')
@@ -6870,6 +6908,8 @@ static function exportExcel($filter)
                     $header = 'SIM 4G';
                 else if (strtoupper($key) == 'KR0250')
                     $header = 'eVC 300';
+                else if (strtoupper($key) == 'KR065')
+                    $header = 'eVC 499';
                 else if (strtoupper($key) == 'KR0150')
                     $header = 'eVC 100';
                 else if (strtoupper($key) == 'KR0450')
@@ -6908,6 +6948,8 @@ static function exportExcel($filter)
                     $header = 'SIM 4G';
                 else if (strtoupper($key) == 'KR0250')
                     $header = 'eVC 300';
+                else if (strtoupper($key) == 'KR065')
+                    $header = 'eVC 499';
                 else if (strtoupper($key) == 'KR0150')
                     $header = 'eVC 100';
                 else if (strtoupper($key) == 'KR0450')
