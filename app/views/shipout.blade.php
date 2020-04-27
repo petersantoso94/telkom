@@ -154,10 +154,8 @@
                         </option>
                         @endif
                         @endforeach
-                        <option value="SUSIN">
-                            SUSIN
-                        </option>
-                        <!--                        <option value="TOKO">TOKO</option>
+                        <option value="XINCHUAN">XINCHUAN</option>
+                        <!--                        
                                                 <option value="ASPROF">ASPROF</option>
                                                 <option value="ASPROT">ASPROT</option>
                                                 <option value="DIRECT">DIRECT</option>
@@ -189,9 +187,7 @@
                         </option>
                         @endif
                         @endforeach
-                        <option value="SUSIN">
-                            SUSIN
-                        </option>
+                        <option value="XINCHUAN">XINCHUAN</option>
                     </select>
                 </div>
                 <div class="col-sm-1" style="margin-top: 5px;">
