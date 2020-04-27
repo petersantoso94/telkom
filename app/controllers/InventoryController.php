@@ -820,9 +820,9 @@ class InventoryController extends BaseController
     {
         $shipto = Input::get('ship');
         $resp = History::where('SubAgent', 'like', '%' . $shipto . '%')->select('SubAgent')->distinct()->get();
-        if( $shipto === "SUSIN"){
+        if( $shipto === "XINCHUAN"){
             $object = new stdClass();
-            $object->SubAgent = "SUSIN";
+            $object->SubAgent = "XINCHUAN";
             $resp[] = $object;
         }
         return $resp;

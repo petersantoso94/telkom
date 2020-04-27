@@ -187,7 +187,6 @@
                         </option>
                         @endif
                         @endforeach
-                        <option value="XINCHUAN">XINCHUAN</option>
                     </select>
                 </div>
                 <div class="col-sm-1" style="margin-top: 5px;">
