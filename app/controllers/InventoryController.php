@@ -728,7 +728,7 @@ class InventoryController extends BaseController
                     $reader->close();
                     $for_raw = '';
                     for ($i = 0; $i < count($arr_sn); $i++) {
-                        if(i>0)
+                        if($i>0)
                             $for_raw .= ",";
                         $for_raw .= "('" . $arr_sn[$i] . "',0,0,0,'" . $arr_laststatusid[$i] . "','" . $arr_laststatus_hist[$i] . "','" . $arr_lastwarehouse[$i] . "','',NULL,'',0,0,0,'" . $arr_hist_date[$i] . "','" . $arr_type[$i] . "','" . $arr_msisdn[$i] . "','".$arr_tsel[$i]."','".$arr_batch[$i]."','TAIWAN STAR',NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'" . $arr_remark[$i] . "',CURDATE(),CURDATE(),'" . Auth::user()->ID . "','" . Auth::user()->ID . "')";
                     }
